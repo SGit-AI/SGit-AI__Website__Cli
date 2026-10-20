@@ -2,7 +2,7 @@
 
 > How to run a vault locally: the vault server's API inventory, the browser modes, when TLS is and is not needed, and how much plumbing sgit would need.
 
-*Source: <https://cli.sgit.ai/articles/sgit-serve-running-a-vault-locally.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/research__sgit-serve-local-vault-server.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-serve-running-a-vault-locally.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/research__sgit-serve-local-vault-server.md>.*
 
 ---
 # `sgit serve`: running a vault locally — research and plan

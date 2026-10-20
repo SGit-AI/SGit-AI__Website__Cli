@@ -2,7 +2,7 @@
 
 > The other API family on this host: a single encrypted payload uploaded once and shared as one link. The two secrets that must not be confused, the SGMETA envelope that keeps the filename off the server, the three calls, revocation that is opt-in at create time only, and when a transfer beats a vault.
 
-*Source: <https://cli.sgit.ai/api/transfers.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/transfers.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/transfers.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/transfers.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # The transfer API, one encrypted handover, one link

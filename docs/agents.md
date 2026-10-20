@@ -2,7 +2,7 @@
 
 > The agent-facing surface: sgit write, --json everywhere, the clone modes including scoped and shallow clones, the session pattern, and multi-agent collaboration.
 
-*Source: <https://cli.sgit.ai/docs/agents.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/agents.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/agents.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/agents.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Working with AI agents

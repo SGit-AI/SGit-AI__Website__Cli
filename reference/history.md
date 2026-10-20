@@ -2,7 +2,7 @@
 
 > Commit history and diffs
 
-*Source: <https://cli.sgit.ai/reference/history.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/history.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit history

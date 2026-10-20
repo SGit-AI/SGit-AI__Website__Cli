@@ -2,7 +2,7 @@
 
 > How two vaults exchange encrypted messages without sharing a vault key and without the sender holding an account: append lanes addressed by a token, composed with PKI. Worked example in CLI, curl and sg.append, with the one step that is not yet wired marked PROPOSED.
 
-*Source: <https://cli.sgit.ai/docs/vault-messaging.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/vault-messaging.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/vault-messaging.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/vault-messaging.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Sending messages between vaults

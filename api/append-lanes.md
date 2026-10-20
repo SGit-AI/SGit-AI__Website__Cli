@@ -2,7 +2,7 @@
 
 > The six append endpoints) the write-only vault-to-vault message transport. Four separated capabilities, the blind write response, server-assigned sortable filenames, idempotent mark-processed, and the limits.
 
-*Source: <https://cli.sgit.ai/api/append-lanes.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/append-lanes.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/append-lanes.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/append-lanes.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Append lanes

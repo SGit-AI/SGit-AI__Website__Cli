@@ -2,7 +2,7 @@
 
 > The plan for a tool-assisted, data-producing security review of one slice of sgit-ai: the code the zero-knowledge guarantee and the trust boundaries live in.
 
-*Source: <https://cli.sgit.ai/articles/security-review-plan.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md>.*
+*Source: <https://cli.sgit.ai/articles/security-review-plan.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md>.*
 
 ---
 # Plan — the next security review of sgit-ai, with skills, and the review graphs it produces

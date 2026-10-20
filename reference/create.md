@@ -2,7 +2,7 @@
 
 > Create a new vault and push it to the server in one step
 
-*Source: <https://cli.sgit.ai/reference/create.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/create.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit create

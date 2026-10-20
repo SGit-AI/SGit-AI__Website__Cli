@@ -2,7 +2,7 @@
 
 > Every sgit command, subcommand, argument and option, generated from the CLI's own parser (sgit help all --format json), grouped by what it is for.
 
-*Source: <https://cli.sgit.ai/reference/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Command reference

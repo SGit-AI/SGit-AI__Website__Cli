@@ -2,7 +2,7 @@
 
 > What each tool found in the round-1 security review of sgit-ai 0.21.0, with counts and cost: the skill vetting, the derived graph, 270 function records, 68 STRIDE threats and the insider overlay.
 
-*Source: <https://cli.sgit.ai/articles/security-review-case-study.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/case-study/README.md>.*
+*Source: <https://cli.sgit.ai/articles/security-review-case-study.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/case-study/README.md>.*
 
 ---
 # Case study — a tool-assisted security review of sgit-ai 0.21.0 (round 1)

@@ -2,7 +2,7 @@
 
 > Read-only vault inspection tools
 
-*Source: <https://cli.sgit.ai/reference/inspect.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/inspect.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit inspect

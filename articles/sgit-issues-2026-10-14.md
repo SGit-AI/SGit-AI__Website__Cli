@@ -2,7 +2,7 @@
 
 > The issues reported on 14 October, each traced to its cause in the code, with what was fixed in the same push and what was left open.
 
-*Source: <https://cli.sgit.ai/articles/sgit-issues-2026-10-14.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-issues-2026-10-14.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md>.*
 
 ---
 # Response to "sgit issues found on 14 October 2026", and the comms-vault performance report

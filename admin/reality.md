@@ -2,7 +2,7 @@
 
 > What exists on cli.sgit.ai today, what does not, and what is only proposed. If it is not here, it does not exist, whatever a brief says.
 
-*Source: <https://cli.sgit.ai/admin/reality.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Reality: what exists, at v0.1.0 (20 October 2026)

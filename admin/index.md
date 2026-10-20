@@ -2,7 +2,7 @@
 
 > How cli.sgit.ai is built, checked and released: one content folder, one generator, one gate, one version, deployed from dev by GitHub Pages; and how it measures against the estate's guidance for every sgit repository.
 
-*Source: <https://cli.sgit.ai/admin/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Engineering: how this site is built and released

@@ -2,7 +2,7 @@
 
 > Declare cached paths (fast single-request reads)
 
-*Source: <https://cli.sgit.ai/reference/cache.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/cache.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit cache

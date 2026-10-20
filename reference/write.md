@@ -2,7 +2,7 @@
 
 > Write a file directly to vault HEAD (agent workflow)
 
-*Source: <https://cli.sgit.ai/reference/write.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/write.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit write

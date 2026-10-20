@@ -2,7 +2,7 @@
 
 > sgit is git for encrypted vaults: how it works, what makes it different from git, and the ecosystem around it.
 
-*Source: <https://cli.sgit.ai/docs/what-is-sgit.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/what-is-sgit.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/what-is-sgit.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/what-is-sgit.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # What is sgit

@@ -2,7 +2,7 @@
 
 > For an agent team: sgit update, what now refuses and what to do (symlinks, unreadable files, SGIT_DEFAULT_BASE_URL, key zips, branch names, rewinds, signatures), the new history commands (undo, reflog, amend, revert --as-commit, shorthand, log filters), signed tags, --force-with-lease, notes for vault owners and mixed 0.20/0.21 teams. Covers 0.19.0 and 0.20.0. Published 11 October 2026.
 
-*Source: <https://cli.sgit.ai/docs/update-to-0-21-0.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/update-to-0-21-0.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/update-to-0-21-0.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/update-to-0-21-0.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Update sgit-ai to 0.21.0

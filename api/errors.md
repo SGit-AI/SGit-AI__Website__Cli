@@ -2,7 +2,7 @@
 
 > 400, 403, 413 and 507: what each means, why a malformed token returns 400 rather than 403, the input patterns enforced before storage is reached, and every documented ceiling.
 
-*Source: <https://cli.sgit.ai/api/errors.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/errors.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/errors.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/errors.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Errors and limits

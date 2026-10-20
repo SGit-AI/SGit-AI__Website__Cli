@@ -2,7 +2,7 @@
 
 > The pages that moved from sgit.ai to cli.sgit.ai on 20 October 2026, each at the same path, and why: the CLI now has use cases of its own, and sgit.ai is the umbrella.
 
-*Source: <https://cli.sgit.ai/admin/moved.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/moved.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # What moved from sgit.ai

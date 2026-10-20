@@ -2,7 +2,7 @@
 
 > A second encryption layer on top of either vault mode: files sealed to named recipients with ECDH P-256, HKDF and AES-256-GCM, with the corrections from the sgit.ai agent's review.
 
-*Source: <https://cli.sgit.ai/articles/sealed-files-layer.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__sealed-files-layer.md>.*
+*Source: <https://cli.sgit.ai/articles/sealed-files-layer.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__sealed-files-layer.md>.*
 
 ---
 # Sealed files — a second encryption layer on top of a vault

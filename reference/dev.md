@@ -2,7 +2,7 @@
 
 > Dev/perf instrumentation tools (sgit dev <tool>)
 
-*Source: <https://cli.sgit.ai/reference/dev.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/dev.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit dev

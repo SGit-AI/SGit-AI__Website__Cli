@@ -219,6 +219,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# cli.sgit.ai: the site's generator lives in admin/build/, which the Python template's build/ rule above would hide
+!admin/build/
+
 # cli.sgit.ai: the credentials tier, never committed (see admin/index.html)
 .local/
 .sg_vault/

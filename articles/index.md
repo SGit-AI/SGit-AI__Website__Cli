@@ -2,7 +2,7 @@
 
 > Articles from the sgit CLI team, newest first: measurements, designs, reviews, decisions and fixes, each taking one topic as far as the evidence goes, with its source in the CLI repository.
 
-*Source: <https://cli.sgit.ai/articles/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/articles/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Research

@@ -2,7 +2,7 @@
 
 > The reference for sgit-ai v0.20.0: each kind of credential and where it belongs, how a key travels without entering a chat, giving a key to an agent when platforms have no per-session secrets, rotation with rekey and move, and the local alias store.
 
-*Source: <https://cli.sgit.ai/docs/key-management.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/key-management.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/key-management.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/key-management.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Vault key management: where each key lives, and how it travels

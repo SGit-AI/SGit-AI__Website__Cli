@@ -2,7 +2,7 @@
 
 > Every page of the sgit CLI documentation in reading order: getting started, the guides, and the security pages, with the command reference and the HTTP API alongside.
 
-*Source: <https://cli.sgit.ai/docs/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/docs/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # The sgit CLI documentation

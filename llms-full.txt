@@ -2,7 +2,7 @@
 
 > This site is written by the team that builds the sgit CLI, about its own tool. What that means for how to read it.
 
-*Source: <https://cli.sgit.ai/about/participant.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/about/participant.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Participant disclosure
@@ -27,7 +27,7 @@ Corrections are welcome, and are published above the mistake: [the corrections f
 
 > Where the brief was wrong or unclear, what was found, and what was done instead. The brief itself is never edited.
 
-*Source: <https://cli.sgit.ai/admin/corrections.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/corrections.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Corrections to the brief
@@ -53,7 +53,7 @@ The brief is [published as given](../briefs/index.md). Where it was wrong, uncle
 
 > How cli.sgit.ai is built, checked and released: one content folder, one generator, one gate, one version, deployed from dev by GitHub Pages; and how it measures against the estate's guidance for every sgit repository.
 
-*Source: <https://cli.sgit.ai/admin/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Engineering: how this site is built and released
@@ -127,7 +127,7 @@ Every generated file is listed in `admin/build/generated.json`, and the build de
 
 > The pages that moved from sgit.ai to cli.sgit.ai on 20 October 2026, each at the same path, and why: the CLI now has use cases of its own, and sgit.ai is the umbrella.
 
-*Source: <https://cli.sgit.ai/admin/moved.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/moved.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # What moved from sgit.ai
@@ -189,7 +189,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 
 > What exists on cli.sgit.ai today, what does not, and what is only proposed. If it is not here, it does not exist, whatever a brief says.
 
-*Source: <https://cli.sgit.ai/admin/reality.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Reality: what exists, at v0.1.0 (20 October 2026)
@@ -236,7 +236,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 
 > Every release of cli.sgit.ai, newest first, with one sentence on what changed and why.
 
-*Source: <https://cli.sgit.ai/admin/versions.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/versions.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Release history
@@ -245,6 +245,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.1.1 | 2026-10-20 | sgit-ai v0.23.0 | The generator and the gate reach the repository: the Python `.gitignore` template's `build/` rule had kept `admin/build/` out of the v0.1.0 commit, so CI could not run `validate.js` and nothing deployed. `.gitignore` now re-includes `admin/build/`. |
 | v0.1.0 | 2026-10-20 | sgit-ai v0.23.0 | The first version, built from [the brief](../briefs/index.md) the same day: 27 pages moved from sgit.ai (site v0.7.87) so the CLI's technical documentation has one home, the command reference generated from `sgit help all --format json` (158 commands), and 23 research documents from the CLI repository (`SGit-AI__CLI` at 5597526) published as articles, with the generator, the gate and the deploy pipeline the sibling sites run. |
 
 ---
@@ -256,7 +257,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 > The six append endpoints) the write-only vault-to-vault message transport. Four separated capabilities, the blind write response, server-assigned sortable filenames, idempotent mark-processed, and the limits.
 
-*Source: <https://cli.sgit.ai/api/append-lanes.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/append-lanes.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/append-lanes.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/append-lanes.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Append lanes
@@ -374,7 +375,7 @@ The `append_token` pattern is `^[0-9a-f]{16,128}$`, hex only. A prefixed token r
 
 > The six authentication headers, what each one gates, and the hash-comparison model: the server stores SHA-256 of every capability key and never holds a raw key or a private key. Includes why vault reads are open by default.
 
-*Source: <https://cli.sgit.ai/api/authentication.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/authentication.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/authentication.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/authentication.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Authentication
@@ -423,7 +424,7 @@ What an unauthenticated reader *can* learn is covered honestly on the [security 
 
 > 400, 403, 413 and 507: what each means, why a malformed token returns 400 rather than 403, the input patterns enforced before storage is reached, and every documented ceiling.
 
-*Source: <https://cli.sgit.ai/api/errors.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/errors.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/errors.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/errors.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Errors and limits
@@ -472,7 +473,7 @@ The page-size clamp is silent: ask for 500 and you get 200 with no warning. Page
 
 > The protocol surface behind sgit: base URL, the capability model, and the reference for vault objects, append lanes, authentication headers and error codes. Built from a code-verified audit at v0.33.54, with unresolved endpoints labelled rather than guessed at.
 
-*Source: <https://cli.sgit.ai/api/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/index.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/index.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/index.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # The HTTP API
@@ -540,7 +541,7 @@ Three items came through the audit unresolved. They are listed rather than docum
 
 > The other API family on this host: a single encrypted payload uploaded once and shared as one link. The two secrets that must not be confused, the SGMETA envelope that keeps the filename off the server, the three calls, revocation that is opt-in at create time only, and when a transfer beats a vault.
 
-*Source: <https://cli.sgit.ai/api/transfers.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/transfers.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/transfers.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/transfers.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # The transfer API, one encrypted handover, one link
@@ -684,7 +685,7 @@ Adapted with attribution from the SG/API team's integration guide of 9 September
 
 > The pointer store: read, write, batch, destroy and presigned endpoints, the caching contract that separates immutable content-addressed objects from mutable refs, and the storage layout behind every vault.
 
-*Source: <https://cli.sgit.ai/api/vault-objects.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/vault-objects.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/vault-objects.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/vault-objects.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Vault objects
@@ -754,7 +755,7 @@ This site is itself served from a vault, so these are the objects behind the pag
 
 > An end-to-end check found that branches did not work. What was fixed behind it, the tests that now cover it, and a review of the test suite's speed and quality.
 
-*Source: <https://cli.sgit.ai/articles/branches-and-test-suite-review.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md>.*
+*Source: <https://cli.sgit.ai/articles/branches-and-test-suite-review.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md>.*
 
 ---
 # Branches check, test performance, test quality — 8 Oct 2026
@@ -838,7 +839,7 @@ behaviour. Recommendation, in order:
 
 > A clone stuck walking trees: the walk re-fetched shared sub-trees once per parent, 10,098 requests for 2,236 unique trees. The instrumented run and the fix.
 
-*Source: <https://cli.sgit.ai/articles/clone-refetched-shared-subtrees.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/02/clone-performance__shared-subtree-refetch.md>.*
+*Source: <https://cli.sgit.ai/articles/clone-refetched-shared-subtrees.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/02/clone-performance__shared-subtree-refetch.md>.*
 
 ---
 # Clone performance — the tree walk re-fetched shared sub-trees once per parent
@@ -1113,7 +1114,7 @@ Suite after the fixes: `pytest tests/unit/ -n auto` → **3871 passed**.
 
 > The CLI, the vault web UI and the SG/Send API across the integrity roll-out, step by step: what each version reads, writes and loses, under the rule that no client may break another still writing.
 
-*Source: <https://cli.sgit.ai/articles/compatibility-matrix-cli-web-ui-api.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/07/compatibility-matrix__cli-x-web-ui-x-api.md>.*
+*Source: <https://cli.sgit.ai/articles/compatibility-matrix-cli-web-ui-api.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/07/compatibility-matrix__cli-x-web-ui-x-api.md>.*
 
 ---
 # Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out
@@ -1211,7 +1212,7 @@ failure mode is "back to today", never "vault unusable".
 
 > The git-parity and security ideas that are not in 0.21.0, what each would take and what it could break, starting from the constraint that a new commit field breaks older clients' signature checks.
 
-*Source: <https://cli.sgit.ai/articles/future-features-after-0-21.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md>.*
+*Source: <https://cli.sgit.ai/articles/future-features-after-0-21.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md>.*
 
 ---
 # Possible future features, after 0.21.0
@@ -1280,7 +1281,7 @@ the ones the comparison note identifies as both valuable to agent teams and ahea
 
 > A review of the one-way map from git's security features to sgit, checked against the code: three corrections, one missing gap, and the four easy gaps closed for 0.21.0.
 
-*Source: <https://cli.sgit.ai/articles/git-to-sgit-security-mapping.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/review__git-to-sgit-security-mapping.md>.*
+*Source: <https://cli.sgit.ai/articles/git-to-sgit-security-mapping.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/review__git-to-sgit-security-mapping.md>.*
 
 ---
 # Review: "Git security features → sgit: a one-way mapping"
@@ -1355,7 +1356,7 @@ is not in the local store") on 0.20.0. Fixed.
 
 > What signature verification, ref monotonicity and 128-bit ids would cost, measured on a real vault, and how to ship all three without a vault move.
 
-*Source: <https://cli.sgit.ai/articles/history-integrity-cost-and-compatibility.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md>.*
+*Source: <https://cli.sgit.ai/articles/history-integrity-cost-and-compatibility.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md>.*
 
 ---
 # History integrity: what the three fixes would cost, and how to ship them without a `vault move`
@@ -1481,7 +1482,7 @@ few percent of bytes on a vault that was impractical to clone a week ago and now
 
 > Articles from the sgit CLI team, newest first: measurements, designs, reviews, decisions and fixes, each taking one topic as far as the evidence goes, with its source in the CLI repository.
 
-*Source: <https://cli.sgit.ai/articles/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/articles/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Research
@@ -1527,7 +1528,7 @@ Adding one file publishes it: `admin/content/articles/<slug>.md`, with a title, 
 
 > An architecture map for a second vault mode built on key pairs from the start, revised twice after review: sequence-number pinning, frozen hosts, concurrent writers.
 
-*Source: <https://cli.sgit.ai/articles/native-pki-vault-mode.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md>.*
+*Source: <https://cli.sgit.ai/articles/native-pki-vault-mode.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md>.*
 
 ---
 # Native PKI vault mode — architecture map
@@ -1793,7 +1794,7 @@ forge. The web UI needs the same verification and unwrap code to open PKI vaults
 
 > Characters outside a narrow set in a path are silently rewritten, so one vault gets two roots and a false push conflict. What really happens, reproduced, and a fix that raises an alarm instead of rewriting.
 
-*Source: <https://cli.sgit.ai/articles/non-ascii-paths-refuse-dont-rewrite.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/13/AC-L-001__non-ascii-paths__refuse-dont-rewrite.md>.*
+*Source: <https://cli.sgit.ai/articles/non-ascii-paths-refuse-dont-rewrite.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/13/AC-L-001__non-ascii-paths__refuse-dont-rewrite.md>.*
 
 ---
 # AC-L-001 / TM-R36 — characters outside `[a-zA-Z0-9/\_.- ]` in paths: what really happens
@@ -1922,7 +1923,7 @@ every path field; the check is about a day.
 
 > What sgit does when the repository is big and the clients are many: the comms vault, 35,000 encrypted objects and ten agents, cloned eight ways and measured from a cloud sandbox.
 
-*Source: <https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md>.*
+*Source: <https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md>.*
 
 ---
 # One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many
@@ -2041,7 +2042,7 @@ the protocol, and the deployment note says so.
 
 > Cloning just the folders an agent reads and writes, read and write, plus a shallow mode, without changing the full clone: the Merkle-spine idea and the measurements.
 
-*Source: <https://cli.sgit.ai/articles/partial-clones-scope-and-depth.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md>.*
+*Source: <https://cli.sgit.ai/articles/partial-clones-scope-and-depth.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md>.*
 
 ---
 # Partial clones — a folder scope and a history depth (6 Oct 2026)
@@ -2194,7 +2195,7 @@ the roots survive.
 
 > sgit pull silently discarded uncommitted edits to tracked files. The root cause, and the fix: git's rules for the working tree, applied before any write.
 
-*Source: <https://cli.sgit.ai/articles/pull-discarded-uncommitted-edits.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/03/pull-discards-uncommitted-edits__fix.md>.*
+*Source: <https://cli.sgit.ai/articles/pull-discarded-uncommitted-edits.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/03/pull-discards-uncommitted-edits__fix.md>.*
 
 ---
 # Fix — `sgit pull` silently discarded uncommitted edits to tracked files
@@ -2358,7 +2359,7 @@ step for step. Running `repro.sh` against a release with this fix should end wit
 
 > Are the read key and the write key really a public and a private key? Half right: the write key should become a signing key, and the read key cannot become a public key. What that would take.
 
-*Source: <https://cli.sgit.ai/articles/read-write-keys-as-pki.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design-analysis__read-write-keys-as-pki.md>.*
+*Source: <https://cli.sgit.ai/articles/read-write-keys-as-pki.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design-analysis__read-write-keys-as-pki.md>.*
 
 ---
 # Read and write keys as PKI — design analysis
@@ -2553,7 +2554,7 @@ Decisions needed from you before starting:
 
 > The CLI team's response to the newsroom's "Scion and sgit" article: what it gets right, the three factual errors, and the measurements from a 35k-object vault the article should have carried.
 
-*Source: <https://cli.sgit.ai/articles/response-to-scion-and-sgit.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md>.*
+*Source: <https://cli.sgit.ai/articles/response-to-scion-and-sgit.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md>.*
 
 ---
 # Response to "Scion and sgit" (newsroom.sgit.ai, article No. 141, v1.0.0)
@@ -2988,7 +2989,7 @@ in §9 come from. Link it as the swarm evidence, next to *Agent workflows on eph
 
 > A second encryption layer on top of either vault mode: files sealed to named recipients with ECDH P-256, HKDF and AES-256-GCM, with the corrections from the sgit.ai agent's review.
 
-*Source: <https://cli.sgit.ai/articles/sealed-files-layer.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__sealed-files-layer.md>.*
+*Source: <https://cli.sgit.ai/articles/sealed-files-layer.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__sealed-files-layer.md>.*
 
 ---
 # Sealed files — a second encryption layer on top of a vault
@@ -3269,7 +3270,7 @@ the earlier analysis.
 
 > A dedicated security pipeline on every pull request, and a keyless AI security review that can break the build on anything new: why, how it is wired, and what it costs per reviewed change.
 
-*Source: <https://cli.sgit.ai/articles/security-ci-and-ai-review.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md>.*
+*Source: <https://cli.sgit.ai/articles/security-ci-and-ai-review.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md>.*
 
 ---
 # Security CI: a dedicated pipeline, and an AI review that can break the build
@@ -3544,7 +3545,7 @@ client, which would have re-presented the single-use GitHub token and been refus
 
 > What each tool found in the round-1 security review of sgit-ai 0.21.0, with counts and cost: the skill vetting, the derived graph, 270 function records, 68 STRIDE threats and the insider overlay.
 
-*Source: <https://cli.sgit.ai/articles/security-review-case-study.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/case-study/README.md>.*
+*Source: <https://cli.sgit.ai/articles/security-review-case-study.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/case-study/README.md>.*
 
 ---
 # Case study — a tool-assisted security review of sgit-ai 0.21.0 (round 1)
@@ -3699,7 +3700,7 @@ part that was not in the input.
 
 > The plan for a tool-assisted, data-producing security review of one slice of sgit-ai: the code the zero-knowledge guarantee and the trust boundaries live in.
 
-*Source: <https://cli.sgit.ai/articles/security-review-plan.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md>.*
+*Source: <https://cli.sgit.ai/articles/security-review-plan.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md>.*
 
 ---
 # Plan — the next security review of sgit-ai, with skills, and the review graphs it produces
@@ -3906,7 +3907,7 @@ case study.
 
 > Agent skills for security review, each checked at its source, ranked by whether it brings a method, a tool with deterministic output, or vets the other skills, against this code base.
 
-*Source: <https://cli.sgit.ai/articles/security-review-skills.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__security-review-skills.md>.*
+*Source: <https://cli.sgit.ai/articles/security-review-skills.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__security-review-skills.md>.*
 
 ---
 # Agent skills for security review — what exists, what it would do here
@@ -4005,7 +4006,7 @@ this review is a worked example of the gap.
 
 > A vault is a set of files laid out by a convention, every immutable object named by the hash of its own ciphertext, so the server is the least interesting part and anything in the path can cache blindly.
 
-*Source: <https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md>.*
 
 ---
 # sgit is a standard, not a server: everything in a vault is one hash away
@@ -4159,7 +4160,7 @@ designs are small enough to be a standard, and why they fit in a page like this 
 
 > The issues reported on 14 October, each traced to its cause in the code, with what was fixed in the same push and what was left open.
 
-*Source: <https://cli.sgit.ai/articles/sgit-issues-2026-10-14.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-issues-2026-10-14.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md>.*
 
 ---
 # Response to "sgit issues found on 14 October 2026", and the comms-vault performance report
@@ -4265,7 +4266,7 @@ caps holding under concurrency, refusals correct) need nothing from the CLI.
 
 > The decision to run the SG/Send container image rather than re-implement the server: the runtimes supported (including Apple's container and Podman), the spike results, and phase 1 as built.
 
-*Source: <https://cli.sgit.ai/articles/sgit-serve-container-first.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/options__sgit-serve-container-and-static.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-serve-container-first.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/options__sgit-serve-container-and-static.md>.*
 
 ---
 # `sgit serve`: container first. Options map and spike results
@@ -4482,7 +4483,7 @@ browser".
 
 > How to run a vault locally: the vault server's API inventory, the browser modes, when TLS is and is not needed, and how much plumbing sgit would need.
 
-*Source: <https://cli.sgit.ai/articles/sgit-serve-running-a-vault-locally.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/research__sgit-serve-local-vault-server.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-serve-running-a-vault-locally.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/research__sgit-serve-local-vault-server.md>.*
 
 ---
 # `sgit serve`: running a vault locally — research and plan
@@ -4800,7 +4801,7 @@ Command placement (rule 9):
 
 > Threat-modeling tools for an agent-driven review: Matt Adams' stack (STRIDE GPT, the insider-threat model), the classics, and the house method, with the agent itself named as an actor.
 
-*Source: <https://cli.sgit.ai/articles/threat-modeling-tools.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__threat-modeling-tools.md>.*
+*Source: <https://cli.sgit.ai/articles/threat-modeling-tools.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__threat-modeling-tools.md>.*
 
 ---
 # Threat-modeling tools for an agent-driven review — Matt Adams' stack, the classics, and the house method
@@ -4898,7 +4899,7 @@ harmless by design.
 
 > The voice brief that started this site, published in full as transcribed, with the request that came with it: make cli.sgit.ai the CLI's main documentation, move the most technical content here from sgit.ai, and publish the CLI team's research as articles.
 
-*Source: <https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # The brief for cli.sgit.ai, 20 October 2026
@@ -4948,7 +4949,7 @@ harmless by design.
 
 > The briefs this site was built from, each published in full as it was given, with its status. Corrections go in the corrections file, never into a brief.
 
-*Source: <https://cli.sgit.ai/briefs/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/briefs/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Briefs
@@ -4968,7 +4969,7 @@ The research articles are the other kind of brief the first one asks for, "our n
 
 > The loop for a team of agents on one vault with sgit-ai 0.18.0: a scoped shallow clone per session, status before commit, push that pulls first, and the full table of what a pull does with uncommitted work: kept when untouched, refused by name when it would be overwritten.
 
-*Source: <https://cli.sgit.ai/docs/agents-sharing-one-vault.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/agents-sharing-one-vault.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/agents-sharing-one-vault.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/agents-sharing-one-vault.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Agents sharing one vault
@@ -5085,7 +5086,7 @@ The team this was worked out on is described in [The agent team as it runs](http
 
 > The agent-facing surface: sgit write, --json everywhere, the clone modes including scoped and shallow clones, the session pattern, and multi-agent collaboration.
 
-*Source: <https://cli.sgit.ai/docs/agents.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/agents.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/agents.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/agents.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Working with AI agents
@@ -5169,7 +5170,7 @@ For a team of agents on one vault, read [Agents sharing one vault](../docs/agent
 
 > The write-up of two-way, signed and encrypted messaging between agents over sgit's append lanes, as two teams ran it on 25 and 26 September 2026: per-session signing keys with a pinned key registry on the sender's own site, ephemeral inbox vaults for agents that keep no secret, the flows, security properties, threat model, HTTP calls as observed, eleven places sgit.ai's docs differed, and recommendations for sgit. Relayed by sgit.newsroom.sgit.ai.
 
-*Source: <https://cli.sgit.ai/docs/append-lane-messaging.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/append-lane-messaging.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/append-lane-messaging.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/append-lane-messaging.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Append-lane messaging between agents that hold no one else's vault key
@@ -5738,7 +5739,7 @@ riskmandate-agent-collab/postmaster/            sgit.newsroom.sgit.ai (repo)
 
 > Two capabilities, a vault key that reads and writes and a read key derived from it one way, plus the five prefixes that declare which you are holding and whether it was meant to be published. Why sgit_public_read_ is the form for an open vault, why publishing one under sgit_private_read_ is a mislabel that an agent will correctly refuse, and why the word matters when the bytes are identical.
 
-*Source: <https://cli.sgit.ai/docs/credentials.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/credentials.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/credentials.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/credentials.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Vault credentials: what each one can do, and what its prefix declares
@@ -5813,7 +5814,7 @@ Where each of these should be kept, how a key travels and how to give one to an 
 
 > sgit vault format (format 2, 128-bit ids, --min-client), who can open a raised vault and what old clients say, the shared branch index, rewind detection and --accept-rewind, sgit check verify, signatures-required and what a signature proves, and a checklist for raising a vault. For sgit-ai 0.21.0.
 
-*Source: <https://cli.sgit.ai/docs/history-integrity.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/history-integrity.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/history-integrity.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/history-integrity.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # History integrity: the format gate, verifying signatures, and rewinds
@@ -5975,7 +5976,7 @@ From the sgit-ai team's 0.19.0, 0.20.0 and 0.21.0 notes. The old-client messages
 
 > On Claude Team and Enterprise plans an Owner sets the code sandbox's network access for the whole organisation, and the default blocks every sgit host. Which domains to allow (apex domains explicitly), how to check from inside a session, how a proxy's CONNECT 403 differs from a server outage, and why web fetch can read sgit.ai while the shell cannot.
 
-*Source: <https://cli.sgit.ai/docs/how-to/claude-team-egress.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/how-to/claude-team-egress.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/how-to/claude-team-egress.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/how-to/claude-team-egress.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Using sgit from Claude on a Team or Enterprise plan: the network allowlist
@@ -6060,7 +6061,7 @@ The proxy's status endpoint records it as a `connect_rejected` relay failure for
 
 > Every page of the sgit CLI documentation in reading order: getting started, the guides, and the security pages, with the command reference and the HTTP API alongside.
 
-*Source: <https://cli.sgit.ai/docs/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/docs/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # The sgit CLI documentation
@@ -6113,7 +6114,7 @@ Read the first section in order; the rest when you need it. Commands are in [the
 
 > Install sgit with pip, verify with sgit doctor, upgrade with sgit update. Python 3.11+, two runtime dependencies.
 
-*Source: <https://cli.sgit.ai/docs/installation.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/installation.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/installation.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/installation.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Installation
@@ -6156,7 +6157,7 @@ The current release is 0.21.0, published 10 October 2026. If `sgit version` stil
 
 > The reference for sgit-ai v0.20.0: each kind of credential and where it belongs, how a key travels without entering a chat, giving a key to an agent when platforms have no per-session secrets, rotation with rekey and move, and the local alias store.
 
-*Source: <https://cli.sgit.ai/docs/key-management.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/key-management.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/key-management.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/key-management.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Vault key management: where each key lives, and how it travels
@@ -6218,7 +6219,7 @@ Checked against sgit-ai v0.20.0 and the live API documentation of `send.sgraph.a
 
 > The honest page: sgit's edges, stated plainly, plus the current roadmap gaps.
 
-*Source: <https://cli.sgit.ai/docs/limitations.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/limitations.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/limitations.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/limitations.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # When NOT to use sgit
@@ -6265,7 +6266,7 @@ If one of these gaps blocks you, say so on [GitHub](https://github.com/SGit-AI/S
 
 > sgit clone --path holds one folder and carries the rest by id; --depth holds the newest commits only. Measured on a 600-commit vault: one folder in 14 s against 80 s for the whole vault. The rules, widening with sgit fetch, the commands that need a full clone, and the two edges.
 
-*Source: <https://cli.sgit.ai/docs/partial-clones.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/partial-clones.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/partial-clones.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/partial-clones.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Partial clones: a folder scope and a history depth
@@ -6416,7 +6417,7 @@ Source: the CLI team's release brief for 0.18.0, 7 October 2026, with its measur
 
 > The keypair lifecycle run end to end on the shipped CLI: RSA-OAEP 4096 encryption, ECDSA P-256 signing, the JSON public-key bundle, the hybrid envelope format, and what PKI does not do yet.
 
-*Source: <https://cli.sgit.ai/docs/pki.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/pki.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/pki.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/pki.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Keys, signatures and encrypting to someone else
@@ -6560,7 +6561,7 @@ Honest edges belong on [the limitations page](../docs/limitations.md) too, and t
 
 > From zero to a synced, encrypted, versioned vault in five minutes: create, commit, push, clone, pull.
 
-*Source: <https://cli.sgit.ai/docs/quickstart.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/quickstart.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/quickstart.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/quickstart.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Quickstart
@@ -6636,7 +6637,7 @@ The web URL printed by `sgit vault info` opens the same vault in the SG/Vault br
 
 > Encrypted memory for agents in VMs, containers, a Mac mini or ephemeral jobs: run the SG/Send container with an access token and a storage folder, create the vault, the agent's clone-work-push entry point, Docker Compose, Kubernetes manifests, the cloud, a second server, what the server holds, and the errors you may meet (--endpoint, mcp<2, port 8080).
 
-*Source: <https://cli.sgit.ai/docs/self-host-for-agents.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/self-host-for-agents.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/self-host-for-agents.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/self-host-for-agents.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Self-hosting a vault server for agents
@@ -6884,7 +6885,7 @@ After the tests on this page the test vault's storage was 26 files, 228 KB: encr
 
 > For an agent that holds SG/Send vault keys and was given this page, an inbox vault id and an append token: the rules (never display a key, never improvise a route), the vault-key-handover/v1 payload, the registry's public key and endpoint, a sender script that pins the key's fingerprint, what to do afterwards and on a 404. The id and the token are never published.
 
-*Source: <https://cli.sgit.ai/docs/send-a-vault-key.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/send-a-vault-key.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/send-a-vault-key.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/send-a-vault-key.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Send a vault key to the registry
@@ -7015,7 +7016,7 @@ Published 7 October 2026 from the registry's own write-up, as the page a sender 
 
 > The Rosetta stone: every git command mapped to its sgit equivalent, plus the three deliberate differences.
 
-*Source: <https://cli.sgit.ai/docs/sgit-for-git-users.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/sgit-for-git-users.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/sgit-for-git-users.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/sgit-for-git-users.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # sgit for git users
@@ -7064,7 +7065,7 @@ You never work directly on a shared branch. Every clone works on a private **clo
 
 > sgit's central idea: private clone branches per machine or agent, shared named branches, and explicit publishing.
 
-*Source: <https://cli.sgit.ai/docs/two-branch-model.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/two-branch-model.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/two-branch-model.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/two-branch-model.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # The two-branch model
@@ -7117,7 +7118,7 @@ The verdict line matters in multi-writer vaults: it distinguishes genuine confli
 
 > Five minutes for an agent team: sgit update, check the version, change the clone command to --path and --depth, and what to do when a pull is refused. Published 7 October 2026.
 
-*Source: <https://cli.sgit.ai/docs/update-to-0-18-0.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/update-to-0-18-0.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/update-to-0-18-0.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/update-to-0-18-0.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Update sgit-ai to 0.18.0
@@ -7187,7 +7188,7 @@ On a vault of about 600 commits and 9,400 files, measured by the CLI team from a
 
 > For an agent team: sgit update, what now refuses and what to do (symlinks, unreadable files, SGIT_DEFAULT_BASE_URL, key zips, branch names, rewinds, signatures), the new history commands (undo, reflog, amend, revert --as-commit, shorthand, log filters), signed tags, --force-with-lease, notes for vault owners and mixed 0.20/0.21 teams. Covers 0.19.0 and 0.20.0. Published 11 October 2026.
 
-*Source: <https://cli.sgit.ai/docs/update-to-0-21-0.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/update-to-0-21-0.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/update-to-0-21-0.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/update-to-0-21-0.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Update sgit-ai to 0.21.0
@@ -7322,7 +7323,7 @@ Clone, pull, commit and push work in both directions, and every commit verifies 
 
 > How two vaults exchange encrypted messages without sharing a vault key and without the sender holding an account: append lanes addressed by a token, composed with PKI. Worked example in CLI, curl and sg.append, with the one step that is not yet wired marked PROPOSED.
 
-*Source: <https://cli.sgit.ai/docs/vault-messaging.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/vault-messaging.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/vault-messaging.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/vault-messaging.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Sending messages between vaults
@@ -7506,7 +7507,7 @@ Not a chat protocol, not a queue with delivery guarantees, and not anonymous, th
 
 > sgit is git for encrypted vaults: how it works, what makes it different from git, and the ecosystem around it.
 
-*Source: <https://cli.sgit.ai/docs/what-is-sgit.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/what-is-sgit.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/what-is-sgit.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/what-is-sgit.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # What is sgit
@@ -7552,7 +7553,7 @@ The **vault key** (`passphrase:vault-id`) is three things in one string: the add
 
 > The documentation for sgit, the command-line tool for encrypted vaults: every command generated from the CLI's own parser, the HTTP API it is a client of, the guides, and the CLI team's research as articles.
 
-*Source: <https://cli.sgit.ai/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # The sgit CLI: git for encrypted vaults, documented from the code
@@ -7593,7 +7594,7 @@ The six newest of the [23 articles](articles/index.md).
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.1.0. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.1.1. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 
@@ -7604,7 +7605,7 @@ Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/
 
 > Branch management
 
-*Source: <https://cli.sgit.ai/reference/branch.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/branch.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit branch
@@ -7751,7 +7752,7 @@ sgit branch switch [options] <name_or_id> [directory]
 
 > Declare cached paths (fast single-request reads)
 
-*Source: <https://cli.sgit.ai/reference/cache.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/cache.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit cache
@@ -7844,7 +7845,7 @@ sgit cache status [options] [directory]
 
 > Decrypt and print a vault file to stdout
 
-*Source: <https://cli.sgit.ai/reference/cat.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/cat.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit cat
@@ -7876,7 +7877,7 @@ sgit cat [options] <path> [directory]
 
 > Vault integrity checks
 
-*Source: <https://cli.sgit.ai/reference/check.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/check.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit check
@@ -7951,7 +7952,7 @@ sgit check verify [options] [directory]
 
 > Thin clone: full commit history + HEAD trees/blobs only. Note: only HEAD is fully fetched — run 'sgit fetch <path>' or 'sgit pull' to access older history.
 
-*Source: <https://cli.sgit.ai/reference/clone-branch.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/clone-branch.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit clone-branch
@@ -7988,7 +7989,7 @@ sgit clone-branch [options] <vault_key> [directory]
 
 > Credentials-only clone: derive keys, write config, no data
 
-*Source: <https://cli.sgit.ai/reference/clone-headless.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/clone-headless.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit clone-headless
@@ -8024,7 +8025,7 @@ sgit clone-headless [options] <vault_key> [directory]
 
 > Clone a specific commit range (range_from..range_to)
 
-*Source: <https://cli.sgit.ai/reference/clone-range.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/clone-range.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit clone-range
@@ -8062,7 +8063,7 @@ sgit clone-range [options] <vault_key> <range> [directory]
 
 > Clone a vault from the remote server
 
-*Source: <https://cli.sgit.ai/reference/clone.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/clone.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit clone
@@ -8104,7 +8105,7 @@ sgit clone [options] <vault_key> [directory]
 
 > Commit local changes to the clone branch
 
-*Source: <https://cli.sgit.ai/reference/commit.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/commit.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit commit
@@ -8138,7 +8139,7 @@ sgit commit [options] [message]
 
 > Create a new vault and push it to the server in one step
 
-*Source: <https://cli.sgit.ai/reference/create.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/create.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit create
@@ -8175,7 +8176,7 @@ sgit create [options] <vault_name>
 
 > Dev/perf instrumentation tools (sgit dev <tool>)
 
-*Source: <https://cli.sgit.ai/reference/dev.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/dev.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit dev
@@ -8572,7 +8573,7 @@ sgit dev workflow trace [options] [vault_dir]
 
 > Check remote connectivity and configuration
 
-*Source: <https://cli.sgit.ai/reference/doctor.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/doctor.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit doctor
@@ -8602,7 +8603,7 @@ sgit doctor [options]
 
 > Fetch file content on demand (sparse clone)
 
-*Source: <https://cli.sgit.ai/reference/fetch.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/fetch.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit fetch
@@ -8640,7 +8641,7 @@ sgit fetch [options] [path] [directory]
 
 > File operations (cat, ls, write)
 
-*Source: <https://cli.sgit.ai/reference/file.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/file.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit file
@@ -8725,7 +8726,7 @@ sgit file write [options] <path> [directory]
 
 > Show help (use `sgit help all` for full surface)
 
-*Source: <https://cli.sgit.ai/reference/help.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/help.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit help
@@ -8756,7 +8757,7 @@ sgit help [options] [topic]
 
 > Commit history and diffs
 
-*Source: <https://cli.sgit.ai/reference/history.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/history.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit history
@@ -8921,7 +8922,7 @@ sgit history undo [options] [directory]
 
 > Every sgit command, subcommand, argument and option, generated from the CLI's own parser (sgit help all --format json), grouped by what it is for.
 
-*Source: <https://cli.sgit.ai/reference/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Command reference
@@ -9030,7 +9031,7 @@ Where to put a new command is a rule of the CLI (its `CLAUDE.md`): a daily-use v
 
 > Create a new empty vault and register it on the server
 
-*Source: <https://cli.sgit.ai/reference/init.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/init.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit init
@@ -9068,7 +9069,7 @@ sgit init [options] [directory]
 
 > Read-only vault inspection tools
 
-*Source: <https://cli.sgit.ai/reference/inspect.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/inspect.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit inspect
@@ -9188,7 +9189,7 @@ sgit inspect vault [directory]
 
 > List vault files with fetch status
 
-*Source: <https://cli.sgit.ai/reference/ls.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/ls.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit ls
@@ -9220,7 +9221,7 @@ sgit ls [options] [path] [directory]
 
 > Abort an in-progress merge and restore working tree
 
-*Source: <https://cli.sgit.ai/reference/merge-abort.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/merge-abort.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit merge-abort
@@ -9250,7 +9251,7 @@ sgit merge-abort [options] [directory]
 
 > Run vault data migrations
 
-*Source: <https://cli.sgit.ai/reference/migrate.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/migrate.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit migrate
@@ -9318,7 +9319,7 @@ sgit migrate status [directory]
 
 > PKI key management and encryption
 
-*Source: <https://cli.sgit.ai/reference/pki.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/pki.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit pki
@@ -9485,7 +9486,7 @@ sgit pki verify [options] <file> <signature>
 
 > Generate the plaintext surface for static publishing (.sg_vault/publish/ — the only path that changes)
 
-*Source: <https://cli.sgit.ai/reference/publish.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/publish.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit publish
@@ -9520,7 +9521,7 @@ sgit publish [options] [directory]
 
 > Pull named branch changes and merge into clone branch
 
-*Source: <https://cli.sgit.ai/reference/pull.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/pull.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit pull
@@ -9556,7 +9557,7 @@ sgit pull [options] [directory]
 
 > Push clone branch to the named branch
 
-*Source: <https://cli.sgit.ai/reference/push.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/push.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit push
@@ -9594,7 +9595,7 @@ sgit push [options] [directory]
 
 > Manage vault remotes (alias for `sgit vault remote`)
 
-*Source: <https://cli.sgit.ai/reference/remote.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/remote.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit remote
@@ -9742,7 +9743,7 @@ sgit remote show [options] <name>
 
 > Resolve merge conflicts per file or all at once
 
-*Source: <https://cli.sgit.ai/reference/resolve.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/resolve.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit resolve
@@ -9776,7 +9777,7 @@ sgit resolve [options] [file]
 
 > Run this vault on your machine: the vault UI + API in a container (Docker, Podman, Apple container), or --static
 
-*Source: <https://cli.sgit.ai/reference/serve.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/serve.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit serve
@@ -9901,7 +9902,7 @@ sgit serve update
 
 > Show uncommitted changes in working directory
 
-*Source: <https://cli.sgit.ai/reference/status.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/status.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit status
@@ -9937,7 +9938,7 @@ sgit status [options] [directory]
 
 > Update sgit-ai to the latest version
 
-*Source: <https://cli.sgit.ai/reference/update.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/update.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit update
@@ -9959,7 +9960,7 @@ sgit update
 
 > Vault management and credential store
 
-*Source: <https://cli.sgit.ai/reference/vault.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/vault.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit vault
@@ -10679,7 +10680,7 @@ sgit vault uninit [directory]
 
 > Show sgit-ai version
 
-*Source: <https://cli.sgit.ai/reference/version.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/version.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit version
@@ -10701,7 +10702,7 @@ sgit version
 
 > Write a file directly to vault HEAD (agent workflow)
 
-*Source: <https://cli.sgit.ai/reference/write.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/write.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit write
@@ -10736,7 +10737,7 @@ sgit write [options] <path> [directory]
 
 > sgit's zero-knowledge security model, precisely stated: the crypto stack, what the server can and cannot see, key strength, and the open security process.
 
-*Source: <https://cli.sgit.ai/security/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/security/index.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/security/index.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/security/index.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Security model

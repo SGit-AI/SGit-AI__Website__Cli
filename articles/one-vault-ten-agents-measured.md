@@ -2,7 +2,7 @@
 
 > What sgit does when the repository is big and the clients are many: the comms vault, 35,000 encrypted objects and ten agents, cloned eight ways and measured from a cloud sandbox.
 
-*Source: <https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md>.*
+*Source: <https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md>.*
 
 ---
 # One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many

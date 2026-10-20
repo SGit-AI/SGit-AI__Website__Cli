@@ -2,7 +2,7 @@
 
 > An architecture map for a second vault mode built on key pairs from the start, revised twice after review: sequence-number pinning, frozen hosts, concurrent writers.
 
-*Source: <https://cli.sgit.ai/articles/native-pki-vault-mode.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md>.*
+*Source: <https://cli.sgit.ai/articles/native-pki-vault-mode.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md>.*
 
 ---
 # Native PKI vault mode — architecture map

@@ -2,7 +2,7 @@
 
 > Pull named branch changes and merge into clone branch
 
-*Source: <https://cli.sgit.ai/reference/pull.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/pull.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit pull

@@ -2,7 +2,7 @@
 
 > The Rosetta stone: every git command mapped to its sgit equivalent, plus the three deliberate differences.
 
-*Source: <https://cli.sgit.ai/docs/sgit-for-git-users.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/sgit-for-git-users.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/sgit-for-git-users.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/sgit-for-git-users.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # sgit for git users

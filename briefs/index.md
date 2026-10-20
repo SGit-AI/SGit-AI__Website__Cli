@@ -2,7 +2,7 @@
 
 > The briefs this site was built from, each published in full as it was given, with its status. Corrections go in the corrections file, never into a brief.
 
-*Source: <https://cli.sgit.ai/briefs/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/briefs/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Briefs

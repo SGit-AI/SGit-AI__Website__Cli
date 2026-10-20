@@ -2,7 +2,7 @@
 
 > Install sgit with pip, verify with sgit doctor, upgrade with sgit update. Python 3.11+, two runtime dependencies.
 
-*Source: <https://cli.sgit.ai/docs/installation.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/installation.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/installation.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/installation.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Installation

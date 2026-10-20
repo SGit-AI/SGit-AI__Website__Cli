@@ -2,7 +2,7 @@
 
 > The documentation for sgit, the command-line tool for encrypted vaults: every command generated from the CLI's own parser, the HTTP API it is a client of, the guides, and the CLI team's research as articles.
 
-*Source: <https://cli.sgit.ai/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/index.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # The sgit CLI: git for encrypted vaults, documented from the code
@@ -43,7 +43,7 @@ The six newest of the [23 articles](articles/index.md).
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.1.0. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.1.1. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

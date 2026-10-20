@@ -2,7 +2,7 @@
 
 > A vault is a set of files laid out by a convention, every immutable object named by the hash of its own ciphertext, so the server is the least interesting part and anything in the path can cache blindly.
 
-*Source: <https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md>.*
+*Source: <https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md>.*
 
 ---
 # sgit is a standard, not a server: everything in a vault is one hash away

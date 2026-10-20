@@ -2,7 +2,7 @@
 
 > For an agent that holds SG/Send vault keys and was given this page, an inbox vault id and an append token: the rules (never display a key, never improvise a route), the vault-key-handover/v1 payload, the registry's public key and endpoint, a sender script that pins the key's fingerprint, what to do afterwards and on a 404. The id and the token are never published.
 
-*Source: <https://cli.sgit.ai/docs/send-a-vault-key.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/send-a-vault-key.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/send-a-vault-key.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/send-a-vault-key.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Send a vault key to the registry

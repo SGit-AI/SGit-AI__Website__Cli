@@ -2,7 +2,7 @@
 
 > Create a new empty vault and register it on the server
 
-*Source: <https://cli.sgit.ai/reference/init.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/init.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit init

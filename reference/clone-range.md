@@ -2,7 +2,7 @@
 
 > Clone a specific commit range (range_from..range_to)
 
-*Source: <https://cli.sgit.ai/reference/clone-range.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/clone-range.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit clone-range

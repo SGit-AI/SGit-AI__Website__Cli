@@ -2,7 +2,7 @@
 
 > Abort an in-progress merge and restore working tree
 
-*Source: <https://cli.sgit.ai/reference/merge-abort.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/merge-abort.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit merge-abort

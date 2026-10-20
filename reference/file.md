@@ -2,7 +2,7 @@
 
 > File operations (cat, ls, write)
 
-*Source: <https://cli.sgit.ai/reference/file.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/file.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit file

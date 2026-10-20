@@ -2,7 +2,7 @@
 
 > Resolve merge conflicts per file or all at once
 
-*Source: <https://cli.sgit.ai/reference/resolve.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/resolve.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit resolve

@@ -2,7 +2,7 @@
 
 > Update sgit-ai to the latest version
 
-*Source: <https://cli.sgit.ai/reference/update.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/update.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit update

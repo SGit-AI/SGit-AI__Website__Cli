@@ -2,7 +2,7 @@
 
 > An end-to-end check found that branches did not work. What was fixed behind it, the tests that now cover it, and a review of the test suite's speed and quality.
 
-*Source: <https://cli.sgit.ai/articles/branches-and-test-suite-review.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md>.*
+*Source: <https://cli.sgit.ai/articles/branches-and-test-suite-review.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md>.*
 
 ---
 # Branches check, test performance, test quality — 8 Oct 2026

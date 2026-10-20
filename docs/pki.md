@@ -2,7 +2,7 @@
 
 > The keypair lifecycle run end to end on the shipped CLI: RSA-OAEP 4096 encryption, ECDSA P-256 signing, the JSON public-key bundle, the hybrid envelope format, and what PKI does not do yet.
 
-*Source: <https://cli.sgit.ai/docs/pki.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/pki.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/docs/pki.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/docs/pki.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # Keys, signatures and encrypting to someone else

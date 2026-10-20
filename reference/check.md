@@ -2,7 +2,7 @@
 
 > Vault integrity checks
 
-*Source: <https://cli.sgit.ai/reference/check.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/check.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit check

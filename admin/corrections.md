@@ -2,7 +2,7 @@
 
 > Where the brief was wrong or unclear, what was found, and what was done instead. The brief itself is never edited.
 
-*Source: <https://cli.sgit.ai/admin/corrections.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/admin/corrections.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # Corrections to the brief

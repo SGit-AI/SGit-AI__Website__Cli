@@ -2,7 +2,7 @@
 
 > The protocol surface behind sgit: base URL, the capability model, and the reference for vault objects, append lanes, authentication headers and error codes. Built from a code-verified audit at v0.33.54, with unresolved endpoints labelled rather than guessed at.
 
-*Source: <https://cli.sgit.ai/api/index.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/index.html> (sgit.ai v0.7.87) on 2026-10-20.*
+*Source: <https://cli.sgit.ai/api/index.html> · generated from the same content as the page, so the two cannot drift. Moved from <https://sgit.ai/api/index.html> (sgit.ai v0.7.87) on 2026-10-20.*
 
 ---
 # The HTTP API

@@ -2,7 +2,7 @@
 
 > Thin clone: full commit history + HEAD trees/blobs only. Note: only HEAD is fully fetched — run 'sgit fetch <path>' or 'sgit pull' to access older history.
 
-*Source: <https://cli.sgit.ai/reference/clone-branch.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/clone-branch.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit clone-branch

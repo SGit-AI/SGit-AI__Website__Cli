@@ -2,7 +2,7 @@
 
 > Agent skills for security review, each checked at its source, ranked by whether it brings a method, a tool with deterministic output, or vets the other skills, against this code base.
 
-*Source: <https://cli.sgit.ai/articles/security-review-skills.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__security-review-skills.md>.*
+*Source: <https://cli.sgit.ai/articles/security-review-skills.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__security-review-skills.md>.*
 
 ---
 # Agent skills for security review — what exists, what it would do here

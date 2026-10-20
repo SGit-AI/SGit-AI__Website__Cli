@@ -2,7 +2,7 @@
 
 > The CLI team's response to the newsroom's "Scion and sgit" article: what it gets right, the three factual errors, and the measurements from a 35k-object vault the article should have carried.
 
-*Source: <https://cli.sgit.ai/articles/response-to-scion-and-sgit.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md>.*
+*Source: <https://cli.sgit.ai/articles/response-to-scion-and-sgit.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md>.*
 
 ---
 # Response to "Scion and sgit" (newsroom.sgit.ai, article No. 141, v1.0.0)

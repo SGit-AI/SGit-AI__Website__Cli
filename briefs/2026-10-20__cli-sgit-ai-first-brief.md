@@ -2,7 +2,7 @@
 
 > The voice brief that started this site, published in full as transcribed, with the request that came with it: make cli.sgit.ai the CLI's main documentation, move the most technical content here from sgit.ai, and publish the CLI team's research as articles.
 
-*Source: <https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # The brief for cli.sgit.ai, 20 October 2026

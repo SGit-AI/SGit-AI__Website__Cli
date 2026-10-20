@@ -2,7 +2,7 @@
 
 > Run this vault on your machine: the vault UI + API in a container (Docker, Podman, Apple container), or --static
 
-*Source: <https://cli.sgit.ai/reference/serve.html> · site v0.1.0 · generated from the same content as the page, so the two cannot drift.*
+*Source: <https://cli.sgit.ai/reference/serve.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 # sgit serve

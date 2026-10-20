@@ -192,7 +192,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.1.0 (20 October 2026)
+# Reality: what exists, at v0.1.2 (20 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -207,13 +207,13 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **The brief** | Published in full, with the initial prompt |
 | **Machine-readable twins** | A `.md` twin for every page, `llms.txt`, `llms-full.txt`, `sitemap.xml`, all generated |
 | **The gate** | `admin/build/validate.js`: build freshness, version agreement, links, canonical host, twins, orphans, leak tripwire; runs in CI before tag and deploy |
+| **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it |
 | **Versioning** | `admin/build/version.txt`, badge on every page via `assets/version.js`, release history, tags `vX.Y.Z` made by CI |
 
 ## Does not exist yet
 
 | | |
 |---|---|
-| **DNS and Pages for cli.sgit.ai** | Not verified from this repository. The workflow deploys; whether `cli.sgit.ai` resolves to it depends on the DNS record and the repository's Pages settings (source: GitHub Actions; the `github-pages` environment must allow `dev`) |
 | **Redirects on sgit.ai** | The moved pages still exist on sgit.ai, and nothing there points here yet. Requested in [the corrections file](../admin/corrections.md) |
 | **The review folder** | `review/` (intent from the brief, code derived from the tree, commits read upwards) is required by the estate's guidance from the first commit and is not built |
 | **Roles and a board** | No `team/` roles or board files yet |
@@ -245,6 +245,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.1.2 | 2026-10-20 | sgit-ai v0.23.0 | The reality file catches up: cli.sgit.ai was checked live after v0.1.1 deployed (DNS, Pages and the `dev` environment all work), so it moves from "does not exist yet" to "exists". |
 | v0.1.1 | 2026-10-20 | sgit-ai v0.23.0 | The generator and the gate reach the repository: the Python `.gitignore` template's `build/` rule had kept `admin/build/` out of the v0.1.0 commit, so CI could not run `validate.js` and nothing deployed. `.gitignore` now re-includes `admin/build/`. |
 | v0.1.0 | 2026-10-20 | sgit-ai v0.23.0 | The first version, built from [the brief](../briefs/index.md) the same day: 27 pages moved from sgit.ai (site v0.7.87) so the CLI's technical documentation has one home, the command reference generated from `sgit help all --format json` (158 commands), and 23 research documents from the CLI repository (`SGit-AI__CLI` at 5597526) published as articles, with the generator, the gate and the deploy pipeline the sibling sites run. |
 
@@ -7594,7 +7595,7 @@ The six newest of the [23 articles](articles/index.md).
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.1.1. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.1.2. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

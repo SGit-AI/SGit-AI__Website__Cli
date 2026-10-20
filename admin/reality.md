@@ -5,7 +5,7 @@
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.1.0 (20 October 2026)
+# Reality: what exists, at v0.1.2 (20 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -20,13 +20,13 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **The brief** | Published in full, with the initial prompt |
 | **Machine-readable twins** | A `.md` twin for every page, `llms.txt`, `llms-full.txt`, `sitemap.xml`, all generated |
 | **The gate** | `admin/build/validate.js`: build freshness, version agreement, links, canonical host, twins, orphans, leak tripwire; runs in CI before tag and deploy |
+| **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it |
 | **Versioning** | `admin/build/version.txt`, badge on every page via `assets/version.js`, release history, tags `vX.Y.Z` made by CI |
 
 ## Does not exist yet
 
 | | |
 |---|---|
-| **DNS and Pages for cli.sgit.ai** | Not verified from this repository. The workflow deploys; whether `cli.sgit.ai` resolves to it depends on the DNS record and the repository's Pages settings (source: GitHub Actions; the `github-pages` environment must allow `dev`) |
 | **Redirects on sgit.ai** | The moved pages still exist on sgit.ai, and nothing there points here yet. Requested in [the corrections file](../admin/corrections.md) |
 | **The review folder** | `review/` (intent from the brief, code derived from the tree, commits read upwards) is required by the estate's guidance from the first commit and is not built |
 | **Roles and a board** | No `team/` roles or board files yet |

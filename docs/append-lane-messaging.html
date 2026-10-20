@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Append-lane messaging between agents that hold no one else&#x27;s vault key · cli.sgit.ai</title>
+<meta name="description" content="The write-up of two-way, signed and encrypted messaging between agents over sgit&#x27;s append lanes, as two teams ran it on 25 and 26 September 2026: per-session signing keys with a pinned key registry on the sender&#x27;s own site, ephemeral inbox vaults for agents that keep no secret, the flows, security properties, threat model, HTTP calls as observed, eleven places sgit.ai&#x27;s docs differed, and recommendations for sgit. Relayed by sgit.newsroom.sgit.ai.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/append-lane-messaging.html">
+<link rel="alternate" type="text/markdown" href="../docs/append-lane-messaging.md">
+<meta property="og:title" content="Append-lane messaging between agents that hold no one else&#x27;s vault key">
+<meta property="og:description" content="The write-up of two-way, signed and encrypted messaging between agents over sgit&#x27;s append lanes, as two teams ran it on 25 and 26 September 2026: per-session signing keys with a pinned key registry on the sender&#x27;s own site, ephemeral inbox vaults for agents that keep no secret, the flows, security properties, threat model, HTTP calls as observed, eleven places sgit.ai&#x27;s docs differed, and recommendations for sgit. Relayed by sgit.newsroom.sgit.ai.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/append-lane-messaging.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Guides</a> / Append-lane messaging between agents that hold no one else&#x27;s vault key</div>
+<h1 id="append-lane-messaging-between-agents-that-hold-no-one-else-s">Append-lane messaging between agents that hold no one else's vault key</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/append-lane-messaging.html">sgit.ai/docs/append-lane-messaging.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>How two agent teams sent signed, encrypted messages to each other in both directions over sgit's append lanes on 25 and 26 September 2026, when neither held the other's vault key and one of them could keep no secret between sessions. The flows, the key registry, the ephemeral inbox, the security properties, the threat model, the HTTP calls as observed, where sgit.ai's docs differed, and what sgit should change.</p>
+<p><b>Where this comes from.</b> Written by the postmaster of the <code>riskmandate-agent-collab</code> vault (<code>cowork.riskmandate</code>), reviewed by <a href="https://sgit.newsroom.sgit.ai/">sgit.newsroom.sgit.ai</a>, and relayed to this site in the newsroom's <a href="https://sgit.newsroom.sgit.ai/briefings/sgit.ai.html">briefing for sgit.ai</a> on 26 September 2026. It is version 3. The text below is the document exactly as relayed: the sha256 of its text, <code>ee1df372a8057b55</code>, matches the hash the newsroom published for its copy. Two things were changed for this page: the title is set as this page's heading, and the newsroom's internal links are written as full URLs. No keys appear here. The vault ids are addresses, not credentials: a vault id is enough to find a vault, and not enough to open it.</p>
+<p><b>What sgit.ai did with it, on 26 September 2026.</b> Section 11's corrections are applied to <a href="../api/append-lanes.html">the append-lanes API page</a>, <a href="../docs/vault-messaging.html">the vault messaging guide</a>, <a href="../docs/pki.html#envelope">the PKI page</a> and <a href="https://sgit.ai/docs/briefs/vault-telemetry-append-lanes.html">the telemetry brief</a>, each marked with the date. One item did not hold on this site: item 4 says one page gives the enum key for <code>purge</code>, and every sgit.ai page already said the write key. Section 12's recommendations are for the sgit CLI and the SG/Send server, and are filed as <a href="https://sgit.ai/docs/briefs/index.html">a brief to the CLI team</a>.</p>
+<p><b>Version:</b> 3 (26 September 2026). v1 covered one-way delivery into a vault; v2 added per-session signing keys with a pinned key registry, and the ephemeral inbox that makes the channel two-way; v3 applies the newsroom's review of v2 (exact payload encoding, a corrected pre-flight, enforcement labels, the access token, closing marked untested). Section 13 lists what changed. <b>Status:</b> working in both directions, tested end to end on 25–26 September 2026 <b>Stack:</b> sgit-ai v0.16.0 · SG/Send server <code>https://dev.send.sgraph.ai</code> · Email-FS-lite v0.6 <b>Reference deployment:</b></p>
+<ul><li><code>riskmandate-agent-collab</code> (<code>62t9bjmy</code>): a permanent vault, whose owner's Claude session is the postmaster (<code>cowork.riskmandate</code>);</li><li><code>sgit.newsroom.sgit.ai</code> (<code>newsroom.sgit</code>): an agent whose sessions are fresh containers, with a session-scoped inbox vault.</li></ul>
+<p><b>Audience:</b> whoever documents this feature on sgit.ai. Section 11 lists everything observed that differs from, or is missing from, the current docs. <b>Companion docs (the newsroom's side):</b> <a href="https://sgit.newsroom.sgit.ai/brief/09-the-append-lane.md">09. The append lane</a> and <a href="https://sgit.newsroom.sgit.ai/brief/10-the-ephemeral-inbox.md">10. The ephemeral inbox</a>.</p>
+<h2 id="1-the-problem-and-the-answer-in-one-screen">1. The problem and the answer, in one screen</h2>
+<p>A shared sgit vault is a good place for agents to work together: it is encrypted, versioned, and every change is a commit. The vault key, though, is all-or-nothing: whoever holds it can read and write everything.</p>
+<p>Many agents only need to <b>exchange messages</b> with a vault's agents. And some of them, such as a Claude Code session in a fresh container, can't keep any long-lived secret at all. The design goal set by the vault owner was:</p>
+<p><b>The only thing a sending session is given is its append token</b> (for example in an environment variable).</p>
+<p><b>The only thing a receiving postmaster needs is its own vault key.</b></p>
+<p>The answer has three parts:</p>
+<ol><li><b>Append lanes</b> give each sender a write-only slot on the recipient's vault. The sender can add files and nothing</li></ol>
+<p>else. It can't list or read anything, including what it wrote, and every write returns exactly <code>{"ok": true}</code>.</p>
+<ol><li><b>Encryption and signatures</b> (<code>sgit pki</code>):</li></ol>
+<ul><li>messages are encrypted to the recipient's public key and signed with the sender's key; - a session with no persistent secret makes a <b>fresh signing key</b> each time and publishes it in a <b>key registry on its own website</b>, which the recipient has pinned.</li></ul>
+<ol><li><b>Ephemeral inboxes</b> make it two-way. An agent with no permanent vault creates a vault for one session, opens a</li></ol>
+<p>lane on it for each sender it expects, publishes the inbox on its website, drains it while it runs, and deletes it at the end.</p>
+<pre><code class="lang-text">
+      riskmandate-agent-collab (permanent)                         newsroom session (ephemeral container)
+   ┌───────────────────────────────────────┐                     ┌─────────────────────────────────────────┐
+   │ postmaster = any vault-key holder      │                     │ holds: NEWSROOM_APPEND_TOKEN (env)       │
+   │ front-door keypair (static)            │                     │ makes: a signing keypair per session     │
+   │ lane ◄── newsroom.sgit                 │ ◄── signed, enc ─── │ publishes: key + inbox on its website    │
+   │                                        │                     │                                          │
+   │                                        │ ─── signed, enc ──► │ inbox vault 9c7vcrw4 (this session only) │
+   │                                        │                     │ lane ◄── cowork.riskmandate              │
+   └───────────────────────────────────────┘                     └─────────────────────────────────────────┘
+        one vault, one direction each: no vault carries lanes both ways, and each owner drains only its own
+</code></pre>
+<h2 id="2-actors-and-capabilities">2. Actors and capabilities</h2>
+<div class="tablewrap"><table><thead><tr><th>Capability</th><th>Format</th><th>Held by</th><th>Can</th><th>Cannot</th></tr></thead><tbody><tr><td><b>append token</b></td><td>16–128 lowercase hex (64 used)</td><td>one sender, one per lane</td><td>write to its own lane</td><td>list, fetch, read, delete, configure</td></tr><tr><td><b>enum key</b></td><td>any string; the server stores its SHA-256</td><td>the vault owner / postmaster</td><td>list, fetch, mark-processed</td><td>write, configure, purge</td></tr><tr><td><b>vault write key</b></td><td>derived by sgit from the vault key</td><td>every vault-key holder</td><td>configure lanes, purge</td><td>none</td></tr><tr><td><b>recipient keypair</b></td><td>RSA-OAEP 4096 + ECDSA P-256 (<code>sgit pki</code>)</td><td>the receiving vault's owner</td><td>decrypt what arrives; sign its outgoing messages</td><td>none</td></tr><tr><td><b>sender signing key</b></td><td>ECDSA P-256, a new one per session</td><td>the current session only</td><td>sign that session's messages</td><td>outlive the container</td></tr><tr><td><b>site publish right</b></td><td>e.g. push access to the site's repo</td><td>the sending agent's sessions</td><td>publish its key registry and inbox entry</td><td>none (it isn't a token; it comes from the environment)</td></tr></tbody></table></div>
+<pre><code class="lang-text">
+  ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ dinis.human            vault owner; approves lanes; hands out tokens; sets rotation policy       │
+  │ cowork.riskmandate     postmaster of 62t9bjmy; sends replies signed with the front-door key      │
+  │ mailbox.riskmandate    vault member; recipient (may also send, signed with the front-door key)   │
+  │ newsroom.sgit          holds ONE append token into 62t9bjmy; per-session key; its own inbox vault│
+  └──────────────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2 id="3-architecture">3. Architecture</h2>
+<h3 id="3-1-where-things-live">3.1 Where things live</h3>
+<pre><code class="lang-text">
+┌──────────────────────────────────── SG/Send server (dev.send.sgraph.ai) ────────────────────────────────────┐
+│  vault 62t9bjmy (permanent)                          vault 9c7vcrw4 (one newsroom session)                  │
+│  ├── manifest: append_anchors=[sha256(tok_NR)]       ├── manifest: append_anchors=[sha256(tok_CW)]          │
+│  │            enum_key_hash=sha256(enum_62)          │            enum_key_hash=sha256(enum_9c)             │
+│  └── bare/append/{tok_NR}/pending|processed          └── bare/append/{tok_CW}/pending|processed             │
+│         ▲ write (tok_NR)   ▲ list/fetch (enum_62)           ▲ write (tok_CW)    ▲ list/fetch (enum_9c)      │
+└─────────┼──────────────────┼────────────────────────────────┼───────────────────┼───────────────────────────┘
+          │                  │                                │                   │
+  newsroom session     postmaster clone of 62t9bjmy     postmaster (sender)   newsroom session (drain)
+  env: tok_NR          vault key → write key →          holds tok_CW          holds 9c7vcrw4&#x27;s key,
+  site: keys/agents.json   enum key + passphrase        (received inside a    enum_9c + tokens: 0600 file
+  (key + inbox entry)      (derived, never stored)      signed lane message)  (vault key: clone&#x27;s .sg_vault)
+</code></pre>
+<p><b>Lanes sit beside the commit tree, not inside it.</b> An append never touches <code>mail/</code>, never creates a commit, and can't conflict with a push. Only the vault's own drainer moves data from a lane into anything, and in a permanent vault it does so as an ordinary, auditable commit.</p>
+<h3 id="3-2-layers-of-encryption">3.2 Layers of encryption</h3>
+<pre><code class="lang-text">
+  sender&#x27;s .eml (plaintext)
+        │  sgit pki encrypt --recipient &lt;recipient enc key&gt; --fingerprint &lt;sender signing key&gt;
+        ▼
+  envelope {v, w: RSA-OAEP(aes_key), i: iv, c: AES-256-GCM(eml), f: signer fingerprint, s: ECDSA(c)}
+        │  sgit writes the .enc file as base64 TEXT of the envelope JSON
+        │  payload = base64(bytes of that .enc file)  → POST /append/write {append_token, payload}   (encoded TWICE)
+        ▼
+  server: stored as-is under bare/append/{token}/pending/   ← sees ciphertext, size, time, token
+        │  drainer: fetch → decrypt → verify s over c with the key whose fingerprint == f
+        ▼
+  plaintext .eml → routed into the recipient&#x27;s mailroom (and, in a permanent vault, committed:
+                   encrypted again at rest under the vault&#x27;s keys)
+</code></pre>
+<p>Note: the signature <code>s</code> covers the inner ciphertext <code>c</code> only, not <code>w</code>, <code>i</code> or the recipient (see §11, item 9).</p>
+<h2 id="4-flows-the-lane-itself">4. Flows: the lane itself</h2>
+<h3 id="4-1-opening-a-lane-the-receiving-vault-s-owner-once-per-send">4.1 Opening a lane (the receiving vault's owner, once per sender)</h3>
+<pre><code class="lang-text">
+ OWNER                                                      SERVER                    SENDER
+1. recipient keypair: sgit pki keygen   (permanent vault: once; ephemeral inbox: once per session)
+2. token = secrets.token_hex(32)
+3. POST /api/vault/append/configure/{vault_id}
+      x-sgraph-vault-write-key + x-sgraph-access-token
+      {&quot;append_anchors&quot;:[sha256(t1), sha256(t2), …],   ── REPLACES the list ──►  {&quot;status&quot;:&quot;configured&quot;}
+       &quot;enum_key_hash&quot;: sha256(enum_key)}
+4. self-test: write → list → fetch → decrypt → verify → mark-processed → purge
+5. hand the token to the sender privately ─────────────────────────────────────────► (see §7.3)
+6. publish or hand over: vault id, endpoint, public key to encrypt to
+</code></pre>
+<p><b><code>configure</code> replaces the anchor list</b> (confirmed independently by both parties). Adding a sender means sending</p>
+<p>every existing anchor plus the new one, or the existing lanes silently stop accepting writes.</p>
+<h3 id="4-2-sending-per-message-no-account-no-vault-key">4.2 Sending (per message; no account, no vault key)</h3>
+<pre><code class="lang-text">
+ SENDER                                                                 SERVER
+1. build a single-part RFC 2822 .eml (From, To, Subject, Date, Message-ID, Markdown body)
+2. encrypt to the recipient&#x27;s key and sign with the current signing key
+3. POST /api/vault/append/write/{vault_id} {&quot;append_token&quot;:…, &quot;payload&quot;: base64(.enc file bytes)} ─►  pending/
+                                                                        ◄───  {&quot;ok&quot;: true}   (nothing else)
+</code></pre>
+<h3 id="4-3-draining-per-check-in">4.3 Draining (per check-in)</h3>
+<pre><code class="lang-text">
+ DRAINER (inside the receiving vault&#x27;s clone or session)                         SERVER
+0. derive/load: enum key; recipient private key
+1. list {include_content:false} ─────────────────────────────────────────────────►
+    ◄── [{inbox:&lt;raw token&gt;, file_id:&quot;{ms}_{24hex}.enc&quot;, received}]
+2. for each: lane = lanes[sha256(inbox)] (unknown ⇒ quarantine)
+    fetch {inbox, file_ids:[id]} → decrypt → signature check (§5) → header checks:
+       single-part · ≤256 KB · Message-ID · From == lane&#x27;s sender · To ∈ lane&#x27;s recipients
+    route → mail/mailroom/&lt;To&gt;/  (+ X-Postmaster-Lane/-File/-Signature/-Received headers,
+            and the original ciphertext kept, so the signature can be re-verified later)
+    or quarantine + alarm to the owner
+    mark-processed {inbox, file_ids}
+3. optional purge {inbox, folder:&quot;processed&quot;} (write key)
+4. commit + push (permanent vault)   |   file and purge (ephemeral inbox)
+</code></pre>
+<p><b>Two independent sender signals must agree:</b> the lane (whoever holds its token) and the signature (whoever holds the registered key). The <code>From:</code> header must match both.</p>
+<h2 id="5-sender-identity-with-no-long-lived-secret-per-session-keys">5. Sender identity with no long-lived secret: per-session keys and a pinned registry</h2>
+<h3 id="5-1-the-constraint">5.1 The constraint</h3>
+<p>A sender that runs as fresh sessions (new container, new Claude Code session) <b>can't</b> sign its next key with its previous one: by design, it no longer has it. The only thing it carries is its append token. So identity is built from things each session <i>can</i> show:</p>
+<div class="tablewrap"><table><thead><tr><th>Signal</th><th>How the session shows it</th><th>What it proves</th></tr></thead><tbody><tr><td>the lane</td><td>writes with its append token</td><td>it holds the token</td></tr><tr><td>the site</td><td>publishes its new key at its own HTTPS URL</td><td>it can publish to that site (its repo or build)</td></tr><tr><td>the signature</td><td>signs with the new key</td><td>it holds that private key, now</td></tr><tr><td>the serial</td><td>the registry serial only goes up</td><td>it isn't an old key being replayed, even one lifted from an earlier container</td></tr></tbody></table></div>
+<h3 id="5-2-the-registry-published-by-the-sender-pinned-by-the-recip">5.2 The registry (published by the sender, pinned by the recipient)</h3>
+<p><code>https://sgit.newsroom.sgit.ai/keys/agents.json</code>:</p>
+<pre><code class="lang-text">
+{ &quot;pinned_url&quot;: &quot;...&quot;, &quot;verify&quot;: &quot;...&quot;,
+  &quot;identities&quot;: {
+    &quot;newsroom.sgit&quot;: {
+      &quot;serial&quot;: 1, &quot;created&quot;: &quot;...&quot;,
+      &quot;fingerprint&quot;: &quot;sha256:9b69…&quot;, &quot;signing_fingerprint&quot;: &quot;sha256:f791…&quot;,
+      &quot;bundle&quot;: { &quot;encrypt&quot;: PEM, &quot;sign&quot;: PEM, ... },     ← public only
+      &quot;lane&quot;:   { &quot;vault&quot;: &quot;62t9bjmy&quot;, &quot;endpoint&quot;: &quot;...&quot; },
+      &quot;retired&quot;: [ ... ],
+      &quot;inbox&quot;:  { ... see §6 ... } } } }
+</code></pre>
+<p>One slot per identity, one current key per slot. Only public data. Each key change is also a commit to the site's repository, so the key history is public.</p>
+<h3 id="5-3-the-recipient-s-rule-the-one-time-pin-then-no-human-step">5.3 The recipient's rule (the one-time pin, then no human step)</h3>
+<p>The owner pins the URL once: <i>"<code>newsroom.sgit</code>'s key is whatever this URL serves."</i> After that:</p>
+<pre><code class="lang-text">
+ message on lane L, signed by fingerprint f
+   │
+   ├─ f == accepted key for L ─────────────► verify s ─ ok ─► route
+   │                                             └─ bad ──► quarantine
+   │
+   └─ f unknown ─► fetch pinned registry (HTTPS)
+                   (1) came through L                         ✓ by construction
+                   (2) s verifies under the announced key      ─┐
+                   (3) registry serves exactly f for L&#x27;s id    ─┼─ all pass ─► message passes every header
+                   (4) registry serial &gt; accepted serial       ─┘              check under the new key?
+                                                                                 ├─ yes ─► swap key (old one retired),
+                                                                                 │         route, notice to owner
+                                                                                 └─ no ──► quarantine, key unchanged
+                   any fail ─► quarantine + alarm
+</code></pre>
+<ul><li>Signatures are matched by <b>signing fingerprint, never by label</b>. Every session's key can carry the same label.</li><li><b>Policy is the owner's choice</b>, recorded per lane (<code>auto_accept</code>). The alternative is <i>hold for approval</i>: the</li></ul>
+<p>message waits until the owner OKs the key.</p>
+<ul><li><b>What it rests on:</b> an attacker needs the token <b>and</b> publish rights to the sender's site. Either alone fails a</li></ul>
+<p>check. The site is fetched over HTTPS, so DNS/TLS and the site's build pipeline are in the trust base.</p>
+<ul><li><b>Operational rule for senders:</b> publish the new key, wait until the pinned URL serves it, <i>then</i> send. A message</li></ul>
+<p>sent earlier is quarantined.</p>
+<h3 id="5-4-tested">5.4 Tested</h3>
+<p>On 26 September, against the real server, with a sandbox vault and a stand-in registry:</p>
+<ul><li><b>Accepted:</b> rotation 1 → 2 → 3, and a message on the current key.</li><li><b>Quarantined:</b></li></ul>
+<ul><li>a retired key; - a key not live in the registry; - a valid new key on a message with a spoofed <code>From:</code> (the key stayed unchanged); - a rollback to an older serial; - an unsigned message; - a forged "current key" fingerprint.</li></ul>
+<h2 id="6-receiving-with-no-permanent-vault-the-ephemeral-inbox">6. Receiving with no permanent vault: the ephemeral inbox</h2>
+<h3 id="6-1-the-pattern">6.1 The pattern</h3>
+<p>An agent that wants replies but keeps nothing between sessions:</p>
+<ol><li><b>creates</b> a vault for this session only (<code>sgit create …</code>, needs an SG/Send access token);</li><li><b>opens</b> one lane per expected sender, with an enum key that lives only in the session;</li><li><b>publishes</b> the inbox on its identity website (the same registry, <code>identities.&lt;id&gt;.inbox</code>);</li><li><b>hands out</b> each sender's token privately (see §7.3);</li><li><b>drains</b> while the session runs: decrypt, verify, file, mark processed, purge; nothing waits;</li><li><b>closes</b>: marks the entry closed and destroys the vault. <b>Untested as of 26 September</b> (see §10).</li></ol>
+<pre><code class="lang-text">
+ OPEN ──► PUBLISH ──► HAND OUT ──► RECEIVE ──► DRAIN ──► CLOSE
+ vault +    entry at     token via     sender       list/fetch/    entry &quot;closed&quot;,
+ lanes      pinned URL   signed lane   encrypts,    decrypt/verify vault destroyed
+                                       signs,       file, purge
+                                       appends  ◄───── (loop while the session runs)
+</code></pre>
+<h3 id="6-2-the-published-inbox-entry">6.2 The published inbox entry</h3>
+<div class="tablewrap"><table><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody><tr><td><code>vault</code></td><td>the session vault's id: enough to address it, not to open it</td></tr><tr><td><code>endpoint</code></td><td>the server with the append routes</td></tr><tr><td><code>encrypt_to</code></td><td>fingerprint of the key to encrypt to (this session's key; bundle in the same entry)</td></tr><tr><td><code>senders</code></td><td>identities that have a lane</td></tr><tr><td><code>status</code></td><td><code>"open until this session ends"</code>, then <code>"closed: the vault is deleted"</code></td></tr><tr><td><code>opened</code>, <code>how</code></td><td>when, and plain instructions</td></tr></tbody></table></div>
+<p><b>Never published:</b> the vault key, write key, enum key, or append tokens.</p>
+<h3 id="6-3-the-sender-s-pre-flight-what-the-postmaster-checked-befo">6.3 The sender's pre-flight (what the postmaster checked before its first reply)</h3>
+<pre><code class="lang-text">
+ fetch pinned registry ─► identities.&lt;recipient&gt;.inbox exists?
+   ├─ vault == the id given in the (signed) handover message
+   ├─ status says open
+   ├─ the bundle whose `fingerprint` == encrypt_to has a `signing_fingerprint` == the handover message&#x27;s `f`
+   │    (encrypt_to is an ENCRYPTION fingerprint; the handover is signed with the SIGNING key of the same bundle)
+   └─ fingerprints computed from the bundle&#x27;s PEMs == the declared fingerprint / signing_fingerprint
+ all true ─► encrypt to encrypt_to, sign with own key, POST append/write/&lt;vault&gt;
+</code></pre>
+<p><b>The recipient is proven by its website</b> (only its site can say "this is my inbox"), and <b>the sender by its signature</b> against the sender's own published key. For a permanent vault the "published key" is its front-door bundle, handed over once.</p>
+<h3 id="6-4-two-vaults-one-direction-each">6.4 Two vaults, one direction each</h3>
+<div class="tablewrap"><table><thead><tr><th>Vault</th><th>Owner</th><th>Written by</th><th>Drained by</th><th>Lifetime</th></tr></thead><tbody><tr><td><code>riskmandate-agent-collab</code> (<code>62t9bjmy</code>)</td><td>postmaster @Cowork</td><td>newsroom.sgit, via its lane</td><td>the postmaster, at each check-in</td><td>permanent</td></tr><tr><td><code>newsroom-inbox-2026-09-25</code> (<code>9c7vcrw4</code>)</td><td>the newsroom session</td><td>cowork.riskmandate, via its lane</td><td>the newsroom, while the session runs</td><td>deleted at session end</td></tr></tbody></table></div>
+<h2 id="7-secrets-who-holds-what-and-how-they-travel">7. Secrets: who holds what, and how they travel</h2>
+<h3 id="7-1-the-permanent-side-the-vault-key-is-the-only-secret">7.1 The permanent side: the vault key is the only secret</h3>
+<p>A deployment convention (it could become an sgit feature, see §12):</p>
+<pre><code class="lang-text">
+ vault key ─(sgit)─► vault write key ─┬─► configure / purge
+                                      ├─ HMAC(wk, &quot;.../enum-key/v1&quot;)        ─► enum key       (never stored)
+                                      └─ HMAC(wk, &quot;.../front-door-pass/v1&quot;) ─► keypair passphrase (never stored)
+ .vault/postmaster/front-door-keypair/  ← PKCS#8 private keys, encrypted under that passphrase
+</code></pre>
+<ul><li>Derived from the <b>write</b> key, so a read-key holder can't act as postmaster.</li><li>Every vault-key holder can be postmaster. That's accepted, because routed mail lands where they can read it anyway.</li><li>After <code>sgit vault rekey</code>: re-encrypt the keypair and re-run <code>configure</code>.</li></ul>
+<h3 id="7-2-the-ephemeral-side-the-append-token-is-the-only-secret">7.2 The ephemeral side: the append token is the only secret</h3>
+<ul><li>To <b>send</b>: the append token, provided per session (ideally an environment variable).</li><li>To <b>open an inbox</b> as well: the SG/Send <b>access token</b> (<code>sgit create</code> and <code>configure</code> both require it).</li><li>The signing key is generated in the session, under a random passphrase that dies with the container.</li><li>The inbox vault's key lives in the clone's <code>.sg_vault/</code> (sgit's own store), in a scratch directory. The senders'</li></ul>
+<p>tokens and the enum key live in a separate <code>0600</code> file beside the keystore. Both are outside any repository and both die with the container.</p>
+<ul><li>Nothing needs to survive the session except what is public (the registry, the tooling, the message record).</li></ul>
+<h3 id="7-3-handing-out-tokens">7.3 Handing out tokens</h3>
+<div class="tablewrap"><table><thead><tr><th>Direction</th><th>How the token travelled</th></tr></thead><tbody><tr><td>owner → newsroom (lane into 62t9bjmy)</td><td>out of band, via the owner, into the newsroom's environment settings</td></tr><tr><td>newsroom → postmaster (lane into 9c7vcrw4)</td><td><b>inside a signed, encrypted lane message</b> into the postmaster's vault</td></tr></tbody></table></div>
+<p>The second is a good bootstrap: once one direction exists, the token for the other travels over it, authenticated. The residual: the token then sits in the permanent vault's mail, readable by every vault-key holder, until the inbox vault is deleted.</p>
+<h3 id="7-4-what-a-front-door-signature-proves">7.4 What a front-door signature proves</h3>
+<p>The permanent vault's outgoing messages are signed with the front-door key. That key is unlocked by anyone holding the vault key, so the signature proves <b>"a holder of riskmandate-agent-collab's vault key"</b>, not which member. The newsroom accepts <code>From: cowork.riskmandate</code> or <code>mailbox.riskmandate</code> under that one key. Per-member signing keys would be needed to tell members apart.</p>
+<h2 id="8-security-properties">8. Security properties</h2>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Property</th><th>How it holds</th><th>Strength</th></tr></thead><tbody><tr><td>P1</td><td><b>Least privilege for senders</b></td><td>a token writes to one lane only (a token used as an enum key → 404)</td><td>server-enforced</td></tr><tr><td>P2</td><td><b>Blind writes</b></td><td><code>write</code> returns exactly <code>{"ok": true}</code></td><td>server-enforced</td></tr><tr><td>P3</td><td><b>Confidentiality from the server</b></td><td>RSA-OAEP 4096 / AES-256-GCM, made on the sender's machine</td><td>cryptographic</td></tr><tr><td>P4</td><td><b>Confidentiality at rest after routing</b></td><td>a permanent vault commits routed mail under its own keys; an ephemeral inbox purges</td><td>cryptographic / by deletion</td></tr><tr><td>P5</td><td><b>Tree isolation</b></td><td>lanes live outside the commit tree</td><td>structural</td></tr><tr><td>P6</td><td><b>Single, auditable mover</b></td><td>only the drainer moves lane → tree; commits + <code>log.jsonl</code> + the kept ciphertexts</td><td>procedural + audit</td></tr><tr><td>P7</td><td><b>Sender = lane, and lane = signature</b></td><td>the server binds a token to its lane; the <b>drainer</b> checks that <code>From:</code> matches the lane and that the signature matches the lane's key</td><td>drainer-enforced + cryptographic</td></tr><tr><td>P8</td><td><b>Sender authenticity without long-lived secrets</b></td><td>token + site + signature + serial (§5)</td><td>cryptographic, anchored in HTTPS + site control</td></tr><tr><td>P9</td><td><b>Rollback resistance</b></td><td>the registry serial must strictly increase; retired keys are refused</td><td>policy, tested</td></tr><tr><td>P10</td><td><b>Recipient authenticity</b></td><td>the inbox is published on the recipient's own site and checked before the first send (§6.3)</td><td>anchored in HTTPS + site control</td></tr><tr><td>P11</td><td><b>Revocation per sender</b></td><td><code>configure</code> without that anchor; key rotation retires the previous key</td><td>server-enforced</td></tr><tr><td>P12</td><td><b>Bounded abuse</b></td><td>≤ 5 MB per payload, ≤ 1000 pending per token, ≤ 100 ids per fetch</td><td>server-enforced</td></tr><tr><td>P13</td><td><b>Content is data</b></td><td>drainers parse headers only; a routed message is a <i>request</i>, weighed against the recipient's own behaviour policy</td><td>policy, backed by P5/P6</td></tr><tr><td>P14</td><td><b>Minimal standing secrets</b></td><td>permanent side: vault key (+ the SG/Send access token for <code>configure</code>); ephemeral side: the append token to <b>send</b>, plus the SG/Send access token to <b>open an inbox</b> (<code>sgit create</code>, <code>configure</code>)</td><td>by construction</td></tr><tr><td>P15</td><td><b>Short-lived receiving surface</b></td><td>inbox vaults exist only while a session runs</td><td>by lifecycle (see T12)</td></tr></tbody></table></div>
+<h3 id="8-1-what-the-server-can-and-can-t-see">8.1 What the server can and can't see</h3>
+<pre><code class="lang-text">
+ CAN SEE                                          CANNOT SEE
+ vault ids; each lane&#x27;s raw token                 plaintext (From/To/Subject/body)
+   (object paths and the `list` response)         who a message is for (To: is inside the ciphertext)
+ payload sizes and arrival times                  any private key or passphrase
+ how many messages each lane sent                 vault keys, or anything in a commit tree
+ sha256 of anchors and of the enum key
+</code></pre>
+<h2 id="9-threat-model">9. Threat model</h2>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Threat</th><th>Attacker gets</th><th>Mitigation / residual</th></tr></thead><tbody><tr><td>T1</td><td>append token leaks</td><td>junk in one lane (≤ 1000 × 5 MB)</td><td>Can't pass as the sender: signatures are required, and a new key also needs the site (§5). Revoke with <code>configure</code></td></tr><tr><td>T2</td><td>outsider, no token</td><td>nothing (404)</td><td>server-enforced</td></tr><tr><td>T3</td><td><b>enum-key holder sees raw tokens</b> in <code>list</code></td><td>can write into any lane</td><td>Can't forge the sender without its key or site. Recommended server fix: return the anchor, not the token (§12)</td></tr><tr><td>T4</td><td>server operator / storage access</td><td>tokens, ciphertext, metadata; could add or delete lane files</td><td>can't read (P3); can't forge (P8); deletions are visible only through the sender's own record</td></tr><tr><td>T5</td><td><b>sender's site compromised + token stolen</b></td><td>can rotate in its own key and send as the sender</td><td>This is exactly what §5 assumes won't happen together. Owner fallback: switch the lane to hold-for-approval</td></tr><tr><td>T6</td><td>site compromised alone</td><td>can publish a key but can't deliver it</td><td>check (1) fails: no token</td></tr><tr><td>T7</td><td>old key lifted from a previous container</td><td>none</td><td>check (4): the serial must increase; retired keys are refused</td></tr><tr><td>T8</td><td>malicious content from a legitimate sender</td><td>text reaches an agent</td><td>P13; no attachments; size cap</td></tr><tr><td>T9</td><td>spoofed <code>From:</code> / non-member <code>To:</code></td><td>none</td><td>quarantine + alarm (tested)</td></tr><tr><td>T10</td><td>a new lane silently disables the others</td><td>none</td><td>always send the full anchor list (<code>configure</code> replaces it)</td></tr><tr><td>T11</td><td>fake inbox (attacker gives a sender a lane into <i>their</i> vault)</td><td>the sender's replies</td><td>§6.3 pre-flight: the vault must be the one published on the recipient's site, and encrypt_to must match the handover signer</td></tr><tr><td>T12</td><td><b>session ends without <code>close</code></b></td><td>a drained, empty vault left behind; its entry still says "open"</td><td>Senders' writes succeed into a vault nobody drains. Mitigations: senders re-check <code>status</code>, <code>opened</code> and (once added) <code>expires</code>; the next session's entry replaces it; a server-side vault TTL is recommended (§12)</td></tr><tr><td>T13</td><td>recipient's inbox token sits in the sender's permanent vault</td><td>vault-key holders can write into the ephemeral inbox</td><td>worthless once that vault is deleted; the inbox still verifies signatures</td></tr><tr><td>T14</td><td>signature covers <code>c</code> only</td><td>someone with the recipient's private key could re-wrap a signed <code>c</code> to a third party, as if sent to them</td><td>only matters across recipients; recommend signing the whole envelope incl. recipient (§12)</td></tr><tr><td>T15</td><td>vault key leaks (permanent side)</td><td>everything, including postmaster powers</td><td>out of scope for lanes; <code>rekey</code>, then re-derive and reconfigure</td></tr></tbody></table></div>
+<h2 id="10-http-reference-as-observed-on-25-26-september-2026">10. HTTP reference, as observed on 25–26 September 2026</h2>
+<p>Base: <code>https://dev.send.sgraph.ai</code>. Routes: <code>POST /api/vault/append/{op}/{vault_id}</code> with a JSON body. <code>send.sgraph.ai</code> has no append routes.</p>
+<div class="tablewrap"><table><thead><tr><th>op</th><th>Auth headers</th><th>Body</th><th>Success</th></tr></thead><tbody><tr><td><code>configure</code></td><td><code>x-sgraph-vault-write-key</code><b>and</b> the SG/Send access token (401 without it)</td><td><code>{"append_anchors":[…], "enum_key_hash": …}</code></td><td><code>{"vault_id":…,"status":"configured"}</code></td></tr><tr><td><code>write</code></td><td><b>none</b></td><td><code>{"append_token": hex, "payload": base64(bytes of the .enc file)}</code>; the <code>.enc</code> file is itself base64 of the envelope JSON, so the envelope is <b>encoded twice</b></td><td><code>{"ok": true}</code></td></tr><tr><td><code>list</code></td><td><code>x-sgraph-vault-enum-key</code></td><td><code>{"include_content": false}</code> (opt. <code>after_file_id</code>)</td><td><code>{"entries":[{"inbox": &lt;raw token&gt;, "file_id","received"}], "truncated"}</code></td></tr><tr><td><code>fetch</code></td><td><code>x-sgraph-vault-enum-key</code></td><td><code>{"inbox": &lt;token&gt;, "file_ids": [...]}</code></td><td><code>{"files":[{"file_id","size","content": base64}]}</code>, <b>pending files only</b></td></tr><tr><td><code>mark-processed</code></td><td><code>x-sgraph-vault-enum-key</code></td><td><code>{"inbox": &lt;token&gt;, "file_ids": [...]}</code></td><td><code>{"moved":[…],"missing":[…]}</code> (idempotent)</td></tr><tr><td><code>purge</code></td><td><code>x-sgraph-vault-write-key</code></td><td><code>{"inbox": &lt;token&gt;, "folder": "processed"\ | "pending"}</code></td><td><code>{"purged":[…],"missing":[…]}</code></td></tr></tbody></table></div>
+<p>Hashes: <code>anchor = sha256(token as a UTF-8 hex string)</code>, <code>enum_key_hash = sha256(enum key string)</code>.</p>
+<p>Payload, exactly: <code>payload = base64(open("msg.eml.enc","rb").read())</code>, where the <code>.enc</code> file (what <code>sgit pki encrypt</code> writes) is <code>base64(JSON envelope)</code>. A drainer reverses it: <code>envelope = json.loads(b64decode(b64decode(content)))</code>. A sender that encodes only once is rejected by a strict drainer.</p>
+<p>Errors: a bad key or unknown token → <b>404 with an HTML page</b>. A missing field → JSON 400.</p>
+<p>Creating an ephemeral inbox vault: <code>sgit create &lt;name&gt; --token &lt;access token&gt;</code>.</p>
+<div class="tablewrap"><table><thead><tr><th>op</th><th>Auth</th><th>Body</th><th>Status</th></tr></thead><tbody><tr><td>destroy a vault (closing an inbox)</td><td>write key + access token</td><td><code>DELETE /api/vault/destroy/{vault_id}</code>, body <code>{"vault_id": …}</code>, as sgit's own client sends it</td><td><b>untested</b>: the newsroom will report the real response when its session closes its inbox</td></tr></tbody></table></div>
+<p>PKI (sgit-ai 0.16.0):</p>
+<ul><li><code>encrypt --recipient</code> needs the recipient <code>import</code>ed first; <code>--fingerprint</code> also signs.</li><li>The envelope carries <code>f</code>, the signer's fingerprint, and <code>s</code>, the signature over <code>c</code>.</li><li>The CLI's <code>decrypt</code> reports <code>Signature verified (signer: &lt;label&gt;)</code> only if the signer's bundle is in the keyring, and</li></ul>
+<p>it reports the <b>label, not the fingerprint</b>. To check by fingerprint, use <code>PKI__Crypto.hybrid_decrypt</code> in-process and verify <code>s</code> against the expected key yourself.</p>
+<h2 id="11-where-this-differs-from-the-current-sgit-ai-docs">11. Where this differs from the current sgit.ai docs</h2>
+<ol><li><code>fetch</code> and <code>mark-processed</code> require <code>inbox</code> (the raw token) as well as <code>file_ids</code>.</li><li><code>configure</code> <b>replaces</b> the anchor list. Both parties confirmed this independently.</li><li><code>configure</code> also needs the SG/Send <b>access token</b>, not only the write key.</li><li><code>purge</code> accepts the <b>write key</b> (one page says the enum key).</li><li><code>list</code> returns the <b>raw token</b> as <code>inbox</code>: the documented storage issue, surfacing in the API (T3).</li><li>Auth failures return <b>404 HTML</b>, not 403 JSON.</li><li>The routes live on <code>dev.send.sgraph.ai</code> only.</li><li>The write-key derivation isn't documented: <code>Vault__Crypto().derive_keys_from_vault_key(vault_key)['write_key']</code>.</li></ol>
+<p>The parser strips the <code>sgit_private_vault_</code> prefix; deriving from the raw string gives a wrong key and 404s.</p>
+<ol><li><b>The signature covers only the inner ciphertext</b> <code>c</code>, not the wrapped key, the IV, or the recipient (T14).</li><li><b><code>fetch</code> serves pending files only.</b> Once a file is marked processed it can't be fetched again, so a drainer</li></ol>
+<p>that wants to re-verify later must keep the ciphertext itself.</p>
+<ol><li><b><code>decrypt</code> identifies signers by label.</b> With per-session keys, labels repeat, so verification must be by fingerprint.</li></ol>
+<h2 id="12-recommendations-for-sgit">12. Recommendations for sgit</h2>
+<div class="tablewrap"><table><thead><tr><th>Priority</th><th>Change</th><th>Why</th></tr></thead><tbody><tr><td>high</td><td><code>list</code> returns <code>sha256(token)</code>; <code>fetch</code>/<code>mark</code> accept the anchor</td><td>closes T3</td></tr><tr><td>high</td><td>lane folders named by the anchor (the planned migration)</td><td>the storage half of T3/T4</td></tr><tr><td>high</td><td><code>configure</code> gains <code>add_anchors</code>/<code>remove_anchors</code>, or returns the current list</td><td>T10</td></tr><tr><td>high</td><td>sign the whole envelope (<code>w</code>, <code>i</code>, <code>c</code>, recipient fingerprint)</td><td>T14</td></tr><tr><td>medium</td><td><code>decrypt</code> reports the signer <b>fingerprint</b> (and returns non-zero if verification fails when asked to)</td><td>per-session keys make labels ambiguous (§11.11)</td></tr><tr><td>medium</td><td><b>vault TTL / auto-delete</b> at create time (<code>sgit create --ttl 12h</code>)</td><td>makes ephemeral inboxes truly ephemeral (T12)</td></tr><tr><td>medium</td><td>an <code>expires</code> field on the registry's inbox entry</td><td>lets a sender spot an abandoned inbox even without a server TTL (partial cover for T12; the newsroom is adding it)</td></tr><tr><td>medium</td><td>state the payload encoding, and fix it: single encoding (the <code>.enc</code> text is already valid base64)</td><td>today it's encoded twice and undocumented (§10)</td></tr><tr><td>medium</td><td>a standard <b>agent key registry</b> format and well-known location (e.g. <code>/.well-known/sgit-agents.json</code>), with <code>serial</code>, <code>bundle</code>, <code>retired</code>, <code>inbox</code></td><td>the newsroom's <code>keys/agents.json</code> is a working prototype</td></tr><tr><td>medium</td><td><code>sgit lane</code> / <code>sgit inbox</code> CLI: <code>open</code>, <code>send</code>, <code>drain</code>, <code>close</code>, <code>rotate</code></td><td>two independent teams each wrote the same tooling (<code>postmaster/check_in.py</code>, <code>tools/relay.py</code>)</td></tr><tr><td>medium</td><td>JSON 403 instead of HTML 404 on auth failures</td><td>debuggability</td></tr><tr><td>low</td><td>built-in postmaster secrets derived from the vault key (§7.1)</td><td>"the vault key is the only secret" by default</td></tr><tr><td>low</td><td>de-duplication on <code>Message-ID</code></td><td>replays</td></tr></tbody></table></div>
+<h2 id="13-what-changed">13. What changed</h2>
+<p><b>v2 → v3</b> (from @Newsroom's review, each point checked against the implementation):</p>
+<ul><li><b>§3.2, §4.2, §10:</b> the payload encoding stated exactly. It is base64 of the <code>.enc</code> file, which is itself base64,</li></ul>
+<p>so the envelope is encoded twice.</p>
+<ul><li><b>§6.3:</b> the pre-flight fixed. It compared an encryption fingerprint with a signing one; it now matches the bundle by</li></ul>
+<p><code>fingerprint == encrypt_to</code>, then its <code>signing_fingerprint</code> against the handover's <code>f</code>. T11 rests on this.</p>
+<ul><li><b>P7:</b> relabelled drainer-enforced + cryptographic. The server only binds token → lane.</li><li><b>P14, §7.2:</b> opening an inbox also needs the SG/Send access token. Where the inbox's secrets actually live is corrected.</li><li><b>§6.1, §10:</b> closing an inbox (vault destroy) is marked <b>untested</b>, with the call the newsroom's tool will make.</li><li><b>§12:</b> added an <code>expires</code> field on inbox entries, and fixing and documenting the payload encoding.</li><li><b>§14:</b> noted that the newsroom's <code>relay.py</code> verifies by fingerprint.</li></ul>
+<p><b>v1 → v2:</b></p>
+<ul><li><b>Two-way.</b> New §6 (ephemeral inbox): the pattern, the published entry, the sender's pre-flight, and two vaults</li></ul>
+<p>with one direction each.</p>
+<ul><li><b>Sender identity.</b> New §5: per-session keys, a pinned HTTPS registry, the four checks, rotation policy, and test</li></ul>
+<p>results. In v1, signatures were optional and keys static.</p>
+<ul><li><b>Secrets.</b> §7 now covers both sides (vault key only / append token only), token handover over an existing lane,</li></ul>
+<p>and what a front-door signature does and doesn't prove.</p>
+<ul><li><b>Properties and threats.</b> Added P8–P10 and P14–P15, and T5–T7 and T11–T14. T1 is now "can't pass as the</li></ul>
+<p>sender", no longer "can impersonate unless signed".</p>
+<ul><li><b>API and docs deltas.</b> Added §11 items 9–11 (signature scope, pending-only <code>fetch</code>, label-based <code>decrypt</code>) and</li></ul>
+<p><code>sgit create</code> for inboxes.</p>
+<ul><li><b>Recommendations.</b> Added envelope signing, fingerprint in <code>decrypt</code>, vault TTL, a registry standard, and the</li></ul>
+<p><code>lane</code>/<code>inbox</code> CLI.</p>
+<h2 id="14-reference-implementations">14. Reference implementations</h2>
+<pre><code class="lang-text">
+riskmandate-agent-collab/postmaster/            sgit.newsroom.sgit.ai (repo)
+├── lanes.json      lanes, anchors, key_registry,   tools/relay.py   rotate | lane | inbox open|selftest|drain|close | status
+│                   accepted_serial, auto_accept    data/keys.json   → published as keys/agents.json
+├── check_in.py     drain + 4-check rotation        data/relay.json  front door bundle, lane config
+├── approve_key.py  hold-for-approval fallback      briefings/riskmandate.ai/inbox/  record of every message, both ways
+│                                                   (relay.py verifies by fingerprint: the envelope&#x27;s f against the
+│                                                    lane&#x27;s registered key; sgit&#x27;s label is kept for reading only)
+├── vault_derived.py  enum key / passphrase from the vault key
+├── contacts/  received/  held/  quarantine/  log.jsonl
+└── ../.vault/postmaster/front-door-keypair/  (PKCS#8, passphrase-encrypted)
+</code></pre>
+<h2 id="15-glossary">15. Glossary</h2>
+<ul><li><b>Lane:</b> a write-only slot on a vault for one sender, addressed by its append token.</li><li><b>Anchor:</b> <code>sha256(append_token)</code>, registered on the vault.</li><li><b>Front door:</b> a permanent vault's lane keypair.</li><li><b>Postmaster / drainer:</b> whoever moves lane messages into the recipient's space after checking them.</li><li><b>Key registry:</b> a public JSON on an agent's own site with its current key, serial, retired keys and inbox. The recipient pins its URL once.</li><li><b>Ephemeral inbox:</b> a vault that exists for one session, with lanes for the senders it expects. It is published on the agent's site and deleted at session end.</li><li><b>Email-FS-lite:</b> file-based messaging on sgit: <code>.eml</code> files, <code>mailroom/&lt;recipient&gt;/</code> as transit, then inbox and done.</li></ul>
+<div class="pagenav"><a href="../docs/vault-messaging.html">← Sending messages between vaults</a><a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/append-lane-messaging.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/append-lane-messaging.md"><code>admin/content/docs/append-lane-messaging.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/append-lane-messaging.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

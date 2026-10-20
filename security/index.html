@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security model · cli.sgit.ai</title>
+<meta name="description" content="sgit&#x27;s zero-knowledge security model, precisely stated: the crypto stack, what the server can and cannot see, key strength, and the open security process.">
+<link rel="canonical" href="https://cli.sgit.ai/security/index.html">
+<link rel="alternate" type="text/markdown" href="../security/index.md">
+<meta property="og:title" content="Security model">
+<meta property="og:description" content="sgit&#x27;s zero-knowledge security model, precisely stated: the crypto stack, what the server can and cannot see, key strength, and the open security process.">
+<meta property="og:url" content="https://cli.sgit.ai/security/index.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl here" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / Security model</div>
+<h1 id="security-model">Security model</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/security/index.html">sgit.ai/security/index.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>Zero knowledge, precisely stated: every file is encrypted on your machine before upload, keys are derived locally from your vault key, and the server stores ciphertext under opaque identifiers. This page tells you exactly what that means, including what the server <i>can</i> see.</p>
+<h2 id="what-the-server-sees-and-never-sees">What the server sees, and never sees</h2>
+<div class="tablewrap"><table><thead><tr><th>The server never sees</th><th>The server does see</th></tr></thead><tbody><tr><td>File contents (encrypted client-side, AES-256-GCM)</td><td>The vault ID (an opaque random identifier)</td></tr><tr><td>Filenames and folder structure</td><td>Encrypted object sizes</td></tr><tr><td>Commit messages and branch names</td><td>Timing of reads and writes</td></tr><tr><td>Your vault key or any derived key</td><td>Approximate activity volume (object counts)</td></tr></tbody></table></div>
+<p>We state the right-hand column deliberately. Traffic analysis of sizes and timing is a real (if narrow) channel, and pretending otherwise would be marketing, not security.</p>
+<h2 id="the-crypto-stack">The crypto stack</h2>
+<div class="tablewrap"><table><thead><tr><th>Layer</th><th>Construction</th></tr></thead><tbody><tr><td>Content encryption</td><td>AES-256-GCM, 12-byte IV, 16-byte tag, byte-compatible with the browser's Web Crypto API</td></tr><tr><td>Key derivation from the vault key</td><td>PBKDF2-HMAC-SHA256, 600,000 iterations, distinct per-vault salts for read and write keys</td></tr><tr><td>Purpose-specific keys</td><td>HKDF-SHA256, per-file keys and a structure key, one-way derived from the read key</td></tr><tr><td>Server-side identifiers</td><td>HMAC-SHA256-derived opaque IDs, the server addresses files it cannot name</td></tr><tr><td>Object identity</td><td>Content-addressed: <code>obj-cas-imm-&lt;sha256-prefix&gt;</code> over ciphertext, enabling dedup without plaintext knowledge</td></tr></tbody></table></div>
+<p>One precision note, because precision beats marketing: the key hierarchy derives a <i>structure key</i> (one-way from the read key) designed to separate access to vault metadata from access to file contents. Today, vault objects are encrypted under the read key, activating the structure-key split across structural objects is an in-progress, reviewed design change, and this page will say so when it lands, not before.</p>
+<h2 id="two-key-systems-and-where-each-applies">Two key systems, and where each applies</h2>
+<p>Everything above describes the <b>symmetric</b> half, and it is the half that matters most: the vault key is symmetric, it is the root of the storage hierarchy, and every object in a vault is encrypted under a key derived one-way from it. If you only ever use sgit to sync your own files across your own machines, that is the whole system.</p>
+<p>There is a second half. Layered on top is a <b>public-key</b> system, for the two things a shared symmetric key cannot express: <b>proving who wrote something</b>, and <b>encrypting to somebody who does not hold your vault key</b>. It is what makes <a href="../docs/vault-messaging.html">vault-to-vault messaging</a> possible, a sender can encrypt to your published public key and drop the result into your vault without ever being able to read it.</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>Vault key (symmetric)</th><th>Keypair (asymmetric)</th></tr></thead><tbody><tr><td>What it is</td><td>One generated string: address, credential and encryption root</td><td>An encryption pair and a signing pair, generated locally</td></tr><tr><td>What it protects</td><td>Every object in the vault</td><td>Individual files addressed to a recipient, and signatures over them</td></tr><tr><td>Who holds it</td><td>Everyone who can open the vault</td><td>Private half: you alone. Public half: publish it freely</td></tr><tr><td>Answers</td><td>“Can this person open the vault?”</td><td>“Who wrote this?” and “Can only <i>they</i> read it?”</td></tr><tr><td>Where it lives on the server</td><td>Never, the server holds ciphertext only</td><td>Public keys at <code>bare/keys/key-rnd-imm-*</code>. Private keys never leave your machine</td></tr></tbody></table></div>
+<p>The constructions, read out of <code>sgit pki keygen</code> on v0.15.0 rather than recalled: <b>RSA-OAEP 4096-bit</b> for encryption and <b>ECDSA P-256</b> for signing, with a hybrid envelope, RSA-OAEP wraps a per-message AES-256-GCM content key. Private keys are passphrase-protected at rest. The full lifecycle is on <a href="../docs/pki.html">the PKI page</a>.</p>
+<p><b>This section is new, and its absence had a cost.</b> Until now this page described the symmetric design and simply did not mention asymmetric cryptography, it never claimed PKI was absent, but it never said it was present either. An agent researching how to send a message between vaults read this page, concluded there was no public-key layer, and stopped looking. The capability had shipped; the sentence that would have pointed at it had not been written. Silence on a page like this one reads as denial.</p>
+<h2 id="key-strength">Key strength</h2>
+<p>Vault keys are generated, not chosen. A generated passphrase is 24 characters over a 36-symbol alphabet (about <b>124 bits of entropy</b> (3624 ≈ 2124), far beyond brute-force reach) before key derivation adds 600,000 rounds of PBKDF2-SHA256 on top. The key never travels to the server: it is the address, the credential, and the root of the encryption hierarchy in one string, and it stays on your machines.</p>
+<p><b>Consequence you should want:</b> there is no password reset. If you lose the vault key, nobody, including us, can recover the contents. Keep it in a password manager, and use <code>sgit vault backup</code> for belt-and-braces.</p>
+<h2 id="two-implementations-one-wire-format">Two implementations, one wire format</h2>
+<p>The sgit CLI and the SG/Vault browser client are independent implementations of the same encrypted wire format, kept interoperable through a versioned contract with test vectors. Every crypto operation must produce byte-for-byte identical output to the Web Crypto API given the same inputs, that requirement is enforced with mandatory test vectors, and it means a second, independent codebase continuously exercises the same format. (More on the browser side at <a href="https://sgraph.ai">sgraph.ai</a>.)</p>
+<h2 id="secrets-safety-by-default">Secrets safety by default</h2>
+<p>sgit is not a secrets manager, and it actively refuses to become an accidental one: files like <code>.env*</code>, <code>.netrc</code>, <code>.pgpass</code>, <code>.git-credentials</code> and private key files (<code>id_rsa</code>, …) are <i>always</i> excluded from commits, so a stray credential can't get swept into a vault snapshot.</p>
+<h2 id="open-security-process">Open security process</h2>
+<ul><li>Open source under Apache-2.0, with a deliberately tiny dependency surface: two runtime dependencies.</li><li>~4,000 tests including mutation testing in CI and integration tests against a real server, no mocks.</li><li>An internal security review series (twelve findings, each individually worked through and debriefed, covering key residency, IV determinism trade-offs, logging hygiene, and more) is being prepared for publication on this page.</li><li>Found something? Report it via <a href="https://github.com/SGit-AI/SGit-AI__CLI/issues">GitHub</a>, security reports get priority.</li><li><b>Key exposed?</b> <a href="https://sgit.ai/case-studies/exposed-vault-key.html">The rotation runbook</a>, including a worked case study of the day this site's own vault key leaked, and what it cost to fix.</li></ul>
+<p><b>Honesty note:</b> sgit is in beta (it powers production workflows daily, and the cryptography is conservative and standard (AES-GCM, PBKDF2, HKDF) nothing exotic). Still: read <a href="../docs/limitations.html">when NOT to use sgit</a> before trusting it with anything critical.</p>
+<div class="pagenav"><span></span><a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../security/index.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/security/index.md"><code>admin/content/security/index.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../security/index.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

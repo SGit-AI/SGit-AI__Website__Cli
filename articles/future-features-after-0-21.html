@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Possible future features, after 0.21.0 · cli.sgit.ai</title>
+<meta name="description" content="The git-parity and security ideas that are not in 0.21.0, what each would take and what it could break, starting from the constraint that a new commit field breaks older clients&#x27; signature checks.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/future-features-after-0-21.html">
+<link rel="alternate" type="text/markdown" href="../articles/future-features-after-0-21.md">
+<meta property="og:title" content="Possible future features, after 0.21.0">
+<meta property="og:description" content="The git-parity and security ideas that are not in 0.21.0, what each would take and what it could break, starting from the constraint that a new commit field breaks older clients&#x27; signature checks.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/future-features-after-0-21.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / Possible future features, after 0.21.0</div>
+<h1 id="possible-future-features-after-0-21-0">Possible future features, after 0.21.0</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-08 · 20:52 UTC</span><span class="k">Kind</span><span class="v">roadmap</span><span class="k">Topics</span><span class="v"><span class="chip">roadmap</span> <span class="chip">git-parity</span> <span class="chip">compatibility</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md"><code>team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><i>CLI team, 8 Oct 2026. The ideas from "Fix merge and undo, then claim the browser" (the git and sgit feature comparison) and "Git security features → sgit" that are NOT in 0.21.0, with what each would take and what it could break. 0.21.0 already ships: reflog, signed tags, short ids and revision shorthand, <code>history undo</code>, log filters and <code>--stat</code>, <code>revert --as-commit</code>, <code>commit --amend</code>, <code>push --force-with-lease</code>, the path-guard hardening.</i></p>
+<h2 id="the-constraint-every-commit-level-idea-must-respect">The constraint every commit-level idea must respect</h2>
+<p><b>A new field in commit objects breaks signature verification on clients from 0.19.0 on.</b> They parse the commit, drop the field they do not know, rebuild the canonical bytes without it, and the signature no longer matches: the commit shows as <code>bad</code>, and under <code>signatures-required</code> the pull is refused. (Verified with sgit-ai 0.20.0.) So any idea that adds a commit field needs the format gate: the vault owner raises <code>--min-client</code> first. Two fields are already in every client's schema and are safe to fill: <code>attestations</code> (a list) and <code>author_signature</code>.</p>
+<p>The branch index is different: unknown index fields are dropped by older clients when they rewrite the index and restored by the next current client (how tags work). New object types in <code>bare/data</code> are invisible to older clients.</p>
+<h2 id="ranked">Ranked</h2>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Idea</th><th>Value</th><th>Cost</th><th>Side effects / constraints</th></tr></thead><tbody><tr><td>1</td><td><b>Union merge driver for declared paths</b> (<code>.sgattributes</code>: <code>runs/*.md merge=union</code>, <code>*.jsonl merge=union</code>)</td><td>High: concurrent appends by agents to one log stop conflicting</td><td>Medium: decrypt base/ours/theirs, line-merge, write a new blob inside the merge</td><td>Limited to opted-in paths. Clients without it still produce today's conflict (not a wrong merge). The attributes file is itself in the vault, so it is versioned and encrypted</td></tr><tr><td>2</td><td><b>Line-level three-way merge for all text files</b> (diff3)</td><td>High</td><td>Medium</td><td>Changes merge results for every text file; conflict markers inside files instead of <code>.conflict</code> copies. Ship after 1 has proven out, behind a setting at first</td></tr><tr><td>3</td><td><b>Shared operation log</b>: the reflog as encrypted, append-only objects that sync</td><td>High and distinctive: team-wide undo and audit, no git equivalent</td><td>Medium–large: a new object type and its sync</td><td>New objects only; old clients ignore them. Needs a retention rule</td></tr><tr><td>4</td><td><b>Author identity</b>: a display name per signing key</td><td>Medium: <code>log --author "Alice"</code></td><td>Small if the name lives in the branch index entry (index field, safe); large if in the commit (format gate)</td><td>Put it in the index</td></tr><tr><td>5</td><td><b>Agent provenance in <code>attestations</code></b>: prompt/tool/run records, encrypted</td><td>Medium–high for agent teams</td><td>Medium</td><td>Safe: the field exists in every client's schema</td></tr><tr><td>6</td><td><b>Conflicts as data</b>: commit a conflict as an object a human or another agent resolves later</td><td>High for agents that cannot stop mid-task</td><td>Large</td><td>Needs a conflict object type and every command to understand it</td></tr><tr><td>7</td><td><b><code>history grep</code> / pickaxe / blame</b></td><td>Medium</td><td>Medium: decrypts every changed blob in the walk; cache needed</td><td>Read-only. Must say where <code>--depth</code>/<code>--path</code> truncates the walk</td></tr><tr><td>8</td><td><b>Branch merge / delete / rename, cherry-pick</b></td><td>Medium</td><td>Low–medium</td><td>Merge any branch reuses the three-way merge; delete needs the index tombstone pattern tags use</td></tr><tr><td>9</td><td><b>Stable change ids</b></td><td>Medium</td><td>Medium</td><td>A commit field: format gate (see the constraint above)</td></tr><tr><td>10</td><td><b>Resumable push</b></td><td>Medium</td><td>Medium</td><td>Verify today's behaviour first (large files already chunk)</td></tr><tr><td>11</td><td><b>Format 2 (128-bit ids) by default for new vaults</b></td><td>Security default</td><td>One line in <code>init</code></td><td>Clients ≤ 0.18 cannot read such a vault and call it corrupt. Do it once 0.19+ is the norm</td></tr><tr><td>12</td><td><b>Per-folder keys</b></td><td>Distinctive: scoped clone becomes an access boundary</td><td>Large: key hierarchy, rekey, scope semantics</td><td>Crypto design work; an architect review first</td></tr><tr><td>13</td><td><b>Bisect, local hooks, aliases</b></td><td>Low</td><td>Low each</td><td>Hooks only local, never read from vault content</td></tr><tr><td>14</td><td><b><code>history restore</code></b> as the name for today's file-level <code>history revert</code>, so <code>revert</code> can mean git's inverse commit</td><td>Clarity for git users</td><td>Low</td><td>Renaming breaks agents' scripts: add <code>restore</code>, keep <code>revert</code> working with a one-line note, decide later</td></tr></tbody></table></div>
+<h2 id="out-of-scope-by-design">Out of scope by design</h2>
+<ul><li><b>Server-side enforcement, per-writer authorisation, push certificates</b>: need the server to know writers (per-writer write keys or server-verified signed writes). An SG/Send API design question.</li><li><b>Server-side search, forge-style review, CI status</b>: need a host that reads content.</li><li><b><code>format-patch</code> / <code>am</code></b>: plaintext patches by email defeat the encryption.</li><li><b>Partial staging</b>: refused by design (whole-file commits).</li><li><b>Prune / gc</b>: only a key-holding client can compute reachability, and deleting objects other clones still reference conflicts with rewind detection. Needs a design of its own.</li></ul>
+<h2 id="suggested-order">Suggested order</h2>
+<p>1 (union driver) → 4 (names in the index) → 3 (shared oplog, building on the reflog) → 5 (provenance) → 2 (full line merge). Each is useful alone, none needs the format gate, and 1–3 are the ones the comparison note identifies as both valuable to agent teams and ahead of git.</p>
+<div class="pagenav"><a href="../articles/branches-and-test-suite-review.html">← Branches check, test performance, test quality — 8 Oct 2026</a><a href="../articles/git-to-sgit-security-mapping.html">Review: &quot;Git security features → sgit: a one-way mapping →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/future-features-after-0-21.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/future-features-after-0-21.md"><code>admin/content/articles/future-features-after-0-21.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/future-features-after-0-21.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

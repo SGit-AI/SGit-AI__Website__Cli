@@ -1,0 +1,4396 @@
+{
+  "schema": "sgit-cli-reference-v1",
+  "cli_version": "v0.23.0",
+  "command_count": 158,
+  "commands": [
+    {
+      "path": "branch",
+      "help": "Branch management",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "branch checkout",
+      "help": "Switch to a branch or restore a specific commit",
+      "options": [
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Force checkout even if there are uncommitted changes (discards them)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key (required for bare vaults without a saved key)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "target",
+          "help": "Branch name, branch ID, or commit ID to switch to",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "branch list",
+      "help": "List all named branches",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "branch merge",
+      "help": "Merge another named branch into the current one",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "The branch to merge in (name or ID), e.g. feature or current",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "branch merge-abort",
+      "help": "Abort an in-progress merge",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "branch new",
+      "help": "Create a new named branch and switch to it",
+      "options": [
+        {
+          "flags": [
+            "--from"
+          ],
+          "help": "Branch from a specific named branch (name or ID)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "New branch name",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "branch rename",
+      "help": "Rename a branch this clone created and has not pushed",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "old",
+          "help": "Current branch name",
+          "required": true
+        },
+        {
+          "name": "new",
+          "help": "New branch name",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "branch switch",
+      "help": "Switch to a named branch",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Force switch even if there are uncommitted changes (discards them)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (to fetch the branch from the server)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name_or_id",
+          "help": "Named branch name or branch ID",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "cache",
+      "help": "Declare cached paths (fast single-request reads)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "cache add",
+      "help": "Declare a path as cached",
+      "options": [
+        {
+          "flags": [
+            "--pointer"
+          ],
+          "help": "Store a locator (blob_id/tree_id) instead of the value",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--value"
+          ],
+          "help": "Store a copy of the file content (files only)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "Vault-relative path (file or folder)",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "cache repair",
+      "help": "Reconcile cache objects with HEAD; drop orphans and duplicates",
+      "options": [
+        {
+          "flags": [
+            "--dry-run"
+          ],
+          "help": "Report what would change without changing anything",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output as JSON",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "cache rm",
+      "help": "Undeclare a cached path",
+      "options": [],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "Vault-relative path",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "cache status",
+      "help": "List cached paths and freshness",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output as JSON",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "cat",
+      "help": "Decrypt and print a vault file to stdout",
+      "options": [
+        {
+          "flags": [
+            "--id"
+          ],
+          "help": "Print only the blob ID (zero network calls)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Print file metadata as JSON (path, blob_id, size, content_type, fetched)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "File path inside the vault",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "check",
+      "help": "Vault integrity checks",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "check fsck",
+      "help": "Verify vault integrity and repair missing objects",
+      "options": [
+        {
+          "flags": [
+            "--repair"
+          ],
+          "help": "Download missing objects from remote",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--verbose"
+          ],
+          "help": "Show object type and referencing parent for each missing/corrupt object",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "check upload-objects",
+      "help": "Upload specific local objects to the server (recovery tool \u2014 run on the vault that HAS the objects)",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        },
+        {
+          "name": "object_ids",
+          "help": "Object IDs to upload (obj-cas-imm-...)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "check verify",
+      "help": "Verify the ECDSA signature on every commit reachable from HEAD",
+      "options": [
+        {
+          "flags": [
+            "--limit"
+          ],
+          "help": "Stop after N commits (0 = all)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--verbose"
+          ],
+          "help": "List every commit with its status",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "clone",
+      "help": "Clone a vault from the remote server",
+      "options": [
+        {
+          "flags": [
+            "--bare"
+          ],
+          "help": "Clone vault structure only \u2014 no working-copy files extracted (full implementation in B09; currently stubs)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--depth"
+          ],
+          "help": "Shallow clone: fetch only the newest N commits of history (1 = HEAD only). Commit, push and pull work normally; history commands stop at the boundary (sgit fetch --unshallow).",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Delete existing directory and re-clone from scratch",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--path"
+          ],
+          "help": "Scoped clone: hold only this vault folder (repeatable). Other folders are carried by id and never downloaded; commits and pulls touch only the held folders. Widen later with sgit fetch <folder>.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--read-key"
+          ],
+          "help": "Read-only clone using a 64-hex AES-256 read key. When set, the positional vault_key is the vault_id only (no passphrase prefix). Equivalent shorthand: pass \"<HEX>:<vault_id>\" as the positional.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--sparse"
+          ],
+          "help": "Download only structure (commits + trees); fetch file content on demand",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key \u2014 one of: {passphrase}:{vault_id} (full clone), {read_key_hex}:{vault_id} (auto-detects read-only), or just {vault_id} when --read-key is set; - reads it from stdin (keeps it out of argv and history)",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Directory to clone into (default: vault ID)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "clone-branch",
+      "help": "Thin clone: full commit history + HEAD trees/blobs only. Note: only HEAD is fully fetched \u2014 run 'sgit fetch <path>' or 'sgit pull' to access older history.",
+      "options": [
+        {
+          "flags": [
+            "--bare"
+          ],
+          "help": "No working-copy extraction (structure only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key ({passphrase}:{vault_id})",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Directory to clone into (default: vault ID)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "clone-headless",
+      "help": "Credentials-only clone: derive keys, write config, no data",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key ({passphrase}:{vault_id})",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Cache directory (optional)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "clone-range",
+      "help": "Clone a specific commit range (range_from..range_to)",
+      "options": [
+        {
+          "flags": [
+            "--bare"
+          ],
+          "help": "No working-copy extraction (structure only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key ({passphrase}:{vault_id})",
+          "required": true
+        },
+        {
+          "name": "range",
+          "help": "Commit range (e.g. abc123..def456)",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Directory to clone into (default: vault ID)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "commit",
+      "help": "Commit local changes to the clone branch",
+      "options": [
+        {
+          "flags": [
+            "--allow-deletions"
+          ],
+          "help": "In sparse clones, allow files absent from disk to be deleted (default: preserve unfetched entries)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--allow-secret-file"
+          ],
+          "help": "Commit PATH although it looks like a vault secret (a zip with a key file in it); names one file, repeatable",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--amend"
+          ],
+          "help": "Replace the last commit (not yet pushed) with the working copy and/or a new -m message",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-d",
+            "--directory"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-m",
+            "--message"
+          ],
+          "help": "Commit message via flag (git-style). Overrides the positional arg.",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "message",
+          "help": "Commit message (auto-generated if omitted)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "create",
+      "help": "Create a new vault and push it to the server in one step",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-push"
+          ],
+          "help": "Initialise locally but skip the initial push",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key ({passphrase}:{vault_id}). Auto-generated if omitted.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_name",
+          "help": "Vault name / directory to create",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev",
+      "help": "Dev/perf instrumentation tools (sgit dev <tool>)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "dev cat-object",
+      "help": "Decrypt and display object contents",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key (auto-read from .sg_vault/local/vault_key if omitted)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "object_id",
+          "help": "Object ID (12-char hex)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev debug",
+      "help": "Enable or disable debug mode for a vault",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "dev debug off",
+      "help": "Disable debug mode",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "dev debug on",
+      "help": "Enable debug mode",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "dev debug status",
+      "help": "Show current debug mode state",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "dev derive-keys",
+      "help": "Derive and display vault keys",
+      "options": [],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key ({passphrase}:{vault_id})",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev dump",
+      "help": "Dump complete internal vault state as JSON",
+      "options": [
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Write dump JSON to FILE instead of stdout",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Dump remote server state instead of local",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--structure-key"
+          ],
+          "help": "Use structure key (hex) for metadata-only dump",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "dev plugins",
+      "help": "Manage sgit-ai plugins",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "dev plugins disable",
+      "help": "Disable a plugin",
+      "options": [],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Plugin name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev plugins enable",
+      "help": "Enable a plugin",
+      "options": [],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Plugin name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev plugins list",
+      "help": "List all plugins with status",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output as JSON",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "dev plugins show",
+      "help": "Show a plugin manifest",
+      "options": [],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Plugin name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev profile",
+      "help": "Profile a vault operation",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "dev profile clone",
+      "help": "Profile the clone pipeline with per-phase timing",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output machine-readable JSON",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Write JSON to FILE instead of stdout",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--sparse"
+          ],
+          "help": "Sparse clone (no blob download)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key ({passphrase}:{vault_id})",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Directory to clone into",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev replay",
+      "help": "Replay / diff a clone trace JSON offline",
+      "options": [
+        {
+          "flags": [
+            "--diff"
+          ],
+          "help": "Compare against a second trace JSON",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "JSON output",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "trace",
+          "help": "Path to trace JSON (from sgit dev profile clone --json)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev server-objects",
+      "help": "Inventory remote objects by type",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "JSON output",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Write JSON to FILE",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev step-clone",
+      "help": "Pausable clone with per-phase progress",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "JSON output",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-pause"
+          ],
+          "help": "Non-interactive; do not pause between steps",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Directory to clone into",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev tree-graph",
+      "help": "Visualise tree DAG from vault metadata",
+      "options": [
+        {
+          "flags": [
+            "--dot"
+          ],
+          "help": "Write Graphviz DOT to FILE",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "JSON output",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Write JSON to FILE",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev workflow",
+      "help": "Workflow framework tools (sgit dev workflow <cmd>)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "dev workflow gc",
+      "help": "Clean up old workflow workspaces",
+      "options": [
+        {
+          "flags": [
+            "--older-than"
+          ],
+          "help": "Remove workspaces older than N days (default: 7)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--vault-dir",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "dev workflow inspect",
+      "help": "Inspect a workflow workspace by work-id",
+      "options": [
+        {
+          "flags": [
+            "--vault-dir",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "work_id",
+          "help": "Work ID (or prefix)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev workflow list",
+      "help": "List registered workflows",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "dev workflow log",
+      "help": "Show recent transaction log records",
+      "options": [
+        {
+          "flags": [
+            "--filter"
+          ],
+          "help": "Filter by workflow name",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--vault-dir",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "dev workflow resume",
+      "help": "Resume an interrupted workflow",
+      "options": [
+        {
+          "flags": [
+            "--vault-dir",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "work_id",
+          "help": "Work ID to resume",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev workflow show",
+      "help": "Show steps + I/O schemas for a workflow",
+      "options": [],
+      "positionals": [
+        {
+          "name": "workflow",
+          "help": "Workflow name (e.g. clone)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "dev workflow trace",
+      "help": "Pretty-print the SGIT_TRACE=1 step trace log",
+      "options": [
+        {
+          "flags": [
+            "--filter"
+          ],
+          "help": "Filter by workflow name",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "vault_dir",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "doctor",
+      "help": "Check remote connectivity and configuration",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output JSON report",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Remote name to check (default: current vault default)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--timeout"
+          ],
+          "help": "Timeout per check in seconds (default: 5)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--write-probe"
+          ],
+          "help": "Also probe write access (writes and deletes a small test object)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "fetch",
+      "help": "Fetch file content on demand (sparse clone)",
+      "options": [
+        {
+          "flags": [
+            "--all"
+          ],
+          "help": "Fetch all unfetched files (convert sparse clone to full)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--unshallow"
+          ],
+          "help": "Shallow clone: fetch the history behind the boundary commit(s)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "File or directory path to fetch (default: all)",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "file",
+      "help": "File operations (cat, ls, write)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "file cat",
+      "help": "Decrypt and print a vault file to stdout",
+      "options": [
+        {
+          "flags": [
+            "--id"
+          ],
+          "help": "Print only the blob ID (zero network calls)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Print file metadata as JSON (path, blob_id, size, content_type, fetched)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "File path inside the vault",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "file ls",
+      "help": "List vault files with fetch status",
+      "options": [
+        {
+          "flags": [
+            "--ids"
+          ],
+          "help": "Include blob IDs in output",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output full entry metadata as JSON array",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "Subdirectory or file path (default: root)",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "file write",
+      "help": "Write a file directly to vault HEAD (agent/programmatic workflow)",
+      "options": [
+        {
+          "flags": [
+            "--also"
+          ],
+          "help": "Additional files to include atomically (repeatable)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--file"
+          ],
+          "help": "Read content from LOCAL_FILE instead of stdin",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Print result as JSON instead of plain text",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--message"
+          ],
+          "help": "Commit message (auto-generated if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--push"
+          ],
+          "help": "Push immediately after writing; stdout contains only the blob ID",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "Vault-relative file path to write",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "help",
+      "help": "Show help (use `sgit help all` for full surface)",
+      "options": [
+        {
+          "flags": [
+            "--format"
+          ],
+          "help": "text: human help (default); json: diffable contract; markdown: docs page; llms: llms.txt index",
+          "choices": [
+            "json",
+            "llms",
+            "markdown",
+            "text"
+          ]
+        },
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Write to FILE instead of stdout (non-text formats)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "topic",
+          "help": "Command name or \"all\" to show the full command surface",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history",
+      "help": "Commit history and diffs",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "history diff",
+      "help": "Show file-level and content-level diff",
+      "options": [
+        {
+          "flags": [
+            "--commit"
+          ],
+          "help": "Compare working copy vs specific commit",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--commit2"
+          ],
+          "help": "Second commit for commit-to-commit diff (requires --commit)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--files-only"
+          ],
+          "help": "Show file names only (no inline diff)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Structured JSON output for agents",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Compare working copy vs named branch HEAD",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "range_spec",
+          "help": "Commit range (e.g. abc..def); synonym for --commit A --commit2 B",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history log",
+      "help": "Show commit history",
+      "options": [
+        {
+          "flags": [
+            "--author"
+          ],
+          "help": "Only commits by WHO: a branch name exactly (alice matches alice, not alice-laptop: use --author alice-laptop), or a signing key id / branch id, whole or by 4+ hex at either end (--author 3f9a)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--file"
+          ],
+          "help": "Show only commits that touched this file",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--files"
+          ],
+          "help": "Include files changed per commit (range mode)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--graph"
+          ],
+          "help": "Show graph with connectors",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--grep"
+          ],
+          "help": "Only commits whose message matches (case-insensitive regular expression)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Structured JSON output for agents (range mode)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--oneline"
+          ],
+          "help": "Compact one-line-per-commit format",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--patch"
+          ],
+          "help": "Include full diff per commit (range mode)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--since"
+          ],
+          "help": "Only commits at or after WHEN (2026-10-08, 2026-10-08T14:30, 3d, 12h, \"2 weeks ago\")",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--stat"
+          ],
+          "help": "List the files each commit added (A), modified (M), deleted (D) or renamed (R)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--until"
+          ],
+          "help": "Only commits before WHEN (same forms)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key (auto-read from .sg_vault/local/vault_key if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-n",
+            "--max-count"
+          ],
+          "help": "Limit output to the last N commits",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "range_spec",
+          "help": "Commit range (e.g. abc..def); omit for full history",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history reflog",
+      "help": "Where this clone's head has pointed (local, newest first)",
+      "options": [
+        {
+          "flags": [
+            "--all"
+          ],
+          "help": "Every local ref, not just this clone's head",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-n",
+            "--max-count"
+          ],
+          "help": "Show the last N moves (default 20, 0 = all)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history reset",
+      "help": "Reset local branch HEAD to a specific commit (git reset --hard)",
+      "options": [],
+      "positionals": [
+        {
+          "name": "commit_id",
+          "help": "Target commit ID (full or prefix); omit to discard working-copy changes",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history revert",
+      "help": "Restore working copy files to a past commit",
+      "options": [
+        {
+          "flags": [
+            "--as-commit"
+          ],
+          "help": "Make a NEW commit that inverts --commit (git revert); push it to undo a pushed change for everyone",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--commit"
+          ],
+          "help": "Revert to a specific commit (default: HEAD)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Skip confirmation prompt when reverting all files",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-m",
+            "--message"
+          ],
+          "help": "Message for --as-commit (default: Revert \"<original>\")",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        },
+        {
+          "name": "files",
+          "help": "Specific files to revert (default: all)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history show",
+      "help": "Show changes introduced by a commit",
+      "options": [
+        {
+          "flags": [
+            "--files-only"
+          ],
+          "help": "Show file names only (no inline diff)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "commit_id",
+          "help": "Commit ID to inspect",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "history undo",
+      "help": "Move this clone's head back to where it was before its last move (local)",
+      "options": [
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Undo even when the head is already on the server (this clone only)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "init",
+      "help": "Create a new empty vault and register it on the server",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--existing"
+          ],
+          "help": "Allow initialising into a non-empty directory without prompting",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--restore"
+          ],
+          "help": "Restore vault from a .vault__*.zip backup in the target directory",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key ({passphrase}:{vault_id}). Generated randomly if omitted.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Directory to create the vault in (default: current directory)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "inspect",
+      "help": "Read-only vault inspection tools",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "inspect diff-state",
+      "help": "Compare two vault dumps and report divergences",
+      "options": [
+        {
+          "flags": [
+            "--local"
+          ],
+          "help": "Produce local dump on the fly",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Produce remote dump on the fly",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "dump_a",
+          "help": "Path to first dump JSON file",
+          "required": false
+        },
+        {
+          "name": "dump_b",
+          "help": "Path to second dump JSON file",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory for on-the-fly dump (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "inspect ignored",
+      "help": "Audit what is excluded from vault tracking",
+      "options": [
+        {
+          "flags": [
+            "--rules"
+          ],
+          "help": "Print the curated ignore sets (no filesystem walk)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--why"
+          ],
+          "help": "Explain whether and why <path> is ignored or tracked",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "inspect object",
+      "help": "Show object details",
+      "options": [],
+      "positionals": [
+        {
+          "name": "object_id",
+          "help": "Object ID (12-char hex)",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "inspect stats",
+      "help": "Show object store statistics",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "inspect tree",
+      "help": "Show current tree entries",
+      "options": [
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key (auto-read from .sg_vault/local/vault_key if omitted)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "inspect vault",
+      "help": "Show vault state overview",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "ls",
+      "help": "List vault files with fetch status",
+      "options": [
+        {
+          "flags": [
+            "--ids"
+          ],
+          "help": "Include blob IDs in output",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output full entry metadata as JSON array",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "Subdirectory or file path (default: root)",
+          "required": false
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "merge-abort",
+      "help": "Abort an in-progress merge and restore working tree",
+      "options": [
+        {
+          "flags": [
+            "--keep-conflict-files"
+          ],
+          "help": "Leave .conflict files in place (debug only)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: current)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "migrate",
+      "help": "Run vault data migrations",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "migrate apply",
+      "help": "Apply pending migrations",
+      "options": [
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Rewrite history even though the vault has signed commits (other clones will need sgit pull --accept-rewind)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "migrate plan",
+      "help": "Show pending migrations",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "migrate status",
+      "help": "Show applied migrations",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pki",
+      "help": "PKI key management and encryption",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "pki contacts",
+      "help": "List imported contacts",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "pki decrypt",
+      "help": "Decrypt a file with local key",
+      "options": [
+        {
+          "flags": [
+            "--fingerprint"
+          ],
+          "help": "Your encryption key fingerprint",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Output file, or - for stdout (default: FILE without .enc)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "file",
+          "help": "Encrypted file (.enc)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "pki delete",
+      "help": "Delete key pair",
+      "options": [],
+      "positionals": [
+        {
+          "name": "fingerprint",
+          "help": "Encryption key fingerprint",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "pki encrypt",
+      "help": "Encrypt a file for a recipient",
+      "options": [
+        {
+          "flags": [
+            "--fingerprint"
+          ],
+          "help": "Your key fingerprint (for signing)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--output",
+            "-o"
+          ],
+          "help": "Output file (default: FILE.enc)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--recipient"
+          ],
+          "help": "Recipient fingerprint (a contact or one of your key pairs)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "file",
+          "help": "File to encrypt",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "pki export",
+      "help": "Export public key bundle (JSON)",
+      "options": [],
+      "positionals": [
+        {
+          "name": "fingerprint",
+          "help": "Encryption key fingerprint",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "pki import",
+      "help": "Import contact public key",
+      "options": [],
+      "positionals": [
+        {
+          "name": "file",
+          "help": "Path to public key bundle JSON (or - for stdin)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "pki keygen",
+      "help": "Generate encryption + signing key pair",
+      "options": [
+        {
+          "flags": [
+            "--label"
+          ],
+          "help": "Label for the key pair",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "pki list",
+      "help": "List local key pairs",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "pki sign",
+      "help": "Sign a file (detached signature)",
+      "options": [
+        {
+          "flags": [
+            "--fingerprint"
+          ],
+          "help": "Signing key fingerprint",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "file",
+          "help": "File to sign",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "pki verify",
+      "help": "Verify a detached signature",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Print {valid, signing_fingerprint, signer_label, signer_source} as JSON",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "file",
+          "help": "File to verify",
+          "required": true
+        },
+        {
+          "name": "signature",
+          "help": "Signature file (.sig)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "publish",
+      "help": "Generate the plaintext surface for static publishing (.sg_vault/publish/ \u2014 the only path that changes)",
+      "options": [
+        {
+          "flags": [
+            "--api-docs"
+          ],
+          "help": "Emit api/docs/ (Swagger UI); implies --api-spec. Default mode: cdn (SRI-pinned); bundled vendors ~1.53 MB",
+          "choices": [
+            "bundled",
+            "cdn"
+          ]
+        },
+        {
+          "flags": [
+            "--api-spec"
+          ],
+          "help": "Emit api/openapi.json describing this folder (a few KB)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--bundles"
+          ],
+          "help": "Also emit bundles/ (head snapshot + per-commit delta zips)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--layout"
+          ],
+          "help": "URL layout recorded in the manifest (default: api-path)",
+          "choices": [
+            "api-path",
+            "flat"
+          ]
+        },
+        {
+          "flags": [
+            "--visibility"
+          ],
+          "help": "bare (default): no key published, unlisted; public: the READ KEY is published in the folder \u2014 irreversible",
+          "choices": [
+            "bare",
+            "named",
+            "public"
+          ]
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip confirmation prompts (CI use)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pull",
+      "help": "Pull named branch changes and merge into clone branch",
+      "options": [
+        {
+          "flags": [
+            "--accept-rewind"
+          ],
+          "help": "Take a remote named branch that was rewound or rewritten (after a deliberate sgit push --force)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "push",
+      "help": "Push clone branch to the named branch",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--branch-only"
+          ],
+          "help": "Push clone branch objects and ref without updating named branch",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Overwrite remote ref unconditionally (no CAS check). Use after sgit history reset <commit> to rewind a branch.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force-with-lease"
+          ],
+          "help": "Force, but only if the remote branch is still where this clone last saw it (or at COMMIT); refuses, writing nothing, if a teammate pushed since.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "remote",
+      "help": "Manage vault remotes (alias for `sgit vault remote`)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "remote add",
+      "help": "Add a remote",
+      "options": [
+        {
+          "flags": [
+            "--default"
+          ],
+          "help": "Set as the default remote",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-health-check"
+          ],
+          "help": "Skip connectivity check on add",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name (e.g. origin)",
+          "required": true
+        },
+        {
+          "name": "url",
+          "help": "Remote API URL",
+          "required": true
+        },
+        {
+          "name": "remote_vault_id",
+          "help": "Remote vault ID (defaults to current vault)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "remote list",
+      "help": "List configured remotes",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "remote remove",
+      "help": "Remove a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name to remove",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "remote rename",
+      "help": "Rename a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "old_name",
+          "help": "Current remote name",
+          "required": true
+        },
+        {
+          "name": "new_name",
+          "help": "New remote name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "remote set-default",
+      "help": "Set the default remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name to set as default",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "remote set-url",
+      "help": "Update the URL of a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-health-check"
+          ],
+          "help": "Skip connectivity check against the new URL",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name",
+          "required": true
+        },
+        {
+          "name": "new_url",
+          "help": "New API URL",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "remote show",
+      "help": "Show details of a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "resolve",
+      "help": "Resolve merge conflicts per file or all at once",
+      "options": [
+        {
+          "flags": [
+            "--all"
+          ],
+          "help": "Resolve all conflicts",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--directory"
+          ],
+          "help": "Vault directory",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--ours"
+          ],
+          "help": "Keep local version",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--show"
+          ],
+          "help": "List unresolved conflicts",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--theirs"
+          ],
+          "help": "Take remote version",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "file",
+          "help": "Relative path of the conflicted file",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "serve",
+      "help": "Run this vault on your machine: the vault UI + API in a container (Docker, Podman, Apple container), or --static",
+      "options": [
+        {
+          "flags": [
+            "--bind"
+          ],
+          "help": "Address to bind (default 127.0.0.1; 0.0.0.0 exposes it to your network)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--data"
+          ],
+          "help": "Data folder for the server (default: .sg_vault/serve/data in this clone)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--image"
+          ],
+          "help": "Image to run (default diniscruz/sg-send-vault:latest)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-pull"
+          ],
+          "help": "Do not check for a newer image; use the one already here",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--open"
+          ],
+          "help": "Open the UI in a browser",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--port"
+          ],
+          "help": "Port on this machine (default 8420; the next free one if taken)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--runtime"
+          ],
+          "help": "container | docker | podman | nerdctl | finch | uv (default: the first found)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--static"
+          ],
+          "help": "Read-only server for a published vault (default: this vault's .sg_vault/publish/, publishing first if needed)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--ui-dir"
+          ],
+          "help": "Built vault UI folder (uv engine only)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "serve install",
+      "help": "Install a container runtime (shows what, then asks)",
+      "options": [
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Do not ask",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "runtime",
+          "help": "container | podman | docker | uv (default: the one recommended here)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "serve logs",
+      "help": "Server output",
+      "options": [
+        {
+          "flags": [
+            "-f",
+            "--follow"
+          ],
+          "help": "",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "serve pull",
+      "help": "Bring work done in the browser into this clone (fast-forward)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "serve push",
+      "help": "Send this clone's commits to the local server",
+      "options": [
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Overwrite commits that exist only on the local server",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "serve runtimes",
+      "help": "Container runtimes on this machine",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "serve status",
+      "help": "Is it running, where, which image",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "serve stop",
+      "help": "Stop the local server",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "serve update",
+      "help": "Get the newest image and restart (same data)",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "status",
+      "help": "Show uncommitted changes in working directory",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--explain"
+          ],
+          "help": "Print a longer explanation of the two-branch model",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "update",
+      "help": "Update sgit-ai to the latest version",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "vault",
+      "help": "Vault management and credential store",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "vault add",
+      "help": "Store a vault key under an alias",
+      "options": [
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Vault key (prompted if omitted)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "alias",
+          "help": "Human-friendly name for this vault",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault attach",
+      "help": "Bind a key to an existing .sg_vault/bare checkout (e.g. a fresh git clone of a one-repo vault)",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--read-key"
+          ],
+          "help": "Read key (with --vault-id) -> read-only attach",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--vault-id"
+          ],
+          "help": "Vault id, required with --read-key",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--vault-key"
+          ],
+          "help": "Full vault key -> read-write attach",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault backup",
+      "help": "Create a backup zip of the vault",
+      "options": [
+        {
+          "flags": [
+            "--include-key"
+          ],
+          "help": "Embed VAULT-KEY in the zip (opt-in; prompts unless --yes)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--label"
+          ],
+          "help": "Label suffix in the filename (default: manual)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "help": "Output directory (default: .sg_vault/backups/)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip confirmation prompts",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault backups",
+      "help": "List available backups for a vault",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault clean",
+      "help": "Remove working copy, keeping bare vault; or prune empty dirs",
+      "options": [
+        {
+          "flags": [
+            "--empty-dirs"
+          ],
+          "help": "Remove empty directories left after file deletions (normal vault)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault delete-on-remote",
+      "help": "Hard-delete this vault from the server, keep local clone intact",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output result as JSON",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip confirmation prompt",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault derive-keys",
+      "help": "Derive vault_id / read_key / write_key / file ids from a vault key or {read_key}:{vault_id} (plumbing: bare hex output, accepts sgit_private_/sgit_public_ prefixes)",
+      "options": [],
+      "positionals": [
+        {
+          "name": "vault_key",
+          "help": "Vault key ({passphrase}:{vault_id}), {read_key_hex}:{vault_id}, or either with its sgit_private_vault_/sgit_private_read_/sgit_public_read_ prefix",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault format",
+      "help": "Show or raise the vault format gate (object-id width, minimum client, features)",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--feature"
+          ],
+          "help": "Add a feature flag (e.g. signatures-required); repeatable",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--min-client"
+          ],
+          "help": "Refuse clients older than this version, by name",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remove-feature"
+          ],
+          "help": "Remove a feature flag; repeatable",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--set"
+          ],
+          "help": "Raise the format: 2 = new objects get 128-bit (32-hex) ids; existing objects keep theirs, no move",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "Access token",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault ignore",
+      "help": "Show always-ignored folders, or deliberately remove a now-ignored folder from the vault",
+      "options": [
+        {
+          "flags": [
+            "--apply"
+          ],
+          "help": "Remove tracked files under FOLDER from the vault in one visible commit; the work tree is untouched",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip the confirmation prompt",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault info",
+      "help": "Show vault identity, remote, branch, and web URL",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "Access token",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault list",
+      "help": "List stored vault aliases",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "vault mirror",
+      "help": "Copy a published vault you cannot read (custody without access) \u2014 keyless, verifiable",
+      "options": [
+        {
+          "flags": [
+            "--verify"
+          ],
+          "help": "Re-check an existing mirror without fetching",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "source",
+          "help": "Published URL or folder to mirror from",
+          "required": false
+        },
+        {
+          "name": "dest",
+          "help": "Destination folder",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault move",
+      "help": "Move vault to a new identity (key rotation + optional server move)",
+      "options": [
+        {
+          "flags": [
+            "--cleanup"
+          ],
+          "help": "Finish or roll back a partially-completed move",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--dry-run"
+          ],
+          "help": "Walk all 8 steps without any side effects",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--new-key"
+          ],
+          "help": "New vault key (auto-generated if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--reason"
+          ],
+          "help": "Reason recorded in the sentinel commit",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--to"
+          ],
+          "help": "Target API URL (same server if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip all interactive prompts (CI / scripted use)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault rekey",
+      "help": "Replace the vault key and re-encrypt all content",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Output result as JSON",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--new-key"
+          ],
+          "help": "New vault key to use (generated if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip confirmation prompts",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "vault rekey check",
+      "help": "Show vault state without making changes",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault rekey commit",
+      "help": "Commit all files under the current key (run after init)",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault rekey init",
+      "help": "Re-initialise vault with a new key (run after wipe)",
+      "options": [
+        {
+          "flags": [
+            "--new-key"
+          ],
+          "help": "Key to use (generated if omitted)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault rekey wipe",
+      "help": "Wipe local encrypted store only (.sg_vault/ removed, files kept)",
+      "options": [
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip confirmation prompt",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault remote",
+      "help": "Manage vault remotes",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "vault remote add",
+      "help": "Add a remote",
+      "options": [
+        {
+          "flags": [
+            "--default"
+          ],
+          "help": "Set as the default remote",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-health-check"
+          ],
+          "help": "Skip connectivity check on add",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name (e.g. origin)",
+          "required": true
+        },
+        {
+          "name": "url",
+          "help": "Remote API URL",
+          "required": true
+        },
+        {
+          "name": "remote_vault_id",
+          "help": "Remote vault ID (defaults to current vault)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault remote list",
+      "help": "List configured remotes",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "vault remote remove",
+      "help": "Remove a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name to remove",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault remote rename",
+      "help": "Rename a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "old_name",
+          "help": "Current remote name",
+          "required": true
+        },
+        {
+          "name": "new_name",
+          "help": "New remote name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault remote set-default",
+      "help": "Set the default remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name to set as default",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault remote set-url",
+      "help": "Update the URL of a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-health-check"
+          ],
+          "help": "Skip connectivity check against the new URL",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name",
+          "required": true
+        },
+        {
+          "name": "new_url",
+          "help": "New API URL",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault remote show",
+      "help": "Show details of a remote",
+      "options": [
+        {
+          "flags": [
+            "--directory",
+            "-d"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Remote name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault remove",
+      "help": "Remove a stored vault key",
+      "options": [],
+      "positionals": [
+        {
+          "name": "alias",
+          "help": "Vault alias to remove",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault restore",
+      "help": "Restore a vault from a backup zip",
+      "options": [
+        {
+          "flags": [
+            "--key"
+          ],
+          "help": "Vault key (required for expanded if not in zip)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--mode"
+          ],
+          "help": "bare: vault only; expanded: vault + working copy (default: expanded)",
+          "choices": [
+            "bare",
+            "expanded"
+          ]
+        },
+        {
+          "flags": [
+            "--verbose"
+          ],
+          "help": "Print each file as it is written (vault objects and working copy)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--yes"
+          ],
+          "help": "Skip confirmation prompts",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "source",
+          "help": "Backup zip path, or vault-dir:backup-id",
+          "required": true
+        },
+        {
+          "name": "destination",
+          "help": "Target directory to restore into",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault serve",
+      "help": "Moved: sgit serve --static",
+      "options": [],
+      "positionals": [
+        {
+          "name": "rest",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault show",
+      "help": "Show vault key for an alias",
+      "options": [],
+      "positionals": [
+        {
+          "name": "alias",
+          "help": "Vault alias",
+          "required": true
+        }
+      ]
+    },
+    {
+      "path": "vault show-key",
+      "help": "Show the vault key for the current directory",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault stash",
+      "help": "Stash uncommitted changes",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault stash drop",
+      "help": "Drop last stash without applying",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault stash list",
+      "help": "List stashes",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault stash pop",
+      "help": "Restore last stash",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault tag",
+      "help": "Named, signed release pointers",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--directory"
+          ],
+          "help": "==SUPPRESS==",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "vault tag create",
+      "help": "Tag a pushed commit (default: this clone's head)",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--directory"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Re-point an existing tag on purpose",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-m",
+            "--message"
+          ],
+          "help": "Tag message",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "Tag name, e.g. v1.0 or release/2026-10",
+          "required": true
+        },
+        {
+          "name": "commit",
+          "help": "Commit id, short id or tag (default: HEAD)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault tag delete",
+      "help": "Delete a tag",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault tag list",
+      "help": "List the tags",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault tag show",
+      "help": "Show a tag and verify its signature",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "name",
+          "help": "",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "vault uninit",
+      "help": "Remove vault metadata (.sg_vault/), creating an auto-backup zip first",
+      "options": [],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "version",
+      "help": "Show sgit-ai version",
+      "options": [],
+      "positionals": []
+    },
+    {
+      "path": "write",
+      "help": "Write a file directly to vault HEAD (agent workflow)",
+      "options": [
+        {
+          "flags": [
+            "--also"
+          ],
+          "help": "Additional files to include atomically (repeatable)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--file"
+          ],
+          "help": "Read content from LOCAL_FILE instead of stdin",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Print result as JSON instead of plain text",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--message"
+          ],
+          "help": "Commit message (auto-generated if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--push"
+          ],
+          "help": "Push immediately after writing; stdout contains only the blob ID",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "path",
+          "help": "Vault-relative file path to write",
+          "required": true
+        },
+        {
+          "name": "directory",
+          "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

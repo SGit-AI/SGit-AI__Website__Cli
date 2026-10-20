@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# cli.sgit.ai: the credentials tier, never committed (see admin/index.html)
+.local/
+.sg_vault/
+node_modules/

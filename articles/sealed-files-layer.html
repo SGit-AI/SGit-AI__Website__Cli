@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sealed files — a second encryption layer on top of a vault · cli.sgit.ai</title>
+<meta name="description" content="A second encryption layer on top of either vault mode: files sealed to named recipients with ECDH P-256, HKDF and AES-256-GCM, with the corrections from the sgit.ai agent&#x27;s review.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/sealed-files-layer.html">
+<link rel="alternate" type="text/markdown" href="../articles/sealed-files-layer.md">
+<meta property="og:title" content="Sealed files — a second encryption layer on top of a vault">
+<meta property="og:description" content="A second encryption layer on top of either vault mode: files sealed to named recipients with ECDH P-256, HKDF and AES-256-GCM, with the corrections from the sgit.ai agent&#x27;s review.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/sealed-files-layer.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / Sealed files — a second encryption layer on top of a vault</div>
+<h1 id="sealed-files-a-second-encryption-layer-on-top-of-a-vault">Sealed files — a second encryption layer on top of a vault</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-09 · 18:23 UTC</span><span class="k">Kind</span><span class="v">design</span><span class="k">Topics</span><span class="v"><span class="chip">crypto</span> <span class="chip">sealed-files</span> <span class="chip">pki</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/09/design__sealed-files-layer.md"><code>team/humans/dinis_cruz/claude-code-web/10/09/design__sealed-files-layer.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 2026-10-09 · <b>Status:</b> design for review, no code · <b>Companion:</b> <a href="../articles/native-pki-vault-mode.html"><code>design__native-pki-vault-mode.md</code></a> (same folder). This layer works on <b>either</b> vault mode, symmetric (today) or native PKI.</p>
+<blockquote><p><b>Revised 2026-10-10 after the sgit.ai agent's review (dev at 0a0707d).</b> Three corrections, applied below:</p>
+<ol><li><b>No "compare by re-sealing".</b> Sealing is randomised (a fresh file key and ephemeral key every time), so re-sealing never reproduces the stored bytes. The tree entry instead carries a <b>keyed hash of the plaintext</b>: HMAC-SHA256 under a key derived from the vault read key, stored under the read key. A recipient compares plaintext to that HMAC. A non-recipient compares the sealed bytes. Unlike the unkeyed <code>content_hash</code>, the keyed hash does not let a vault reader confirm a guess of the content.</li><li><b>Seal-policy changes need an authorised signer.</b> Otherwise any writer can "unseal by policy": drop a rule or a recipient, and the next commit of that path is sealed to fewer people, or not at all. <code>.sgit/seal</code> names its <code>admins</code> (public keys). A commit that changes the policy must be signed by one of them, or pull refuses it, as <code>signatures-required</code> does. The first policy is pinned by the clone that adds it (trust on first use, like the PKI mode's writer set).</li><li><b>The construction is Web-Crypto-native: ECDH P-256 + HKDF-SHA256 + AES-256-GCM.</b> That is the HPKE base mode with the P-256 KEM (RFC 9180, DHKEM(P-256, HKDF-SHA256)). Browsers open sealed files with no WASM dependency, and CLAUDE.md's byte-for-byte parity rule holds with test vectors. age is kept as an <b>interop path only</b>:</li></ol>
+<ul><li><code>sgit seal export --age</code> re-seals a file for the stock <code>age</code> tool;</li><li>hardware and KMS keys are reached through a provider bridge that speaks the <code>age-plugin</code> protocol for the unwrap step only (only the file key crosses it). §3 and §9 below are updated accordingly.</li></ul></blockquote>
+<blockquote><p><b>Revised again 2026-10-10 after the release-gate review (dev at eed8084).</b> Two more corrections:</p>
+<ol><li><b>The comparison value moves inside the sealed envelope.</b> A keyed hash under a key derived from the <i>vault read key</i> (correction 1 above) does not stop guessing: every reader holds that key, so a reader who is not a recipient can still compute the HMAC of a guess and compare. The comparison value is now <code>HMAC-SHA256(K_cmp, plaintext)</code> with <code>K_cmp = HKDF(FK, info="sgit seal compare v1")</code>, where <code>FK</code> is the per-file key that only recipients unwrap. It is stored <b>inside</b> the envelope, as the first 32 bytes of the encrypted payload, never in the tree entry. A recipient's clone caches it per sealed blob id in a 0600 local file, so <code>status</code> does not call the identity provider on every run. The tree entry holds only the hash of the sealed bytes.</li><li><b>The chunked AES-GCM payload has defined framing</b> (§3.1): a per-file payload key, a counter nonce, and the chunk index and a final-chunk flag in the AAD. A reader refuses truncation, reordering, extension and a final flag in the wrong place.</li></ol></blockquote>
+<h2 id="1-the-idea-in-your-words-and-in-mechanism">1. The idea, in your words and in mechanism</h2>
+<blockquote><p>As the author I can say: "here is my public key, encrypt this data with it; if you need to decrypt it, point over there". The files still exist in the vault as before, but only someone with the private key can read them. The service holding the private key can be local, remote, or anything else.</p></blockquote>
+<p>Mechanically, this is <b>envelope encryption to recipients' public keys, with decryption delegated to an identity provider</b>. git-crypt (GPG), SOPS (KMS/age/PGP) and age (X25519, ssh keys, hardware plugins) all use this pattern. The vault keeps doing its job, and selected files get an inner envelope:</p>
+<pre><code class="lang-text"> plaintext ──► [ inner: sealed to recipients&#x27; public keys ]  ──► [ outer: vault encryption ] ──► host
+               file key FK (random) encrypts the content          read key / DK, exactly as today
+               FK is wrapped once per recipient public key</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Who</th><th>Sees</th></tr></thead><tbody><tr><td>The host</td><td>ciphertext only (outer layer), as today</td></tr><tr><td>A <b>vault reader</b> (read key)</td><td>that the file exists: its name, path, history, approximate size, who changed it when. <b>Not its content.</b></td></tr><tr><td>A <b>recipient</b> (holds, or can ask for, a matching private key)</td><td>the content</td></tr></tbody></table></div>
+<p>Two levels, two key systems:</p>
+<ul><li><b>Outer layer</b> (vault key): hides everything from the host.</li><li><b>Inner layer</b> (recipient keys): hides content from everyone who is not a recipient, including the host, other vault members, and anyone who later obtains the vault's read key.</li></ul>
+<h2 id="2-what-each-party-can-do-precisely">2. What each party can do, precisely</h2>
+<div class="tablewrap"><table><thead><tr><th>Party</th><th>Create a sealed file</th><th>Read it</th><th>Edit it</th><th>Replace / delete it</th></tr></thead><tbody><tr><td>Recipient (with its provider)</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr><tr><td>Vault writer, not a recipient</td><td><b>yes</b>: only the recipients' <i>public</i> keys are needed</td><td>no</td><td>no (editing needs reading first)</td><td><b>yes, blindly</b>: it can write new sealed bytes over the file, or delete it</td></tr><tr><td>Vault reader</td><td>no</td><td>no</td><td>no</td><td>no</td></tr><tr><td>Host</td><td>no</td><td>no</td><td>no</td><td>withhold or replay, as today</td></tr></tbody></table></div>
+<p>One correction to "you could only edit or modify a file if you have that key". <b>Editing</b> needs the key, because you must read before you change. <b>Replacing</b> does not. Any vault writer can put new sealed bytes at the same path, because sealing needs only public keys. Stopping that is an integrity question, not a confidentiality one, and has two answers that can be combined:</p>
+<ol><li><b>Signed envelopes:</b> the sealer signs the inner envelope with its own key. Readers (recipients) check that the signer is on the path's allowed-author list (§4).</li><li><b>Path rules enforced on commit/pull:</b> a commit that changes a sealed path must be signed by an allowed author. Otherwise pull refuses it, as <code>signatures-required</code> does today. With the native PKI mode's writer set, this becomes a hard rule.</li></ol>
+<h2 id="3-format">3. Format</h2>
+<p><b>Recommendation (revised 10-10): an HPKE envelope, DHKEM(P-256, HKDF-SHA256) + AES-256-GCM, all native to Web Crypto; age v1 as an export and plugin-bridge format only.</b> The original reasoning for age follows, kept for the record.</p>
+<ul><li>It is specified, small and audited. Recipient types include X25519, ssh-ed25519 / ssh-rsa and scrypt (passphrase), plus a <b>plugin protocol</b> (<code>age-plugin-*</code>).</li><li>The plugin protocol is precisely "the private key lives elsewhere": YubiKey/PIV, TPM, Secure Enclave and cloud KMS plugins already exist.</li><li><b>A sealed file can be opened with the stock <code>age</code> tool, without sgit</b>, which is good for longevity and audit.</li><li>The pieces it needs (X25519, HKDF-SHA256, ChaCha20-Poly1305, HMAC-SHA256, scrypt) are all in <code>cryptography</code>. A minimal reader/writer for the X25519 and plugin stanzas is a few hundred lines.</li></ul>
+<p><b>Trade-off to decide.</b> age's payload cipher is ChaCha20-Poly1305, which <b>Web Crypto does not provide</b>, while CLAUDE.md asks for Web Crypto byte-for-byte parity. The browser would use <code>typage</code> (the reference TypeScript age implementation). The alternative is a custom HPKE envelope (X25519 + HKDF + AES-256-GCM, all in Web Crypto), at the cost of the tool ecosystem and the plugins. My view: age. The plugin ecosystem <i>is</i> the "decryption service elsewhere" feature, and the parity rule can name <code>typage</code> as the browser implementation for this layer.</p>
+<pre><code class="lang-text">sealed file   = &quot;age-encryption.org/v1\n&quot;
+                &quot;-&gt; X25519 &lt;ephemeral&gt;\n&lt;wrapped FK&gt;\n&quot;        one stanza per recipient
+                &quot;-&gt; piv-p256 &lt;tag&gt; &lt;…&gt;\n&lt;wrapped FK&gt;\n&quot;        a hardware / plugin recipient
+                &quot;--- &lt;header MAC&gt;\n&quot;
+                &lt;payload: ChaCha20-Poly1305 STREAM, 64 KiB chunks, under a key from FK&gt;
+              [ + optional detached Ed25519 signature by the sealer, in a sidecar stanza ]</code></pre>
+<h3 id="3-1-payload-framing-hpke-envelope-revised-10-10">3.1 Payload framing (HPKE envelope, revised 10-10)</h3>
+<pre><code class="lang-text">header        = magic &quot;sgit-seal/1&quot; ‖ header_nonce (16 random bytes) ‖ recipient stanzas
+                (each: HPKE enc ‖ HPKE-Seal(recipient pub, FK)) ‖ chunk_size (u32, 65536)
+H             = SHA-256(header)
+PK            = HKDF-SHA256(ikm=FK, salt=header_nonce, info=&quot;sgit seal payload v1&quot;)   (32 bytes)
+plaintext&#x27;    = HMAC-SHA256(K_cmp, plaintext) ‖ plaintext        (the comparison value rides inside)
+chunk i       = plaintext&#x27;[i·65536 : (i+1)·65536]                 (the last may be shorter;
+                                                                   an empty file is one empty final chunk)
+nonce_i       = u88_be(i) ‖ final_i                               (12 bytes; final_i = 0x01 on the last chunk only)
+aad_i         = H ‖ u64_be(i) ‖ final_i
+ct_i          = AES-256-GCM(PK, nonce_i, chunk i, aad_i)
+sealed file   = header ‖ ct_0 ‖ ct_1 ‖ … ‖ ct_n</code></pre>
+<ul><li><b>The AAD binds each chunk to this header, its position and whether it ends the file</b>, so chunks cannot be moved between files, reordered, dropped from the end (the new last chunk has <code>final = 0</code> and fails) or followed by more (anything after a <code>final = 1</code> chunk is refused). The index is also in the nonce, which keeps nonces unique under <code>PK</code> without storing them.</li><li><code>PK</code> is fresh per sealing (random <code>FK</code> and <code>header_nonce</code>), so the counter nonce never repeats under one key. At most 2^32 chunks (256 TiB) per file.</li><li>A reader streams: it verifies and releases chunk <i>i</i> before reading <i>i+1</i>, but treats the file as complete only after a valid <code>final = 1</code> chunk. The plaintext is written to a temp file and renamed only then, so a truncated file never reaches the working copy.</li><li>Test vectors (Python and Web Crypto, byte for byte): empty file, exactly one chunk, one chunk plus one byte, three chunks; and the refusals: truncated at a chunk boundary, two chunks swapped, a chunk appended after the final one, a final flag on chunk 0 of three, a header byte changed.</li></ul>
+<h2 id="4-policy-which-files-to-whom-written-by-whom">4. Policy: which files, to whom, written by whom</h2>
+<p>A committed policy file, signed like any commit. It works the way <code>.gitattributes</code> works for git-crypt:</p>
+<pre><code class="lang-text"># .sgit/seal      (committed; changes to it are themselves a signed, reviewable commit)
+recipients:
+  dinis   = age1qy…            # published key, fingerprint pinned here
+  backup  = age1zz…            # offline recovery key
+  ops     = age1yubikey1q…     # hardware-held
+seal:
+  secrets/**        -&gt; dinis, backup
+  finance/*.xlsx    -&gt; dinis, ops, backup
+  **/.env           -&gt; dinis, backup
+authors:                       # optional: who may change a sealed path (§2)
+  secrets/**        -&gt; dinis</code></pre>
+<ul><li><b>Recipients by public key</b>, fetched from the published key directory and <b>pinned by fingerprint in the policy</b>. A later change at the directory cannot silently add someone; the policy changes only through a commit.</li><li><code>sgit commit</code> seals any changed file a rule matches. <code>sgit seal add &lt;path&gt; --to &lt;name&gt;</code> and <code>sgit seal rekey</code> edit the policy.</li></ul>
+<h2 id="5-on-disk-in-the-working-copy">5. On disk, in the working copy</h2>
+<div class="tablewrap"><table><thead><tr><th>Clone</th><th>A sealed file looks like</th></tr></thead><tbody><tr><td>Has a working identity for that file</td><td>the <b>plaintext</b>, written 0600 (secret writer). <code>sgit status</code> compares <code>HMAC(K_cmp, plaintext)</code> with the value inside the envelope (cached locally per blob, revised 10-10); never by re-sealing, which is randomised</td></tr><tr><td>Has no identity, or the provider is unreachable</td><td>the <b>sealed bytes</b>, unchanged (an <code>age</code> file). <code>status</code> treats it as unchanged, never deleted or modified: the same "keep the committed entry" rule the symlink ban uses</td></tr></tbody></table></div>
+<p>Integration points in the current code:</p>
+<ul><li><b>Tree entries</b> carry <code>content_hash</code> = an unkeyed <code>sha256(plaintext)[:12]</code> (today's <code>Vault__Crypto.content_hash</code>), stored under the vault read key. For a sealed file that would let any vault reader <i>confirm a guess</i> of the content. <b>For sealed files the hash is taken over the sealed bytes.</b> The entry also gets a <code>sealed</code> flag and the recipients' fingerprints (still under the read key).</li><li><b>Blob reuse</b> (<code>encrypt_or_reuse_blob</code> matches on <code>content_hash</code>) then works on sealed bytes. Re-sealing an unchanged file is skipped as long as the plaintext is unchanged and the policy did not change (a local cache of plaintext hash → sealed blob).</li><li><b>Merge:</b> sealed files are binary unless both sides can be opened locally. A conflict keeps both versions (<code>.conflict</code>). Diff shows <code>sealed, changed</code> without an identity.</li></ul>
+<h2 id="6-the-decryption-service-identity-provider">6. The decryption service ("identity provider")</h2>
+<p>Only the <b>16-byte file key</b> crosses the boundary, never the content:</p>
+<pre><code class="lang-text">sgit ──(stanza: recipient tag + wrapped FK)──► provider ──(FK, or &quot;refused&quot;)──► sgit</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Provider</th><th>Where the private key lives</th><th>Notes</th></tr></thead><tbody><tr><td>Local identity file</td><td><code>~/.config/sgit/identities</code> (0600)</td><td>the simple default; written by the secret writer</td></tr><tr><td>ssh key / ssh-agent</td><td>your existing ssh key (ed25519/rsa)</td><td>age natively supports ssh recipients; nothing new to manage</td></tr><tr><td>Hardware</td><td>YubiKey / PIV / TPM / Secure Enclave via <code>age-plugin-*</code></td><td>touch-to-decrypt; the key cannot be copied</td></tr><tr><td>Remote service</td><td>a team service, cloud KMS, or an SG/Send service, over an authenticated API</td><td>can <b>log, rate-limit, require approval and revoke</b> per unwrap, per file: an audit trail of who opened what. Offline means unreadable, by design</td></tr></tbody></table></div>
+<p>Configuration is per clone (<code>.sg_vault/local/identities</code> naming providers) or per user. The interface is the age plugin protocol, so any existing plugin works, and our own remote-service provider is just one more plugin.</p>
+<p><b>Capability hand-off.</b> The same envelope moves <i>vault</i> capabilities between people. <code>sgit share --to dinis</code> seals a read or write capability to Dinis's published key: no passphrase in chat, argv or shell history. This closes most of TM-R14 and is phase 2 of the earlier analysis.</p>
+<h2 id="7-what-it-protects-and-what-it-does-not">7. What it protects, and what it does not</h2>
+<div class="tablewrap"><table><thead><tr><th>Threat</th><th>Covered</th></tr></thead><tbody><tr><td>Host reads content</td><td>yes (outer layer, as today)</td></tr><tr><td>A vault member who is not a recipient reads a sealed file</td><td><b>yes</b></td></tr><tr><td>The vault read key leaks (a share, a log, an old clone)</td><td><b>yes for sealed files</b>: they need a recipient key as well</td></tr><tr><td>A recipient's key is revoked</td><td>only for <b>new</b> seals: history sealed to them stays readable to them (inherent; rotate secrets, not just files)</td></tr><tr><td>A non-recipient writer replaces a sealed file</td><td>detected with signed envelopes / author rules (§2); not prevented on the host</td></tr><tr><td>File names, paths, sizes, history from vault readers</td><td>not hidden (they live in the vault's tree). Sizes are approximate (age adds per-chunk overhead); pad if needed</td></tr><tr><td>Plaintext on a recipient's disk</td><td>out of scope: it is the recipient's machine (written 0600)</td></tr><tr><td>Provider compromise</td><td>as strong as the provider: hardware or approval-based providers limit it</td></tr></tbody></table></div>
+<h2 id="8-relation-to-the-native-pki-mode">8. Relation to the native PKI mode</h2>
+<ul><li><b>Independent of the vault mode:</b> sealed files work in symmetric vaults today.</li><li><b>In a PKI vault</b>, per-member envelopes are also the natural way to hand <code>DK</code> to each member: the vault's <code>DK</code> is sealed to every member's public key instead of to one shared <code>R</code>. Removing a reader then means re-sealing to the rest (native-mode doc §6).</li><li>The deposit capability (native-mode doc §5) plus sealed files gives a <b>drop box</b>: contributors can add files that only the owner can open, and cannot read each other's.</li></ul>
+<h2 id="9-effort">9. Effort</h2>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>What</th><th>CLI estimate</th></tr></thead><tbody><tr><td>1</td><td>HPKE envelope (DHKEM(P-256, HKDF-SHA256) + AES-256-GCM, chunked), Python and Web Crypto with shared vectors; <code>seal export --age</code></td><td>~1 week</td></tr><tr><td>2</td><td><code>.sgit/seal</code> policy, seal on commit, open on checkout/pull, sealed-bytes hashing, status rules</td><td>1–1.5 weeks</td></tr><tr><td>3</td><td>Providers: identity file + ssh keys, then the plugin protocol (hardware/KMS), then a remote-service plugin</td><td>~1 week (+ service side)</td></tr><tr><td>4</td><td>Signed envelopes + author rules on pull</td><td>~0.5 week</td></tr><tr><td>5</td><td><code>sgit share --to &lt;contact&gt;</code> (capability hand-off)</td><td>~0.5 week</td></tr><tr><td>—</td><td>Web UI: open sealed files with Web Crypto (no WASM) + a provider bridge</td><td>web team</td></tr></tbody></table></div>
+<h2 id="10-decisions-for-you">10. Decisions for you</h2>
+<ol><li><b>Format (revised 10-10):</b> the Web-Crypto-native HPKE envelope, with age as an export and plugin-bridge format. (Was: age.)</li><li><b>Working copy:</b> plaintext when the clone can open the file (git-crypt style), or always sealed on disk with <code>sgit cat</code> / <code>sgit open</code> to read?</li><li><b>Integrity for sealed paths:</b> signed envelopes + author rules in the first version, or later?</li><li><b>First remote provider:</b> an SG/Send-hosted unwrap service with approval and audit, or a cloud KMS plugin?</li></ol>
+<div class="pagenav"><a href="../articles/security-review-plan.html">← Plan — the next security review of sgit-ai, with skills, and the review graphs it produces</a><a href="../articles/native-pki-vault-mode.html">Native PKI vault mode — architecture map →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/sealed-files-layer.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/sealed-files-layer.md"><code>admin/content/articles/sealed-files-layer.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/sealed-files-layer.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

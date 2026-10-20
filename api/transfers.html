@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The transfer API, one encrypted handover, one link · cli.sgit.ai</title>
+<meta name="description" content="The other API family on this host: a single encrypted payload uploaded once and shared as one link. The two secrets that must not be confused, the SGMETA envelope that keeps the filename off the server, the three calls, revocation that is opt-in at create time only, and when a transfer beats a vault.">
+<link rel="canonical" href="https://cli.sgit.ai/api/transfers.html">
+<link rel="alternate" type="text/markdown" href="../api/transfers.md">
+<meta property="og:title" content="The transfer API, one encrypted handover, one link">
+<meta property="og:description" content="The other API family on this host: a single encrypted payload uploaded once and shared as one link. The two secrets that must not be confused, the SGMETA envelope that keeps the filename off the server, the three calls, revocation that is opt-in at create time only, and when a transfer beats a vault.">
+<meta property="og:url" content="https://cli.sgit.ai/api/transfers.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl here" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../api/index.html">HTTP API</a> / The transfer API, one encrypted handover, one link</div>
+<h1 id="the-transfer-api-one-encrypted-handover-one-link">The transfer API, one encrypted handover, one link</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/api/transfers.html">sgit.ai/api/transfers.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>The other half of the API on this host. A <b>vault</b> is a versioned encrypted tree you clone, pull and push; a <b>transfer</b> is a single encrypted payload uploaded once and handed over as one link. Same server, same zero-knowledge property, different job, and until now this site documented a transfer <i>header</i> without documenting a single transfer <i>endpoint</i>.</p>
+<p><b>Provenance.</b> This page is derived from an integration guide written by the team that owns the SG/Send API, who executed <b>every request, response, status code and byte layout in it against the production user API on 9 September 2026</b>. That run is theirs, not ours. We have not re-executed it here, and the date is the one to check it against. Their guide is released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+<h2 id="transfer-or-vault">Transfer or vault?</h2>
+<p>Pick this first; it decides everything after it.</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>Transfer</th><th><a href="../api/vault-objects.html">Vault</a></th></tr></thead><tbody><tr><td><b>Shape</b></td><td>One payload, uploaded once</td><td>A versioned tree of files</td></tr><tr><td><b>History</b></td><td>None. There is no second version</td><td>Commits, branches, merges</td></tr><tr><td><b>The reader gets</b></td><td>The whole payload, or nothing</td><td>Any single file, without fetching the rest</td></tr><tr><td><b>Lifecycle</b></td><td>Expires, caps downloads, can be revoked</td><td>Lives until you delete it</td></tr><tr><td><b>The credential</b></td><td>A decryption key in the URL fragment</td><td>A <a href="https://sgit.ai/docs/vault/reading-a-vault-file.html">read key</a>, derived one-way</td></tr><tr><td><b>Reach for it when</b></td><td>An agent finishes a job and hands the result over <b>once</b>: a bundle, a report, a dated export</td><td>The thing is read repeatedly, browsed, updated, or rendered as an app</td></tr></tbody></table></div>
+<p>The SG/API team's own guidance, for a workflow that ships one bundle per voice memo, is that the transfer API is <i>“the simpler and better fit”</i>. That is the right instinct in general: <b>a vault is the wrong answer for a handover that happens once.</b></p>
+<h2 id="two-secrets-that-must-never-be-confused">Two secrets that must never be confused</h2>
+<p>This is the part that goes wrong first, and it goes wrong silently, a leaked access key does not throw.</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>What it authorises</th><th>Where it goes</th></tr></thead><tbody><tr><td><b>The access key</b> <code>x-sgraph-access-token</code></td><td><i>You</i>, to upload</td><td>A request <b>header</b>. Never a URL, never a share link, never a log</td></tr><tr><td><b>The decryption key</b></td><td><i>Anyone</i>, to read</td><td>The URL <b>fragment</b>: everything after <code>#</code>, which no browser sends to the server</td></tr></tbody></table></div>
+<p>They are unrelated values. The fragment is what makes a share link both shareable and private: the key reaches the recipient's client and never the origin serving the page. The API also accepts <code>?access_token=</code> as a query fallback and it works, <b>do not use it</b>; query strings land in proxy logs, browser history and workflow execution records.</p>
+<p>What the server can see: ciphertext size, a hashed sender IP, a creation timestamp, and the <code>content_type_hint</code> you supply. What it cannot see: the filename, the contents, or the key.</p>
+<h2 id="the-payload-format-two-layers-in-this-order">The payload format, two layers, in this order</h2>
+<p>The filename must not reach the server, so it is wrapped <i>inside</i> the plaintext before encryption. Getting the order wrong produces a corrupt download with no name.</p>
+<p><b>Inner, the SGMETA envelope:</b></p>
+<pre><code class="lang-text">&quot;SGMETA\0&quot;          7 bytes    53 47 4D 45 54 41 00
+meta_len            4 bytes    uint32, big-endian
+metadata JSON       meta_len   {&quot;filename&quot;:&quot;…&quot;}  UTF-8
+file bytes          rest       your payload</code></pre>
+<p><b>Outer, AES-256-GCM over that whole buffer:</b></p>
+<pre><code class="lang-text">IV                 12 bytes    random, fresh per upload, prepended
+ciphertext + tag   rest        GCM appends its own 16-byte tag</code></pre>
+<ul><li><b>Key:</b> 32 random bytes, shared as <b>base64url, unpadded</b>: 43 characters.</li><li><b>IV:</b> 12 random bytes, never reused with the same key.</li><li><b>Overhead:</b> the uploaded payload is exactly <b>28 bytes larger</b> than the plaintext (12 + 16).</li></ul>
+<p>Same primitive as everything else here: AES-256-GCM, done client-side, with the server holding ciphertext under a key it never had. <a href="../security/index.html">The security page</a> covers why that is the whole product rather than a feature of it.</p>
+<h2 id="the-three-calls">The three calls</h2>
+<div class="tablewrap"><table><thead><tr><th>Call</th><th>Endpoint</th><th>Notes</th></tr></thead><tbody><tr><td><b>1 · create</b></td><td><code>POST /api/transfers/create</code></td><td>Returns <code>transfer_id</code>. Body carries <code>file_size_bytes</code> (the <i>plaintext</i> length, display metadata only), <code>content_type_hint</code> (stored in the clear, keep it generic), <code>max_downloads</code>, <code>auto_delete</code>, <code>expires_at</code></td></tr><tr><td><b>2 · upload</b></td><td><code>POST /api/transfers/upload/{id}</code></td><td><b>Raw bytes</b>: not base64, not multipart. <code>Content-Type: application/octet-stream</code></td></tr><tr><td><b>3 · complete</b></td><td><code>POST /api/transfers/complete/{id}</code></td><td>Nothing is downloadable until this call lands</td></tr></tbody></table></div>
+<p>Only those three need the access key. <code>info</code> and <code>download</code> are <b>public by design</b>: the decryption key is the gate, which is exactly why a share link works for someone with no account.</p>
+<p><b>Two traps in the create body.</b> <code>expires_at</code> is in <b>milliseconds</b> since epoch, not seconds; <code>0</code> means never. And <code>max_downloads: 0</code> means <i>unlimited</i>, not zero, once a finite allowance is exhausted, downloads return <b>410</b>.</p>
+<h3 id="build-the-share-link-yourself">Build the share link yourself</h3>
+<p><code>complete</code> returns a <code>download_url</code> of <code>/d/{id}</code>. <b>Ignore it</b>: verified as a 404; it is not a live route. The link to hand out is:</p>
+<pre><code class="lang-text">https://send.sgraph.ai/en-gb/download/#{transfer_id}/{key_base64url}</code></pre>
+<p>Omit <code>/{key}</code> for a link-only form when the key travels through a second channel. The fragment parser splits on the <b>first</b> <code>/</code> and truncates at a <code>|</code>, so <code>|</code> is reserved, base64url never produces one, so following the format above keeps you clear.</p>
+<h2 id="what-a-receiving-agent-has-to-do">What a receiving agent has to do</h2>
+<p>This is the payoff, and it is two calls with no account and no browser: <code>GET /api/transfers/download/{id}</code> needs no auth, and the key from the fragment does the rest, split the IV off the first 12 bytes, AES-GCM decrypt, check the <code>SGMETA\0</code> magic, read the big-endian length, and the filename and payload fall out. For a JSON-only transport such as an MCP tool, <code>GET /api/transfers/download-base64/{id}</code> returns the same bytes wrapped in JSON.</p>
+<p><b>Downloads are counted.</b> An agent retrying a failed run burns the allowance. For agent-facing links prefer <code>max_downloads: 0</code> with a short <code>expires_at</code>, time-bounded rather than attempt-bounded, because a retry is not a reader.</p>
+<h2 id="expiry-caps-and-revocation">Expiry, caps and revocation</h2>
+<p>Revocation is opt-in <b>at create time and only then</b>: set <code>delete_auth_hash</code> to <code>sha256(secret)</code> in hex and store the secret beside the transfer id. Without it, deletion is disabled for that transfer forever. To revoke, <code>DELETE /api/transfers/delete/{id}</code> carrying the access key and <code>x-sgraph-transfer-delete-auth: &lt;the secret, not the hash&gt;</code>, the one header <a href="../api/authentication.html">the authentication page</a> already listed before this page existed to explain it.</p>
+<p><b>410 and 404 are both normal end states, not errors to retry:</b> 410 is gone-as-expected (expired or exhausted), 404 is never-existed-or-deleted.</p>
+<h2 id="size">Size</h2>
+<div class="tablewrap"><table><thead><tr><th>Path</th><th>Ceiling</th><th>When</th></tr></thead><tbody><tr><td><b>Direct upload</b></td><td>keep the encrypted payload under <b>~4 MB</b></td><td>The normal case</td></tr><tr><td>Multipart / presigned</td><td>Larger</td><td>Needs the S3 backend, check <code>GET /api/presigned/capabilities</code> first</td></tr></tbody></table></div>
+<p>The ~4 MB figure is a working limit rather than a published one: the Lambda URL caps a request body at 6 MB and the browser client switches to presigned at 5 MB. Text bundles compress far below it; <b>audio does not</b>, and is usually the most sensitive part of a bundle as well as the largest.</p>
+<h2 id="verified-behaviour">Verified behaviour</h2>
+<p>The SG/API team's run, 9 September 2026, reproduced here as they reported it:</p>
+<div class="tablewrap"><table><thead><tr><th>Case</th><th>Result</th></tr></thead><tbody><tr><td>Header <code>x-sgraph-access-token</code></td><td><b>200</b></td></tr><tr><td>Header <code>x-sgraph-send-access-token</code></td><td><b>401</b>: that name does not work</td></tr><tr><td>No token, or a wrong one</td><td><b>401</b></td></tr><tr><td><code>download</code> / <code>info</code> with no token</td><td><b>200</b>: public by design</td></tr><tr><td>Round trip: wrap → encrypt → create → upload → complete → download → decrypt → unwrap</td><td><b>Byte-identical</b> payload recovered, filename intact</td></tr><tr><td>Download #3 against <code>max_downloads: 2</code></td><td><b>410</b></td></tr><tr><td>Download of an expired transfer</td><td><b>410</b></td></tr><tr><td><code>DELETE</code> with wrong / correct delete-auth</td><td><b>403</b> / <b>200</b>, then <b>404</b></td></tr><tr><td><code>GET /d/{transfer_id}</code></td><td><b>404</b>: not a route</td></tr><tr><td>Key length</td><td>32 bytes → 43 base64url characters</td></tr><tr><td>Encrypted payload overhead</td><td>plaintext + 28 bytes</td></tr></tbody></table></div>
+<h2 id="the-rules-worth-holding-to">The rules worth holding to</h2>
+<ol><li><b>Never log or return the decryption key</b> outside the share link. It is not an identifier, anyone holding it reads the payload. In a workflow engine that means keeping it out of node output that gets persisted.</li><li><b>Never put the access key in a URL.</b> Header only.</li><li><b>Never reuse an IV.</b> Twelve fresh random bytes per upload.</li><li><b>Keep the filename inside the envelope.</b> <code>content_type_hint</code> is in the clear; the name is not, and that is the reason the envelope exists.</li><li><b>Always set an expiry.</b> A link pasted into a chat lives as long as the chat does; the transfer should not.</li><li><b>Bundle for a reader who is an agent</b>: a <code>manifest.json</code> saying what each file is, and an <code>llms.txt</code>, cost nothing and are the difference between a payload that can be used and one that has to be opened by a person first.</li></ol>
+<p>Adapted with attribution from the SG/API team's integration guide of 9 September 2026 (CC BY 4.0); the workflow-specific half of that document (credential wiring, node shapes, the bundle layout for one product) stays with the product it was written for. <a href="../api/index.html">API reference</a> · <a href="../api/vault-objects.html">Vault objects</a> · <a href="../api/append-lanes.html">Append lanes</a> · <a href="https://sgit.ai/docs/guidance/index.html">Working on a vault</a></p>
+<div class="pagenav"><a href="../api/vault-objects.html">← Vault objects</a><a href="../api/append-lanes.html">Append lanes →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../api/transfers.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/api/transfers.md"><code>admin/content/api/transfers.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../api/transfers.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

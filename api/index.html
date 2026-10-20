@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The HTTP API · cli.sgit.ai</title>
+<meta name="description" content="The protocol surface behind sgit: base URL, the capability model, and the reference for vault objects, append lanes, authentication headers and error codes. Built from a code-verified audit at v0.33.54, with unresolved endpoints labelled rather than guessed at.">
+<link rel="canonical" href="https://cli.sgit.ai/api/index.html">
+<link rel="alternate" type="text/markdown" href="../api/index.md">
+<meta property="og:title" content="The HTTP API">
+<meta property="og:description" content="The protocol surface behind sgit: base URL, the capability model, and the reference for vault objects, append lanes, authentication headers and error codes. Built from a code-verified audit at v0.33.54, with unresolved endpoints labelled rather than guessed at.">
+<meta property="og:url" content="https://cli.sgit.ai/api/index.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl here" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl here" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / The HTTP API</div>
+<h1 id="the-http-api">The HTTP API</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/api/index.html">sgit.ai/api/index.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>Everything sgit does, it does over this API. The CLI is a client; so is the browser bridge; so is anything you write. This section is the protocol surface, endpoints, headers, gates, limits and the error codes you will actually hit. <b>Two families share this host</b>: <a href="../api/vault-objects.html">vaults</a>, which are versioned trees you clone and push, and <a href="../api/transfers.html">transfers</a>, which are single encrypted handovers.</p>
+<p><b>Where this came from, and how far to trust it.</b> This section is built from a code-verified audit supplied by the SG/API team, read out of the route tables and constants at <b>v0.33.54</b> rather than recalled. It is <i>their</i> verification, not ours: this site has not independently exercised every endpoint. Where their audit and the shipped client disagreed we checked and said so; where something is registered but unconfirmed it is labelled <b>PROPOSED</b> and you should not build on it yet. Same rule as the rest of this site, if it is not verified, it says so.</p>
+<h2 id="base-url">Base URL</h2>
+<p><code>https://send.sgraph.ai</code> for the hosted service, or your own host if you <a href="https://sgit.ai/deploy/index.html">run it yourself</a>. All request and response bodies are JSON unless stated otherwise.</p>
+<h2 id="the-one-idea-worth-reading-first">The one idea worth reading first</h2>
+<p>The server is a <b>capability-checked ciphertext store</b>, and every access-control decision it makes is a hash comparison. It stores <code>SHA-256</code> of each capability key and checks <code>H(presented) == stored</code>. It never holds a raw key, and it never holds a private key at all.</p>
+<p>That is what makes the rest of the design possible: a vault ID is an address rather than an account, reads are public by default because the bytes are useless without a key, and a stranger can write to your vault without ever having a credential on the platform.</p>
+<h2 id="the-reference">The reference</h2>
+<div class="tablewrap"><table><thead><tr><th>Page</th><th>What is in it</th></tr></thead><tbody><tr><td><a href="../api/authentication.html">Authentication</a></td><td>The six headers, what each gates, and the hash-comparison model</td></tr><tr><td><a href="../api/vault-objects.html">Vault objects</a></td><td>The pointer store (read, write, batch, destroy) plus the caching contract and storage layout</td></tr><tr><td><a href="../api/append-lanes.html">Append lanes</a></td><td>The six append endpoints: the vault-to-vault message transport</td></tr><tr><td><a href="../api/transfers.html">Transfers</a></td><td>The other family on this host: one encrypted payload, uploaded once, handed over as a single link, the SGMETA envelope, the three calls, and when to reach for this instead of a vault</td></tr><tr><td><a href="../api/errors.html">Errors and limits</a></td><td>400, 403, 413, 507, what each actually means, and the ceilings that produce them</td></tr></tbody></table></div>
+<h2 id="four-capabilities">Four capabilities</h2>
+<p>Most of the API surface is one of four capability tiers. They are separated so that holding one tells you nothing about the others:</p>
+<div class="tablewrap"><table><thead><tr><th>Capability</th><th>Presented as</th><th>Grants</th></tr></thead><tbody><tr><td><code>append_token</code></td><td>a field in the request body</td><td>Write to one append lane. Nothing else, not even listing it</td></tr><tr><td><code>enum_key</code></td><td><code>x-sgraph-vault-enum-key</code></td><td>List, fetch and mark-processed on append lanes</td></tr><tr><td><code>write_key</code></td><td><code>x-sgraph-vault-write-key</code></td><td>Write and delete objects; configure and purge lanes</td></tr><tr><td>private key</td><td><i>never presented</i></td><td>Decryption, client-side only</td></tr></tbody></table></div>
+<p>The fourth row is the point of the design rather than a footnote: the server cannot decrypt anything it stores, so the strongest capability in the system is the one it never sees.</p>
+<h2 id="where-to-start">Where to start</h2>
+<ul><li>Sending an encrypted message between two vaults → <a href="../docs/vault-messaging.html">Vault messaging</a>, which composes <a href="../api/append-lanes.html">append lanes</a> with <a href="../docs/pki.html">PKI</a>.</li><li>Reading or writing files → <a href="../api/vault-objects.html">Vault objects</a>.</li><li>Building a vault app in the browser → the <a href="https://sgit.ai/docs/vault/sg-bridge.html">SG bridge</a> wraps this API so you never write HTTP.</li><li>Using the CLI instead → <a href="../docs/quickstart.html">Quickstart</a>.</li></ul>
+<h2 id="open-questions-we-will-not-guess-at">Open questions we will not guess at</h2>
+<p>Three items came through the audit unresolved. They are listed rather than documented, because a confident page about an endpoint that does not exist is worse than no page:</p>
+<div class="tablewrap"><table><thead><tr><th>Item</th><th>Status</th></tr></thead><tbody><tr><td><code>GET /api/vault/zip/{vault_id}</code></td><td><b>UNRESOLVED</b>: registered in the route table, marked PROPOSED in the team’s reality document. Not documented either way until that is reconciled</td></tr><tr><td><code>/join/*</code></td><td><b>UNRESOLVED</b>: the reality document lists three live endpoints, but the routes are not registered in the deployed app. Not documented</td></tr><tr><td>Client-side lane addressing</td><td><b>PROPOSED</b>: <code>append_token = H(public key)</code> is the intended model; no shipped command emits it. See the <a href="../docs/vault-messaging.html#addressing">addressing note</a> for what to do meanwhile</td></tr></tbody></table></div>
+<div class="pagenav"><span></span><a href="../api/authentication.html">Authentication →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../api/index.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/api/index.md"><code>admin/content/api/index.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../api/index.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plan — the next security review of sgit-ai, with skills, and the review graphs it produces · cli.sgit.ai</title>
+<meta name="description" content="The plan for a tool-assisted, data-producing security review of one slice of sgit-ai: the code the zero-knowledge guarantee and the trust boundaries live in.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/security-review-plan.html">
+<link rel="alternate" type="text/markdown" href="../articles/security-review-plan.md">
+<meta property="og:title" content="Plan — the next security review of sgit-ai, with skills, and the review graphs it produces">
+<meta property="og:description" content="The plan for a tool-assisted, data-producing security review of one slice of sgit-ai: the code the zero-knowledge guarantee and the trust boundaries live in.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/security-review-plan.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / Plan — the next security review of sgit-ai, with skills, and the review graphs it produces</div>
+<h1 id="plan-the-next-security-review-of-sgit-ai-with-skills-and-the">Plan — the next security review of sgit-ai, with skills, and the review graphs it produces</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-11 · 16:32 UTC</span><span class="k">Kind</span><span class="v">plan</span><span class="k">Topics</span><span class="v"><span class="chip">security</span> <span class="chip">review</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md"><code>team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>From:</b> the sgit-ai CLI agent · <b>Date:</b> 2026-10-11 · <b>Status:</b> proposed, for Dinis to accept or redirect before step 0 runs. <b>Companion docs:</b> <a href="../articles/security-review-skills.html"><code>research__security-review-skills.md</code></a>, <a href="../articles/threat-modeling-tools.html"><code>research__threat-modeling-tools.md</code></a>, <code>map__security-work-already-done.md</code> in this folder.</p>
+<h2 id="1-one-sentence">1. One sentence</h2>
+<p>Run a tool-assisted, data-producing security review of <b>one slice</b> of sgit-ai (the code the zero-knowledge guarantee and the trust boundaries live in), using five skills and three tools chosen in the research docs, join every output to the existing register and its tests, and leave behind the first <code>review/</code> graphs and per-file security records, so the case study can say which tool found what.</p>
+<h2 id="2-scope-the-slice-and-why-it-is-this-one">2. Scope: the slice, and why it is this one</h2>
+<p>The code-review-graphs brief says not to start an existing repository with a full derivation, and the <code>secrets.sgit.ai/review/</code> page starts from what people actually walk. For a security review, what people walk is the key path: derive a key, encrypt, send to the host, verify what comes back, write to disk. Everything the register's High-impact rows touch is in these packages.</p>
+<div class="tablewrap"><table><thead><tr><th>In scope (round 1)</th><th>Files · lines</th><th>Why</th></tr></thead><tbody><tr><td><code>sgit_ai/crypto/</code></td><td>9 · 793</td><td>every primitive; the KDF cache; the deterministic metadata mode (KI-SEC-02); PKI</td></tr><tr><td><code>sgit_ai/network/api/</code></td><td>13 · 1,504</td><td>the host boundary: presigned URLs, CAS, per-op conflicts, timeouts, scheme rules</td></tr><tr><td><code>sgit_ai/storage/</code> (<code>Vault__Path_Guard</code>, <code>Vault__Storage</code>, <code>Vault__Verified_Write</code>, <code>Vault__Object_Store</code>, <code>Vault__Index_Reader</code>, <code>Vault__Ref_Manager</code>, <code>Vault__Branch_Manager</code>)</td><td>7 of 17</td><td>the local boundary and verified writes; where the path, symlink, baseline and index fixes landed</td></tr><tr><td><code>sgit_ai/core/actions/verify/</code>, <code>clone/</code>, <code>pull/</code>, <code>push/</code>, <code>commit/</code>; <code>sgit_ai/core/Vault__Secret_Guard.py</code>, <code>Vault__Ignore.py</code></td><td>5 of 28 action groups + 2</td><td>verify-then-accept, the rewind guard, the secret guard and the always-ignored set</td></tr><tr><td><code>sgit_ai/secrets/</code>, <code>sgit_ai/cli/CLI__Main.py</code>, <code>CLI__Credential_Store.py</code>, <code>CLI__Token_Store.py</code>, <code>CLI__Debug_Log.py</code>, <code>CLI__Vault.py</code></td><td>6 files</td><td>where keys are stored, pinned, printed and logged (TM-R14 is High)</td></tr><tr><td><code>.github/workflows/*.yml</code>, <code>pyproject.toml</code>, <code>sgit update</code></td><td>3 + 2</td><td>supply chain (TM-R21)</td></tr></tbody></table></div>
+<p>41 source files, about 11,300 lines (counted with <code>wc -l</code>), out of 469 files. <b>Out of scope for round 1:</b> <code>plugins/</code>, <code>workflow/</code>, <code>migrations/</code>, the rest of <code>cli/</code>, <code>core/serve</code>, <code>mirror</code>, <code>publish</code> (round 2 candidate: their code-stage review is owed since 08/19), <code>objects/</code>, <code>safe_types/</code>, <code>schemas/</code> (covered by the Type_Safe tests and the round-trip invariant).</p>
+<h2 id="3-the-tools-and-what-each-is-for">3. The tools, and what each is for</h2>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>Tool</th><th>Chosen because</th><th>Not chosen</th></tr></thead><tbody><tr><td>0</td><td>OWASP AST10 checklist; <code>cisco-ai-defense/skill-scanner</code></td><td>the only published rubric for installing third-party instruction files into a key-custody repository</td><td>SkillLedger and skillsign: nothing on our list is signed, so there is nothing to verify</td></tr><tr><td>1</td><td>Trail of Bits <b>audit-context-building</b></td><td>a per-function dossier with a line for every claim and "nothing found" for unestablished assumptions; no verdicts, so it cannot anchor the later steps</td><td>Sentry's "research the code base first" is a paragraph, not an artefact</td></tr><tr><td>1</td><td>a parser (Python <code>ast</code>)</td><td>the code-review-graphs brief: derived structure comes from parsers, never a model</td><td>STRIDE GPT's repository stage: it is a model reading code, so its output goes in the intent/explanation layer, not <code>graph/</code></td></tr><tr><td>2</td><td><b>STRIDE GPT</b> CLI (<code>analyze</code>, JSON, Anthropic via LiteLLM) and the <b><code>stride-threat-modelling</code> skill</b> copy</td><td>two independent STRIDE passes with the same rubric: one by the tool, one by this agent; stable threat ids; evidence required per threat</td><td>the hosted <code>mcp.stridegpt.ai</code> endpoint (sends the description off-machine); pytm and Threagile (their libraries are web- and infrastructure-shaped; a pytm model file is a round 2 artefact once the DFD exists as data)</td></tr><tr><td>2</td><td>Matt Adams' <b>insider-threat model</b> (27 threats)</td><td>the agent as actor; thirteen threats already map to register rows after one reading</td><td></td></tr><tr><td>3</td><td>Sentry <b>security-review</b> (cryptography, file-security, supply-chain, logging guides) and <b>secret-serialization</b>; Trail of Bits <b>insecure-defaults</b>, <b>sharp-edges</b>, <b>differential-review</b> (0.20.0 → 0.21.0), <b>post-patch-validation</b> (the 0.21 fixes)</td><td>method, not pattern list; the diff of 0.21.0 is the largest security diff the project has had and two of its fixes regressed</td><td>Project CodeGuard: read its crypto and supply-chain rules once, cite where relevant, do not install; the "Anthropic Cybersecurity Skills" library (not Anthropic's, no code-review domain); Varlock (keep the rule, not the skill); squirrelscan (nothing to audit in a CLI)</td></tr><tr><td>3</td><td><b>Semgrep</b> (<code>p/python</code>, <code>python.cryptography.*</code>, Trail of Bits rules), <b>Bandit</b>, <b>pip-audit</b>; Sentry <b>gha-security-review</b> on the workflows</td><td>deterministic, SARIF, and the CI baseline TM-R21 has wanted since 10/08</td><td>CodeQL: worth adding at the CI step if the Semgrep pass leaves gaps; not first</td></tr><tr><td>3</td><td>Anthropic <b><code>/security-review</code></b></td><td>already here; diff-scoped; a second opinion on the pending changes of each fix commit</td><td>as the whole-slice review: its filter drops DoS-shaped findings by design, and three accepted rows are DoS-shaped</td></tr><tr><td>4</td><td>Trail of Bits <b>fp-check</b>; Matt Adams' <b>threat-led-triage</b> over all findings with the STRIDE GPT model</td><td>every finding is a claim to verify; ranking by reachability across <i>our</i> boundaries is how the list stays short</td><td>CVSS-style scoring</td></tr><tr><td>5</td><td>the house <code>.security.json</code> schema; the <code>review/</code> layout from the code-review-graphs brief</td><td>so the output is data the sites can join and the next review can diff</td><td>a prose report alone</td></tr><tr><td>6</td><td>the TM-Bench rubric (four dimensions) with the register as ground truth</td><td>the measurable part of the case study</td><td>running TM-Bench itself (no public harness)</td></tr></tbody></table></div>
+<h2 id="4-the-steps">4. The steps</h2>
+<p>Each step names its output. Outputs that are data go under <code>review/</code> (new, at the repository root, per the brief); prose goes under this folder's date; threat-model changes go in the register with their tests, as §9 of the threat model requires.</p>
+<h3 id="step-0-vet-pin-canary-half-a-day">Step 0 — Vet, pin, canary (half a day)</h3>
+<ol><li>Clone each skill source at a commit SHA; record SHA and <code>sha256</code> of every SKILL.md.</li><li>Run <code>skill-scanner scan-all --format sarif</code> over the lot; HIGH blocks install. Keep the SARIF.</li><li>Fill the AST10 table from <a href="../articles/security-review-skills.html"><code>research__security-review-skills.md</code></a> §2 for each skill.</li><li>Install into this cloud session only (no vault key, no token, no <code>.env</code> on disk here): Trail of Bits plugins (<code>audit-context-building</code>, <code>insecure-defaults</code>, <code>sharp-edges</code>, <code>differential-review</code>, <code>post-patch-validation</code>, <code>fp-check</code>, <code>static-analysis</code>, <code>supply-chain-risk-auditor</code>); Sentry <code>security-review</code>, <code>secret-serialization</code>, <code>gha-security-review</code>; <code>stride-threat-modelling</code> skill copy; <code>threat-led-triage</code> skill; <code>pip install stride-gpt==&lt;pinned&gt;</code> with hashes; Semgrep, Bandit, pip-audit pinned.</li><li>Rule for every run: the agent never reads <code>.sg_vault/local/*</code>, never prints a key, never runs a skill's "fix" mode. Written at the top of the session prompt.</li></ol>
+<p><b>Output:</b> <code>…/10/11/case-study/00__vetting.md</code> with the table and SARIF.</p>
+<h3 id="step-1-context-and-the-first-derived-graph-one-day">Step 1 — Context and the first derived graph (one day)</h3>
+<ol><li><code>audit-context-building</code> over the slice → <code>audit-context/DOSSIER.md</code> and one file per function. Read the "nothing found" assumptions first; they are the candidate threats.</li><li>A small <code>ast</code>-based deriver (classes, methods, calls within the slice, tests that import each module) → <code>review/graph/{files,classes,methods,tests}.json</code>, each node with path, lines and tree hash, per the brief's grammar. Freshness checked by tree hash. <b>Parsers only.</b></li><li>Intent for the slice, written from the threat model's §2 assets, §4 boundaries and §5 mechanisms, each node citing its section → <code>review/intent/boundaries.json</code>, <code>mechanisms.json</code>. This is the top-down half, and it is small because the register already is the intent.</li></ol>
+<p><b>Output:</b> the dossier; <code>review/graph/</code> and <code>review/intent/</code> seeds; <code>review/README.md</code> with counts written by the deriver, not by hand.</p>
+<h3 id="step-2-threat-model-two-ways-plus-the-insider-overlay-one-da">Step 2 — Threat model, two ways, plus the insider overlay (one day)</h3>
+<ol><li><code>stride-gpt analyze &lt;slice&gt; -f json -o review/stride/stride-gpt.json</code> with the cost estimate recorded first. Also <code>-f sarif</code> for the triage step.</li><li>This agent runs the <code>stride-threat-modelling</code> skill over the same slice and the dossier → <code>review/stride/agent.json</code>, same schema (id, STRIDE class, component, description, evidence line, mitigation).</li><li>Reconcile → <code>review/stride/join.json</code>: each threat id ↔ TM-R/TM-F row ↔ test file, or <code>new</code>, or <code>out-of-scope-by-model</code> (the host-and-harness threats). Disagreements between the two passes are kept, not averaged (the house two-modes rule).</li><li>Insider overlay: confirm the thirteen mappings in the threat-modeling doc §1.1 against code; add actor <b>A9</b> (the agent holding the key) to the register §3, and a column to §6 naming the insider threat ids each row answers. Where a mapping proves an <i>open</i> gap, write its <code>Known_Gaps</code> test in the same commit.</li></ol>
+<p><b>Output:</b> <code>review/stride/</code> (three files); a register change with tests; the first number for the case study (STRIDE GPT's completeness and coverage against the register).</p>
+<h3 id="step-3-code-review-two-days">Step 3 — Code review (two days)</h3>
+<p>Run in this order, each writing findings as <code>VULN-###</code> / <code>VERIFY-###</code> with file, line, evidence:</p>
+<ol><li>Semgrep, Bandit, pip-audit → <code>review/findings/semgrep.sarif</code>, <code>bandit.json</code>, <code>pip-audit.json</code>. These three also become the CI baseline: a new job step in "Run Security &amp; Adversarial Tests" that fails on <i>new</i> findings only (closes TM-R21's open half).</li><li><code>insecure-defaults</code> and <code>sharp-edges</code> on <code>crypto/</code> and <code>storage/</code>.</li><li>Sentry <code>security-review</code> on the slice with the cryptography, file-security, supply-chain and logging guides; <code>secret-serialization</code> on <code>crypto/Vault__Secret_File.py</code>, <code>secrets/</code>, <code>cli/CLI__Debug_Log.py</code>, <code>cli/CLI__Vault.py</code>, <code>cli/CLI__Credential_Store.py</code>.</li><li><code>differential-review</code> on <code>git diff 0.20.0..0.21.0 -- &lt;slice&gt;</code>; <code>post-patch-validation</code> on the TM-F25→F29 and TM-F27→F30 pairs specifically (the two fixes that regressed).</li><li><code>gha-security-review</code> on the three workflows; <code>supply-chain-risk-auditor</code> on <code>osbot-utils</code> and <code>cryptography</code>.</li><li><code>/security-review</code> on each fix commit as it is made (step 4), as the PR gate.</li></ol>
+<p><b>Output:</b> <code>review/findings/&lt;tool&gt;.json</code> per tool, same record shape, each with <code>tool</code>, <code>confidence</code>, <code>file</code>, <code>line</code>, <code>evidence</code>.</p>
+<h3 id="step-4-triage-and-fix-one-day-plus-the-fixes">Step 4 — Triage and fix (one day, plus the fixes)</h3>
+<ol><li><code>fp-check</code> over every finding; a finding without a reproducing path is <code>VERIFY</code>, not <code>VULN</code>.</li><li><code>threat-led-triage rank review/findings/*.json against review/stride/stride-gpt.json</code> → <code>review/findings/ranked.json</code>, with the "could not determine" list kept.</li><li>House rule applies to anything real: a <code>Fixed</code> test that fails on the current code, the fix, the register row, the CHANGELOG line, in one commit. Anything accepted gets a <code>Known_Gaps</code> test and a <code>risk_decision</code> with owner and rationale.</li></ol>
+<p><b>Output:</b> fixes with tests; register updated; the per-tool true/false-positive counts for the case study.</p>
+<h3 id="step-5-per-file-records-and-the-skill-rule-half-a-day">Step 5 — Per-file records and the skill rule (half a day)</h3>
+<ol><li>One <code>.security.json</code> per file in the slice (house schema: <code>attack_surface</code>, <code>vulnerabilities</code> with <code>risk_decision</code>, <code>secrets_exposure</code>, <code>dependencies</code> with <code>trust_boundary_crossings</code>, <code>redundant_code</code>), written from the dossier and the findings, every claim with a line → <code>review/security/&lt;path&gt;.security.json</code>. The slice is 41 files; that is the whole point of the slice.</li><li>Add to <code>library/skills/sg-send-cli__SKILL.md</code> (and the sgit skill on <code>skills.sgit.ai</code>) the rule Varlock states and the insider model's I4 needs: never print, echo or log a vault key, read key, write key or token; read keys from the store, not from argv; prefer the key prompt. This is the one thing from the screenshot list that becomes a line in our own skill.</li></ol>
+<p><b>Output:</b> <code>review/security/</code>; the skill change.</p>
+<h3 id="step-6-publish-half-a-day">Step 6 — Publish (half a day)</h3>
+<ol><li>The two research docs → <code>skills.sgit.ai</code> and <code>threat-modeling.sgit.ai</code> Documents, as they are.</li><li>The case study: which tool found what (true positives, false positives, time, cost per tool), STRIDE GPT scored on the four TM-Bench dimensions against the register, the insider overlay result, the vetting table and the signature gap → both sites, and to Matt Adams.</li><li>Link the 0.21.0 register and the case study from <code>sgit.ai/security/</code> (closes "being prepared").</li></ol>
+<h2 id="5-acceptance">5. Acceptance</h2>
+<ul><li>Every file in <code>review/graph/</code> is regenerated byte-identically by the deriver from the tree hash it names; a stale file fails the check.</li><li>Every STRIDE threat in <code>review/stride/join.json</code> resolves to a register row with a test, or is marked <code>new</code> with a <code>VERIFY</code>, or <code>out-of-scope-by-model</code> with the reason.</li><li>Every <code>VULN</code> has a test that fails on the code before its fix; every accepted gap has a <code>Known_Gaps</code> test and a <code>risk_decision</code>.</li><li>The security CI job runs Semgrep, Bandit and pip-audit against a committed baseline and is green on the head that adds it.</li><li>Suites on the final head: unit, security, integration, QA all pass, with counts in the note.</li><li>The case study reports per-tool counts, not impressions.</li></ul>
+<h2 id="6-risks-of-the-plan-itself">6. Risks of the plan itself</h2>
+<div class="tablewrap"><table><thead><tr><th>Risk</th><th>Handling</th></tr></thead><tbody><tr><td>A skill is a supply-chain vector into a key-custody repository (AST01/02)</td><td>step 0; cloud session with no keys; pinned SHAs; no fix modes</td></tr><tr><td>Prompt injection from repository content into a review skill: <code>tests/security/</code> and the review-round tests contain adversarial strings by design (hostile paths, <code>(ſ[a-z]+)+$</code>, forged objects)</td><td>review skills read <code>sgit_ai/</code>, not <code>tests/</code>; findings cite <code>sgit_ai/</code> lines only; the agent treats skill output as claims</td></tr><tr><td>STRIDE GPT sends the slice to the model provider</td><td>the code is Apache-2.0 and public; never run it over a checkout holding <code>.sg_vault/local</code>; record the cost estimate first</td></tr><tr><td>Finding flood: 23 Bandit mediums were counted in March</td><td>step 4's ranking and the baseline; only ranked-reachable findings get a test</td></tr><tr><td>The derived graph becomes hand-maintained</td><td><code>review/graph/</code> is written by the deriver only; the freshness check is in the acceptance list</td></tr><tr><td>Scope creep into <code>plugins/</code>, <code>workflow/</code>, <code>serve</code>/<code>mirror</code>/<code>publish</code></td><td>named out of scope; round 2 is a separate plan with its own note</td></tr></tbody></table></div>
+<h2 id="7-decisions-needed-from-dinis">7. Decisions needed from Dinis</h2>
+<ol><li>Accept the slice, or swap one package in or out (the obvious candidate to add is <code>core/actions/publish</code> + <code>mirror</code>, owed since 08/19; it would make round 1 about 60 files).</li><li>Whether <code>review/</code> goes at the repository root now (the brief's layout) or under <code>team/explorer/appsec/review/</code> until the deriver is trusted. The plan assumes the root.</li><li>Whether to tell Matt before or after the run that his three tools are being test-driven on a published register with tests, so he can say what he would like measured.</li></ol>
+<div class="pagenav"><a href="../articles/security-review-skills.html">← Agent skills for security review — what exists, what it would do here</a><a href="../articles/sealed-files-layer.html">Sealed files — a second encryption layer on top of a vault →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/security-review-plan.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/security-review-plan.md"><code>admin/content/articles/security-review-plan.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/security-review-plan.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out · cli.sgit.ai</title>
+<meta name="description" content="The CLI, the vault web UI and the SG/Send API across the integrity roll-out, step by step: what each version reads, writes and loses, under the rule that no client may break another still writing.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/compatibility-matrix-cli-web-ui-api.html">
+<link rel="alternate" type="text/markdown" href="../articles/compatibility-matrix-cli-web-ui-api.md">
+<meta property="og:title" content="Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out">
+<meta property="og:description" content="The CLI, the vault web UI and the SG/Send API across the integrity roll-out, step by step: what each version reads, writes and loses, under the rule that no client may break another still writing.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/compatibility-matrix-cli-web-ui-api.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out</div>
+<h1 id="compatibility-matrix-sgit-cli-vault-web-ui-sg-send-api-acros">Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-07 · 15:58 UTC</span><span class="k">Kind</span><span class="v">analysis</span><span class="k">Topics</span><span class="v"><span class="chip">compatibility</span> <span class="chip">web-ui</span> <span class="chip">api</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/07/compatibility-matrix__cli-x-web-ui-x-api.md"><code>team/humans/dinis_cruz/claude-code-web/10/07/compatibility-matrix__cli-x-web-ui-x-api.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 7 Oct 2026 · <b>Rule we hold:</b> a vault written by any client version stays readable and writable by every other version in use. A newer client may <i>lose</i> nothing that an older client does not already lose today (the web UI's single-entry index overwrite is the baseline loss), and must never <i>break</i> an older client that is still writing. The API does not change in any step below (Q1 answered: it is id-agnostic).</p>
+<h2 id="1-what-ships-now-on-the-branch-no-cross-version-effect">1. What ships now (on the branch, no cross-version effect)</h2>
+<div class="tablewrap"><table><thead><tr><th>Change</th><th>Old CLI (≤ 0.18.0) on the same vault</th><th>Today's web UI on the same vault</th><th>API</th></tr></thead><tbody><tr><td><code>fsck</code> dedupe (270 s → 12 s)</td><td>local only</td><td>n/a</td><td>none</td></tr><tr><td>whole-vault guard names <code>sgit dev dump</code></td><td>n/a</td><td>n/a</td><td>none</td></tr><tr><td><b>canonical (JCS) signing input</b></td><td>reads the commit as before; nothing verifies, so the changed bytes are invisible</td><td>same; it never reads <code>signature</code></td><td>none</td></tr><tr><td><b><code>author_key_id</code> on new signed commits</b></td><td>the field has been in <code>commit_v1</code> since March 2026 (<code>Safe_Str__Author_Key_Id</code>, <code>key-rnd-imm-…</code> matches); older CLIs parse it; any client without the field drops it on read</td><td>ignores it</td><td>none</td></tr><tr><td>interop vectors (fixtures)</td><td>n/a</td><td>gives them something to test against</td><td>none</td></tr><tr><td>website debrief, notes, briefs</td><td>n/a</td><td>n/a</td><td>none</td></tr></tbody></table></div>
+<p><b>Verdict: merge and release as 0.18.x or 0.19.0 with no coordination.</b> One property to state in the release note: <code>vault move</code> re-encrypts and re-ids every commit, so signatures made before a move do not verify after it (they never did; it only becomes visible once verification exists). Move re-signs its own sentinel.</p>
+<h2 id="2-next-cli-batch-0-19-safe-with-today-s-web-ui-degrades-grac">2. Next CLI batch (0.19): safe with today's web UI, degrades gracefully with old CLIs</h2>
+<div class="tablewrap"><table><thead><tr><th>Change</th><th>Effect on an old CLI writing the same vault</th><th>Effect with today's web UI</th><th>Loss vs today</th></tr></thead><tbody><tr><td><b>Gate fields in the index</b> (<code>format</code>, <code>min_client</code>, <code>features</code>), read and preserved; written only by an owner command</td><td>an old CLI's push re-uploads its local index from a Type_Safe object that <b>dropped the unknown fields</b>, so the gate is erased by the next old-CLI push. <b>Fails open</b> (vault reads as format 1 again), never closed</td><td>the web UI's single-entry overwrite erases it the same way</td><td>none: a gate that is erased leaves the vault exactly as today</td></tr><tr><td><b><code>pull</code> / <code>status</code> re-read the remote index and merge entries</b></td><td>old CLI unaffected (still reads its local copy)</td><td>after a web overwrite the new CLI merges its local entries back in and re-uploads, so the mapping is <b>restored</b> rather than lost</td><td>none; a gain when a new CLI pulls</td></tr><tr><td><b>Index upload with <code>write-if-match</code> + merge-retry</b></td><td>old CLIs keep blind writes; last-writer-wins remains between them, as today</td><td>web overwrites still win when they come last, as today</td><td>none</td></tr><tr><td><b>Signature verification, warn mode</b></td><td>read-only; no writes</td><td>read-only</td><td>none, but see noise below</td></tr><tr><td><b>Hint fix</b> on the pattern-mismatch error ("run <code>sgit update</code>")</td><td>applies only to clients that have it</td><td>n/a</td><td>none</td></tr><tr><td><b><code>migrate apply</code> refuses on signed history</b> without <code>--force</code>, re-signs with it</td><td>old CLIs can still run the old migration; it rewrites history exactly as it does today</td><td>n/a</td><td>none</td></tr></tbody></table></div>
+<p><b>Noise, not breakage:</b> on the collaboration vault today, 247 of 674 commits verify, 315 have no key mapping and 112 are unsigned (web UI and keyless clones). Warn mode must therefore be quiet by default: a summary line in <code>sgit check fsck</code> and <code>history log --verify</code>, never a warning per pull. Otherwise agents will learn to ignore it before it means anything.</p>
+<h2 id="3-gated-steps-need-the-other-teams-first-shipping-them-early">3. Gated steps (need the other teams first; shipping them early would break the rule)</h2>
+<div class="tablewrap"><table><thead><tr><th>Change</th><th>What breaks without the other side</th><th>Who must ship first</th></tr></thead><tbody><tr><td><b>Ref monotonicity</b> (0.20)</td><td>today's web UI pushes the named ref unconditionally and can drop another writer's commits; a monotonic CLI reports each one as a rollback. True, but a stream of alarms</td><td>web shells on <code>pushIfMatch()</code> with a reconcile step</td></tr><tr><td><b>Signatures <code>required</code></b></td><td>every web commit fails policy (unsigned); 427 of 674 historic commits on the example vault can never pass</td><td>per-device web keys registered in the index; a checkpoint rule for history</td></tr><tr><td><b>Format 2 (32-hex ids)</b></td><td><b>the one hard break:</b> any CLI ≤ 0.18 fails on a 32-hex id. Correction (8 Oct, reproduced): not a validation error; verify-before-write refuses the object, so a fresh clone reports <code>integrity check refused vault data … corrupt or substituted content</code> and a pull reports <code>missing file … try sgit check fsck</code>, both pointing at the wrong fix (<code>sgit update</code> is the fix). Today's web UI reads them fine but writes 12-hex ids for new objects (mixed, allowed)</td><td>web <code>computeObjectId</code> format-aware; old web releases retired; and, on our side, no pre-gate CLI still writing to vaults that are raised</td></tr></tbody></table></div>
+<h2 id="4-the-matrix">4. The matrix</h2>
+<p>API unchanged throughout. Cells read: what happens to a vault that both clients write.</p>
+<div class="tablewrap"><table><thead><tr><th></th><th><b>Web UI today</b> (single-entry index overwrite, random-IV trees, unconditional push, 12-hex ids)</th><th><b>Web UI with the index fix</b> (read-merge-CAS, honours the gate)</th><th><b>Web UI id-aware</b> (+ format-aware ids, deterministic trees, <code>pushIfMatch</code>)</th></tr></thead><tbody><tr><td><b>CLI ≤ 0.18.0</b></td><td>today. Index mapping lost on each web push; tree ids differ per writer; lost updates possible on web push</td><td>mapping kept; otherwise as today</td><td>as today for this client; it <b>crashes on a format-2 vault</b></td></tr><tr><td><b>CLI 0.18.x / 0.19</b> (canonical signing, author_key_id, gate read+preserve, pull merges index, CAS upload, warn)</td><td>works. Gate erased by web pushes → fails open; new CLI restores mapping on its next pull; warn-mode counts are noisy</td><td>works. Gate holds; mappings hold; verification covers all new CLI commits</td><td>works. Verification covers web commits too once they sign</td></tr><tr><td><b>CLI 0.20</b> (+ ref monotonicity)</td><td>works, but web lost-updates surface as rollback warnings (correct, noisy)</td><td>same noise until <code>pushIfMatch</code></td><td>clean</td></tr><tr><td><b>CLI format-2-aware</b> (+ 32-hex ids on raised vaults)</td><td>raised vaults: web reads fine, writes 12-hex ids (mixed, fine), <b>erases the gate</b> → an old CLI may then be let in and crash</td><td>raised vaults hold their gate; old CLIs refused by name only if they are ≥ 0.19, older ones crash</td><td>clean</td></tr></tbody></table></div>
+<h2 id="5-the-two-scenarios-behind-the-question">5. The two scenarios behind the question</h2>
+<p><b>"A vault pushed by the new CLI must work in the old web UI and the old CLI."</b> It does, for everything in §1 and §2. Nothing in those batches writes a byte an old reader cannot parse: <code>author_key_id</code> is an existing field, the gate fields are dropped by old readers, the index merge produces the same schema, canonical signatures are opaque base64 to everyone. The only future write an old reader cannot parse is a 32-hex object id, and that is §3, gated.</p>
+<p><b>"It is fine if the web UI overwrites and we lose a little mapping."</b> Agreed, with the precise statement of the loss: the web overwrite loses <i>other branches' index entries</i>, which is what it loses today, and from 0.19 the next CLI pull restores them. Two things it must not be allowed to lose silently: a <i>raised</i> gate (so raising a vault to format 2 waits for the web index fix) and a <i>required</i> signature policy (same). Both fail open rather than closed, so the failure mode is "back to today", never "vault unusable".</p>
+<h2 id="6-order-with-the-dependency-each-step-actually-has">6. Order, with the dependency each step actually has</h2>
+<ol><li><b>Now:</b> merge the branch; release. No dependency.</li><li><b>0.19:</b> gate (read/preserve/owner-write), pull index refresh and merge, CAS index upload, warn-mode verification in <code>fsck</code> and <code>history log --verify</code>, hint fix, migrate guard. No dependency: everything fails open against today's web UI and old CLIs.</li><li><b>Web index fix ships</b> (their §3.1). From then on gates and mappings hold.</li><li><b>0.20:</b> ref monotonicity, after the web shells use <code>pushIfMatch</code>.</li><li><b>Format 2:</b> after the web <code>computeObjectId</code> change and once the fleet of CLIs writing to a vault is ≥ 0.19 (the gate can refuse by name only from 0.19 up). Raise vaults one at a time.</li><li><b><code>required</code> signatures:</b> after per-device web keys.</li></ol>
+<div class="pagenav"><a href="../articles/git-to-sgit-security-mapping.html">← Review: &quot;Git security features → sgit: a one-way mapping</a><a href="../articles/history-integrity-cost-and-compatibility.html">History integrity: what the three fixes would cost, and how to ship them without a vault move →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/compatibility-matrix-cli-web-ui-api.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/compatibility-matrix-cli-web-ui-api.md"><code>admin/content/articles/compatibility-matrix-cli-web-ui-api.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/compatibility-matrix-cli-web-ui-api.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

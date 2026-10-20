@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The brief for cli.sgit.ai, 20 October 2026 · cli.sgit.ai</title>
+<meta name="description" content="The voice brief that started this site, published in full as transcribed, with the request that came with it: make cli.sgit.ai the CLI&#x27;s main documentation, move the most technical content here from sgit.ai, and publish the CLI team&#x27;s research as articles.">
+<link rel="canonical" href="https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html">
+<link rel="alternate" type="text/markdown" href="../briefs/2026-10-20__cli-sgit-ai-first-brief.md">
+<meta property="og:title" content="The brief for cli.sgit.ai, 20 October 2026">
+<meta property="og:description" content="The voice brief that started this site, published in full as transcribed, with the request that came with it: make cli.sgit.ai the CLI&#x27;s main documentation, move the most technical content here from sgit.ai, and publish the CLI team&#x27;s research as articles.">
+<meta property="og:url" content="https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../briefs/index.html">Briefs</a> / The brief for cli.sgit.ai, 20 October 2026</div>
+<h1 id="the-brief-for-cli-sgit-ai-20-october-2026">The brief for cli.sgit.ai, 20 October 2026</h1>
+<p><b>Status:</b> accepted; the first version of this site (v0.1.0) was built from it the same day. <b>Written by:</b> Dinis Cruz, spoken, transcribed by Otter.ai. <b>Published:</b> in full and as transcribed, including the transcription's errors. What the errors stand for, and anything the build found the brief to be wrong about, is in <a href="../admin/corrections.html">the corrections file</a>, not here.</p>
+<h2 id="the-brief-as-transcribed">The brief, as transcribed</h2>
+<blockquote><p>Okay, so this is now a brief for the the agent that is going to build the API website for the CLI, which is going to be at cli.sketo.ai, and the idea is to start to make this the main documentation repo for the CLI. At the moment, we're kind of using Escrip. AI, but I think we need to start moving some of that content here, or at least the most technical and the most detailed and stuff like that, and also to provide a way for the creation of specific articles that top that focus on specific topics and specific sort of implementations or specific ideas, which is something that we've talked before and we have we start doing in other websites, which is basically the place where we start to capture it first is almost like our new generation of briefs, which work better here, right? So then that's a lovely place to put that stuff. So I think to start with, let's just move the content because the CLI now starts to have a whole set of use cases that are even independent, and the Skit is more of the commercialization, the over umbrella, because we now have a lot of excrete usages, usages, right? So we can refactor it like that.</p></blockquote>
+<p><i>Transcribed by https://otter.ai</i></p>
+<h2 id="the-request-that-came-with-it-the-initial-prompt">The request that came with it (the initial prompt)</h2>
+<blockquote><p>Hi can you take a look at this brief and create the first version of this website.</p>
+<p>Also, take a look at a lot of the content in sk.ai that we can move, and also look at the content that is already on the main repo for the CLI, which that has been having a bunch of articles published that we should now also publish here as articles as the latest research capabilities, sorry, research topics.</p>
+<p>please push to dev once you completed the first setup</p>
+<p>see guidance at sgit.ai for how to setup these websites</p></blockquote>
+<h2 id="what-the-brief-asks-for-read-plainly">What the brief asks for, read plainly</h2>
+<ol><li><b>cli.sgit.ai becomes the main documentation for the sgit CLI.</b> sgit.ai stays the umbrella: the project, the vault platform, the commercial side.</li><li><b>Move the most technical and detailed content here from sgit.ai.</b> The CLI now has use cases of its own, independent of the rest of the project.</li><li><b>A place for articles that each take one topic, one implementation or one idea as far as it goes.</b> These are "our new generation of briefs", and they are captured here first.</li><li><b>Publish the research the CLI repository already holds</b> as those articles.</li><li><b>Follow the estate's guidance for setting up a site</b>, and push the first version to <code>dev</code>.</li></ol>
+<h2 id="how-the-first-version-answers-it">How the first version answers it</h2>
+<div class="tablewrap"><table><thead><tr><th>Ask</th><th>Where it is</th></tr></thead><tbody><tr><td>1. The CLI's main documentation</td><td><a href="../docs/index.html">the docs</a> and <a href="../reference/index.html">the command reference</a>, every command generated from the CLI's own parser</td></tr><tr><td>2. Move the technical content</td><td>95 pages in all; the ones that moved, with where each was: <a href="../admin/moved.html">What moved from sgit.ai</a></td></tr><tr><td>3. A place for topic articles</td><td><a href="../articles/index.html">Research</a>; publishing one is adding one file, the contract is in <code>admin/content/articles/README.md</code></td></tr><tr><td>4. The CLI repository's research</td><td>23 articles, each with its source path and commit in the CLI repository</td></tr><tr><td>5. The estate's guidance</td><td><a href="https://sgit.ai/docs/guidance/repositories.html">Every sgit repository</a>, followed item by item on <a href="../admin/index.html">the engineering page</a>, with what is not done yet in <a href="../admin/reality.html">the reality file</a></td></tr></tbody></table></div>
+
+<p class="small dim" style="margin-top:2rem">This page as <a href="../briefs/2026-10-20__cli-sgit-ai-first-brief.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/briefs/2026-10-20__cli-sgit-ai-first-brief.md"><code>admin/content/briefs/2026-10-20__cli-sgit-ai-first-brief.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../briefs/2026-10-20__cli-sgit-ai-first-brief.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

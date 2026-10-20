@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Partial clones — a folder scope and a history depth (6 Oct 2026) · cli.sgit.ai</title>
+<meta name="description" content="Cloning just the folders an agent reads and writes, read and write, plus a shallow mode, without changing the full clone: the Merkle-spine idea and the measurements.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/partial-clones-scope-and-depth.html">
+<link rel="alternate" type="text/markdown" href="../articles/partial-clones-scope-and-depth.md">
+<meta property="og:title" content="Partial clones — a folder scope and a history depth (6 Oct 2026)">
+<meta property="og:description" content="Cloning just the folders an agent reads and writes, read and write, plus a shallow mode, without changing the full clone: the Merkle-spine idea and the measurements.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/partial-clones-scope-and-depth.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / Partial clones — a folder scope and a history depth (6 Oct 2026)</div>
+<h1 id="partial-clones-a-folder-scope-and-a-history-depth-6-oct-2026">Partial clones — a folder scope and a history depth (6 Oct 2026)</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-06 · 23:01 UTC</span><span class="k">Kind</span><span class="v">design</span><span class="k">Topics</span><span class="v"><span class="chip">clone</span> <span class="chip">partial-clones</span> <span class="chip">agents</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md"><code>team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Branch:</b> <code>claude/charming-babbage-5hzcxq</code> · <b>Vault measured:</b> <code>y8pwtjlw</code> (626 commits, 8,013+ trees, 9,404 blobs, 18,720 objects at HEAD time) <b>Ask:</b> agents that know which folders they read and write should be able to clone just those, read <i>and</i> write; plus a shallow (no-history) mode; and none of it may change the full clone.</p>
+<h2 id="1-the-idea-in-one-paragraph">1. The idea, in one paragraph</h2>
+<p>The vault is a Merkle tree: a commit names a root tree, a tree names its children by id. To hold <code>mail/crm.riskmandate/</code> a clone needs the root tree, the <code>mail/</code> tree (the <i>spine</i>) and the folder's own subtree; everything else is an entry it keeps by id ("opaque"). To commit a change inside the folder, rebuild the folder's subtree from disk, then each tree on the spine with one entry replaced, and keep the siblings' ids — exactly what the whole-vault builder would produce, byte for byte, because tree encryption is deterministic (a test proves the rebuilt root id equals the full builder's). Push uploads the new commit, the spine trees, the changed subtree and the new blobs; the server needs nothing new. Two scoped clones in different folders cannot conflict: out-of-scope entries are always the remote's, by id.</p>
+<h2 id="2-what-was-built">2. What was built</h2>
+<div class="tablewrap"><table><thead><tr><th>piece</th><th>where</th></tr></thead><tbody><tr><td>scope model (paths + boundaries, pure path logic)</td><td><code>storage/Vault__Scope.py</code> (re-exported from <code>core/scope/</code>)</td></tr><tr><td>opaque entries in the tree builder (<code>build</code>, <code>build_from_flat</code>, <code>opaque=</code>), canonical entry order</td><td><code>storage/Vault__Sub_Tree.py</code></td></tr><tr><td>scoped flatten → (flat, opaque); level-by-level fetch walk that only opens held + spine folders</td><td><code>storage/Vault__Scoped_Tree.py</code></td></tr><tr><td>local config: <code>scope_paths</code>, <code>shallow_boundaries</code> (empty on full clones)</td><td><code>schemas/Schema__Local_Config.py</code></td></tr><tr><td>clone: <code>--depth N</code>, <code>--path F</code> (repeatable); depth-limited commit walk records boundaries; scoped tree walk; scoped checkout; bulk sweep skipped for partial clones</td><td>clone steps, <code>Vault__Sync__Clone</code>, <code>CLI__Main</code>/<code>CLI__Vault</code></td></tr><tr><td>commit / write_file: scoped flatten + opaque rebuild; writes outside scope refused with the path</td><td><code>Vault__Sync__Commit</code></td></tr><tr><td>status: scoped diff; chain fetch stops at boundaries</td><td><code>Vault__Sync__Status</code></td></tr><tr><td>pull: scoped fetch (held folders only), merge within scope with theirs' opaque entries, commit walk stops at boundaries (push's implicit pull used to deepen a shallow clone to the root)</td><td><code>Step__Pull__Fetch_Missing</code>, <code>Step__Pull__Merge</code>, <code>Vault__Sync__Pull</code></td></tr><tr><td>push: scoped flatten, trees/blobs the clone never fetched are skipped (unchanged, on the server), cache reconcile skipped</td><td><code>Vault__Sync__Push</code>, <code>Vault__Batch</code></td></tr><tr><td>widen (<code>sgit fetch &lt;folder&gt;</code>), unshallow (<code>sgit fetch --unshallow</code>), <code>require_whole</code></td><td><code>core/actions/scope/Vault__Sync__Scope.py</code></td></tr><tr><td>guard on <code>check fsck</code>, <code>dump</code>, <code>publish</code>, <code>vault move</code></td><td><code>cli/CLI__Scope_Guard.py</code></td></tr><tr><td>branch switch keeps scope fields</td><td><code>Vault__Branch_Switch</code></td></tr></tbody></table></div>
+<h2 id="3-numbers-on-the-real-vault-this-session-through-its-egress-">3. Numbers on the real vault (this session, through its egress gateway)</h2>
+<div class="tablewrap"><table><thead><tr><th>clone</th><th>objects</th><th>store</th><th>files</th><th>wall</th></tr></thead><tbody><tr><td>full (bulk sweep, unchanged)</td><td>18,720</td><td>173 MB</td><td>3,442</td><td>81 s</td></tr><tr><td><code>--path mail/crm.riskmandate --depth 1</code></td><td>429</td><td>3.2 MB</td><td>365</td><td><b>14 s</b></td></tr><tr><td><code>--path docs --path conductor --depth 1</code></td><td>20</td><td>—</td><td>15</td><td><b>5 s</b></td></tr><tr><td>widen the CRM clone with <code>docs</code></td><td>+10</td><td>—</td><td>+8</td><td>2 s</td></tr></tbody></table></div>
+<p>On the scoped clone: <code>status</code> in sync; <code>history log</code> shows HEAD and stops; <code>check fsck</code> refuses naming what the clone holds and how to widen.</p>
+<h2 id="4-no-side-effects-on-the-full-clone-how-that-was-held">4. "No side effects on the full clone" — how that was held</h2>
+<ul><li>Every scope branch is behind <code>scope.is_scoped()</code> / <code>is_partial()</code>; a whole-vault clone takes the exact calls it took before (<code>flatten</code>, <code>build</code>, <code>build_from_flat</code>, <code>_fetch_missing_objects</code> without the new kwarg, <code>checkout</code>). The existing pull-step tests use a fake sync client with no crypto and no new kwargs, and they pass unchanged — which is the proof the full path is not touched.</li><li><code>Vault__Sub_Tree.build*</code> with no opaque entries runs the old code; with them, the entry order is re-established to files-then-folders by name so ids match the whole-vault builder.</li><li>Real vault, before and after: a full clone gives the same 18,720 objects, empty scope and boundary in its config, and <code>fsck</code> reports the same 41 missing objects.</li><li><code>pytest tests/unit/ -n auto</code>: 3,932 passed (21 new partial-clone tests on two real clones in the in-memory API: read, write, delete, refuse-outside-scope, write_file, fast-forward and three-way pulls with changes outside scope, two scoped agents never conflicting, dirty edit survives a pull, depth-1 round trips, unshallow, scoped+shallow, widen, guards, branch switch, and a full-clone-unchanged check; 8 storage tests on the scoped tree).</li></ul>
+<h2 id="5-caveats-and-follow-ups">5. Caveats and follow-ups</h2>
+<ul><li>A folder renamed by another agent silently leaves a clone's scope (names are decrypted along the spine). Pull should notice a held path vanishing and say so. Not done.</li><li>Scoped clones cannot see blobs missing elsewhere; the push fix from earlier today should ship with this (same branch).</li><li><code>history log</code> on a shallow clone ends with "history stops here: shallow clone … sgit fetch --unshallow" instead of an <code>[object not found locally]</code> line.</li><li>A shared, immutable object cache across clones on one machine would make every agent's clone after the first a local copy — the browser-style cache idea; separate change.</li><li><code>clone-branch</code> (thin) still walks all commits serially; with <code>--depth 1</code> on <code>sgit clone</code> there is little reason left to use it.</li></ul>
+<h2 id="6-deep-review-before-the-pr-to-main-same-day-evening">6. Deep review before the PR to main (same day, evening)</h2>
+<p>Two passes over <code>origin/main...origin/dev</code> after the merge: a code review (bugs, side effects) and a security review (new exploitable issues only, &gt;80 % confidence). CI on dev was green first (run 37544894784 on ddee8a4).</p>
+<h3 id="security-review-no-new-vulnerability-three-hardening-gaps-cl">Security review — no new vulnerability; three hardening gaps closed</h3>
+<p>No high-confidence exploitable issue was introduced. Three pre-existing "trust the host / trust the committer" gaps that the new fetch paths exercise more were closed anyway:</p>
+<div class="tablewrap"><table><thead><tr><th>Gap</th><th>Fix</th><th>Test</th></tr></thead><tbody><tr><td>A batch read wrote whatever <code>file_id</code> the host answered with, and the id names the on-disk path</td><td><code>_batch_read_chunk</code> keeps only requested ids</td><td><code>Test_API__Ignores_Unrequested_File_Ids</code> (real local HTTP server answering with <code>local/config.json</code> and an extra object)</td></tr><tr><td><code>Vault__Verified_Write.save</code> accepted any contained path (<code>local/config.json</code>, a working-copy file)</td><td>store-leaf allow-list <code>STORE_FILE_ID</code> + protected-dir check, before the content-address check</td><td><code>Test_Verified_Write__Store_Paths_Only</code></td></tr><tr><td>Pull let an untracked file be overwritten when the tree entry's <code>content_hash</code> CLAIMED the same content</td><td>proven from the decrypted blob (<code>blob_hash_fn</code>), the claim is ignored</td><td><code>test_commit_whose_entry_hash_lies_cannot_overwrite_an_untracked_file</code> (a commit built with a lying hash)</td></tr></tbody></table></div>
+<h3 id="code-review-15-findings-what-changed">Code review — 15 findings, what changed</h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Finding</th><th>Resolution</th></tr></thead><tbody><tr><td>1</td><td><code>Vault__Head_Paths</code> flattened the whole tree on a scoped clone → tracked-wins rule broke, a tracked file under an ignored dir was dropped by the next commit</td><td>scoped flatten; test</td></tr><tr><td>2</td><td>read-only scoped clones: status/checkout used the whole tree</td><td>scoped in <code>_status_read_only</code> and the RO checkout step; test</td></tr><tr><td>3</td><td>sparse push could try to load a blob it never fetched</td><td>collector skips any blob not local</td></tr><tr><td>4</td><td><code>sgit ls</code>/<code>fetch</code>/<code>cat</code> on a scoped clone walked a sibling's tree and failed</td><td><code>_get_head_flat_map</code> scoped; test</td></tr><tr><td>5</td><td>other commands crash with "vault may be corrupted — run fsck" on a partial clone</td><td>friendly error naming the scope + how to widen (generic, for every command); test</td></tr><tr><td>6</td><td>branch-only push re-uploaded the whole clone-branch history each time</td><td>stops at the server's clone head; blobs the server has are not re-sent — and the ref CAS was matching the LOCAL ref bytes, so the ref write conflicted on every push after a commit (silent on the in-memory API, a 409 on the real one): now matches the server's bytes; test checks the server ref and that nothing re-sent is a blob</td></tr><tr><td>7</td><td>status walked the whole local history on every call</td><td>walk stops at known-complete heads; test (0 object reads when up to date; N when N behind); the truncated-fetch case is covered by the existing lower-bound test</td></tr><tr><td>8</td><td>widen overwrote files already on disk under the new folder</td><td>refuses naming the clash; held folders untouched; test</td></tr><tr><td>9</td><td>one failing bulk-sweep chunk aborted the clone</td><td>fail-soft per chunk; test</td></tr><tr><td>10</td><td>sweep counters unsynchronised across threads</td><td>lock + summed futures</td></tr><tr><td>11</td><td>duplicate parents counted against the fetch limit</td><td>deduped</td></tr><tr><td>12</td><td><code>CLI__Scope_Guard</code> duplicated <code>require_whole</code></td><td>delegates</td></tr><tr><td>13</td><td>pull-step call shape</td><td>kept (the fake-client tests prove the full path is unchanged)</td></tr><tr><td>14</td><td>guard re-read the config</td><td>config read once in the merge step, passed through</td></tr><tr><td>15</td><td><code>Vault__Scope</code> held raw <code>list[str]</code></td><td><code>Safe_Str__File_Path</code> / <code>Safe_Str__Commit_Id</code> with validation (<code>..</code>, absolute, non-object ids refused; nested folders collapse)</td></tr></tbody></table></div>
+<h3 id="what-the-new-tests-then-found-would-have-shipped-otherwise">What the new tests then found (would have shipped otherwise)</h3>
+<ul><li><b>Typed boundary ids broke unshallow and the status boundary stop.</b> <code>Safe_Str</code> hashes differently from the equal <code>str</code> (<code>'x' in {Safe_Str('x')}</code> is False) and <code>os.path.join</code> sanitises it (<code>/</code> → <code>_</code>), so once the config fields became Safe types the boundary commit was "not in the local store" and <code>--unshallow</code> on a scoped shallow clone fetched nothing. <code>Vault__Scope.boundary_ids()</code> / <code>folders()</code> hand consumers plain strings; a test pins both behaviours. Worth remembering for every Safe_Str that reaches a path or a set.</li><li>The first status rewrite assumed "a local commit has local ancestors", which a truncated fetch (limit hit) violates; the walk now stops only at known-complete heads.</li><li>Branch-only push's ref CAS bug above (pre-existing, invisible to the in-memory API).</li></ul>
+<p><code>pytest tests/unit/ -n auto</code>: 3,953 passed (21 new review tests under <code>tests/unit/review/</code>).</p>
+<h3 id="follow-up-7-oct-the-merge-of-main-into-dev-and-a-ci-flake-th">Follow-up (7 Oct): the merge of main into dev and a CI flake that was a real leak</h3>
+<p>Merging <code>main</code> into <code>dev</code> for PR #7 conflicted only on the release bot's version bumps (dev v0.17.3, main v0.17.0; dev kept). CI on that merge then failed on <code>test_Dev__Tree__Graph__Happy::test_analyse_temp_dir_cleaned_up</code>, which diffed <code>/tmp</code> before and after <code>analyse()</code> and so could see any vault another xdist worker was creating at that moment. Rewriting it to watch the <code>mkdtemp</code> calls made inside the call exposed something real: every <code>sgit clone</code> (all five entry points) creates <code>/tmp/sgit-clone-*</code> as the workflow workspace's root, the runner removes the workspace inside it on success, and the root stays — one empty dir per clone, 3,881 of them in this sandbox. <code>_run_clone_workflow</code> now removes the root in its <code>finally</code>, success or failure; a review test clones three ways and checks none of the roots survive.</p>
+<div class="pagenav"><a href="../articles/history-integrity-cost-and-compatibility.html">← History integrity: what the three fixes would cost, and how to ship them without a vault move</a><a href="../articles/pull-discarded-uncommitted-edits.html">Fix — sgit pull silently discarded uncommitted edits to tracked files →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/partial-clones-scope-and-depth.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/partial-clones-scope-and-depth.md"><code>admin/content/articles/partial-clones-scope-and-depth.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/partial-clones-scope-and-depth.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+# cli.sgit.ai
+
+> The documentation for sgit, the command-line tool for encrypted vaults (pip install sgit-ai; entry
+> points `sgit` and `sgit-ai`): every command, generated from the CLI's own parser; the HTTP API it is a
+> client of; the guides; and the CLI team's research, published as articles.
+
+Site version: v0.1.0 · command reference generated from sgit-ai v0.23.0 (158 commands) · 95 pages.
+
+Every page below is markdown, generated from the same source as the HTML page at the same path (swap
+`.md` for `.html`). Links inside the markdown point at markdown. Every page in one document: /llms-full.txt.
+
+Notes for agents:
+- The command reference is the code's own account of itself: /reference/sgit-cli-reference.json is the
+  output of `sgit help all --format json` (schema sgit-cli-reference-v1). Diff two releases' JSON to see
+  exactly what changed. Your installed version answers the same question: `sgit help all --format json`.
+- Never write a vault key into a tracked file. Read keys may be published; vault keys never.
+- The project, the vault platform and the network of sites: https://sgit.ai/llms.txt
+
+## Home
+- [cli.sgit.ai](/index.md): The documentation for sgit, the command-line tool for encrypted vaults: every command generated from the CLI's own parser, the HTTP API it is a client of, the guides, and the CLI team's research as articles.
+
+## Get started
+- [Docs](/docs/index.md): Every page of the sgit CLI documentation in reading order: getting started, the guides, and the security pages, with the command reference and the HTTP API alongside.
+- [What is sgit](/docs/what-is-sgit.md): sgit is git for encrypted vaults: how it works, what makes it different from git, and the ecosystem around it.
+- [Installation](/docs/installation.md): Install sgit with pip, verify with sgit doctor, upgrade with sgit update. Python 3.11+, two runtime dependencies.
+- [Quickstart](/docs/quickstart.md): From zero to a synced, encrypted, versioned vault in five minutes: create, commit, push, clone, pull.
+- [sgit for git users](/docs/sgit-for-git-users.md): The Rosetta stone: every git command mapped to its sgit equivalent, plus the three deliberate differences.
+- [The two-branch model](/docs/two-branch-model.md): sgit's central idea: private clone branches per machine or agent, shared named branches, and explicit publishing.
+- [When NOT to use sgit](/docs/limitations.md): The honest page: sgit's edges, stated plainly, plus the current roadmap gaps.
+
+## Guides
+- [Partial clones: a folder scope and a history depth](/docs/partial-clones.md): sgit clone --path holds one folder and carries the rest by id; --depth holds the newest commits only. Measured on a 600-commit vault: one folder in 14 s against 80 s for the whole vault. The rules, widening with sgit fetch, the commands that need a full clone, and the two edges.
+- [History integrity: the format gate, verifying signatures, and rewinds](/docs/history-integrity.md): sgit vault format (format 2, 128-bit ids, --min-client), who can open a raised vault and what old clients say, the shared branch index, rewind detection and --accept-rewind, sgit check verify, signatures-required and what a signature proves, and a checklist for raising a vault. For sgit-ai 0.21.0.
+- [Working with AI agents](/docs/agents.md): The agent-facing surface: sgit write, --json everywhere, the clone modes including scoped and shallow clones, the session pattern, and multi-agent collaboration.
+- [Agents sharing one vault](/docs/agents-sharing-one-vault.md): The loop for a team of agents on one vault with sgit-ai 0.18.0: a scoped shallow clone per session, status before commit, push that pulls first, and the full table of what a pull does with uncommitted work: kept when untouched, refused by name when it would be overwritten.
+- [Sending messages between vaults](/docs/vault-messaging.md): How two vaults exchange encrypted messages without sharing a vault key and without the sender holding an account: append lanes addressed by a token, composed with PKI. Worked example in CLI, curl and sg.append, with the one step that is not yet wired marked PROPOSED.
+- [Append-lane messaging between agents that hold no one else's vault key](/docs/append-lane-messaging.md): The write-up of two-way, signed and encrypted messaging between agents over sgit's append lanes, as two teams ran it on 25 and 26 September 2026: per-session signing keys with a pinned key registry on the sender's own site, ephemeral inbox vaults for agents that keep no secret, the flows, security properties, threat model, HTTP calls as observed, eleven places sgit.ai's docs differed, and recommendations for sgit. Relayed by sgit.newsroom.sgit.ai.
+- [Self-hosting a vault server for agents](/docs/self-host-for-agents.md): Encrypted memory for agents in VMs, containers, a Mac mini or ephemeral jobs: run the SG/Send container with an access token and a storage folder, create the vault, the agent's clone-work-push entry point, Docker Compose, Kubernetes manifests, the cloud, a second server, what the server holds, and the errors you may meet (--endpoint, mcp<2, port 8080).
+- [Send a vault key to the registry](/docs/send-a-vault-key.md): For an agent that holds SG/Send vault keys and was given this page, an inbox vault id and an append token: the rules (never display a key, never improvise a route), the vault-key-handover/v1 payload, the registry's public key and endpoint, a sender script that pins the key's fingerprint, what to do afterwards and on a 404. The id and the token are never published.
+- [Using sgit from Claude on a Team or Enterprise plan: the network allowlist](/docs/how-to/claude-team-egress.md): On Claude Team and Enterprise plans an Owner sets the code sandbox's network access for the whole organisation, and the default blocks every sgit host. Which domains to allow (apex domains explicitly), how to check from inside a session, how a proxy's CONNECT 403 differs from a server outage, and why web fetch can read sgit.ai while the shell cannot.
+- [Update sgit-ai to 0.21.0](/docs/update-to-0-21-0.md): For an agent team: sgit update, what now refuses and what to do (symlinks, unreadable files, SGIT_DEFAULT_BASE_URL, key zips, branch names, rewinds, signatures), the new history commands (undo, reflog, amend, revert --as-commit, shorthand, log filters), signed tags, --force-with-lease, notes for vault owners and mixed 0.20/0.21 teams. Covers 0.19.0 and 0.20.0. Published 11 October 2026.
+- [Update sgit-ai to 0.18.0](/docs/update-to-0-18-0.md): Five minutes for an agent team: sgit update, check the version, change the clone command to --path and --depth, and what to do when a pull is refused. Published 7 October 2026.
+
+## Security
+- [Security model](/security/index.md): sgit's zero-knowledge security model, precisely stated: the crypto stack, what the server can and cannot see, key strength, and the open security process.
+- [Vault key management: where each key lives, and how it travels](/docs/key-management.md): The reference for sgit-ai v0.20.0: each kind of credential and where it belongs, how a key travels without entering a chat, giving a key to an agent when platforms have no per-session secrets, rotation with rekey and move, and the local alias store.
+- [Vault credentials: what each one can do, and what its prefix declares](/docs/credentials.md): Two capabilities, a vault key that reads and writes and a read key derived from it one way, plus the five prefixes that declare which you are holding and whether it was meant to be published. Why sgit_public_read_ is the form for an open vault, why publishing one under sgit_private_read_ is a mislabel that an agent will correctly refuse, and why the word matters when the bytes are identical.
+- [Keys, signatures and encrypting to someone else](/docs/pki.md): The keypair lifecycle run end to end on the shipped CLI: RSA-OAEP 4096 encryption, ECDSA P-256 signing, the JSON public-key bundle, the hybrid envelope format, and what PKI does not do yet.
+
+## Command reference
+- [Command reference](/reference/index.md): Every sgit command, subcommand, argument and option, generated from the CLI's own parser (sgit help all --format json), grouped by what it is for.
+- [sgit branch](/reference/branch.md): Branch management
+- [sgit cache](/reference/cache.md): Declare cached paths (fast single-request reads)
+- [sgit cat](/reference/cat.md): Decrypt and print a vault file to stdout
+- [sgit check](/reference/check.md): Vault integrity checks
+- [sgit clone](/reference/clone.md): Clone a vault from the remote server
+- [sgit clone-branch](/reference/clone-branch.md): Thin clone: full commit history + HEAD trees/blobs only. Note: only HEAD is fully fetched — run 'sgit fetch <path>' or 'sgit pull' to access older history.
+- [sgit clone-headless](/reference/clone-headless.md): Credentials-only clone: derive keys, write config, no data
+- [sgit clone-range](/reference/clone-range.md): Clone a specific commit range (range_from..range_to)
+- [sgit commit](/reference/commit.md): Commit local changes to the clone branch
+- [sgit create](/reference/create.md): Create a new vault and push it to the server in one step
+- [sgit dev](/reference/dev.md): Dev/perf instrumentation tools (sgit dev <tool>)
+- [sgit doctor](/reference/doctor.md): Check remote connectivity and configuration
+- [sgit fetch](/reference/fetch.md): Fetch file content on demand (sparse clone)
+- [sgit file](/reference/file.md): File operations (cat, ls, write)
+- [sgit help](/reference/help.md): Show help (use `sgit help all` for full surface)
+- [sgit history](/reference/history.md): Commit history and diffs
+- [sgit init](/reference/init.md): Create a new empty vault and register it on the server
+- [sgit inspect](/reference/inspect.md): Read-only vault inspection tools
+- [sgit ls](/reference/ls.md): List vault files with fetch status
+- [sgit merge-abort](/reference/merge-abort.md): Abort an in-progress merge and restore working tree
+- [sgit migrate](/reference/migrate.md): Run vault data migrations
+- [sgit pki](/reference/pki.md): PKI key management and encryption
+- [sgit publish](/reference/publish.md): Generate the plaintext surface for static publishing (.sg_vault/publish/ — the only path that changes)
+- [sgit pull](/reference/pull.md): Pull named branch changes and merge into clone branch
+- [sgit push](/reference/push.md): Push clone branch to the named branch
+- [sgit remote](/reference/remote.md): Manage vault remotes (alias for `sgit vault remote`)
+- [sgit resolve](/reference/resolve.md): Resolve merge conflicts per file or all at once
+- [sgit serve](/reference/serve.md): Run this vault on your machine: the vault UI + API in a container (Docker, Podman, Apple container), or --static
+- [sgit status](/reference/status.md): Show uncommitted changes in working directory
+- [sgit update](/reference/update.md): Update sgit-ai to the latest version
+- [sgit vault](/reference/vault.md): Vault management and credential store
+- [sgit version](/reference/version.md): Show sgit-ai version
+- [sgit write](/reference/write.md): Write a file directly to vault HEAD (agent workflow)
+
+## HTTP API
+- [The HTTP API](/api/index.md): The protocol surface behind sgit: base URL, the capability model, and the reference for vault objects, append lanes, authentication headers and error codes. Built from a code-verified audit at v0.33.54, with unresolved endpoints labelled rather than guessed at.
+- [Authentication](/api/authentication.md): The six authentication headers, what each one gates, and the hash-comparison model: the server stores SHA-256 of every capability key and never holds a raw key or a private key. Includes why vault reads are open by default.
+- [Vault objects](/api/vault-objects.md): The pointer store: read, write, batch, destroy and presigned endpoints, the caching contract that separates immutable content-addressed objects from mutable refs, and the storage layout behind every vault.
+- [The transfer API, one encrypted handover, one link](/api/transfers.md): The other API family on this host: a single encrypted payload uploaded once and shared as one link. The two secrets that must not be confused, the SGMETA envelope that keeps the filename off the server, the three calls, revocation that is opt-in at create time only, and when a transfer beats a vault.
+- [Append lanes](/api/append-lanes.md): The six append endpoints) the write-only vault-to-vault message transport. Four separated capabilities, the blind write response, server-assigned sortable filenames, idempotent mark-processed, and the limits.
+- [Errors and limits](/api/errors.md): 400, 403, 413 and 507: what each means, why a malformed token returns 400 rather than 403, the input patterns enforced before storage is reached, and every documented ceiling.
+
+## Research
+- [Research](/articles/index.md): Articles from the sgit CLI team, newest first: measurements, designs, reviews, decisions and fixes, each taking one topic as far as the evidence goes, with its source in the CLI repository.
+- [sgit is a standard, not a server: everything in a vault is one hash away](/articles/sgit-is-a-standard-one-hash-away.md): A vault is a set of files laid out by a convention, every immutable object named by the hash of its own ciphertext, so the server is the least interesting part and anything in the path can cache blindly.
+- [Response to "Scion and sgit" (newsroom.sgit.ai, article No. 141, v1.0.0)](/articles/response-to-scion-and-sgit.md): The CLI team's response to the newsroom's "Scion and sgit" article: what it gets right, the three factual errors, and the measurements from a 35k-object vault the article should have carried.
+- [One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many](/articles/one-vault-ten-agents-measured.md): What sgit does when the repository is big and the clients are many: the comms vault, 35,000 encrypted objects and ten agents, cloned eight ways and measured from a cloud sandbox.
+- [Response to "sgit issues found on 14 October 2026", and the comms-vault performance report](/articles/sgit-issues-2026-10-14.md): The issues reported on 14 October, each traced to its cause in the code, with what was fixed in the same push and what was left open.
+- [Security CI: a dedicated pipeline, and an AI review that can break the build](/articles/security-ci-and-ai-review.md): A dedicated security pipeline on every pull request, and a keyless AI security review that can break the build on anything new: why, how it is wired, and what it costs per reviewed change.
+- [AC-L-001 / TM-R36 — characters outside `[a-zA-Z0-9/\_.- ]` in paths: what really happens](/articles/non-ascii-paths-refuse-dont-rewrite.md): Characters outside a narrow set in a path are silently rewritten, so one vault gets two roots and a false push conflict. What really happens, reproduced, and a fix that raises an alarm instead of rewriting.
+- [`sgit serve`: container first. Options map and spike results](/articles/sgit-serve-container-first.md): The decision to run the SG/Send container image rather than re-implement the server: the runtimes supported (including Apple's container and Podman), the spike results, and phase 1 as built.
+- [`sgit serve`: running a vault locally — research and plan](/articles/sgit-serve-running-a-vault-locally.md): How to run a vault locally: the vault server's API inventory, the browser modes, when TLS is and is not needed, and how much plumbing sgit would need.
+- [Case study — a tool-assisted security review of sgit-ai 0.21.0 (round 1)](/articles/security-review-case-study.md): What each tool found in the round-1 security review of sgit-ai 0.21.0, with counts and cost: the skill vetting, the derived graph, 270 function records, 68 STRIDE threats and the insider overlay.
+- [Threat-modeling tools for an agent-driven review — Matt Adams' stack, the classics, and the house method](/articles/threat-modeling-tools.md): Threat-modeling tools for an agent-driven review: Matt Adams' stack (STRIDE GPT, the insider-threat model), the classics, and the house method, with the agent itself named as an actor.
+- [Agent skills for security review — what exists, what it would do here](/articles/security-review-skills.md): Agent skills for security review, each checked at its source, ranked by whether it brings a method, a tool with deterministic output, or vets the other skills, against this code base.
+- [Plan — the next security review of sgit-ai, with skills, and the review graphs it produces](/articles/security-review-plan.md): The plan for a tool-assisted, data-producing security review of one slice of sgit-ai: the code the zero-knowledge guarantee and the trust boundaries live in.
+- [Sealed files — a second encryption layer on top of a vault](/articles/sealed-files-layer.md): A second encryption layer on top of either vault mode: files sealed to named recipients with ECDH P-256, HKDF and AES-256-GCM, with the corrections from the sgit.ai agent's review.
+- [Native PKI vault mode — architecture map](/articles/native-pki-vault-mode.md): An architecture map for a second vault mode built on key pairs from the start, revised twice after review: sequence-number pinning, frozen hosts, concurrent writers.
+- [Read and write keys as PKI — design analysis](/articles/read-write-keys-as-pki.md): Are the read key and the write key really a public and a private key? Half right: the write key should become a signing key, and the read key cannot become a public key. What that would take.
+- [Branches check, test performance, test quality — 8 Oct 2026](/articles/branches-and-test-suite-review.md): An end-to-end check found that branches did not work. What was fixed behind it, the tests that now cover it, and a review of the test suite's speed and quality.
+- [Possible future features, after 0.21.0](/articles/future-features-after-0-21.md): The git-parity and security ideas that are not in 0.21.0, what each would take and what it could break, starting from the constraint that a new commit field breaks older clients' signature checks.
+- [Review: "Git security features → sgit: a one-way mapping](/articles/git-to-sgit-security-mapping.md): A review of the one-way map from git's security features to sgit, checked against the code: three corrections, one missing gap, and the four easy gaps closed for 0.21.0.
+- [Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out](/articles/compatibility-matrix-cli-web-ui-api.md): The CLI, the vault web UI and the SG/Send API across the integrity roll-out, step by step: what each version reads, writes and loses, under the rule that no client may break another still writing.
+- [History integrity: what the three fixes would cost, and how to ship them without a `vault move`](/articles/history-integrity-cost-and-compatibility.md): What signature verification, ref monotonicity and 128-bit ids would cost, measured on a real vault, and how to ship all three without a vault move.
+- [Partial clones — a folder scope and a history depth (6 Oct 2026)](/articles/partial-clones-scope-and-depth.md): Cloning just the folders an agent reads and writes, read and write, plus a shallow mode, without changing the full clone: the Merkle-spine idea and the measurements.
+- [Fix — `sgit pull` silently discarded uncommitted edits to tracked files](/articles/pull-discarded-uncommitted-edits.md): sgit pull silently discarded uncommitted edits to tracked files. The root cause, and the fix: git's rules for the working tree, applied before any write.
+- [Clone performance — the tree walk re-fetched shared sub-trees once per parent](/articles/clone-refetched-shared-subtrees.md): A clone stuck walking trees: the walk re-fetched shared sub-trees once per parent, 10,098 requests for 2,236 unique trees. The instrumented run and the fix.
+
+## Briefs
+- [Briefs](/briefs/index.md): The briefs this site was built from, each published in full as it was given, with its status. Corrections go in the corrections file, never into a brief.
+- [The brief for cli.sgit.ai, 20 October 2026](/briefs/2026-10-20__cli-sgit-ai-first-brief.md): The voice brief that started this site, published in full as transcribed, with the request that came with it: make cli.sgit.ai the CLI's main documentation, move the most technical content here from sgit.ai, and publish the CLI team's research as articles.
+
+## Site
+- [Engineering](/admin/index.md): How cli.sgit.ai is built, checked and released: one content folder, one generator, one gate, one version, deployed from dev by GitHub Pages; and how it measures against the estate's guidance for every sgit repository.
+- [Release history](/admin/versions.md): Every release of cli.sgit.ai, newest first, with one sentence on what changed and why.
+- [What moved from sgit.ai](/admin/moved.md): The pages that moved from sgit.ai to cli.sgit.ai on 20 October 2026, each at the same path, and why: the CLI now has use cases of its own, and sgit.ai is the umbrella.
+- [Reality](/admin/reality.md): What exists on cli.sgit.ai today, what does not, and what is only proposed. If it is not here, it does not exist, whatever a brief says.
+- [Corrections](/admin/corrections.md): Where the brief was wrong or unclear, what was found, and what was done instead. The brief itself is never edited.
+- [Participant disclosure](/about/participant.md): This site is written by the team that builds the sgit CLI, about its own tool. What that means for how to read it.

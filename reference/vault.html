@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit vault · cli.sgit.ai</title>
+<meta name="description" content="Vault management and credential store">
+<link rel="canonical" href="https://cli.sgit.ai/reference/vault.html">
+<link rel="alternate" type="text/markdown" href="../reference/vault.md">
+<meta property="og:title" content="sgit vault">
+<meta property="og:description" content="Vault management and credential store">
+<meta property="og:url" content="https://cli.sgit.ai/reference/vault.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl here" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc wide">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../reference/index.html">Command reference</a> / sgit vault</div>
+<h1 id="sgit-vault">sgit vault</h1>
+<p>Vault management and credential store.</p>
+<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.23.0. 41 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
+<pre><code class="lang-text">sgit vault</code></pre>
+<h2 id="subcommands">Subcommands</h2>
+<ul><li><a href="#vault-add"><code>sgit vault add</code></a>: Store a vault key under an alias</li><li><a href="#vault-attach"><code>sgit vault attach</code></a>: Bind a key to an existing .sg_vault/bare checkout (e.g. a fresh git clone of a one-repo vault)</li><li><a href="#vault-backup"><code>sgit vault backup</code></a>: Create a backup zip of the vault</li><li><a href="#vault-backups"><code>sgit vault backups</code></a>: List available backups for a vault</li><li><a href="#vault-clean"><code>sgit vault clean</code></a>: Remove working copy, keeping bare vault; or prune empty dirs</li><li><a href="#vault-delete-on-remote"><code>sgit vault delete-on-remote</code></a>: Hard-delete this vault from the server, keep local clone intact</li><li><a href="#vault-derive-keys"><code>sgit vault derive-keys</code></a>: Derive vault_id / read_key / write_key / file ids from a vault key or {read_key}:{vault_id} (plumbing: bare hex output, accepts sgit_private_/sgit_public_ prefixes)</li><li><a href="#vault-format"><code>sgit vault format</code></a>: Show or raise the vault format gate (object-id width, minimum client, features)</li><li><a href="#vault-ignore"><code>sgit vault ignore</code></a>: Show always-ignored folders, or deliberately remove a now-ignored folder from the vault</li><li><a href="#vault-info"><code>sgit vault info</code></a>: Show vault identity, remote, branch, and web URL</li><li><a href="#vault-list"><code>sgit vault list</code></a>: List stored vault aliases</li><li><a href="#vault-mirror"><code>sgit vault mirror</code></a>: Copy a published vault you cannot read (custody without access) — keyless, verifiable</li><li><a href="#vault-move"><code>sgit vault move</code></a>: Move vault to a new identity (key rotation + optional server move)</li><li><a href="#vault-rekey"><code>sgit vault rekey</code></a>: Replace the vault key and re-encrypt all content</li><li><a href="#vault-rekey-check"><code>sgit vault rekey check</code></a>: Show vault state without making changes</li><li><a href="#vault-rekey-commit"><code>sgit vault rekey commit</code></a>: Commit all files under the current key (run after init)</li><li><a href="#vault-rekey-init"><code>sgit vault rekey init</code></a>: Re-initialise vault with a new key (run after wipe)</li><li><a href="#vault-rekey-wipe"><code>sgit vault rekey wipe</code></a>: Wipe local encrypted store only (.sg_vault/ removed, files kept)</li><li><a href="#vault-remote"><code>sgit vault remote</code></a>: Manage vault remotes</li><li><a href="#vault-remote-add"><code>sgit vault remote add</code></a>: Add a remote</li><li><a href="#vault-remote-list"><code>sgit vault remote list</code></a>: List configured remotes</li><li><a href="#vault-remote-remove"><code>sgit vault remote remove</code></a>: Remove a remote</li><li><a href="#vault-remote-rename"><code>sgit vault remote rename</code></a>: Rename a remote</li><li><a href="#vault-remote-set-default"><code>sgit vault remote set-default</code></a>: Set the default remote</li><li><a href="#vault-remote-set-url"><code>sgit vault remote set-url</code></a>: Update the URL of a remote</li><li><a href="#vault-remote-show"><code>sgit vault remote show</code></a>: Show details of a remote</li><li><a href="#vault-remove"><code>sgit vault remove</code></a>: Remove a stored vault key</li><li><a href="#vault-restore"><code>sgit vault restore</code></a>: Restore a vault from a backup zip</li><li><a href="#vault-serve"><code>sgit vault serve</code></a>: Moved: sgit serve --static</li><li><a href="#vault-show"><code>sgit vault show</code></a>: Show vault key for an alias</li><li><a href="#vault-show-key"><code>sgit vault show-key</code></a>: Show the vault key for the current directory</li><li><a href="#vault-stash"><code>sgit vault stash</code></a>: Stash uncommitted changes</li><li><a href="#vault-stash-drop"><code>sgit vault stash drop</code></a>: Drop last stash without applying</li><li><a href="#vault-stash-list"><code>sgit vault stash list</code></a>: List stashes</li><li><a href="#vault-stash-pop"><code>sgit vault stash pop</code></a>: Restore last stash</li><li><a href="#vault-tag"><code>sgit vault tag</code></a>: Named, signed release pointers</li><li><a href="#vault-tag-create"><code>sgit vault tag create</code></a>: Tag a pushed commit (default: this clone's head)</li><li><a href="#vault-tag-delete"><code>sgit vault tag delete</code></a>: Delete a tag</li><li><a href="#vault-tag-list"><code>sgit vault tag list</code></a>: List the tags</li><li><a href="#vault-tag-show"><code>sgit vault tag show</code></a>: Show a tag and verify its signature</li><li><a href="#vault-uninit"><code>sgit vault uninit</code></a>: Remove vault metadata (.sg_vault/), creating an auto-backup zip first</li></ul>
+<h3 id="vault-add">sgit vault add</h3>
+<p>Store a vault key under an alias</p>
+<pre><code class="lang-text">sgit vault add [options] &lt;alias&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>alias</code></td><td>required</td><td>Human-friendly name for this vault</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--vault-key</code></td><td>Vault key (prompted if omitted)</td></tr></tbody></table></div>
+<h3 id="vault-attach">sgit vault attach</h3>
+<p>Bind a key to an existing .sg_vault/bare checkout (e.g. a fresh git clone of a one-repo vault)</p>
+<pre><code class="lang-text">sgit vault attach [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--read-key</code></td><td>Read key (with --vault-id) -&gt; read-only attach</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--vault-id</code></td><td>Vault id, required with --read-key</td></tr><tr><td><code>--vault-key</code></td><td>Full vault key -&gt; read-write attach</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr></tbody></table></div>
+<h3 id="vault-backup">sgit vault backup</h3>
+<p>Create a backup zip of the vault</p>
+<pre><code class="lang-text">sgit vault backup [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--include-key</code></td><td>Embed VAULT-KEY in the zip (opt-in; prompts unless --yes)</td></tr><tr><td><code>--label</code></td><td>Label suffix in the filename (default: manual)</td></tr><tr><td><code>--output-dir</code></td><td>Output directory (default: .sg_vault/backups/)</td></tr><tr><td><code>--yes</code></td><td>Skip confirmation prompts</td></tr></tbody></table></div>
+<h3 id="vault-backups">sgit vault backups</h3>
+<p>List available backups for a vault</p>
+<pre><code class="lang-text">sgit vault backups [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h3 id="vault-clean">sgit vault clean</h3>
+<p>Remove working copy, keeping bare vault; or prune empty dirs</p>
+<pre><code class="lang-text">sgit vault clean [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--empty-dirs</code></td><td>Remove empty directories left after file deletions (normal vault)</td></tr></tbody></table></div>
+<h3 id="vault-delete-on-remote">sgit vault delete-on-remote</h3>
+<p>Hard-delete this vault from the server, keep local clone intact</p>
+<pre><code class="lang-text">sgit vault delete-on-remote [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--json</code></td><td>Output result as JSON</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr><tr><td><code>--yes</code></td><td>Skip confirmation prompt</td></tr></tbody></table></div>
+<h3 id="vault-derive-keys">sgit vault derive-keys</h3>
+<p>Derive vault_id / read_key / write_key / file ids from a vault key or {read_key}:{vault_id} (plumbing: bare hex output, accepts sgit_private_/sgit_public_ prefixes)</p>
+<pre><code class="lang-text">sgit vault derive-keys &lt;vault_key&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>vault_key</code></td><td>required</td><td>Vault key ({passphrase}:{vault_id}), {read_key_hex}:{vault_id}, or either with its sgit_private_vault_/sgit_private_read_/sgit_public_read_ prefix</td></tr></tbody></table></div>
+<h3 id="vault-format">sgit vault format</h3>
+<p>Show or raise the vault format gate (object-id width, minimum client, features)</p>
+<pre><code class="lang-text">sgit vault format [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL</td></tr><tr><td><code>--feature</code></td><td>Add a feature flag (e.g. signatures-required); repeatable</td></tr><tr><td><code>--min-client</code></td><td>Refuse clients older than this version, by name</td></tr><tr><td><code>--remove-feature</code></td><td>Remove a feature flag; repeatable</td></tr><tr><td><code>--set</code></td><td>Raise the format: 2 = new objects get 128-bit (32-hex) ids; existing objects keep theirs, no move</td></tr><tr><td><code>--token</code></td><td>Access token</td></tr></tbody></table></div>
+<h3 id="vault-ignore">sgit vault ignore</h3>
+<p>Show always-ignored folders, or deliberately remove a now-ignored folder from the vault</p>
+<pre><code class="lang-text">sgit vault ignore [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--apply</code></td><td>Remove tracked files under FOLDER from the vault in one visible commit; the work tree is untouched</td></tr><tr><td><code>--yes</code></td><td>Skip the confirmation prompt</td></tr></tbody></table></div>
+<h3 id="vault-info">sgit vault info</h3>
+<p>Show vault identity, remote, branch, and web URL</p>
+<pre><code class="lang-text">sgit vault info [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL</td></tr><tr><td><code>--token</code></td><td>Access token</td></tr></tbody></table></div>
+<h3 id="vault-list">sgit vault list</h3>
+<p>List stored vault aliases</p>
+<pre><code class="lang-text">sgit vault list</code></pre>
+<h3 id="vault-mirror">sgit vault mirror</h3>
+<p>Copy a published vault you cannot read (custody without access) — keyless, verifiable</p>
+<pre><code class="lang-text">sgit vault mirror [options] [source] [dest]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>source</code></td><td>optional</td><td>Published URL or folder to mirror from</td></tr><tr><td><code>dest</code></td><td>optional</td><td>Destination folder</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--verify</code></td><td>Re-check an existing mirror without fetching</td></tr></tbody></table></div>
+<h3 id="vault-move">sgit vault move</h3>
+<p>Move vault to a new identity (key rotation + optional server move)</p>
+<pre><code class="lang-text">sgit vault move [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--cleanup</code></td><td>Finish or roll back a partially-completed move</td></tr><tr><td><code>--dry-run</code></td><td>Walk all 8 steps without any side effects</td></tr><tr><td><code>--new-key</code></td><td>New vault key (auto-generated if omitted)</td></tr><tr><td><code>--reason</code></td><td>Reason recorded in the sentinel commit</td></tr><tr><td><code>--to</code></td><td>Target API URL (same server if omitted)</td></tr><tr><td><code>--token</code></td><td>SG/Send access token</td></tr><tr><td><code>--yes</code></td><td>Skip all interactive prompts (CI / scripted use)</td></tr></tbody></table></div>
+<h3 id="vault-rekey">sgit vault rekey</h3>
+<p>Replace the vault key and re-encrypt all content</p>
+<pre><code class="lang-text">sgit vault rekey [options]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--json</code></td><td>Output result as JSON</td></tr><tr><td><code>--new-key</code></td><td>New vault key to use (generated if omitted)</td></tr><tr><td><code>--yes</code></td><td>Skip confirmation prompts</td></tr></tbody></table></div>
+<h4 id="vault-rekey-check">sgit vault rekey check</h4>
+<p>Show vault state without making changes</p>
+<pre><code class="lang-text">sgit vault rekey check [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td></td></tr></tbody></table></div>
+<h4 id="vault-rekey-commit">sgit vault rekey commit</h4>
+<p>Commit all files under the current key (run after init)</p>
+<pre><code class="lang-text">sgit vault rekey commit [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td></td></tr></tbody></table></div>
+<h4 id="vault-rekey-init">sgit vault rekey init</h4>
+<p>Re-initialise vault with a new key (run after wipe)</p>
+<pre><code class="lang-text">sgit vault rekey init [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td></td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--new-key</code></td><td>Key to use (generated if omitted)</td></tr></tbody></table></div>
+<h4 id="vault-rekey-wipe">sgit vault rekey wipe</h4>
+<p>Wipe local encrypted store only (.sg_vault/ removed, files kept)</p>
+<pre><code class="lang-text">sgit vault rekey wipe [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td></td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--yes</code></td><td>Skip confirmation prompt</td></tr></tbody></table></div>
+<h3 id="vault-remote">sgit vault remote</h3>
+<p>Manage vault remotes</p>
+<pre><code class="lang-text">sgit vault remote</code></pre>
+<h4 id="vault-remote-add">sgit vault remote add</h4>
+<p>Add a remote</p>
+<pre><code class="lang-text">sgit vault remote add [options] &lt;name&gt; &lt;url&gt; [remote_vault_id]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td>Remote name (e.g. origin)</td></tr><tr><td><code>url</code></td><td>required</td><td>Remote API URL</td></tr><tr><td><code>remote_vault_id</code></td><td>optional</td><td>Remote vault ID (defaults to current vault)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--default</code></td><td>Set as the default remote</td></tr><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr><tr><td><code>--no-health-check</code></td><td>Skip connectivity check on add</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification</td></tr></tbody></table></div>
+<h4 id="vault-remote-list">sgit vault remote list</h4>
+<p>List configured remotes</p>
+<pre><code class="lang-text">sgit vault remote list [options]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-remote-remove">sgit vault remote remove</h4>
+<p>Remove a remote</p>
+<pre><code class="lang-text">sgit vault remote remove [options] &lt;name&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td>Remote name to remove</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-remote-rename">sgit vault remote rename</h4>
+<p>Rename a remote</p>
+<pre><code class="lang-text">sgit vault remote rename [options] &lt;old_name&gt; &lt;new_name&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>old_name</code></td><td>required</td><td>Current remote name</td></tr><tr><td><code>new_name</code></td><td>required</td><td>New remote name</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-remote-set-default">sgit vault remote set-default</h4>
+<p>Set the default remote</p>
+<pre><code class="lang-text">sgit vault remote set-default [options] &lt;name&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td>Remote name to set as default</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-remote-set-url">sgit vault remote set-url</h4>
+<p>Update the URL of a remote</p>
+<pre><code class="lang-text">sgit vault remote set-url [options] &lt;name&gt; &lt;new_url&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td>Remote name</td></tr><tr><td><code>new_url</code></td><td>required</td><td>New API URL</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr><tr><td><code>--no-health-check</code></td><td>Skip connectivity check against the new URL</td></tr></tbody></table></div>
+<h4 id="vault-remote-show">sgit vault remote show</h4>
+<p>Show details of a remote</p>
+<pre><code class="lang-text">sgit vault remote show [options] &lt;name&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td>Remote name</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--directory</code>, <code>-d</code></td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h3 id="vault-remove">sgit vault remove</h3>
+<p>Remove a stored vault key</p>
+<pre><code class="lang-text">sgit vault remove &lt;alias&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>alias</code></td><td>required</td><td>Vault alias to remove</td></tr></tbody></table></div>
+<h3 id="vault-restore">sgit vault restore</h3>
+<p>Restore a vault from a backup zip</p>
+<pre><code class="lang-text">sgit vault restore [options] &lt;source&gt; &lt;destination&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>source</code></td><td>required</td><td>Backup zip path, or vault-dir:backup-id</td></tr><tr><td><code>destination</code></td><td>required</td><td>Target directory to restore into</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--key</code></td><td>Vault key (required for expanded if not in zip)</td></tr><tr><td><code>--mode</code></td><td>bare: vault only; expanded: vault + working copy (default: expanded) One of: <code>bare</code>, <code>expanded</code>.</td></tr><tr><td><code>--verbose</code></td><td>Print each file as it is written (vault objects and working copy)</td></tr><tr><td><code>--yes</code></td><td>Skip confirmation prompts</td></tr></tbody></table></div>
+<h3 id="vault-serve">sgit vault serve</h3>
+<p>Moved: sgit serve --static</p>
+<pre><code class="lang-text">sgit vault serve [rest]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>rest</code></td><td>optional</td><td></td></tr></tbody></table></div>
+<h3 id="vault-show">sgit vault show</h3>
+<p>Show vault key for an alias</p>
+<pre><code class="lang-text">sgit vault show &lt;alias&gt;</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>alias</code></td><td>required</td><td>Vault alias</td></tr></tbody></table></div>
+<h3 id="vault-show-key">sgit vault show-key</h3>
+<p>Show the vault key for the current directory</p>
+<pre><code class="lang-text">sgit vault show-key [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h3 id="vault-stash">sgit vault stash</h3>
+<p>Stash uncommitted changes</p>
+<pre><code class="lang-text">sgit vault stash [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-stash-drop">sgit vault stash drop</h4>
+<p>Drop last stash without applying</p>
+<pre><code class="lang-text">sgit vault stash drop [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-stash-list">sgit vault stash list</h4>
+<p>List stashes</p>
+<pre><code class="lang-text">sgit vault stash list [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h4 id="vault-stash-pop">sgit vault stash pop</h4>
+<p>Restore last stash</p>
+<pre><code class="lang-text">sgit vault stash pop [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<h3 id="vault-tag">sgit vault tag</h3>
+<p>Named, signed release pointers</p>
+<pre><code class="lang-text">sgit vault tag [options]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--directory</code></td><td>==SUPPRESS==</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr></tbody></table></div>
+<h4 id="vault-tag-create">sgit vault tag create</h4>
+<p>Tag a pushed commit (default: this clone's head)</p>
+<pre><code class="lang-text">sgit vault tag create [options] &lt;name&gt; [commit]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td>Tag name, e.g. v1.0 or release/2026-10</td></tr><tr><td><code>commit</code></td><td>optional</td><td>Commit id, short id or tag (default: HEAD)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--directory</code></td><td>Vault directory (default: .)</td></tr><tr><td><code>--force</code></td><td>Re-point an existing tag on purpose</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr><tr><td><code>-m</code>, <code>--message</code></td><td>Tag message</td></tr></tbody></table></div>
+<h4 id="vault-tag-delete">sgit vault tag delete</h4>
+<p>Delete a tag</p>
+<pre><code class="lang-text">sgit vault tag delete [options] &lt;name&gt; [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td></td></tr><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr></tbody></table></div>
+<h4 id="vault-tag-list">sgit vault tag list</h4>
+<p>List the tags</p>
+<pre><code class="lang-text">sgit vault tag list [options] [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr></tbody></table></div>
+<h4 id="vault-tag-show">sgit vault tag show</h4>
+<p>Show a tag and verify its signature</p>
+<pre><code class="lang-text">sgit vault tag show [options] &lt;name&gt; [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>name</code></td><td>required</td><td></td></tr><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr></tbody></table></div>
+<h3 id="vault-uninit">sgit vault uninit</h3>
+<p>Remove vault metadata (.sg_vault/), creating an auto-backup zip first</p>
+<pre><code class="lang-text">sgit vault uninit [directory]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
+<div class="pagenav"><a href="../reference/update.html">← sgit update</a><a href="../reference/version.html">sgit version →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../reference/vault.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/reference/sgit-cli-reference.json"><code>admin/content/reference/sgit-cli-reference.json</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../reference/vault.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

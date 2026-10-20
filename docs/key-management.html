@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vault key management: where each key lives, and how it travels · cli.sgit.ai</title>
+<meta name="description" content="The reference for sgit-ai v0.20.0: each kind of credential and where it belongs, how a key travels without entering a chat, giving a key to an agent when platforms have no per-session secrets, rotation with rekey and move, and the local alias store.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/key-management.html">
+<link rel="alternate" type="text/markdown" href="../docs/key-management.md">
+<meta property="og:title" content="Vault key management: where each key lives, and how it travels">
+<meta property="og:description" content="The reference for sgit-ai v0.20.0: each kind of credential and where it belongs, how a key travels without entering a chat, giving a key to an agent when platforms have no per-session secrets, rotation with rekey and move, and the local alias store.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/key-management.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl here" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../security/index.html">Security</a> / Vault key management: where each key lives, and how it travels</div>
+<h1 id="vault-key-management-where-each-key-lives-and-how-it-travels">Vault key management: where each key lives, and how it travels</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/key-management.html">sgit.ai/docs/key-management.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>A vault is encrypted in the client, so the server never holds a key and the key is the whole question: whoever holds it holds the vault. This page is the reference for sgit-ai v0.20.0: each kind of credential, where it should be kept, how a key travels without entering a chat, how to give one to an agent, and how to rotate one. The reasoning and the roadmap are in the article <a href="https://sgit.ai/articles/where-the-vault-keys-live.html">Where the vault keys live</a>.</p>
+<p><b>Why this page exists, with the date on it.</b> On 10 October 2026 a reader asked where the keys of the vaults that temporary agent sessions write to are managed. The docs explained what each credential can do (<a href="../docs/credentials.html">vault credentials</a>) and how to hand a key to a registry (<a href="../docs/send-a-vault-key.html">send a vault key</a>), but nowhere said where keys should live. This page is that answer.</p>
+<h2 id="each-credential-and-where-it-belongs">Each credential, and where it belongs</h2>
+<div class="tablewrap"><table><thead><tr><th>Credential</th><th>Can</th><th>Keep it in</th><th>Publish?</th></tr></thead><tbody><tr><td><b>Vault key</b> <code>sgit_private_vault_&lt;passphrase&gt;:&lt;vault_id&gt;</code></td><td>Read and write the vault, and derive everything below</td><td>A password manager, for keys a person holds. A registry vault, for keys agents create. The working session that needs it, for as long as it needs it</td><td><b>Never.</b> Not in a page, a repository, a commit message, an issue, a log or a chat</td></tr><tr><td><b>Read key</b> <code>sgit_public_read_&lt;read key&gt;:&lt;vault_id&gt;</code></td><td>Read every file and every commit</td><td>Anywhere you would put the content itself</td><td>Yes, on purpose, under the public prefix. Check it with <code>check_credential.py</code> first</td></tr><tr><td><b>Write key</b></td><td>Push, and configure append lanes with the access token</td><td>Derived when needed (<code>sgit vault derive-keys</code>); nowhere on its own</td><td>Never</td></tr><tr><td><b>Append token</b></td><td>Write to one lane, blind</td><td>The one sender it was issued to, one token per sender</td><td>Never. Retire it once it has appeared anywhere durable</td></tr><tr><td><b>Enumeration key</b></td><td>List, fetch and mark lane messages processed</td><td>The vault owner, beside the vault key</td><td>Never</td></tr><tr><td><b>PKI private key</b></td><td>Decrypt what was sealed to you; sign</td><td>The machine or vault that generated it (<code>sgit pki keygen</code>)</td><td>Never. Publish the public bundle (<code>sgit pki export</code>) instead</td></tr><tr><td><b>SG/Send access token</b></td><td>Use a server: create, push, configure</td><td>The environment of the sessions that push, as narrowly as the platform allows (see below)</td><td>Never</td></tr></tbody></table></div>
+<h2 id="how-a-key-travels">How a key travels</h2>
+<ul><li><b>Into the registry.</b> The agent that made the vault seals the key to the registry's public key and writes it to the registry's append lane with a write-only token. It never displays the key. The full instructions, for the agent that has to follow them, are on <a href="../docs/send-a-vault-key.html">send a vault key</a>.</li><li><b>To a person.</b> Through their own password manager, or a lane of their own sealed to their public key. Not in a message thread: a transcript is a durable record held by someone else.</li><li><b>Onto a page.</b> As a read key only, with the <code>sgit_public_read_</code> prefix, after <code>check_credential.py</code> classifies it. The build refuses any <code>sgit_private_</code> credential in a tracked file.</li><li><b>To another agent.</b> See the next section. Where you can, let the agent create its own vault and send the key back on a lane, so no key has to be handed in.</li></ul>
+<h2 id="giving-a-key-to-an-agent">Giving a key to an agent</h2>
+<p>An agent needs three things to work with a vault: the key, sgit, and network access to the API host (or a server in its own network: <a href="../docs/self-host-for-agents.html">self-hosting</a>). The key is the hard part, because agent platforms do not have secrets per session.</p>
+<ul><li><b>Claude Code on the web.</b> Environment variables belong to the environment and "any command Claude runs can read" them; on Team and Enterprise, every member's sessions in a shared environment read its variables (<a href="https://code.claude.com/docs/en/cloud-environments#set-environment-variables">cloud environments</a>). On Pro and Max, a <b>network secret</b> is attached by the agent proxy outside the session, which suits a server token such as the SG/Send access token, but not a vault key, which has to be inside the session to decrypt.</li><li><b>OpenAI Codex cloud.</b> Secrets reach setup scripts only and are removed before the agent runs (<a href="https://learn.chatgpt.com/docs/environments/cloud-environment">cloud environments</a>).</li><li><b>What we do meanwhile.</b> One small vault per conversation or job, so each key opens little; the agent creates the vault where it can, and sends the key to the registry; a key that had to be pasted into a prompt is treated as exposed, and the vault is rotated when the work ends.</li></ul>
+<h2 id="rotation-and-retirement">Rotation and retirement</h2>
+<ul><li><code>sgit vault rekey</code> replaces the vault key and re-encrypts all content (<code>check</code>, then <code>wipe</code>, <code>init</code>, <code>commit</code>).</li><li><code>sgit vault move</code> moves the vault to a new identity, a new key and optionally a new server, in eight steps with <code>--dry-run</code> and <code>--cleanup</code>.</li><li><b>Rotation is not retroactive.</b> Anyone who already fetched the objects keeps them; a new key protects future commits only. Treat a leaked read key as published content, and a leaked vault key as a reason to rotate now.</li><li><b>Retire lanes</b> whose tokens have appeared anywhere durable: reconfigure the lane without that anchor.</li></ul>
+<h2 id="on-one-machine">On one machine</h2>
+<p><code>sgit vault add &lt;alias&gt;</code>, <code>sgit vault list</code>, <code>sgit vault show &lt;alias&gt;</code> and <code>sgit vault remove &lt;alias&gt;</code> keep keys under aliases on one machine. That is convenient on a laptop. It is not a backup: an ephemeral container loses it with everything else when it is reclaimed, so a key that matters is also in the registry or a password manager.</p>
+<h2 id="what-comes-next">What comes next</h2>
+<p>Integrations with password managers (<a href="https://sgit.ai/partnerships/vault-key-management.html">the open call</a>), the passkey-unlocked keyring of <a href="https://secrets.sgit.ai/">secrets.sgit.ai</a>, <a href="../docs/pki.html">PKI</a> for sharing without shared secrets, and decryption that happens out of band. Statuses are in <a href="https://sgit.ai/articles/where-the-vault-keys-live.html#next">the article</a>.</p>
+<p>Checked against sgit-ai v0.20.0 and the live API documentation of <code>send.sgraph.ai</code> (v0.32.4) and <code>dev.send.sgraph.ai</code> (v0.33.69) on 10 October 2026.</p>
+<div class="pagenav"><a href="../security/index.html">← Security model</a><a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/key-management.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/key-management.md"><code>admin/content/docs/key-management.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/key-management.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

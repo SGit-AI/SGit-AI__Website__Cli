@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent skills for security review — what exists, what it would do here · cli.sgit.ai</title>
+<meta name="description" content="Agent skills for security review, each checked at its source, ranked by whether it brings a method, a tool with deterministic output, or vets the other skills, against this code base.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/security-review-skills.html">
+<link rel="alternate" type="text/markdown" href="../articles/security-review-skills.md">
+<meta property="og:title" content="Agent skills for security review — what exists, what it would do here">
+<meta property="og:description" content="Agent skills for security review, each checked at its source, ranked by whether it brings a method, a tool with deterministic output, or vets the other skills, against this code base.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/security-review-skills.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / Agent skills for security review — what exists, what it would do here</div>
+<h1 id="agent-skills-for-security-review-what-exists-what-it-would-d">Agent skills for security review — what exists, what it would do here</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-11 · 16:32 UTC</span><span class="k">Kind</span><span class="v">research</span><span class="k">Topics</span><span class="v"><span class="chip">security</span> <span class="chip">skills</span> <span class="chip">agents</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/11/research__security-review-skills.md"><code>team/humans/dinis_cruz/claude-code-web/10/11/research__security-review-skills.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>From:</b> the sgit-ai CLI agent · <b>Date:</b> 2026-10-11 · <b>For:</b> <code>skills.sgit.ai</code> (Documents), then the case study once used.</p>
+<p><b>Method.</b> Each entry was checked at its source (the repository README or SKILL.md, the project site, or the registry page) on 2026-10-11, not from the aggregator listing that surfaced it. Where a claim could not be confirmed it says so. "On this code" means the sgit-ai CLI: 469 Python files, Type_Safe throughout, two runtime dependencies (<code>osbot-utils</code>, <code>cryptography</code>), AES-256-GCM / PBKDF2 / HKDF / ECDSA P-256 in <code>sgit_ai/crypto/</code>, a host boundary in <code>sgit_ai/network/api/</code>, a local boundary in <code>sgit_ai/storage/</code>.</p>
+<p><b>The ranking rule.</b> A skill earns a place on this review if it does one of three things the existing work does not already do: (a) brings a <i>method</i> (not a pattern list) that reaches crypto, trust boundaries and file handling; (b) brings a <i>tool</i> with deterministic output (SARIF, JSON) we can join to the threat model; (c) vets the other skills. Skills that only restate OWASP web-app lists score low here: this code base has no HTML, no SQL, no sessions.</p>
+<h2 id="1-the-catalogue">1. The catalogue</h2>
+<h3 id="1-1-from-the-screenshot">1.1 From the screenshot</h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Skill</th><th>Source, licence</th><th>What it is</th><th>On this code</th><th>Verdict</th></tr></thead><tbody><tr><td>S1</td><td><b>security-review</b></td><td><code>getsentry/skills</code>, <code>skills/security-review/SKILL.md</code>, Apache-2.0 (references credit the OWASP Cheat Sheet Series, CC BY-SA 4.0)</td><td>A review <i>method</i>: research the whole code base first, trace data flow, then report only high-confidence findings (<code>VULN-###</code>) with a separate "needs verification" list (<code>VERIFY-###</code>). Do-not-flag rules for tests, dead code, server-controlled config. Loads reference guides per topic (17: injection, XSS, authorization, authentication, <b>cryptography</b>, deserialization, <b>file security</b>, SSRF, CSRF, data protection, API, business logic, modern threats, misconfiguration, error handling, <b>supply chain</b>, <b>logging</b>) and per language (Python among five)</td><td>The cryptography, file-security, supply-chain and logging guides fit. The confidence discipline matches the house rule that a finding needs a reproducing test. Timon Weber's comparison of five Claude Code security skills picked this one as the only one worth installing</td><td><b>Use.</b> Primary code-review skill for the slice</td></tr><tr><td>S2</td><td><b>Cisco software.security</b> → Project CodeGuard</td><td><code>cosai-oasis/project-codeguard</code> (was <code>project-codeguard/rules</code>), CC BY 4.0; Tessl registry lists <code>cisco/software-security</code> at 82 % quality</td><td>Secure-by-default <i>rules</i> for AI coding agents, eight categories: cryptography, input validation, authentication, authorization, supply chain, cloud, platform, data protection. Ships a <code>.claude-plugin</code> and a <code>skills/</code> folder; translators to Cursor, Copilot, Windsurf</td><td>The cryptography and supply-chain rules are a checklist to read the slice against (safe algorithms, key management, dependency pinning). It is guidance for <i>writing</i> code; it has no review loop, no output format, no verification step</td><td><b>Reference only.</b> Read its crypto and supply-chain rules once; cite them in findings where they apply. Do not install as a plugin for this review</td></tr><tr><td>S3</td><td><b>"Anthropic Cybersecurity Skills"</b></td><td><code>mukul975/Anthropic-Cybersecurity-Skills</code>, Apache-2.0, community project by Mahipal Jangra; README: "Not affiliated with Anthropic PBC"</td><td>About 817 skills in 34 domains mapped to MITRE ATT&amp;CK v19.1, NIST CSF 2.0, ATLAS, D3FEND, NIST AI RMF, F3. SKILL.md with When to Use / Prerequisites / Workflow / Verification</td><td>No threat-modeling or secure-code-review domain. Cryptography (16 skills) is TLS, Ed25519, PQ migration, key management at the operations level, not code review. Much of it is offensive and dual-use (C2, exploitation). The review queue is self-described as months long</td><td><b>Skip.</b> The name misleads; the content is a SOC and red-team library, not a code-review method</td></tr><tr><td>S4</td><td><b>audit-website</b> (squirrelscan)</td><td><code>squirrelscan/skills</code>; the <code>squirrel</code> CLI from squirrelscan.com, installed by <code>curl | sh</code></td><td>Site audit: SEO, performance, accessibility, security headers, mixed content, leaked-secret patterns (96). Gen Agent Trust Hub rated the skill <b>Fail / high risk</b> for the pipe-to-shell install and agent-run fixes</td><td>Nothing to audit in a CLI. Possible later use on the published <code>*.sgit.ai</code> sites and on <code>sgit vault serve</code> / published static vaults, with the binary installed by hand and the agent never running its fixes</td><td><b>Skip for the CLI.</b> Park for the website estate</td></tr><tr><td>S5</td><td><b>Varlock</b></td><td><code>wrsmith108/varlock-claude-skill</code> wrapping <code>dmno-dev/varlock</code> (varlock.dev)</td><td>A <code>.env.schema</code> with sensitivity flags; the skill's rules are "never echo environment variables, never read <code>.env</code> directly, validate with masked output". Thin: no support files in the skill repo</td><td>The <i>rule</i> is the point, and it is already a sgit concern: TM-R14 (keys in argv and logs, re-ranked High on 10/09 because agents' command lines are read by many tools), TM-R09 (<code>.env</code> tracked-wins), the always-ignored set in <code>Vault__Ignore</code>. We do not use <code>.env</code> at runtime</td><td><b>Skip the skill, keep the rule.</b> Fold "never print a vault key, token or read key" into the sgit skill (<code>library/skills/sg-send-cli__SKILL.md</code>) as a stated rule; see plan step 5</td></tr><tr><td>S6</td><td><b>OWASP Agentic Skills Top 10 (AST10)</b></td><td><code>OWASP/www-project-agentic-skills-top-10</code>, incubator, "1.0-2026", leads Ken Huang and Fabio Cerullo, CC BY-SA 4.0</td><td>Ten risks for the skill layer (between model and tools): AST01 malicious skills, AST02 supply-chain compromise (both Critical), AST03 over-privileged, AST04 insecure metadata, AST05 untrusted external instructions, AST06 weak isolation (High), AST07 update drift, AST08 poor scanning, AST09 no governance, AST10 cross-platform reuse (Medium). A pre-install checklist</td><td>Not a review skill; it is the rubric for <i>installing</i> the others into a repository whose whole point is key custody. Every skill on this list is a third-party instruction file that will run with read access to the code and, in a careless session, to a vault key</td><td><b>Use as the gate.</b> Plan step 0 applies its checklist to each installed skill and records the answers</td></tr><tr><td>S7</td><td><b>Behavioral verification</b> (canary run, signed manifest)</td><td>AST10 checklist items; tools: <code>cisco-ai-defense/skill-scanner</code> (Apache-2.0, PyPI <code>cisco-ai-skill-scanner</code>, SARIF, YARA + dataflow + optional LLM pass, pre-commit hook and reusable workflow), <code>getsentry/skills</code> <code>skill-scanner</code> skill, <code>skillsign</code> (Ed25519 over a skill folder), SkillLedger (content-addressed, SLSA L3)</td><td>The checklist asks for a valid Ed25519 signature with a content hash matching the manifest, and a run in an isolated canary environment with a report that observed behaviour matches declared behaviour</td><td>None of the skills above ship a signed manifest, so the signature check fails for all of them today (the <code>skills.sgit.ai</code> catalogue already shows version and permissions fields undeclared on our own eight). What we <i>can</i> do: scan each SKILL.md with the Cisco scanner, pin to a commit SHA, read it, and run it first in this cloud session (which has no vault key) before any session that holds one</td><td><b>Use the scanner, note the gap.</b> The gap (no signatures anywhere in the ecosystem) is itself a <code>skills.sgit.ai</code> finding</td></tr></tbody></table></div>
+<h3 id="1-2-not-in-the-screenshot-and-stronger-for-this-code">1.2 Not in the screenshot, and stronger for this code</h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Skill</th><th>Source, licence</th><th>What it is</th><th>On this code</th><th>Verdict</th></tr></thead><tbody><tr><td>S8</td><td><b>Trail of Bits skills</b></td><td><code>trailofbits/skills</code>, CC BY-SA 4.0, plugin marketplace (<code>/plugin marketplace add trailofbits/skills</code>)</td><td>About 49 skills in named plugins. The ones that matter here: <b>audit-context-building</b> (a dossier per function: invariants, assumptions with the line that establishes each or "nothing found", callees; explicitly <i>no</i> verdicts; runs each function in its own subagent), <b>differential-review</b> (security review of a diff with git history), <b>insecure-defaults</b> (parallel hunt for fail-open defaults with a verifier per file), <b>sharp-edges</b> (error-prone APIs; AES-GCM nonce handling is their own example), <b>variant-analysis</b>, <b>fp-check</b> (gate review of each finding), <b>static-analysis</b> (CodeQL, Semgrep, SARIF), <b>semgrep-rule-creator</b>, <b>supply-chain-risk-auditor</b> (PyPI advisories, abandoned upstreams), <b>spec-to-code-compliance</b>, <b>property-based-testing</b> (Hypothesis), <b>mutation-testing</b> (surviving mutants), <b>post-patch-validation</b> (missed variants after a fix), <b>agentic-actions-auditor</b> (GitHub Actions used by agents). <code>constant-time-analysis</code> targets compiled code, so it is marginal for pure Python</td><td>This is the only set written by people who audit cryptographic code for a living. The context dossier is the data asset the code-review-graphs brief wants at the "explanation layer", written by an agent, with a line cited for every claim. <code>post-patch-validation</code> is tailor-made for 0.21.0, where two of the fixes introduced regressions (TM-F29, TM-F30). <code>supply-chain-risk-auditor</code> is TM-R21</td><td><b>Use.</b> The backbone of the review: context, then insecure-defaults and sharp-edges on <code>crypto/</code> and <code>storage/</code>, differential-review on 0.20.0→0.21.0, fp-check on everything, post-patch-validation on the 0.21 fixes</td></tr><tr><td>S9</td><td><b>Anthropic <code>/security-review</code></b> and the <code>claude-code-security-review</code> GitHub Action</td><td><code>anthropics/claude-code-security-review</code>, MIT; the slash command is built into Claude Code (present in this session)</td><td>Reviews pending changes (command) or a PR diff (Action). Categories: injection, auth, data exposure, cryptography (weak algorithms, key management, randomness), input validation, business logic (race, TOCTOU), configuration, supply chain, code execution, XSS. A second model pass filters false positives (excludes DoS, rate limiting, resource exhaustion, generic validation, open redirects). Prompt is customisable by copying <code>.claude/commands/security-review.md</code>. <b>Not hardened against prompt injection</b>: the README says review trusted PRs only</td><td>Cheap, already here, diff-scoped. The exclusions matter: three of our accepted rows are DoS-shaped (TM-R18 tree shapes, TM-R35 <code>--grep</code>), which this tool would not report by design. Useful as the PR gate once a baseline exists; the Action needs <code>pull-requests: write</code> and an API key secret</td><td><b>Use on diffs</b>, not as the whole-slice review. Candidate for the CI job later, after the Bandit / pip-audit baseline (TM-R21), with the fork-approval setting on</td></tr><tr><td>S10</td><td><b>find-bugs</b>, <b>secret-serialization</b>, <b>gha-security-review</b></td><td><code>getsentry/skills</code>, Apache-2.0</td><td><code>find-bugs</code>: bugs and security issues in local branch changes. <code>secret-serialization</code>: secrets leaking through serialization, logs or spans. <code>gha-security-review</code>: GitHub Actions workflows for exploitation risk</td><td><code>secret-serialization</code> is the exact shape of TM-R14 and TM-F05/F16 (keys written, printed, logged): <code>sgit vault info</code> prints the full key; <code>Vault__Secret_File</code>, <code>Secrets__Store</code>, <code>CLI__Debug_Log</code> are its targets. <code>gha-security-review</code> covers the three CI workflows and the SP-10 "template pins nothing" finding</td><td><b>Use</b> <code>secret-serialization</code> on <code>crypto/</code>, <code>secrets/</code>, <code>cli/CLI__Debug_Log.py</code>, <code>cli/CLI__Vault.py</code>; <code>gha-security-review</code> on <code>.github/workflows/</code>. <code>find-bugs</code> overlaps S9; skip</td></tr><tr><td>S11</td><td><b>Classical scanners</b>: Semgrep (<code>p/python</code>, <code>python.cryptography.*</code> rules), Bandit, pip-audit, CodeQL</td><td>OSS; Trail of Bits <code>semgrep-rules</code> adds crypto rules</td><td>Deterministic pattern scanners with SARIF output</td><td>TM-R21 already asks for Bandit and pip-audit in the security CI job with a baseline; KI-SEC-06 counted about 23 Bandit mediums. Semgrep's crypto rules (insecure hash, insecure cipher, PKCS#1 v1.5) are the right first pass over <code>crypto/</code>. Their SARIF is what <code>threat-led-triage</code> consumes</td><td><b>Use</b>, and keep: these become the CI baseline the threat model has wanted since 10/08</td></tr></tbody></table></div>
+<h2 id="2-what-the-vetting-gate-looks-like-ast10-applied">2. What the vetting gate looks like (AST10 applied)</h2>
+<p>For every skill the plan installs, record this table in the case study before the first run:</p>
+<div class="tablewrap"><table><thead><tr><th>Check (AST10 checklist)</th><th>Evidence we can produce today</th></tr></thead><tbody><tr><td>Provenance: author identity, content hash, signature</td><td>Repository and commit SHA pinned; <code>sha256</code> of each SKILL.md recorded; <b>no signature exists</b> for any of them</td></tr><tr><td>Scan status</td><td><code>skill-scanner scan-all &lt;dir&gt; --format sarif</code> output kept under the case study; HIGH fails the install</td></tr><tr><td>Permissions: files, tools, network</td><td>Read from the frontmatter (<code>allowed-tools</code>); Sentry's security-review declares <code>Read, Grep, Glob, Bash, Task</code>. Any skill that fetches remote instructions at run time fails AST05 unless pinned</td></tr><tr><td>Identity files</td><td>Does it ask to write <code>CLAUDE.md</code>, <code>AGENTS.md</code>, memory? Sentry's <code>agents-md</code> does by design; the review skills must not</td></tr><tr><td>External content</td><td><code>mcp-stride-gpt</code> hosted at <code>mcp.stridegpt.ai</code> sends the app description off-machine; use the skill copy or self-host on loopback (see the threat-modeling doc)</td></tr><tr><td>Dependencies pinned</td><td><code>stride-gpt</code> from PyPI pinned by version and hash; the scanner itself pinned</td></tr><tr><td>Risk tier matches scope</td><td>A review skill that only reads is Low; anything that writes fixes is Medium and runs with <code>--dry-run</code> or not at all</td></tr><tr><td>Canary run</td><td>First run in a session with no vault key, no <code>.env</code>, no token on disk (this cloud environment qualifies: <code>find / -name .sg_vault</code> is empty)</td></tr></tbody></table></div>
+<p>The honest finding for <code>skills.sgit.ai</code>: <b>the ecosystem's best security-review skills cannot pass their own community's checklist</b>, because nobody signs skills yet. The <code>skills.sgit.ai</code> thesis (skills as packages with version, permissions and provenance) is exactly the missing piece, and this review is a worked example of the gap.</p>
+<h2 id="3-two-ideas-worth-taking-not-installing">3. Two ideas worth taking, not installing</h2>
+<ul><li><b>Confidence tiers with a "needs verification" list</b> (S1). Our house rule already demands a test per finding; the Sentry format gives the step before the test a name. Adopt the <code>VULN-###</code> / <code>VERIFY-###</code> split in the review output, then promote a VERIFY only when its test exists.</li><li><b>Context before verdicts</b> (S8 audit-context-building). The dossier's "assumption with nothing found to establish it" is the single most useful intermediate artefact: it is a candidate threat with its line number attached, before anyone has argued about severity. That is the <code>.security.json</code> row's <code>attack_surface</code> and <code>trust_boundary_crossings</code> fields, written by an agent with a citation, which is what the code-review-graphs brief allows at the explanation layer.</li></ul>
+<h2 id="4-sources-checked">4. Sources checked</h2>
+<ul><li><code>github.com/getsentry/skills</code> (README skill list; <code>skills/security-review/SKILL.md</code>)</li><li><code>github.com/trailofbits/skills</code> (README, plugin list; <code>audit-context-building</code> SKILL.md)</li><li><code>github.com/anthropics/claude-code-security-review</code> (README)</li><li><code>github.com/cosai-oasis/project-codeguard</code>, <code>github.com/project-codeguard/rules</code>; Cisco and OASIS announcements (Oct 2025, Feb 2026)</li><li><code>github.com/mukul975/Anthropic-Cybersecurity-Skills</code> (README)</li><li><code>owasp.org/www-project-agentic-skills-top-10/</code> (project page, README, checklist)</li><li><code>github.com/cisco-ai-defense/skill-scanner</code></li><li><code>smithery.ai/skills/andymsun/audit-website</code>, <code>docs.squirrelscan.com</code>, Gen Agent Trust Hub rating</li><li><code>github.com/wrsmith108/varlock-claude-skill</code>, <code>varlock.dev</code></li><li>timonweb.com, "I checked 5 security skills for Claude Code, only one is worth installing"</li></ul>
+<div class="pagenav"><a href="../articles/threat-modeling-tools.html">← Threat-modeling tools for an agent-driven review — Matt Adams&#x27; stack, the classics, and the house method</a><a href="../articles/security-review-plan.html">Plan — the next security review of sgit-ai, with skills, and the review graphs it produces →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/security-review-skills.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/security-review-skills.md"><code>admin/content/articles/security-review-skills.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/security-review-skills.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

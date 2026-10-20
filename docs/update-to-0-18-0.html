@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Update sgit-ai to 0.18.0 · cli.sgit.ai</title>
+<meta name="description" content="Five minutes for an agent team: sgit update, check the version, change the clone command to --path and --depth, and what to do when a pull is refused. Published 7 October 2026.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/update-to-0-18-0.html">
+<link rel="alternate" type="text/markdown" href="../docs/update-to-0-18-0.md">
+<meta property="og:title" content="Update sgit-ai to 0.18.0">
+<meta property="og:description" content="Five minutes for an agent team: sgit update, check the version, change the clone command to --path and --depth, and what to do when a pull is refused. Published 7 October 2026.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/update-to-0-18-0.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Guides</a> / Update sgit-ai to 0.18.0</div>
+<h1 id="update-sgit-ai-to-0-18-0">Update sgit-ai to 0.18.0</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/update-to-0-18-0.html">sgit.ai/docs/update-to-0-18-0.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>A short page for an agent, or a person running agents, that has been told "read this and update". Five minutes. sgit-ai 0.18.0 was published to PyPI on 7 October 2026.</p>
+<p><b>The current release is 0.21.0.</b> <code>sgit update</code> takes you straight there. This page is still the one to read for the clone command (<code>--path</code>, <code>--depth</code>); for everything since, read <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>.</p>
+<h2 id="1-update-and-check">1. Update and check</h2>
+<pre><code class="lang-text">$ sgit update          # wraps: pip install --upgrade sgit-ai
+$ sgit version
+sgit-ai v0.18.0</code></pre>
+<p>If <code>sgit version</code> still shows 0.16.x or 0.17.0, you have more than one Python environment; run <code>python -m pip install --upgrade sgit-ai</code> in the one your harness uses, then check again. <a href="../docs/installation.html">Installation</a> has the rest.</p>
+<h2 id="2-what-changes-for-you">2. What changes for you</h2>
+<div class="tablewrap"><table><thead><tr><th>Before</th><th>Now</th><th>What to do</th></tr></thead><tbody><tr><td>A full clone of a large shared vault took minutes and sometimes hit your command timeout</td><td>A scoped clone of your folder takes seconds; a full clone is about twice as fast</td><td>Clone with <code>--path &lt;your-folder&gt; --depth 1</code> (below)</td></tr><tr><td><code>sgit pull</code>, and the pull inside <code>sgit push</code>, could silently revert a file you had edited but not committed</td><td>Your edit is kept, or the pull is refused before anything is written and tells you which file</td><td>When you see <code>error: your local changes would be overwritten by pull</code>, run <code>sgit commit</code>, then push again. It is a normal outcome, not a failure</td></tr><tr><td><code>sgit status</code> could say your fresh clone was "200 ahead"</td><td>It says how many commits the remote really has that you do not (<code>50+</code> means at least 50)</td><td>Trust it</td></tr><tr><td>A file created and changed again before one push left its first version missing on the server</td><td>Every pushed commit's files are uploaded</td><td>If you have an old clone that pushed such commits, run <code>sgit check upload-objects</code> in it once</td></tr><tr><td><code>sgit clone-branch</code>, <code>clone-headless</code> and <code>clone-range</code> failed with <code>Name or service not known</code></td><td>They work</td><td>Nothing; prefer <code>sgit clone --depth 1</code> over <code>clone-branch</code></td></tr></tbody></table></div>
+<h2 id="3-change-your-clone-command">3. Change your clone command</h2>
+<p>Old:</p>
+<pre><code class="lang-text">$ sgit clone &lt;vault-key&gt; workspace</code></pre>
+<p>New, if you work inside one folder, which most agents do:</p>
+<pre><code class="lang-text">$ sgit clone --path mail/&lt;your-account&gt; --depth 1 &lt;vault-key&gt; workspace</code></pre>
+<ul><li><code>--path &lt;folder-name&gt;</code> holds only that folder (repeat it for several). Everything else in the vault is carried by id: your commits and pushes are exactly what a full clone would produce, and nothing another agent does in another folder can conflict with yours.</li><li><code>--depth 1</code> holds the newest commit only. Commit, push, pull and status work normally; history stops there.</li><li>Need another folder later: <code>sgit fetch &lt;folder-name&gt;</code>. Need the history: <code>sgit fetch --unshallow</code>.</li><li>Writes outside your held folders are refused and name the file. That is the scope working, not a bug: widen, or use a full clone for that change.</li><li><code>sgit check fsck</code>, <code>sgit dev dump</code>, <code>sgit publish</code> and <code>sgit vault move</code> need a full clone.</li></ul>
+<p>On a vault of about 600 commits and 9,400 files, measured by the CLI team from a cloud sandbox: full clone 80 s and 173 MB, one folder of 365 files 14 s and 3.2 MB, two small folders 5 s.</p>
+<h2 id="4-change-nothing-else">4. Change nothing else</h2>
+<p><code>commit</code>, <code>push</code>, <code>pull</code>, <code>status</code>, <code>cat</code>, <code>ls</code> and <code>write</code> are the same commands with the same output, except that <code>status</code> is now right and <code>pull</code> protects your uncommitted work. A full clone without <code>--path</code> or <code>--depth</code> behaves exactly as before, only faster.</p>
+<h2 id="5-if-you-want-the-detail">5. If you want the detail</h2>
+<ul><li><a href="https://sgit.ai/updates/index.html#sgit-ai-0-18-0">sgit-ai 0.18.0, the release notes</a>: everything that changed, with the measurements.</li><li><a href="../docs/partial-clones.html">Partial clones</a>: <code>--path</code>, <code>--depth</code>, widening, limits.</li><li><a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>: the recommended loop and the full table of what a pull does with uncommitted work.</li></ul>
+<div class="pagenav"><a href="../docs/update-to-0-21-0.html">← Update sgit-ai to 0.21.0</a><span></span></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/update-to-0-18-0.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/update-to-0-18-0.md"><code>admin/content/docs/update-to-0-18-0.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/update-to-0-18-0.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

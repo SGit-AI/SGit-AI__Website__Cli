@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit serve: container first. Options map and spike results · cli.sgit.ai</title>
+<meta name="description" content="The decision to run the SG/Send container image rather than re-implement the server: the runtimes supported (including Apple&#x27;s container and Podman), the spike results, and phase 1 as built.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/sgit-serve-container-first.html">
+<link rel="alternate" type="text/markdown" href="../articles/sgit-serve-container-first.md">
+<meta property="og:title" content="sgit serve: container first. Options map and spike results">
+<meta property="og:description" content="The decision to run the SG/Send container image rather than re-implement the server: the runtimes supported (including Apple&#x27;s container and Podman), the spike results, and phase 1 as built.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/sgit-serve-container-first.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl here" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / sgit serve: container first. Options map and spike results</div>
+<h1 id="sgit-serve-container-first-options-map-and-spike-results"><code>sgit serve</code>: container first. Options map and spike results</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-12 · 22:25 UTC</span><span class="k">Kind</span><span class="v">decision</span><span class="k">Topics</span><span class="v"><span class="chip">serve</span> <span class="chip">containers</span> <span class="chip">docker</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/12/options__sgit-serve-container-and-static.md"><code>team/humans/dinis_cruz/claude-code-web/10/12/options__sgit-serve-container-and-static.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 2026-10-12 · <b>Status:</b> options and plan, no sgit code yet · <b>Supersedes</b> the "native server" plan in <a href="../articles/sgit-serve-running-a-vault-locally.html"><code>research__sgit-serve-local-vault-server.md</code></a> (same folder). The API inventory and browser notes there still apply.</p>
+<p><b>Decision (Dinis):</b> run a working vault locally from the SG/Send container image. It has the vault UI and the API in one image and always tracks the latest SG/Send. sgit gets native support for it:</p>
+<ul><li>it abstracts the container runtime;</li><li>it supports several runtimes, including Apple's <code>container</code>;</li><li>it can install one when none is present;</li><li>it should also work without Docker where possible.</li></ul>
+<p>The current read-only server stays as a separate, clearly named mode.</p>
+<blockquote><p><b>Update, same day: decisions taken and phase 1 built.</b></p>
+<ul><li><b>Decisions:</b></li></ul>
+<ol><li>Image <code>latest</code>, with the digest that ran recorded.</li><li><code>sgit serve install</code> installs, after showing what and asking.</li><li>Both Apple <code>container</code> and Podman are supported on macOS.</li><li><code>sgit vault serve</code> moved to <code>sgit serve --static</code>.</li><li>The brief to SG/Send is in this folder.</li></ol>
+<ul><li><b>What changed from the plan below:</b> the clone does <b>not</b> push to the local server as a second remote. Its rewind baselines and its copy of the server's ref are kept per branch, not per server, so two servers would trip its own rewind protection. Instead:</li><li><code>sgit serve push</code> (clone → server) only ever moves the local server forward;</li><li><code>sgit serve pull</code> (server → clone) fetches, verifies, checks the signature policy and fast-forwards this clone's own branch;</li><li><code>sgit push</code> then reaches the real server as usual.</li><li><b>Verified here:</b></li><li>Docker end to end: start, the UI opening the served clone, a server-side commit brought back, stop;</li><li>the uv engine (same data folder);</li><li>divergence refusals.</li></ul>
+<p>The Apple <code>container</code> adapter is written to its documented CLI but not yet run on a Mac.</p></blockquote>
+<h2 id="1-two-modes">1. Two modes</h2>
+<div class="tablewrap"><table><thead><tr><th>Mode</th><th>Command</th><th>What it is</th><th>Writes</th><th>Needs</th></tr></thead><tbody><tr><td><b>container</b> (default)</td><td><code>sgit serve</code></td><td>The SG/Send image (<code>diniscruz/sg-send-vault</code>): vault UI + full API + disk store, on <code>localhost</code></td><td>yes. A real local vault server: the UI edits, sgit pushes and pulls</td><td>a container runtime, or the Python engine (§4)</td></tr><tr><td><b>static</b></td><td><code>sgit serve --static</code> (today's <code>sgit vault serve</code>)</td><td>A stdlib read-only file server for a <b>published</b> vault: the static loader plus the encrypted store, no API</td><td>no</td><td>nothing</td></tr></tbody></table></div>
+<ul><li>Static mode still has a job: it previews what <code>sgit publish</code> produces, or serves an unpacked published zip, with zero dependencies.</li><li>It is not "run a vault". Rename it, and make <code>sgit vault serve</code> print its new place (the rule-9 moved-word behaviour).</li></ul>
+<h2 id="2-what-i-verified-today-spike-in-this-cloud-container">2. What I verified today (spike in this cloud container)</h2>
+<p>All of it was run here, x86_64 Linux, Docker 29.6 / containerd 2.2. The screenshot <code>spike__local-container-ui-open-vault.png</code> is next to this file.</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Check</th><th>Result</th></tr></thead><tbody><tr><td>1</td><td><code>docker pull diniscruz/sg-send-vault:latest</code></td><td>about 10 s; <b>400 MB</b>; a multi-arch index (amd64 + arm64); server <b>v0.34.0</b>, UI v0.2.3; 31 tags (<code>v0.27.70</code> … <code>v0.34.0</code>)</td></tr><tr><td>2</td><td><code>docker run -p 8080:8080 -v &lt;dir&gt;:/data</code></td><td><code>/api/info/health</code> ok; UI <code>/</code> 200</td></tr><tr><td>3</td><td><code>sgit init</code> / <code>commit</code> / <code>push</code> / <code>clone --base-url http://127.0.0.1:8080</code> (repo code)</td><td>works: 12 objects on disk at <code>&lt;dir&gt;/vault/iv/ivh5cbkj/{manifest.json,bare/…}</code>; the fresh clone has the files</td></tr><tr><td>4</td><td><b>The image runs as uid 10001</b> (its README still says root)</td><td>a host folder owned by the user is <b>not writable</b>: <code>Permission denied: '/data/vault'</code>. <b>Fix: <code>--user $(id -u):$(id -g)</code></b>, which sgit must always pass</td></tr><tr><td>5</td><td>sgit refuses to push with no token ("no access token configured") even though the server has no auth</td><td>passing any <code>--token</code> works. <b>sgit fix:</b> a server that needs no token is a normal case</td></tr><tr><td>6</td><td>Headless Chromium → <code>http://localhost:8080/en-gb/vault/</code>, key typed into the form</td><td><b>the vault opens and decrypts</b>: <code>docs/</code>, <code>a.md</code> ("hello local"). Same origin, plain http on localhost, Web Crypto fine</td></tr><tr><td>7</td><td><code>#&lt;vault-key&gt;</code> in the URL</td><td>did not auto-open (the form did)</td></tr><tr><td>8</td><td>The UI loads <code>sg-layout.js</code> and <code>sg-llm-events.js</code> <b>from <code>dev.tools.sgraph.ai</code> at runtime</b></td><td>not self-contained, despite "no CDN dependency" in its README: offline or air-gapped use will break</td></tr><tr><td>9</td><td>The UI shows "Read-only" until an access key is entered</td><td>expected; <code>sgit serve</code> should print the access-key hint, or configure the container so the UI is writable</td></tr><tr><td>10</td><td><b>containerd only</b> (<code>ctr run</code>, no Docker API)</td><td>works (image imported, push lands on disk)</td></tr><tr><td>11</td><td>Anonymous <code>ctr pull</code> from Docker Hub</td><td><b>429 Too Many Requests</b>; Docker Hub's anonymous limit is 100 pulls per 6 h per IP</td></tr><tr><td>12</td><td><b>No container at all:</b> the image's own server code (<code>sgraph_ai_app_send__docker.app</code>) under a Python 3.12 venv, with the UI folder copied out of the image</td><td>works: health, UI, and an sgit push to a disk store</td></tr><tr><td>13</td><td>CORS for the hosted UI (<code>Origin: https://vault.sgraph.ai</code>)</td><td>preflight 200 with <code>Access-Control-Allow-Origin: *</code> … <b>but with <code>Access-Control-Request-Private-Network: true</code> → 400 "Disallowed CORS private-network"</b>. Starlette's <code>allow_private_network</code> is off, so Chrome's private-network preflight from vault.sgraph.ai to localhost fails</td></tr><tr><td>14</td><td>A server error response</td><td><b>contains the full Python stack trace</b> (an information leak; fine on a laptop, not on a shared host)</td></tr></tbody></table></div>
+<h2 id="3-runtimes-what-exists-and-how-sgit-would-drive-each">3. Runtimes: what exists and how sgit would drive each</h2>
+<p>"docker-compatible" means it accepts <code>run -d --name -p -v --user -e</code>, <code>ps</code>, <code>stop</code>, <code>logs</code> and <code>pull</code> with the same flags, so one adapter covers all of them. Rows marked † come from my knowledge rather than today's run; check each against its current docs when building the adapter.</p>
+<div class="tablewrap"><table><thead><tr><th>Runtime</th><th>OS</th><th>CLI</th><th>Install (what <code>sgit serve install</code> would do or print)</th><th>Notes</th></tr></thead><tbody><tr><td><b>Docker Engine</b></td><td>Linux</td><td><code>docker</code></td><td>distro package / get.docker.com</td><td>the reference; verified here</td></tr><tr><td><b>Docker Desktop</b></td><td>macOS, Windows</td><td><code>docker</code></td><td>the vendor installer</td><td>Linux VM under the hood; <b>paid licence for larger companies</b>†</td></tr><tr><td><b>Podman</b></td><td>Linux, macOS, Windows</td><td><code>podman</code> (docker-compatible)</td><td><code>brew install podman</code> + <code>podman machine init/start</code> on mac/Windows; distro package on Linux</td><td>daemonless, <b>rootless by default</b>†; with <code>--userns=keep-id</code> the uid problem (#4) goes away; no Docker licence</td></tr><tr><td><b>Apple <code>container</code></b></td><td>macOS 26 on <b>Apple silicon</b> (macOS 15 runs with reduced networking)</td><td><code>container</code> (its own CLI, docker-like)</td><td>signed <code>.pkg</code> from GitHub <code>apple/container</code> releases, then <code>container system start</code></td><td>one lightweight VM per container, runs OCI images, no Docker. <b>Its own adapter</b>; flags to confirm against <code>container run --help</code> (ports, mounts)</td></tr><tr><td><b>Colima</b></td><td>macOS, Linux</td><td>gives a <code>docker</code> (or <code>nerdctl</code>) context</td><td><code>brew install colima docker &amp;&amp; colima start</code></td><td>free, Lima VM; then the docker adapter†</td></tr><tr><td><b>OrbStack</b></td><td>macOS</td><td><code>docker</code></td><td>vendor app</td><td>fast; commercial licence for business use†</td></tr><tr><td><b>Rancher Desktop</b></td><td>macOS, Windows, Linux</td><td><code>docker</code> or <code>nerdctl</code></td><td>vendor installer</td><td>free (SUSE)†</td></tr><tr><td><b>Finch</b></td><td>macOS, Windows, Linux</td><td><code>finch</code> (nerdctl-based, docker-like)</td><td>AWS installer / brew</td><td>free (AWS)†</td></tr><tr><td><b>containerd + nerdctl</b></td><td>Linux</td><td><code>nerdctl</code> (docker-compatible)</td><td>distro or release tarball</td><td>lean Linux servers; raw <code>ctr</code> works too (verified, #10)</td></tr><tr><td><b>WSL2</b></td><td>Windows</td><td>any of the above inside WSL</td><td><code>wsl --install</code> + one of the above</td><td>Windows without Docker Desktop</td></tr><tr><td><b>Python engine</b> (no container)</td><td>anywhere with <b><code>uv</code></b></td><td><code>uv run --python 3.12 --with sgraph-ai-app-send …</code></td><td><code>uv</code> (one static binary); uv fetches Python 3.12 itself</td><td>the same server code as the image, verified (#12); needs the built UI folder (§5)</td></tr></tbody></table></div>
+<p><b>Detection order:</b> a runtime already running wins. Otherwise the order is:</p>
+<ol><li><code>docker</code> (context answers)</li><li><code>podman</code></li><li><code>container</code> (Apple)</li><li><code>nerdctl</code></li><li><code>finch</code></li><li>the Python engine if <code>uv</code> is found</li><li><code>--static</code> as the last resort, with a message saying what the user is missing</li></ol>
+<p><code>sgit serve --runtime &lt;name&gt;</code> overrides the choice. <code>sgit serve runtimes</code> lists what it found, and for anything missing, the one install command per OS.</p>
+<p><b>Installing:</b></p>
+<ul><li><code>sgit serve install [&lt;runtime&gt;]</code> prints the command and runs it <b>only after a yes</b>, because it is a system change.</li><li>On macOS with Apple silicon it suggests Apple <code>container</code>, or Podman.</li><li>On Linux it suggests Podman or Docker Engine.</li><li>On Windows it suggests WSL2 + Podman.</li><li>Without any runtime, it suggests <code>uv</code> and the Python engine.</li></ul>
+<h2 id="4-what-sgit-serve-does-container-mode">4. What <code>sgit serve</code> does (container mode)</h2>
+<pre><code class="lang-text">sgit serve                     # inside a clone
+  1. pick a runtime (§3); pull the image, pinned by digest and recorded (latest by default; --tag vX.Y.Z)
+  2. data dir: &lt;clone&gt;/.sg_vault/serve/ (or --data DIR, interchangeable with any sg-send-vault /data)
+  3. run: --name sgit-serve-&lt;vault_id&gt; --user &lt;uid&gt;:&lt;gid&gt; -p 127.0.0.1:&lt;port&gt;:8080 -v &lt;data&gt;:/data
+          (-p on 127.0.0.1 only: a plain `-p 8080:8080` publishes on every interface)
+  4. wait for /api/info/health
+  5. seed: push this clone into it as a remote, `local` → http://127.0.0.1:&lt;port&gt;
+           (the existing push code: no coupling to the server&#x27;s disk layout)
+  6. print the UI URL, the vault-key and access-key hints; --open launches the browser
+sgit serve status | logs | stop | update     # update = pull the newer image, restart, same data dir
+sgit serve --static                          # today&#x27;s read-only published-folder server</code></pre>
+<p>Then:</p>
+<ul><li><code>sgit pull --remote local</code> brings edits made in the browser into the clone, with full verify-then-accept;</li><li><code>sgit push</code> sends them to the real server.</li></ul>
+<p>The server owns its own store. The clone's <code>.sg_vault/bare/</code> is never mounted, because the UI writing the clone's accepted refs would undo what 0.21 fixed.</p>
+<p><b>Python engine:</b> steps 1 and 3 become <code>uv run --python 3.12 --with sgraph-ai-app-send==&lt;v&gt; python -m … --port &lt;p&gt;</code>, with <code>SEND__STORAGE_MODE=disk</code>, <code>SEND__DISK_PATH=&lt;data&gt;</code> and <code>SEND__VAULT_STATIC_DIR=&lt;ui dir&gt;</code>. Everything else is the same.</p>
+<p><b>TLS:</b> only for the LAN or Safari cases (see the research note §5–6).</p>
+<ul><li>sgit generates a cert with <code>cryptography</code>;</li><li>it mounts the cert and key at <code>/certs</code>;</li><li>it sets <code>FAST_API__TLS__ENABLED=true</code>, which the image already supports.</li></ul>
+<h2 id="5-asks-of-the-sg-send-team-from-the-spike">5. Asks of the SG/Send team (from the spike)</h2>
+<ol><li><b>Vendor the <code>dev.tools.sgraph.ai</code> scripts into the image</b> (#8). Today the "self-contained" UI needs the internet.</li><li><b><code>allow_private_network=True</code></b> in the CORS middleware (#13). Without it, the hosted UI cannot reach a local server from Chrome.</li><li><b>No stack traces in error responses</b> (#14), or only behind a debug flag.</li><li><b>README:</b> the image runs as uid 10001, so document <code>--user</code> or <code>chown</code> (#4).</li><li><b>Also publish to GHCR or ECR Public</b> (#11). sgit can then fall back when Docker Hub rate-limits.</li><li><b>Publish the built vault UI</b> (<code>/app/static_vault</code>) as a versioned release asset. That is what the Python engine needs; today it can only be copied out of the image.</li><li>Optionally, let <code>#&lt;vault-key&gt;</code> (or a <code>?key=</code> handoff) auto-open on <code>/en-gb/vault/</code> (#7), so <code>sgit serve --open</code> lands inside the vault.</li></ol>
+<h2 id="6-changes-in-sgit">6. Changes in sgit</h2>
+<div class="tablewrap"><table><thead><tr><th>Change</th><th>Size</th></tr></thead><tbody><tr><td><code>Container__Runtime</code> (detect, pull, run, ps, stop, logs, health wait) with adapters: docker-compatible (docker, podman, nerdctl, finch), Apple <code>container</code>, Python engine (uv)</td><td>~350 lines</td></tr><tr><td><code>CLI__Serve</code>: container mode (seed via push to a <code>local</code> remote, banner, <code>--open</code>), <code>status/logs/stop/update/runtimes/install</code>, <code>--static</code> = today's server; <code>sgit vault serve</code> points to it</td><td>~250 lines</td></tr><tr><td>A token is optional when the server has no auth (#5)</td><td>small</td></tr><tr><td>TLS cert generation + mount</td><td>~100 lines</td></tr><tr><td><b>Tests:</b><br>• unit: each adapter's command lines, against a fake runtime binary on <code>PATH</code>;<br>• integration: <b>real Docker in CI</b> (the daemon starts in this kind of environment, as shown today); clone, push and pull against the image; a Playwright check that the UI opens the vault</td><td>~1 day</td></tr></tbody></table></div>
+<p><b>Estimate:</b></p>
+<div class="tablewrap"><table><thead><tr><th>Phase</th><th>Work</th><th>Estimate</th></tr></thead><tbody><tr><td>1</td><td>Docker-compatible adapter + serve, stop, status, logs + seeding</td><td>2 days</td></tr><tr><td>2</td><td>Apple <code>container</code> adapter + Python engine</td><td>1–1.5 days; the Apple adapter needs a Mac to test on</td></tr><tr><td>3</td><td><code>runtimes</code>/<code>install</code> + TLS</td><td>1 day</td></tr><tr><td>4</td><td>Docs, threat model rows</td><td>½ day</td></tr></tbody></table></div>
+<p>Total: about <b>5 days</b>. Phase 1 alone gives you "clone a vault, <code>sgit serve</code>, edit it in the browser".</p>
+<h2 id="7-decisions-for-you">7. Decisions for you</h2>
+<ol><li><b>Image tag:</b> default to <code>latest</code> (always current, as you suggested) and record the digest in use, or pin per sgit release for reproducibility? My suggestion: <code>latest</code>, plus <code>--tag</code> and a recorded digest.</li><li><b>Installing runtimes:</b> print the command only, or run it after confirmation?</li><li><b>Apple <code>container</code> vs Podman</b> as the macOS recommendation: Apple's needs macOS 26 on Apple silicon; Podman runs everywhere.</li><li><b><code>--static</code> naming:</b> keep <code>sgit vault serve</code> as an alias, or move it fully?</li><li>Should I send the §5 asks to the SG/Send team as a brief?</li></ol>
+<h2 id="sources">Sources</h2>
+<ul><li>Apple <code>container</code>: <a href="https://tessl.io/registry/skills/github/sanjay3290/ai-skills/apple-container">https://tessl.io/registry/skills/github/sanjay3290/ai-skills/apple-container</a> (community summary of <code>apple/container</code>: Apple silicon only, macOS 26 supported, macOS 15 with reduced networking, signed .pkg + <code>container system start</code>)</li><li>Docker Hub pull limits: <a href="https://docs.docker.com/docker-hub/download-rate-limit/">https://docs.docker.com/docker-hub/download-rate-limit/</a>, <a href="https://oneuptime.com/blog/post/2026-03-20-portainer-docker-hub-anonymous-auth/view">https://oneuptime.com/blog/post/2026-03-20-portainer-docker-hub-anonymous-auth/view</a></li><li>Chrome Local Network Access and Safari localhost blocking: the sources in <a href="../articles/sgit-serve-running-a-vault-locally.html"><code>research__sgit-serve-local-vault-server.md</code></a>.</li></ul>
+<div class="pagenav"><a href="../articles/non-ascii-paths-refuse-dont-rewrite.html">← AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a><a href="../articles/sgit-serve-running-a-vault-locally.html">sgit serve: running a vault locally — research and plan →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/sgit-serve-container-first.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/sgit-serve-container-first.md"><code>admin/content/articles/sgit-serve-container-first.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/sgit-serve-container-first.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

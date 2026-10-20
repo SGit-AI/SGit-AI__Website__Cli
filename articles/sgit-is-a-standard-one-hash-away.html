@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit is a standard, not a server: everything in a vault is one hash away · cli.sgit.ai</title>
+<meta name="description" content="A vault is a set of files laid out by a convention, every immutable object named by the hash of its own ciphertext, so the server is the least interesting part and anything in the path can cache blindly.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html">
+<link rel="alternate" type="text/markdown" href="../articles/sgit-is-a-standard-one-hash-away.md">
+<meta property="og:title" content="sgit is a standard, not a server: everything in a vault is one hash away">
+<meta property="og:description" content="A vault is a set of files laid out by a convention, every immutable object named by the hash of its own ciphertext, so the server is the least interesting part and anything in the path can cache blindly.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl here" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / sgit is a standard, not a server: everything in a vault is one hash away</div>
+<h1 id="sgit-is-a-standard-not-a-server-everything-in-a-vault-is-one">sgit is a standard, not a server: everything in a vault is one hash away</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-16 · 10:27 UTC</span><span class="k">Kind</span><span class="v">position</span><span class="k">Topics</span><span class="v"><span class="chip">architecture</span> <span class="chip">storage</span> <span class="chip">caching</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><i>Draft for the newsroom, 16 Oct 2026. Second companion to "Scion and sgit" (No. 141). Facts from the CLI's code at <code>dev</code> 881d6df, the sgit.ai pages linked, and the ruv.sgit ledger.</i></p>
+<p>Anthropic's post on Scion describes a server that answers every question a client has about the repository, and three tiers of cache in front of it. The post is honest that this is a centralised design in the line of Google's Piper and Meta's Sapling, and that it "is by no means a suitable replacement for git for general use". It is worth saying what sgit is in the same plain terms, because people read "encrypted git" and picture a product with a server in the middle. There is a server, and it is the least interesting part.</p>
+<h2 id="what-a-vault-is">What a vault is</h2>
+<p>A vault is a set of files laid out by a convention. Four kinds of object, all ciphertext: blobs (file contents), trees (a folder: encrypted names pointing at blob and tree ids), commits (a tree id, parents, a message, a signature), and one mutable pointer per branch, the ref. Every object except the ref and the branch index is named by the SHA-256 of its own ciphertext, so a name can never point at different bytes, anyone can check an object against its name, and anyone who has fetched one can keep it for ever.</p>
+<p>The name says which is which. An immutable object's id carries <code>-imm-</code>; the mutable pointers carry <code>-muw-</code>. So anything between the storage and the reader, a browser, a proxy, a CDN, a CI cache, a page on a website, can decide to keep an object for ever by looking at its name, without reading a byte of it and without being told by a header. This is how the vault app in the browser got fast: it caches every <code>-imm-</code> object the first time it sees one and refetches only the ref. It is a small convention and it makes a large difference, and it is also a trade made on purpose. sgit keeps no deltas between versions of a file; a changed file is a new object. Git stores deltas and has to be told what changed; sgit stores whole objects that anyone can cache blindly.</p>
+<p>That is git's object model with encryption underneath it, and the choice was deliberate: git solved the hard problems of history, branching and merging twenty years ago, and the workflows built on them are why git won. What sgit changes is where the trust sits.</p>
+<h2 id="everything-from-one-hash">Everything from one hash</h2>
+<p>The part that makes it a standard rather than a service is that nothing in a vault has to be discovered. It is all derived from the key:</p>
+<ol><li>The vault key gives the vault id and, one way, the read key. The read key cannot be turned back into the write key, so it can be published.</li><li>The read key gives the ref's name: <code>ref-pid-muw-</code> plus the first twelve hex characters of <code>HMAC(read_key, "sg-vault-v1:file-id:ref:" + vault_id)</code>. The server never told you where HEAD is. You computed it.</li><li>The ref holds the head commit id. The commit holds the tree id. Trees hold the ids of blobs and subtrees, with the names encrypted inside them. Ref, commit, trees on the path, blob: a file is four requests from its read key, and the requests are plain GETs of fixed paths.</li><li>Writing is the same objects, PUT in batches, and one compare-and-swap on the ref.</li></ol>
+<p>sgit.ai's own documentation pages read a vault exactly this way in the browser, with a reader of about ninety lines; a cold load fetches 18 objects, the next load fetches one 69-byte ref, and a load inside the two-minute freshness window fetches nothing at all. The CLI and the browser app are two independent implementations of the same wire format, and they verify each other's work.</p>
+<p>Because the read half of the convention is four GETs of fixed paths, any storage that answers a GET implements it: an S3 bucket, GitHub Pages, a CDN, a folder, Python's one-line file server. <code>sgit clone --transport static</code> reads from any of them, and <code>sgit publish</code> is what lays a vault out for one. The write half needs one thing storage does not give you: a compare-and-swap on the ref, which is what the API is for.</p>
+<h2 id="the-hot-path-a-cache-you-can-compute">The hot path: a cache you can compute</h2>
+<p>Four GETs is cheap, but a page that serves one record a thousand times a minute does not want to walk trees. So the convention has a cache layer, shipped: <code>sgit cache add &lt;path&gt;</code> declares a path, and every push keeps an encrypted cache object for it at a location derived from the read key and the path. A reader with only the vault id and the read key computes the candidate ids locally, makes one batch request for the ref and the candidates, checks the commit id inside against the ref, and has the file with no walk. A miss, a stale entry or a mismatch falls back to the ordinary walk, so correctness never depends on the cache; losing one is a performance problem, never a correctness one. The reference reader is written to run in an edge function that serves one hot record. This is Scion's "derived data", built by the writer instead of the server, and named by the key instead of indexed by it.</p>
+<h2 id="what-the-server-does-and-what-storage-does">What the server does, and what storage does</h2>
+<p>Strip the convention down and the API is left with two jobs: protect writes (an access token, compare-and-swap on the ref and the branch index) and shorten reads a little (batches of fifty objects, a listing for cold full clones). Everything else is storage. Which is why, when you look at sgit's timings, you are looking at the storage:</p>
+<ul><li>On the hosted service, a Lambda in front of S3 behind CloudFront, a request costs its round trip before a byte moves: the newsroom measured 317 ms a request through the API and 44 ms for the same object from GitHub Pages. A one-folder, one-commit clone of a 35,000-object vault is 137 objects and 3 MB, and takes 13 s from a cloud sandbox because it is a dozen dependent requests, not because of the bytes.</li><li>On a local server with disk storage (the ruv.sgit ledger, eleven recorded hive runs), every sgit operation is 0.4 to 1.5 s including Python start-up and the 600,000-iteration key derivation; a 142-file, 6.9 MB vault clones in 0.74 s and pushes in 0.87 s.</li><li>The same 35,000-object vault, the same client, the objects moved to local disk: a one-folder, one-commit clone is 0.8 s against a local API server and 2.3 s from a plain file server, against 13 s hosted; a scoped clone with all 1,227 commits of history is 7 s locally against 181 s hosted (the same 1,227 requests, at a millisecond each instead of 150); the full clone is 69 s locally against three and a half minutes, and most of the 69 s is the client decrypting 16,000 trees.</li></ul>
+<p>So the deployment question is not "how do I scale the sgit server" but "where do I put the objects, and how close": memory, a disk, a bucket behind a CDN, a static host. The sgit.ai deploy pages are that list, and <code>sgit serve</code> runs the hosted service's own image on a laptop.</p>
+<h2 id="why-the-work-stays-on-the-client">Why the work stays on the client</h2>
+<p>Scion moves history, blame and merges to the server, and says it is "by no means" for general use. sgit keeps them on the client, and would even if the server could read the data, for the reason git did: a merge is a workflow step that needs the context of the change, the history and the policy that says who may merge what. In ruv.sgit every worker in a hive writes to its own branch and the host merges them under the run's written mandate, with a receipt; in the shared vault ten agents use every day, they meet on a named branch and resolve on the clone that has the conflict in front of it. Scion's post concedes this from the other side: it could not keep a global merge queue at its merge rate, so concurrent changes conflict and an agent fixes them. The merge went back to the client there too.</p>
+<p>What sgit does not have today is a <code>blame</code> command; path history, signed authorship, signed tags and verification exist, and blame is a fold over path history that nobody has written yet. That is the honest gap, stated.</p>
+<h2 id="keep-the-property-that-made-git-git">Keep the property that made git git</h2>
+<p>The distributed copy, complete and verifiable, is why git survived every centralised system that promised to be faster. sgit keeps it: a full clone is one command and holds everything, and anyone with the key can rebuild it from any host. What changed is that the full clone became optional. A folder scope, a history depth, a sparse clone and the cache layer mean an agent takes the part it needs and a repository can hold large files without every client paying for them, which is the one habit every git team has had to police by hand. The whole-history clone is the backup and the audit, and it is still there.</p>
+<h2 id="the-constraint-that-designed-it">The constraint that designed it</h2>
+<p>None of this was a plan to be minimal. The server cannot read a byte, so "just do it on the server" was never available: no server-side index, no server-side render, no merge the client did not make, no derived data the client could not compute from the key. Every feature had to be expressible as objects a writer produces and a reader derives. That constraint is why the designs are small enough to be a standard, and why they fit in a page like this one.</p>
+<h2 id="what-this-does-not-claim">What this does not claim</h2>
+<ul><li>Not proven at Scion's scale: the largest vault is about 35,000 objects, 1,300 commits and ten agents.</li><li>No blame or bisect yet. A partial clone of a long history walks the commits one request at a time until a commit-chain object ships; a depth avoids it today.</li><li>The CDN in front of the hosted API does not yet serve object reads from cache; browsers, clients and static hosts do.</li></ul>
+<div class="pagenav"><span></span><a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/sgit-is-a-standard-one-hash-away.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/sgit-is-a-standard-one-hash-away.md"><code>admin/content/articles/sgit-is-a-standard-one-hash-away.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/sgit-is-a-standard-one-hash-away.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

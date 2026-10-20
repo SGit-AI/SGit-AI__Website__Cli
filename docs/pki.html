@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keys, signatures and encrypting to someone else · cli.sgit.ai</title>
+<meta name="description" content="The keypair lifecycle run end to end on the shipped CLI: RSA-OAEP 4096 encryption, ECDSA P-256 signing, the JSON public-key bundle, the hybrid envelope format, and what PKI does not do yet.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/pki.html">
+<link rel="alternate" type="text/markdown" href="../docs/pki.md">
+<meta property="og:title" content="Keys, signatures and encrypting to someone else">
+<meta property="og:description" content="The keypair lifecycle run end to end on the shipped CLI: RSA-OAEP 4096 encryption, ECDSA P-256 signing, the JSON public-key bundle, the hybrid envelope format, and what PKI does not do yet.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/pki.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl here" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../security/index.html">Security</a> / Keys, signatures and encrypting to someone else</div>
+<h1 id="keys-signatures-and-encrypting-to-someone-else">Keys, signatures and encrypting to someone else</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/pki.html">sgit.ai/docs/pki.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>The vault key is symmetric and opens the whole vault. A keypair does the two things it cannot: prove <i>who</i> wrote something, and encrypt to somebody who holds no vault key at all. This page is the lifecycle, run end to end on the shipped CLI.</p>
+<p><b>Everything below was executed, not recalled.</b> Every command, every output shape and every construction on this page came from running <code>sgit pki</code> on <b>v0.15.0</b> in a throwaway home directory. Where the behaviour differs from what you might expect, and in two places it does, the page says so.</p>
+<h2 id="what-sgit-actually-generates">What sgit actually generates</h2>
+<p><code>sgit pki keygen</code> creates <b>two</b> pairs at once, and prints two fingerprints:</p>
+<div class="tablewrap"><table><thead><tr><th>Purpose</th><th>Construction</th><th>Identifier</th></tr></thead><tbody><tr><td>Encryption</td><td><b>RSA-OAEP, 4096-bit</b></td><td><code>fingerprint</code></td></tr><tr><td>Signing</td><td><b>ECDSA P-256</b></td><td><code>signing_fingerprint</code></td></tr></tbody></table></div>
+<p>Encryption is <b>hybrid</b>, which is what makes it usable on files of any size: a fresh AES-256-GCM content key encrypts the payload, and RSA-OAEP wraps that content key. The same AES-256-GCM primitive as the rest of the vault, the keypair only changes how the content key gets to the recipient.</p>
+<p>Note for anyone integrating against a spec rather than the binary: this is <b>RSA-OAEP and ECDSA</b>, not X25519/Ed25519. Draft material describing an X25519 sealing layer describes a design, not what v0.15.0 ships.</p>
+<h2 id="the-lifecycle">The lifecycle</h2>
+<h3 id="1-generate">1 · Generate</h3>
+<pre><code class="lang-text">$ sgit pki keygen --label &quot;My Vault Identity&quot;
+Enter passphrase to protect private keys:
+
+Generating RSA-4096 encryption key... done
+
+Key pair created:
+  Label:                My Vault Identity
+  Encryption:           RSA-OAEP 4096-bit
+  Signing:              ECDSA P-256
+  Fingerprint:          sha256:a4615402a0bc23ac
+  Signing fingerprint:  sha256:69d9b4835ccf790c</code></pre>
+<p><b>Keygen prompts for a passphrase</b> and will not proceed without one, private keys are encrypted at rest. In a script, feed it on stdin; with no terminal at all it exits with an <code>EOFError</code> rather than silently generating an unprotected key, which is the right failure.</p>
+<p>RSA-4096 generation is not instant. Expect a pause.</p>
+<h3 id="2-publish-the-public-half">2 · Publish the public half</h3>
+<pre><code class="lang-text">$ sgit pki list
+  sha256:a4615402a0bc23ac  My Vault Identity  (RSA-OAEP 4096)
+
+$ sgit pki export sha256:a4615402a0bc23ac &gt; my-identity.json</code></pre>
+<p><b>Export produces a JSON bundle, not a PEM file.</b> It carries both public keys, both fingerprints and the label:</p>
+<pre><code class="lang-text">{
+  &quot;v&quot;: 1,
+  &quot;encrypt&quot;: &quot;-----BEGIN PUBLIC KEY-----\nMIICIjANBgkq…&quot;,
+  &quot;sign&quot;:    &quot;-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQ…&quot;,
+  &quot;label&quot;:   &quot;My Vault Identity&quot;,
+  &quot;fingerprint&quot;:         &quot;sha256:a4615402a0bc23ac&quot;,
+  &quot;signing_fingerprint&quot;: &quot;sha256:69d9b4835ccf790c&quot;
+}</code></pre>
+<p>The bundle contains no private material. Publish it, mail it, commit it, put it on your website.</p>
+<h3 id="3-import-someone-else-s">3 · Import someone else’s</h3>
+<pre><code class="lang-text">$ sgit pki import their-identity.json
+Imported contact: Their Label
+  Fingerprint: sha256:…
+
+$ sgit pki contacts
+  sha256:…  Their Label</code></pre>
+<h3 id="4-encrypt-to-them-and-decrypt-what-they-send-you">4 · Encrypt to them, and decrypt what they send you</h3>
+<pre><code class="lang-text">$ sgit pki encrypt message.txt --recipient sha256:a4615402a0bc23ac
+Encrypted to message.txt.enc
+
+$ sgit pki decrypt message.txt.enc --fingerprint sha256:a4615402a0bc23ac
+Enter passphrase:
+Decrypted to message.txt</code></pre>
+<p>Round trip verified. Two argument details that will bite you once each: <code>encrypt</code> takes <code>--recipient</code> (a contact’s fingerprint) and an optional <code>--fingerprint</code> for <i>your</i> signing key; <code>decrypt</code> requires <code>--fingerprint</code>. It will not guess which of your keys to try.</p>
+<h3 id="5-sign-and-verify">5 · Sign and verify</h3>
+<pre><code class="lang-text">$ sgit pki sign report.pdf --fingerprint sha256:69d9b4835ccf790c
+$ sgit pki verify report.pdf report.pdf.sig</code></pre>
+<p>Detached signatures, so the signed file is unchanged. Signing uses the <i>signing</i> fingerprint, which is the second one keygen printed.</p>
+<h2 id="the-envelope-on-the-wire">The envelope on the wire</h2>
+<p>An encrypted file is base64 over a small JSON object, worth knowing if you are writing an interoperable client:</p>
+<div class="tablewrap"><table><thead><tr><th>Field</th><th>Contents</th><th>Observed size</th></tr></thead><tbody><tr><td><code>v</code></td><td>Envelope version, <code>2</code> on v0.15.0</td><td>none</td></tr><tr><td><code>w</code></td><td>The AES content key, wrapped with RSA-OAEP to the recipient</td><td>512 bytes (4096-bit)</td></tr><tr><td><code>i</code></td><td>AES-GCM IV</td><td>12 bytes</td></tr><tr><td><code>c</code></td><td>Ciphertext with its GCM tag</td><td>plaintext + 16</td></tr><tr><td><code>f</code></td><td>The signer's fingerprint, when <code>encrypt</code> was given <code>--fingerprint</code></td><td>none</td></tr><tr><td><code>s</code></td><td>The ECDSA signature, over <code>c</code> only</td><td>none</td></tr></tbody></table></div>
+<p><b>Two things to know when you rely on the signature</b> (checked 26 September 2026, on sgit-ai v0.16.0). First, <b>it covers the inner ciphertext <code>c</code> only</b>: not the wrapped key <code>w</code>, not the IV, and not who the message was encrypted to. Someone holding the recipient's private key could re-wrap a signed <code>c</code> to a third party. Signing the whole envelope is the recommended fix. Second, <b><code>decrypt</code> reports the signer's label, not its fingerprint</b>, and only when the signer's bundle is in your keyring. Labels are not unique, so when identity matters, verify <code>s</code> against the expected key by fingerprint yourself. Both are from <a href="../docs/append-lane-messaging.html">the append-lane write-up</a>.</p>
+<p>A 37-byte plaintext produced a 1,076-byte file: the RSA-wrapped key dominates, so this is efficient for large payloads and heavy for tiny ones.</p>
+<h2 id="where-public-keys-live-in-a-vault">Where public keys live in a vault</h2>
+<p>Vaults carry public PKI keys as immutable objects at <code>bare/keys/key-rnd-imm-*</code>, alongside the content store at <code>bare/data/obj-cas-imm-*</code>. They are public by construction, so nothing there needs protecting, which is exactly why a lane addressed by a public key can be written to by a stranger.</p>
+<h2 id="what-this-is-for">What this is for</h2>
+<p>Signing and encrypting files is useful on its own. The larger use is <a href="../docs/vault-messaging.html"><b>vault-to-vault messaging</b></a>: your public key becomes an address a stranger can write to, and your private key is the only thing that can read what arrives. That page composes this one with <a href="../api/append-lanes.html">append lanes</a>.</p>
+<h2 id="what-this-does-not-do-yet">What this does not do yet</h2>
+<ul><li><b>No key revocation or rotation workflow.</b> There is no CRL, no expiry, no <code>sgit pki revoke</code>. If a private key is compromised, you generate a new pair and redistribute the bundle out of band.</li><li><b>No web of trust and no directory.</b> Fingerprint verification is your problem, compare out of band, exactly as with SSH host keys.</li><li><b>Fingerprints carry a <code>sha256:</code> prefix.</b> That prefix is part of the CLI identifier, not part of any hash you might need elsewhere. See the <a href="../docs/vault-messaging.html#addressing">addressing note</a>. It is a live source of confusion.</li><li><b>Signing and encryption are separate keys.</b> Passing the wrong fingerprint to the wrong verb fails; it does not fall back.</li></ul>
+<p>Honest edges belong on <a href="../docs/limitations.html">the limitations page</a> too, and these are listed there.</p>
+<div class="pagenav"><a href="../docs/credentials.html">← Vault credentials: what each one can do, and what its prefix declares</a><span></span></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/pki.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/pki.md"><code>admin/content/docs/pki.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/pki.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

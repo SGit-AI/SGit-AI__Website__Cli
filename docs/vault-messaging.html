@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sending messages between vaults · cli.sgit.ai</title>
+<meta name="description" content="How two vaults exchange encrypted messages without sharing a vault key and without the sender holding an account: append lanes addressed by a token, composed with PKI. Worked example in CLI, curl and sg.append, with the one step that is not yet wired marked PROPOSED.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/vault-messaging.html">
+<link rel="alternate" type="text/markdown" href="../docs/vault-messaging.md">
+<meta property="og:title" content="Sending messages between vaults">
+<meta property="og:description" content="How two vaults exchange encrypted messages without sharing a vault key and without the sender holding an account: append lanes addressed by a token, composed with PKI. Worked example in CLI, curl and sg.append, with the one step that is not yet wired marked PROPOSED.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/vault-messaging.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Guides</a> / Sending messages between vaults</div>
+<h1 id="sending-messages-between-vaults">Sending messages between vaults</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/vault-messaging.html">sgit.ai/docs/vault-messaging.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>Two vaults can exchange encrypted messages without sharing a vault key, without the sender having an account, and without the server ever being able to read anything. The mechanism is an <b>append lane</b>: a write-only channel attached to a vault, addressed by the hash of a public key.</p>
+<p><b>Why this page exists.</b> Both halves of this capability were already documented, the transport as <a href="https://sgit.ai/docs/vault/sg-bridge.html"><code>sg.append</code></a>, the crypto as <a href="../docs/pki.html"><code>sgit pki</code></a>, on pages that never referenced each other. An agent asked how to send a message between vaults, found both halves, and could not find the sentence that says they combine. This is that sentence, written out.</p>
+<h2 id="the-shape-of-it">The shape of it</h2>
+<pre><code class="lang-text">   SENDER                        SERVER                      RECIPIENT
+   ──────                        ──────                      ─────────
+   has: your public key          stores: ciphertext          has: private key
+                                         + hashes of keys          + enum_key
+
+   encrypt(msg, your_pubkey)
+   append_token = H(pubkey)
+        │
+        │  POST /api/vault/append/write/{vault_id}
+        │  { append_token, payload }
+        ├────────────────────────▶  gate: H(append_token) ∈ append_anchors?
+        ◀────────────────────────  { &quot;ok&quot;: true }   ← blind: no id, no count
+                                          │
+                                          │   POST /append/list      (enum_key)
+                                          ◀──────────────────────────┤
+                                          │   POST /append/fetch     │
+                                          ├─────────────────────────▶│ decrypt locally
+                                          │   POST /append/mark-processed
+                                          ◀──────────────────────────┤</code></pre>
+<p><b>What the server can see:</b> that a lane received something, how big it was, and when. <b>What it cannot see:</b> the content, or the recipient’s private key, which never leaves their machine.</p>
+<h2 id="four-capabilities-deliberately-separated">Four capabilities, deliberately separated</h2>
+<p>This is the part worth understanding, because it is why a sender cannot read the lane they write to:</p>
+<div class="tablewrap"><table><thead><tr><th>Capability</th><th>Who holds it</th><th>Can</th><th>Cannot</th></tr></thead><tbody><tr><td><code>append_token</code></td><td>the sender</td><td>write</td><td>list, fetch, read anything</td></tr><tr><td><code>enum_key</code></td><td>the vault owner</td><td>list, fetch, mark-processed</td><td>write, purge</td></tr><tr><td><code>write_key</code></td><td>the vault owner</td><td>configure, purge</td><td>none</td></tr><tr><td>private key</td><td>the vault owner</td><td><b>decrypt</b></td><td><i>never sent to the server</i></td></tr></tbody></table></div>
+<p>The server stores <code>SHA-256</code> hashes of the first three and checks <code>H(presented) == stored</code>. It never holds a raw capability key, and never holds a private key at all. Compromising the server yields hashes and ciphertext.</p>
+<p>Read in the <a href="https://sgit.ai/compare/index.html">privilege vocabulary</a> the comparison pages use: the sender’s capability is <b>scoped</b> to one operation on one lane, <b>bearer</b>-held, and <b>observable</b> to the owner but not to the sender. A write-only credential that cannot read its own effects is an unusually clean shape.</p>
+<h2 id="setting-up-a-lane-recipient-one-time">Setting up a lane recipient, one-time</h2>
+<p>Have a keypair and publish the public half (<a href="../docs/pki.html">full lifecycle here</a>):</p>
+<pre><code class="lang-text">$ sgit pki keygen --label &quot;My Vault Identity&quot;
+$ sgit pki export sha256:a4615402a0bc23ac &gt; my-identity.json</code></pre>
+<p>Then register, against your vault, the hash of the sender’s lane address and the hash of your enumeration key:</p>
+<pre><code class="lang-text">$ curl -X POST https://dev.send.sgraph.ai/api/vault/append/configure/$VAULT_ID \
+    -H &quot;x-sgraph-vault-write-key: $WRITE_KEY&quot; \
+    -H &quot;x-sgraph-access-token: $SG_SEND_ACCESS_TOKEN&quot; \
+    -H &quot;Content-Type: application/json&quot; \
+    -d &#x27;{&quot;append_anchors&quot;:[&quot;&lt;sha256 of the append_token&gt;&quot;],
+         &quot;enum_key_hash&quot;:&quot;&lt;sha256 of your enum_key&gt;&quot;}&#x27;</code></pre>
+<p><code>configure</code> patches an existing vault manifest. It does not create a vault. It needs the SG/Send access token as well as the write key. <b>It replaces the anchor list</b>, so adding a sender means sending every existing anchor plus the new one. A <b>404 with an HTML page</b> means the vault ID or the write key is wrong. The <code>/api/vault/append/*</code> routes are on <code>dev.send.sgraph.ai</code>. Checked 10 October 2026: <code>dev.send.sgraph.ai</code> (API v0.33.69) serves the six <code>/api/vault/append/*</code> routes; <code>send.sgraph.ai</code> (API v0.32.4) still serves the same six under their older <code>/api/vault/inbox/*</code> names (<code>inbox/append</code> for the write), from before the rename.Corrected on 26 September 2026: this paragraph said a wrong key returned 403, and the examples used <code>send.sgraph.ai</code>, which has no append routes. See <a href="../docs/append-lane-messaging.html">the write-up</a> that found both.</p>
+<h2 id="deriving-the-lane-address-read-this-before-writing-code">Deriving the lane address read this before writing code</h2>
+<p><b>This step is not yet wired end to end, and the gap is worth stating precisely.</b> The design is <code>append_token = H(recipient public key)</code>, so a sender can compute your lane address from the public bundle you gave them, with no extra coordination. That is an elegant property and it is the intended model.</p>
+<p>What ships on <b>sgit v0.15.0</b>, and is still the case on <b>sgit-ai v0.20.0</b> (checked 10 October 2026): <code>sgit pki export</code> emits a <b>JSON bundle</b> containing two PEM blocks, a label and two fingerprints, <i>not</i> a bare public key. No shipped command emits the append token, and hashing the bundle file is not a defined derivation (field order and whitespace would change the answer). The <b>server</b> side of append lanes is code-verified and shipped; the <b>client</b> derivation that turns a public key into a lane address is <b>PROPOSED</b>.</p>
+<p><b>What to do meanwhile:</b> treat <code>append_token</code> as an opaque 64-hex secret you agree out of band, generate one, hand it to your sender, register its SHA-256 as an <code>append_anchor</code>. Everything else on this page works today. When the derivation lands, the token stops needing to be exchanged; nothing else changes.</p>
+<p>Two format rules that cause avoidable failures:</p>
+<ul><li>The token pattern is <code>^[0-9a-f]{16,128}$</code>, <b>hex only</b>. A prefixed token like <code>tok_abc…</code> returns <b>400</b>, not 403, because it fails input validation before it reaches any gate.</li><li>CLI fingerprints are printed as <code>sha256:a4615402a0bc23ac</code>. That <code>sha256:</code> prefix is part of the CLI identifier and is <b>not</b> part of a token. Pasting a fingerprint straight in is the most likely way to hit that 400.</li></ul>
+<h2 id="sending">Sending</h2>
+<pre><code class="lang-text"># 1. encrypt to the recipient&#x27;s public key (RSA-OAEP 4096 + AES-256-GCM, client-side)
+$ sgit pki encrypt message.txt --recipient sha256:a4615402a0bc23ac
+Encrypted to message.txt.enc
+
+# 2. append it to their lane
+$ curl -X POST https://dev.send.sgraph.ai/api/vault/append/write/$THEIR_VAULT_ID \
+    -H &quot;Content-Type: application/json&quot; \
+    -d &#x27;{&quot;append_token&quot;:&quot;&#x27;$APPEND_TOKEN&#x27;&quot;,&quot;payload&quot;:&quot;&#x27;$(base64 -w0 message.txt.enc)&#x27;&quot;}&#x27;
+{&quot;ok&quot;: true}</code></pre>
+<p><b>The payload is encoded twice.</b> The <code>.enc</code> file is already base64 text, and the example sends base64 of that file, which is what the server and today's drainers expect. The <a href="../api/append-lanes.html#payload">API page</a> gives the exact decode.</p>
+<p><b>No account is needed to send.</b> The write endpoint requires no access token, the <code>append_token</code> is the whole gate. That is deliberate: somebody can send to your vault without holding a credential on the platform at all.</p>
+<p>The response is <b>blind by design</b>: exactly <code>{"ok": true}</code>, with no file ID, no count and no metadata. A sender cannot learn what else is in the lane, or even whether theirs was the first write.</p>
+<h2 id="receiving">Receiving</h2>
+<p>Poll cheaply first, a metadata-only listing reads <b>zero</b> payloads:</p>
+<pre><code class="lang-text">$ curl -X POST https://dev.send.sgraph.ai/api/vault/append/list/$VAULT_ID \
+    -H &quot;x-sgraph-vault-enum-key: $ENUM_KEY&quot; \
+    -H &quot;Content-Type: application/json&quot; \
+    -d &#x27;{&quot;include_content&quot;: false}&#x27;</code></pre>
+<p>Filenames are server-assigned as <code>{epoch_ms}_{24-hex}.enc</code>, so they sort chronologically, which is what makes cursor pagination stable. Page with <code>after_file_id</code> set to the last ID you saw.</p>
+<pre><code class="lang-text">$ curl -X POST .../append/fetch/$VAULT_ID -H &quot;x-sgraph-vault-enum-key: $ENUM_KEY&quot; \
+    -d &#x27;{&quot;inbox&quot;:&quot;&#x27;$APPEND_TOKEN&#x27;&quot;,&quot;file_ids&quot;:[&quot;1755302400000_a3f8….enc&quot;]}&#x27;
+
+$ sgit pki decrypt message.txt.enc --fingerprint sha256:a4615402a0bc23ac
+
+$ curl -X POST .../append/mark-processed/$VAULT_ID -H &quot;x-sgraph-vault-enum-key: $ENUM_KEY&quot; \
+    -d &#x27;{&quot;inbox&quot;:&quot;&#x27;$APPEND_TOKEN&#x27;&quot;,&quot;file_ids&quot;:[&quot;1755302400000_a3f8….enc&quot;]}&#x27;</code></pre>
+<p><code>fetch</code> and <code>mark-processed</code> both need the lane named in <code>inbox</code>: the raw token, as <code>list</code> returns it. <code>fetch</code> serves pending files only, so a drainer that wants to re-verify a signature later must keep the ciphertext itself.</p>
+<p><code>mark-processed</code> is idempotent, a file already moved comes back in <code>missing</code> rather than as an error, so a retried batch is safe.</p>
+<h2 id="two-ways-and-with-no-long-lived-secret">Two ways, and with no long-lived secret</h2>
+<p>On 25 and 26 September 2026 two agent teams used this to message each other in both directions without either holding the other's vault key. One side was a permanent vault; the other was an agent whose sessions are fresh containers and can keep no secret between them. Three things made that work, and <a href="../docs/append-lane-messaging.html">the write-up</a> describes each with its flows, tests and threat model:</p>
+<ul><li><b>Signatures on every message</b>, checked against the lane: the lane says who holds the token, the signature says who holds the key, and the <code>From:</code> header must match both.</li><li><b>A fresh signing key per session</b>, published in a key registry on the sender's own website, which the recipient pins once. The registry's serial only goes up, so an old key lifted from an earlier container is refused.</li><li><b>An ephemeral inbox</b>: a vault created for one session, with a lane for each expected sender, published on the agent's site, drained while the session runs and deleted at the end.</li></ul>
+<p><b>Verify signers by fingerprint, not by label.</b> <code>sgit pki decrypt</code> reports the signer's label, and with a new key per session labels repeat. See <a href="../docs/pki.html#envelope">what the signature covers</a>.</p>
+<h2 id="from-inside-a-vault-app">From inside a vault app</h2>
+<p>The same transport through the browser bridge, with no HTTP of your own (see <a href="https://sgit.ai/docs/vault/sg-bridge.html"><code>sg.append</code></a>):</p>
+<pre><code class="lang-text">await sg.append.configure({ appendAnchors: [anchorHash], enumKeyHash });
+await sg.append.write({ appendToken, payload });            // blind
+const { entries } = await sg.append.list({ includeContent: false });
+const { files }   = await sg.append.fetch({ fileIds });
+await sg.append.markProcessed({ fileIds });
+await sg.append.purge({ folder: &#x27;processed&#x27; });</code></pre>
+<h2 id="practical-notes">Practical notes</h2>
+<ul><li><b>Limits.</b> 5 MB per message (<b>413</b>) · 1000 pending files per token (<b>507</b>) · 100 file IDs per batch (<b>400</b>) · 3 MB inline-content ceiling when listing with content (<b>413</b>) · list page size 50 by default, 200 max, clamped silently.</li><li><b>Several senders.</b> Register several <code>append_anchors</code>. Each sender writes to their own lane, so a listing can be scoped to one of them.</li><li><b>Housekeeping.</b> <code>purge</code> with <code>folder:"processed"</code> and no file IDs clears a whole lane’s processed set in one call. It takes <code>"pending"</code> or <code>"processed"</code>, the older <code>"inbox"</code> value now returns 400.</li><li><b>The API was renamed.</b> <code>inbox</code> became <code>append</code> in v0.32.7, so a server at v0.32.7 or later has no <code>/api/vault/inbox/*</code> URL. A server on an earlier version still has only the old names: on 10 October 2026 that included <code>send.sgraph.ai</code> (v0.32.4). Check <code>/api/openapi.json</code> on the host you use.</li></ul>
+<h2 id="what-this-is-not">What this is not</h2>
+<p>Not a chat protocol, not a queue with delivery guarantees, and not anonymous, the server sees lane activity and timing even though it cannot read content. It is a <b>generic append-only transport</b>: the same primitive carries logs, signals, control messages and state flows between agents. The client decides what the bytes mean.</p>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="../api/append-lanes.html">API, append lanes</a>: the six endpoints, gates, limits and status codes</li><li><a href="../docs/append-lane-messaging.html">Append-lane messaging between agents</a>: the write-up of two-way use, 26 September 2026</li><li><a href="../docs/pki.html">PKI</a>: keypair lifecycle, verified against the shipped CLI</li><li><a href="https://sgit.ai/docs/vault/sg-bridge.html"><code>sg.append</code></a>: the same transport from a vault app</li><li><a href="../security/index.html#pki">Security model</a>: where the keypair sits relative to the symmetric vault key</li></ul>
+<div class="pagenav"><a href="../docs/agents-sharing-one-vault.html">← Agents sharing one vault</a><a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/vault-messaging.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/vault-messaging.md"><code>admin/content/docs/vault-messaging.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/vault-messaging.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

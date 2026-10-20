@@ -1,0 +1,58 @@
+usage: sgit-ai [-h] [--version] [--base-url BASE_URL] [--token TOKEN]
+               [--debug] [--vault PATH]
+               {doctor,version,update,help,clone,init,create,clone-branch,clone-headless,clone-range,commit,status,pull,push,fetch,publish,cat,ls,write,branch,merge-abort,resolve,vault,serve,cache,migrate,pki,check,dev,file,history,inspect,remote} ...
+
+CLI tool for syncing encrypted vaults with SG/Send
+
+positional arguments:
+  {doctor,version,update,help,clone,init,create,clone-branch,clone-headless,clone-range,commit,status,pull,push,fetch,publish,cat,ls,write,branch,merge-abort,resolve,vault,serve,cache,migrate,pki,check,dev,file,history,inspect,remote}
+                        Available commands
+    doctor              Check remote connectivity and configuration
+    version             Show sgit-ai version
+    update              Update sgit-ai to the latest version
+    help                Show help (use `sgit help all` for full surface)
+    clone               Clone a vault from the remote server
+    init                Create a new empty vault and register it on the server
+    create              Create a new vault and push it to the server in one
+                        step
+    clone-branch        Thin clone: full commit history + HEAD trees/blobs
+                        only. Note: only HEAD is fully fetched — run 'sgit
+                        fetch <path>' or 'sgit pull' to access older history.
+    clone-headless      Credentials-only clone: derive keys, write config, no
+                        data
+    clone-range         Clone a specific commit range (range_from..range_to)
+    commit              Commit local changes to the clone branch
+    status              Show uncommitted changes in working directory
+    pull                Pull named branch changes and merge into clone branch
+    push                Push clone branch to the named branch
+    fetch               Fetch file content on demand (sparse clone)
+    publish             Generate the plaintext surface for static publishing
+                        (.sg_vault/publish/ — the only path that changes)
+    cat                 Decrypt and print a vault file to stdout
+    ls                  List vault files with fetch status
+    write               Write a file directly to vault HEAD (agent workflow)
+    branch              Branch management
+    merge-abort         Abort an in-progress merge and restore working tree
+    resolve             Resolve merge conflicts per file or all at once
+    vault               Vault management and credential store
+    serve               Run this vault on your machine: the vault UI + API in
+                        a container (Docker, Podman, Apple container), or
+                        --static
+    cache               Declare cached paths (fast single-request reads)
+    migrate             Run vault data migrations
+    pki                 PKI key management and encryption
+    check               Vault integrity checks
+    dev                 Dev/perf instrumentation tools (sgit dev <tool>)
+    file                File operations (cat, ls, write)
+    history             Commit history and diffs
+    inspect             Read-only vault inspection tools
+    remote              Manage vault remotes (alias for `sgit vault remote`)
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --base-url BASE_URL   API base URL (default: https://dev.send.sgraph.ai)
+  --token TOKEN         SG/Send access token
+  --debug               Enable debug mode (show network traffic with timing)
+  --vault PATH          Override context detection: treat PATH as the vault
+                        root

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Update sgit-ai to 0.21.0 · cli.sgit.ai</title>
+<meta name="description" content="For an agent team: sgit update, what now refuses and what to do (symlinks, unreadable files, SGIT_DEFAULT_BASE_URL, key zips, branch names, rewinds, signatures), the new history commands (undo, reflog, amend, revert --as-commit, shorthand, log filters), signed tags, --force-with-lease, notes for vault owners and mixed 0.20/0.21 teams. Covers 0.19.0 and 0.20.0. Published 11 October 2026.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/update-to-0-21-0.html">
+<link rel="alternate" type="text/markdown" href="../docs/update-to-0-21-0.md">
+<meta property="og:title" content="Update sgit-ai to 0.21.0">
+<meta property="og:description" content="For an agent team: sgit update, what now refuses and what to do (symlinks, unreadable files, SGIT_DEFAULT_BASE_URL, key zips, branch names, rewinds, signatures), the new history commands (undo, reflog, amend, revert --as-commit, shorthand, log filters), signed tags, --force-with-lease, notes for vault owners and mixed 0.20/0.21 teams. Covers 0.19.0 and 0.20.0. Published 11 October 2026.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/update-to-0-21-0.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
+      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Guides</a> / Update sgit-ai to 0.21.0</div>
+<h1 id="update-sgit-ai-to-0-21-0">Update sgit-ai to 0.21.0</h1>
+<div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/update-to-0-21-0.html">sgit.ai/docs/update-to-0-21-0.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<p>A page for an agent, or a person running agents, that has been told "read this and update". Ten minutes. sgit-ai 0.21.0 was published to PyPI on 10 October 2026. It includes everything in 0.19.0 and 0.20.0, so coming from 0.18.0 or older this is the only page you need. <b>Your daily loop does not change</b>: <code>pull</code>, work, <code>commit</code>, <code>push</code>. What changes is what sgit now refuses to do, and a set of history commands you have been missing.</p>
+<h2 id="1-update-and-check">1. Update and check</h2>
+<pre><code class="lang-text">$ sgit update          # wraps: pip install --upgrade sgit-ai
+$ sgit version
+sgit-ai v0.21.0</code></pre>
+<p>If <code>sgit version</code> still shows an older number, you have more than one Python environment; run <code>python -m pip install --upgrade sgit-ai</code> in the one your harness uses, then check again. <a href="../docs/installation.html">Installation</a> has the rest. Your existing clones need nothing: the first command in each one records the server it uses and moves its bookkeeping to the 0.21.0 layout.</p>
+<h2 id="2-what-now-refuses-and-what-to-do">2. What now refuses, and what to do</h2>
+<p>0.21.0 is a security release. Each of these used to work, or work silently and do damage. Each refusal names the file or branch and says what to do; none changes anything before it stops.</p>
+<div class="tablewrap"><table><thead><tr><th>You see</th><th>Why</th><th>What to do</th></tr></thead><tbody><tr><td><code>warning: skipped symlink &lt;path&gt;</code> on commit</td><td>sgit never stores, follows or writes through a link. A link to <code>.sg_vault/local/vault_key</code> used to commit the vault key itself</td><td>Nothing. Commit the real file if you meant to. A tracked file replaced by a link keeps its committed version; <code>status</code> and <code>pull</code> name it</td></tr><tr><td><code>cannot read &lt;file&gt; (Permission denied); nothing was changed</code></td><td>A file sgit cannot open used to read as deleted, and a commit removed it for everyone</td><td>Close the program holding it or fix its permissions, then run the command again</td></tr><tr><td>a refusal naming <code>SGIT_DEFAULT_BASE_URL</code></td><td>The variable used to silently redirect a vault, with your token and write key, to whatever host it named</td><td>Name the server once: <code>sgit --base-url &lt;url&gt; &lt;command&gt;</code> (the flag goes before a group too), or <code>sgit remote add origin &lt;url&gt;</code>. Vaults made by 0.21.0 already record it</td></tr><tr><td>a commit refused over a zip that holds a key</td><td>A backup zip (or any zip) holding a vault key or a private signing key would hand it to every reader</td><td>Delete it, or move it out of the vault folder. <code>sgit commit --allow-secret-file &lt;path&gt;</code> commits one on purpose</td></tr><tr><td><code>a branch named '&lt;name&gt;' already exists on the server</code> on push</td><td>A teammate pushed a branch with that name first; yours used to land where nobody could see it</td><td><code>sgit branch rename &lt;name&gt; &lt;new-name&gt;</code>, then <code>sgit push</code></td></tr><tr><td><code>the named branch was REWOUND</code>; <code>push</code> exits 1</td><td>Someone force-pushed, or the server served an old pointer</td><td>Do not accept it on your own; tell the vault owner. If it was deliberate: <code>sgit pull --accept-rewind</code>, which keeps your own unpushed commits and drops the removed ones</td></tr><tr><td><code>this vault needs sgit-ai &gt;= X.Y.Z</code></td><td>The owner raised the vault's minimum client</td><td><code>sgit update</code>, then retry</td></tr><tr><td>a pull, clone or push refused over an unsigned commit</td><td>The vault requires signed commits (<code>signatures-required</code>)</td><td>Tell the vault owner. If your clone has no signing key (it says <code>UNSIGNED</code> when you commit), clone the vault again</td></tr><tr><td><code>'abcdef1' is not a valid tag name</code>, or a revision refused as ambiguous</td><td>A tag named like a commit id would shadow it</td><td>Pick another name. For an existing short-hex tag write <code>tag:&lt;name&gt;</code>, or the full commit id</td></tr><tr><td><code>sgit: 'log' is now sgit history log</code> (exit 2)</td><td>Commands moved into groups in earlier releases</td><td>Use the name it prints</td></tr></tbody></table></div>
+<h2 id="3-new-commands-worth-knowing">3. New commands worth knowing</h2>
+<p>All local, all safe to try. Every example below is output from 0.21.0 on the live dev server, 11 October 2026.</p>
+<h3 id="history-the-way-git-users-expect-it">History, the way git users expect it</h3>
+<pre><code class="lang-text">$ sgit history log --grep more --stat
+  f7a8b9646ae9 (HEAD)  add more  ~1  [blobs:+1]
+      M  notes.md
+
+$ sgit history show HEAD~1
+commit obj-cas-imm-bb27e943d81d
+parent obj-cas-imm-326e87100964
+    first notes
++ notes.md  (8 bytes)</code></pre>
+<ul><li><b>Revisions everywhere a commit is named:</b> <code>HEAD</code>, <code>@</code>, <code>HEAD~2</code>, <code>HEAD^2</code>, <code>@{1}</code> (where this clone's head was), tag names, the 12-hex id <code>history log</code> prints, or any unique prefix of 4+ characters.</li><li><b>Log filters:</b> <code>--grep</code>, <code>--since</code> / <code>--until</code> (<code>2026-10-08</code>, <code>3d</code>, <code>"2 weeks ago"</code>, <code>yesterday</code>), <code>--author</code> (a signing key id or branch name), <code>--stat</code>. They follow merged-in commits too.</li></ul>
+<h3 id="undo-amend-revert">Undo, amend, revert</h3>
+<pre><code class="lang-text">$ sgit history undo
+Undone: this clone&#x27;s head is back at f7a8b9646ae9 (was d9c5d05ea052).
+  1 file(s) restored, 0 removed. Run it again to redo; sgit history reflog shows every move.
+
+$ sgit history reflog -n 3
+  @{0}  f7a8b9646ae9  2026-10-11 15:54:26  add more  (was d9c5d05ea052)
+  @{1}  d9c5d05ea052  2026-10-11 15:54:25  local mistake  (was f7a8b9646ae9)
+  @{2}  f7a8b9646ae9  2026-10-11 15:54:09  add more  (was bb27e943d81d)</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Command</th><th>What it does</th><th>When</th></tr></thead><tbody><tr><td><code>sgit history undo</code></td><td>moves this clone's head back to before its last move, restoring the files; run again to redo</td><td>a local commit you regret, before pushing</td></tr><tr><td><code>sgit history reflog</code></td><td>every move of this clone's head (local, last 1,000); <code>sgit history reset &lt;id&gt;</code> brings one back</td><td>after a reset, an accepted rewind or a bad merge</td></tr><tr><td><code>sgit commit --amend [-m …]</code></td><td>replaces the last commit; refused once it is on the server</td><td>a typo in the message, a forgotten file</td></tr><tr><td><code>sgit history revert --as-commit --commit &lt;rev&gt;</code></td><td>a new, signed commit that inverts an earlier one (git's <code>revert</code>)</td><td>undoing a <b>pushed</b> change for everyone</td></tr></tbody></table></div>
+<p>Plain <code>sgit history revert</code> still restores files without committing, as before.</p>
+<h3 id="tags-branches-safer-force">Tags, branches, safer force</h3>
+<pre><code class="lang-text">$ sgit vault tag create v1.0 -m &quot;first release&quot;
+Tagged f7a8b9646ae9 as v1.0, signed by this clone.
+$ sgit vault tag list
+  ✓ v1.0  f7a8b9646ae9  2026-10-11 15:54 UTC  first release</code></pre>
+<ul><li><b>Signed tags</b> (<code>sgit vault tag create | list | show | delete</code>): an encrypted, signed object; the name lives only in the encrypted branch index, so the server never sees it. Tags do not move without <code>--force</code>, and a pull reports a tag that moved. A tag name works wherever a commit does.</li><li><b>Branches work end to end:</b> <code>branch new</code>, <code>branch switch</code> (fetches first), <code>branch merge &lt;name&gt;</code>, and <code>branch rename</code> for a branch not yet pushed. Before 0.21.0, work on a branch was pushed to the main branch.</li><li><b><code>sgit push --force-with-lease</code></b>: forces only if the remote is still where this clone last accepted it, and writes with compare-and-swap, so a teammate's push is never clobbered. Running <code>status</code> in between does not satisfy the lease.</li><li><b><code>sgit doctor</code></b> names the server it checks and sends the same headers as push and pull; <code>sgit clone - &lt;dir&gt;</code> reads the vault key from stdin, so it never appears in your command line or shell history.</li></ul>
+<h2 id="4-if-you-are-the-vault-owner">4. If you are the vault owner</h2>
+<p>Nothing changes for a vault until you raise it. 0.21.0 is the first release where the history-integrity features are safe for a team of writers.</p>
+<pre><code class="lang-text">$ sgit vault format --set 2 --min-client 0.21.0 --feature signatures-required
+Vault format updated and written to the server.
+  …
+  Format:      2  (new objects get 32-hex ids)
+  Min client:  0.21.0   (this client: v0.21.0)
+  Features:    ids-128, signatures-required, signed-since-82bcf306a04a</code></pre>
+<ul><li><b><code>--min-client 0.21.0</code></b> is the recommended floor: a 0.19.0 or 0.20.0 client is then refused by name (<code>this vault needs sgit-ai &gt;= 0.21.0 and this is 0.20.0: run</code>sgit update``, checked on 11 October). It also keeps 0.20.0 clients from dropping the vault's tags, below.</li><li><b><code>signatures-required</code></b> now works with several writers. Clone, pull and push all check it. Only commits after the moment you switch it on (<code>signed-since-…</code>) must be signed, so older unsigned history is fine.</li><li><b>Clients older than 0.19.0 do not know the gate exists.</b> On a raised vault they fail and blame the data ("integrity check refused vault data", "missing file … sgit check fsck"). The fix for them is <code>sgit update</code>, never <code>vault move</code> or <code>fsck --repair</code>. Raise a vault only when every writer is on 0.21.0.</li></ul>
+<p>The whole model (the gate, 128-bit ids, rewinds, signatures) is in <a href="../docs/history-integrity.html">History integrity</a>.</p>
+<h2 id="5-mixed-teams-0-20-0-and-0-21-0-on-one-vault">5. Mixed teams: 0.20.0 and 0.21.0 on one vault</h2>
+<p>Clone, pull, commit and push work in both directions, and every commit verifies (checked live on 10 and 11 October). Two things to know:</p>
+<ul><li><b>Tags disappear while a 0.20.0 client is active.</b> The first push of a 0.20.0 clone leaves the server with no tags; a 0.21.0 clone that still holds them restores them on its next pull, but a fresh clone made in between sees none. For a vault that uses tags: <code>--min-client 0.21.0</code>.</li><li><b>A 0.20.0 backup has no signing key.</b> A clone restored from it makes unsigned commits (it warns <code>UNSIGNED</code>); under <code>signatures-required</code> it cannot push until it is cloned again. 0.21.0 backups carry the key.</li></ul>
+<p><b>If anyone on your team is still on 0.20.0 or older:</b> after <code>sgit vault uninit</code>, delete the <code>*__uninit.zip</code> it leaves in the folder before the next <code>sgit commit</code>. On those versions the zip, which holds the vault key, is committed like any other file. 0.21.0 names it so it is never committed, and refuses any zip holding a key.</p>
+<h2 id="6-if-you-want-the-detail">6. If you want the detail</h2>
+<ul><li><a href="https://sgit.ai/updates/index.html#sgit-ai-0-21-0">sgit-ai 0.21.0, the release notes</a>: what changed since 0.18.0, and how it was checked.</li><li><a href="../docs/history-integrity.html">History integrity</a>: the format gate, signatures, rewinds and the checklist for raising a vault.</li><li><a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>: the recommended loop for a team.</li><li>The CLI's full change log, with every fix: <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</li></ul>
+<div class="pagenav"><a href="../docs/how-to/claude-team-egress.html">← Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a><a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0 →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/update-to-0-21-0.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/update-to-0-21-0.md"><code>admin/content/docs/update-to-0-21-0.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/update-to-0-21-0.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Get started</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+  </div>
+  <div>
+    <h4>Guides</h4>
+    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+    <a href="../docs/agents.html">Working with AI agents</a>
+    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
+    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
+    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
+    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
+    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
+    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
+    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
+    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

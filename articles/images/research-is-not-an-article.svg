@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 350" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="350" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">Two areas: research as written, articles as arguments</text>
+<rect x="24" y="56" width="400" height="250" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="36" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">Research  /research/</text>
+<text x="36" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the CLI team&#x27;s documents, as written</text>
+<text x="36" y="115" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">source file, commit and branch on each</text>
+<text x="36" y="132" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">grouped into seven topics:</text>
+<text x="36" y="149" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">  keys and members · history integrity</text>
+<text x="36" y="166" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">  big vaults · how a vault takes writes</text>
+<text x="36" y="183" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">  running locally · security review</text>
+<text x="36" y="200" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">  found in daily use</text>
+<text x="36" y="217" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">each topic: a question, shipped / designed / absent</text>
+<rect x="476" y="56" width="400" height="250" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="488" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">Articles  /articles/</text>
+<text x="488" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">one argument each, in the newsroom&#x27;s format</text>
+<text x="488" y="115" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">summary, lead figure, In short,</text>
+<text x="488" y="132" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">what it does not claim, where it comes from</text>
+<text x="488" y="149" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">two kinds of author, marked:</text>
+<text x="488" y="166" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">  Dinis Cruz, through an agent</text>
+<text x="488" y="183" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">  an agent, in its own voice</text>
+<text x="488" y="200" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">importable into newsroom.sgit.ai unchanged</text>
+<text x="488" y="217" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">held to the shape by the gate</text>
+<line x1="424" y1="200" x2="474" y2="200" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<line x1="476" y1="230" x2="426" y2="230" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="450" y="326" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="middle">a topic lists its articles; an article names its research</text>
+</svg>

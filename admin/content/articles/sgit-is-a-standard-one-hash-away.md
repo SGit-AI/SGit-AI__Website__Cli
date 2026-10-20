@@ -1,21 +1,25 @@
 ---
 title: sgit is a standard, not a server: everything in a vault is one hash away
 date: 2026-10-16
-time: 10:27
-kind: position
-tags: architecture, storage, caching
-summary: A vault is a set of files laid out by a convention, every immutable object named by the hash of its own ciphertext, so the server is the least interesting part and anything in the path can cache blindly.
-author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md
-source_path: team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md
-source_commit: 5597526
+author: Dinis Cruz
+author_url: https://sgit.ai/about/
+summary: People read "encrypted git" and picture a product with a server in the middle. There is a server, and it is the least interesting part. A vault is a set of files laid out by a convention: blobs, trees, commits and one mutable ref per branch, all ciphertext, and every object except the ref and the branch index named by the SHA-256 of its own bytes. The name says which is which, `-imm-` or `-muw-`, so a browser, a proxy, a CDN or a CI cache can keep an object for ever by reading its name and never its content. Nothing in a vault has to be discovered: the read key gives the ref's name, the ref gives the commit, the commit the tree, and a file is four plain GETs of fixed paths, so any storage that answers a GET implements the read half, from S3 to GitHub Pages to a folder. Writing needs one thing storage does not give, a compare-and-swap on the ref, and that is what the API is for. A shipped cache layer lets a reader compute where a hot file's encrypted copy lives and fetch it in one batch. When you look at sgit's timings you are looking at the storage: 317 ms a request through the hosted API, 44 ms from GitHub Pages, 0.8 s for a scoped clone against a local server that takes 13 s hosted. The work stays on the client, as it did in git, because a merge needs the context of the change. The server cannot read a byte, so every feature had to be objects a writer produces and a reader derives, and that constraint is why the design is small enough to be a standard.
+version: v0.2.0
+license: https://creativecommons.org/licenses/by/4.0/
+tags: [architecture, storage, caching, wire-format, immutable-objects, static-hosting, scion, git, standard, article]
 status: published
 ---
 
-# sgit is a standard, not a server: everything in a vault is one hash away
+!shot sgit-is-a-standard-one-hash-away.svg | /articles/images/ | Everything from one hash. From the left: the vault key gives the read key one way; the read key gives the ref's name by an HMAC, so nobody has to say where HEAD is; the ref holds the commit, the commit the tree, the tree the blob. Four plain GETs of fixed paths, which any storage that answers a GET can serve. Below, the two kinds of object name: -imm- objects are named by the hash of their ciphertext and can be cached for ever by anyone, -muw- pointers are refetched. | diagram
 
-*Draft for the newsroom, 16 Oct 2026. Second companion to "Scion and sgit" (No. 141). Facts from
-the CLI's code at `dev` 881d6df, the sgit.ai pages linked, and the ruv.sgit ledger.*
+## In short {#in-short}
+
+- **A vault is a convention, not a service.** Four kinds of object, all ciphertext, every immutable one named by the SHA-256 of its own bytes.
+- **The name says what can be cached.** `-imm-` objects can be kept for ever by anything in the path without reading them; `-muw-` pointers are refetched.
+- **Nothing has to be discovered.** The read key gives the ref's name; ref, commit, trees, blob is four GETs of fixed paths, which any storage that answers a GET can serve.
+- **Writing needs one compare-and-swap,** and that is what the API is for; the rest of the timings are the storage's.
+- **The work stays on the client,** as in git, because a merge needs the context of the change; Scion's own merge queue went back to the client too.
+- **The constraint designed it.** A server that cannot read a byte left only objects a writer produces and a reader derives. No blame or bisect yet, stated.
 
 Anthropic's post on Scion describes a server that answers every question a client has about the
 repository, and three tiers of cache in front of it. The post is honest that this is a centralised
@@ -24,7 +28,7 @@ replacement for git for general use". It is worth saying what sgit is in the sam
 because people read "encrypted git" and picture a product with a server in the middle. There is
 a server, and it is the least interesting part.
 
-## What a vault is
+## What a vault is {#vault}
 
 A vault is a set of files laid out by a convention. Four kinds of object, all ciphertext: blobs
 (file contents), trees (a folder: encrypted names pointing at blob and tree ids), commits (a tree
@@ -46,7 +50,7 @@ That is git's object model with encryption underneath it, and the choice was del
 solved the hard problems of history, branching and merging twenty years ago, and the workflows
 built on them are why git won. What sgit changes is where the trust sits.
 
-## Everything from one hash
+## Everything from one hash {#everything-from-hash}
 
 The part that makes it a standard rather than a service is that nothing in a vault has to be
 discovered. It is all derived from the key:
@@ -72,7 +76,7 @@ GET implements it: an S3 bucket, GitHub Pages, a CDN, a folder, Python's one-lin
 for one. The write half needs one thing storage does not give you: a compare-and-swap on the
 ref, which is what the API is for.
 
-## The hot path: a cache you can compute
+## The hot path: a cache you can compute {#hot-path-cache}
 
 Four GETs is cheap, but a page that serves one record a thousand times a minute does not want to
 walk trees. So the convention has a cache layer, shipped: `sgit cache add <path>` declares a path,
@@ -85,7 +89,7 @@ correctness one. The reference reader is written to run in an edge function that
 record. This is Scion's "derived data", built by the writer instead of the server, and named by the
 key instead of indexed by it.
 
-## What the server does, and what storage does
+## What the server does, and what storage does {#server-does-storage}
 
 Strip the convention down and the API is left with two jobs: protect writes (an access token,
 compare-and-swap on the ref and the branch index) and shorten reads a little (batches of fifty
@@ -111,7 +115,7 @@ So the deployment question is not "how do I scale the sgit server" but "where do
 objects, and how close": memory, a disk, a bucket behind a CDN, a static host. The sgit.ai deploy
 pages are that list, and `sgit serve` runs the hosted service's own image on a laptop.
 
-## Why the work stays on the client
+## Why the work stays on the client {#work-stays-on}
 
 Scion moves history, blame and merges to the server, and says it is "by no means" for general
 use. sgit keeps them on the client, and would even if the server could read the data, for the
@@ -127,7 +131,7 @@ What sgit does not have today is a `blame` command; path history, signed authors
 and verification exist, and blame is a fold over path history that nobody has written yet. That
 is the honest gap, stated.
 
-## Keep the property that made git git
+## Keep the property that made git git {#keep-property-that}
 
 The distributed copy, complete and verifiable, is why git survived every centralised system that
 promised to be faster. sgit keeps it: a full clone is one command and holds everything, and
@@ -137,7 +141,7 @@ the part it needs and a repository can hold large files without every client pay
 which is the one habit every git team has had to police by hand. The whole-history clone is the
 backup and the audit, and it is still there.
 
-## The constraint that designed it
+## The constraint that designed it {#constraint-that-designed}
 
 None of this was a plan to be minimal. The server cannot read a byte, so "just do it on the
 server" was never available: no server-side index, no server-side render, no merge the client
@@ -145,7 +149,7 @@ did not make, no derived data the client could not compute from the key. Every f
 be expressible as objects a writer produces and a reader derives. That constraint is why the
 designs are small enough to be a standard, and why they fit in a page like this one.
 
-## What this does not claim
+## What this does not claim {#limits}
 
 - Not proven at Scion's scale: the largest vault is about 35,000 objects, 1,300 commits and ten
   agents.
@@ -153,3 +157,11 @@ designs are small enough to be a standard, and why they fit in a page like this 
   time until a commit-chain object ships; a depth avoids it today.
 - The CDN in front of the hosted API does not yet serve object reads from cache; browsers,
   clients and static hosts do.
+
+If you are building storage, a cache or a second client for this format, write to agent@riskmandate.ai.
+
+## Where this comes from {#sources}
+
+Draft for the newsroom, 16 Oct 2026, the second companion to "Scion and sgit" (newsroom article No. 141). Facts from the CLI's code at `dev` 881d6df, the sgit.ai pages it links, and the ruv.sgit ledger.
+
+Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is [`team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md`](https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__sgit-is-a-standard-one-hash-away.md) in SGit-AI__CLI at `5473571`, on the branch `claude/charming-babbage-5hzcxq`. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the In short, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: [/research/topics/scale.html](/research/topics/scale.html).

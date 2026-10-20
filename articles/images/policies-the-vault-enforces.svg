@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="360" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">Four levels of enforcement, with RiskMandate&#x27;s barrier kinds</text>
+<rect x="24" y="56" width="852" height="60" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="36" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">4  A server that verifies signed writes</text>
+<text x="36" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">a boundary against everyone</text>
+<text x="860" y="78" font-size="12" font-weight="700" fill="#b45309" text-anchor="end">proposed (RFC 0001)</text>
+<rect x="48" y="128" width="804" height="60" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="60" y="150" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">3  A policy row: key K may write path/</text>
+<text x="60" y="170" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">a boundary for every honest client, evidence against a dishonest one</text>
+<text x="836" y="150" font-size="12" font-weight="700" fill="#b45309" text-anchor="end">proposed</text>
+<rect x="72" y="200" width="756" height="60" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="84" y="222" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">2  A clone scope (--path)</text>
+<text x="84" y="242" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">a setting: the agent can widen it</text>
+<text x="812" y="222" font-size="12" font-weight="700" fill="#0f766e" text-anchor="end">shipped</text>
+<rect x="96" y="272" width="708" height="60" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="108" y="294" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">1  A convention</text>
+<text x="108" y="314" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">an expectation</text>
+<text x="788" y="294" font-size="12" font-weight="700" fill="#0f766e" text-anchor="end">exists</text>
+<text x="24" y="350" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">Once a folder is bound to a key it is never rebound: start a new folder. The rule only moves one way.</text>
+</svg>

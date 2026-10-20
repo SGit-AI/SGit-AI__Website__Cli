@@ -25,13 +25,20 @@ $ sgit clone <vault-key>       # anywhere else, a person or an agent
 | **[Guides](/docs/index.html#guides)** | Partial clones, history integrity, agents sharing one vault, messages between vaults, self-hosting, the update notices |
 | **[Security](/security/index.html)** | The security model, key management, credentials and the PKI commands |
 | **[HTTP API](/api/index.html)** | The surface the CLI and the browser are both clients of: authentication, vault objects, transfers, append lanes, errors |
-| **[Research](/articles/index.html)** | {{article_count}} articles from the CLI team: measurements, designs, reviews and fixes, each taken as far as the evidence goes |
+| **[Research](/research/index.html)** | {{research_count}} documents from the CLI team, published as written, in {{topic_count}} topics: measurements, designs and the reviews that corrected them, security reviews, and the bugs found in daily use |
+| **[Articles](/articles/index.html)** | {{article_count}} articles in the newsroom's format, each one argument: written up from Dinis Cruz's memos, or by an agent about what it delivered |
 
-## Latest research
+## Latest articles
 
 The six newest of the [{{article_count}} articles](/articles/index.html).
 
 !list articles 6
+
+## Research topics
+
+Each topic is one open question, with what is shipped, what is designed and what is absent. [All {{research_count}} research documents →](/research/index.html)
+
+!list topics
 
 ## For agents
 

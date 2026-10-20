@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists · cli.sgit.ai</title>
+<meta name="description" content="A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article&#x27;s 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip&#x27;s directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/a-vault-in-one-file.html">
+<link rel="alternate" type="text/markdown" href="../articles/a-vault-in-one-file.md">
+<meta property="og:title" content="A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists">
+<meta property="og:description" content="A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article&#x27;s 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip&#x27;s directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/a-vault-in-one-file.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl here" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</div>
+<h1 id="a-vault-in-one-file-native-zip-support-for-sgit-where-it-win">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</h1>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-20 · published · site v0.2.0</p><p class="lead"><b>Summary:</b> A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article&#x27;s 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip&#x27;s directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute.</p><p class="chips"><span class="chip">zip</span> <span class="chip">bundles</span> <span class="chip">storage</span> <span class="chip">static-hosting</span> <span class="chip">range-requests</span> <span class="chip">performance</span> <span class="chip">publish</span> <span class="chip">file-hosts</span> <span class="chip">measurement</span></p>
+<figure class="shot"><img src="../articles/images/a-vault-in-one-file.svg" alt="Requests against one file. Top, measured on the article&#x27;s 12 MB vault from a local server: 106 separate GETs took 2.0 to 2.5 seconds, one 12.7 MB zip took 0.13 seconds to fetch and unpack. Middle, the 35,000-object vault from local disk: 111 seconds object by object, 3 seconds as one 430 MB zip. Bottom, the shape of the file: members appended one after another and the central directory at the end, so two range requests read the directory and any one member." loading="lazy"><figcaption>Requests against one file. Top, measured on the article&#x27;s 12 MB vault from a local server: 106 separate GETs took 2.0 to 2.5 seconds, one 12.7 MB zip took 0.13 seconds to fetch and unpack. Middle, the 35,000-object vault from local disk: 111 seconds object by object, 3 seconds as one 430 MB zip. Bottom, the shape of the file: members appended one after another and the central directory at the end, so two range requests read the directory and any one member.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>A vault is files and folders, so it can be a zip.</b> Every object is immutable and named by its hash, so the store is append-only by nature, which is the one thing a zip does cheaply.</li><li><b>Most of it exists.</b> <code>sgit publish --bundles</code> already writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; <code>vault backup</code> and <code>uninit</code> write zips; <code>--transport local</code> reads a folder; OSBot-Utils has a zip-bytes library and Memory-FS a zip storage provider. What is missing is a clone that <i>reads</i> a bundle and a bare store that <i>lives</i> in one.</li><li><b>The cost today is requests, not bytes.</b> From the sandbox a 28-byte object costs 0.5 to 0.6 s whether it comes through the API or straight from S3; a 2 MB object costs 1.5 s; eight in parallel reach 12 MB/s. Many small files pay the per-request floor every time; one file pays it once.</li><li><b>Measured locally on the article's 12 MB vault:</b> 106 separate GETs, 2.0 to 2.5 s; one 12.7 MB zip, 0.05 s to fetch and 0.08 s to unpack.</li><li><b>The crossover is a link-speed question</b>, and for the hosted path it sits in the tens of megabytes: below it a zip wins outright, above it the zip's cost is bandwidth while the objects' cost is the request count, and the batched routes already amortise that.</li><li><b>Selective fetch survives.</b> A zip's central directory sits at its end; one range request reads it, one more reads any member. A vault in one file on S3, Dropbox or a Drive that honours <code>Range</code> is still a vault you can read one file from.</li><li><b>Measured on the 35k-object vault:</b> the 430 MB head zip fetched in 3 s from a local disk against 111 s for the objects one by one; appending a member costs 0.25 s; the directory and one member read over HTTP <code>Range</code> in six requests.</li><li><b>It is the right shape for the small-file vaults</b> (logs, stats, API captures), for a vault inside a vault, and for file hosts that have no API at all. It is the wrong shape for a shared vault ten agents push to every minute, because every write would rewrite the file's directory.</li></ul>
+<h2 id="zip-this-purpose">What a zip is, for this purpose</h2>
+<p>A zip is a sequence of members, each a header followed by its bytes, with a <b>central directory</b> at the end that lists every member and its offset. Three consequences matter here:</p>
+<ol><li><b>Appending is cheap.</b> To add a member you write it after the last one and rewrite the central directory; nothing before it moves. Removing or replacing a member means rewriting the file.</li><li><b>Reading one member needs two reads</b>: the directory (at a known place, the end), then the member's bytes at the offset the directory gives. Over HTTP those are two <code>Range</code> requests.</li><li><b>Compression is per member and optional.</b> <code>ZIP_STORED</code> keeps bytes as they are, which is what <code>publish --bundles</code> chose after measuring: DEFLATE on ciphertext came out <i>larger</i> (1.078× against 1.075×) at ten times the CPU.</li></ol>
+<p>Put a vault's object model next to that. Objects are immutable and content-addressed, so they are only ever appended, never changed; a zip of them is append-only in exactly the way the format likes. The mutable pointers (the ref, the branch index, cache objects) are the parts a zip does badly, and they are tiny, so they live beside it or in a second small file.</p>
+<h2 id="already-exists">What already exists</h2>
+<div class="tablewrap"><table><thead><tr><th>Piece</th><th>What it does</th><th>Where</th></tr></thead><tbody><tr><td><code>sgit publish --bundles</code></td><td><code>bundles/head-&lt;commit&gt;.zip</code> (every object reachable from the head) and <code>bundles/&lt;commit&gt;.zip</code> (what that commit introduced); <code>ZIP_STORED</code>, fixed timestamps, sorted members, so publishing twice gives identical bytes; "derived, never authoritative": a missing bundle degrades to loose fetches, and every extracted object is id-verified before it is written</td><td><code>Vault__Publish__Bundles</code>, 0.18.0</td></tr><tr><td><code>sgit vault backup</code> / <code>restore</code></td><td>a zip of the vault store with a manifest; <code>uninit</code> leaves one; a zip that holds a key is refused at commit</td><td><code>Vault__Backup</code>, 0.20–0.21</td></tr><tr><td><code>--transport local</code></td><td>a folder is a vault; reads are file reads</td><td><code>Vault__API__Static</code> family</td></tr><tr><td><code>--transport static</code></td><td>any GET host; batch reads fan out to parallel GETs</td><td>0.18.0</td></tr><tr><td><code>sgit vault mirror</code></td><td>a keyless, verified copy of a published vault</td><td>0.18.0</td></tr><tr><td>OSBot-Utils <code>Zip_Bytes</code>, <code>utils/Zip</code></td><td>add, replace, remove, list and read members of a zip held as bytes; zip and unzip folders</td><td>3.75.0</td></tr><tr><td>Memory-FS <code>Storage_FS__Zip</code></td><td>a storage provider whose whole file system is one zip, in memory, saved to disk on demand: <code>file__save</code>, <code>file__bytes</code>, <code>file__delete</code>, <code>files__paths</code>, <code>export_bytes</code></td><td>installed with the SG/Send server</td></tr></tbody></table></div>
+<p>So: a vault can already be <i>written</i> as one file (the head bundle is a complete bare store), and the server already runs on a file-system abstraction that has a zip backend. Nobody has yet made the CLI <b>clone from</b> a bundle or <b>run on</b> one.</p>
+<h2 id="numbers">The numbers</h2>
+<p><b>The per-request floor.</b> From this sandbox, today, one object of 28 bytes:</p>
+<div class="tablewrap"><table><thead><tr><th>Path</th><th>Round trip</th></tr></thead><tbody><tr><td>hosted API (<code>/api/vault/read/</code>, Lambda in front of S3, through the sandbox's proxy)</td><td>0.50 to 0.64 s</td></tr><tr><td>direct S3 (presigned URL, no Lambda, same proxy)</td><td>0.55 to 0.63 s</td></tr></tbody></table></div>
+<p>The Lambda is not the floor from here; the network path is. One 2.15 MB object takes 1.4 to 1.8 s either way (about 1.3 MB/s on one stream); eight in parallel finish in 1.46 s together, 11.8 MB/s aggregate. Those are this sandbox's numbers; a laptop on a good link has a lower floor and more bandwidth, and the arithmetic below is written so the reader can put their own in.</p>
+<p><b>Many objects against one file, locally</b> (no network at all: a Python file server, the article's own vault, 83 files, 106 objects, 12.3 MB of ciphertext):</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>Time</th></tr></thead><tbody><tr><td><code>sgit clone --transport static</code> (106 GETs, verified, checked out)</td><td>2.04 s, 2.45 s</td></tr><tr><td><code>GET bundles/head-….zip</code> (12.7 MB, one request)</td><td>0.05 s</td></tr><tr><td>unpack it (106 members)</td><td>0.08 s</td></tr><tr><td><code>sgit publish --bundles</code> (make the zips)</td><td>4.9 s</td></tr></tbody></table></div>
+<p>Even with zero latency, a hundred small requests cost two seconds of process and protocol; one file costs a tenth of that.</p>
+<p><b>The same vault hosted</b>, which is where the question is interesting:</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>Requests</th><th>Bytes</th><th>Time from here</th></tr></thead><tbody><tr><td>clone through the API, 0.22.0</td><td>2 batches of 50 that overflowed the Lambda, 14 s of back-off, 106 single reads</td><td>12.3 MB</td><td>59 s</td></tr><tr><td>clone through the API, after the batch fix</td><td>~5 (ref, index, two half-batches, trees)</td><td>12.3 MB</td><td>8 to 10 s</td></tr><tr><td>one zip from S3 (projected from the measured floor and throughput)</td><td>1</td><td>12.7 MB</td><td>0.6 s + 12.7 MB ÷ 1.3 MB/s ≈ 10 s on one stream; ≈ 1.7 s if the file is fetched in 8 ranges</td></tr></tbody></table></div>
+<p>From this slow sandbox the zip and the fixed batch tie at 12 MB. From a client with 20 MB/s the zip is under 2 s and the batches are still 5 requests deep, so the zip wins by three to four times. The general rule, with <i>f</i> the per-request floor, <i>B</i> the bytes, <i>T</i> the throughput and <i>N</i> the objects:</p>
+<ul><li>objects: ≈ <i>f</i> × (fixed requests + ⌈<i>N</i>/50⌉ ÷ 16 in flight) + <i>B</i>/<i>T</i></li><li>one zip: ≈ <i>f</i> + <i>B</i>/<i>T</i></li></ul>
+<p>The zip is never slower on bytes and always fewer requests; the objects path only catches up when <i>N</i> is small enough that its batches are a handful, which is the case under about a hundred objects. Above that, and for every vault of many small files, the single file wins on the hosted path by the request count, and the gap grows with <i>N</i>, not with <i>B</i>.</p>
+<p><b>The large vault</b> (the comms vault: 35,423 objects, 527 MB; the per-object path from a local file server was 110 s, from the hosted API 3½ min):</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>Result</th></tr></thead><tbody><tr><td><code>sgit publish --bundles</code></td><td>13 min 44 s: one head snapshot of 430 MB (33,886 members, every object reachable from the head) and 1,227 per-commit delta zips (435 MB together, 865 MB in all). Unpacking shows the head zip itself is a matter of seconds; the time is the deltas, one walk of the parents per commit.</td></tr><tr><td><code>GET</code> the head zip from a local file server</td><td><b>3.06 s</b>, one request, 430 MB</td></tr><tr><td>unpack 33,886 members</td><td>3.92 s</td></tr><tr><td>per-object static clone of the same vault (earlier run)</td><td>110.6 s</td></tr><tr><td>open the zip and read its directory (33,886 entries)</td><td>0.31 s; 200 random members then read in 5 ms</td></tr><tr><td>append one 4 KB member to the 430 MB zip</td><td>0.25 s; the file grows by the member and a rewritten directory, nothing else moves</td></tr><tr><td>read it over HTTP with <code>Range</code> (a test server that honours it)</td><td>the directory in 5 requests and 2.7 MB; one member in one more request; 0.15 to 0.23 s in all</td></tr></tbody></table></div>
+<p>So for the largest vault we have: one file fetched in three seconds against two minutes of requests from the same disk, a store you can append to in a quarter of a second, and a file you can read one object out of with two requests. One finding on the way: <code>sgit serve --static</code> answers a <code>Range</code> request with the whole file (status 200), so the two-request read needs a host that honours ranges, which S3 and CloudFront do and the local static server does not yet.</p>
+<h2 id="fits">Where it fits</h2>
+<p><b>The bare store as a zip, locally.</b> <code>.sg_vault/bare/data/</code> becomes <code>.sg_vault/bare/data.zip</code>: objects are appended as they are written (a push's new objects, a pull's fetched ones), the directory is rewritten at the end, and reads come from the zip by offset. Memory-FS's provider already does the in-memory version; the CLI's object store would need a zip backend behind the same <code>exists</code>/<code>read</code>/<code>write</code> interface. The mutable files (<code>refs/</code>, <code>indexes/</code>, <code>cache/</code>, <code>local/</code>) stay as files beside it. A vault is then two things you can copy: a zip and a small folder. That is the "original pedigree" the memo mentions, and it is what a backup already is.</p>
+<p><b>A clone that reads a bundle.</b> <code>sgit clone</code> from a static host that has <code>bundles/</code> fetches the head bundle in one request (or in ranges), verifies every member by id as <code>extract_verified</code> already does, and walks nothing. A pull from a static host fetches the per-commit delta bundles for the commits it lacks, which is the union the bundle design promises reconstructs <code>bare/data/</code> exactly. This is git's packfile in the one place sgit should have it: the cold start from a dumb host.</p>
+<p><b>Hosting on file storage with no API.</b> A published vault is a folder of thousands of small files, which is fine for S3 and GitHub Pages and poor for Google Drive, Dropbox or a NAS share, where each file is an object with its own metadata and sync cost. As a zip plus a few small files it is one upload, one download, and one sync. Dropbox staff have said on their forum that the content-download endpoints honour HTTP <code>Range</code> requests; for Google Drive, <code>alt=media</code> downloads are documented and a third-party guide reports <code>Range</code> working, which the CLI should test for a <code>206</code> rather than assume. Where <code>Range</code> works, a vault in one file is still a vault you can read one object from: two requests, the directory and the member.</p>
+<p><b>Vaults of small files.</b> The stats, log and API-capture vaults in the memo have the shape that hurts most on per-object hosting (tens of thousands of objects of a few hundred bytes) and that a zip serves best; the streaming-changes draft's hour-bucket files reduce the count at the source, and a zip reduces the cost of what remains.</p>
+<p><b>Vaults within vaults.</b> A zip is one object, so a whole vault can sit inside another vault as a single blob, keyed by its own key. The cost is the whole-object rule: a change to the inner vault is a new blob of its full size. That is right for an archive, a run's evidence, a frozen release; wrong for an inner vault that changes often.</p>
+<h2 id="does-not-fit">Where it does not fit</h2>
+<ul><li><b>Many writers.</b> Every append rewrites the central directory, and concurrent appends to one file need a lock the hosted server does not give. The shared comms vault stays as objects; the zip is for local stores, publication and transport.</li><li><b>Partial clones from a zip over HTTP are two requests per object</b>, not one, and the directory for a large vault is itself megabytes (35k entries is a few MB). Fine for "read three files from a published vault"; not a replacement for the batch route when a client wants half the objects.</li><li><b>A zip has limits.</b> 65,535 members and 4 GB before Zip64, which Python's <code>zipfile</code> turns on by itself and some other readers do not; the comms vault is already past half the member limit.</li><li><b>It changes nothing about security.</b> The members are the same ciphertext under the same names; a zip on a Drive is as readable to the host as the folder was, which is not at all.</li></ul>
+<h2 id="limits">What this does not claim</h2>
+<ul><li>No clone reads a bundle today, and no bare store lives in a zip; both are proposals.</li><li>The hosted timings are from one cloud sandbox whose every request leaves through a proxy; the floor and the throughput are that sandbox's.</li><li>Range support on Drive and Dropbox is reported, not verified here.</li></ul>
+<h2 id="questions-thread-code">Questions for the thread (each a code change)</h2>
+<ol><li><b><code>clone --transport static</code> reads <code>bundles/head-*.zip</code> when it is there</b>, verifying each member by id; <code>pull</code> reads the delta bundles for missing commits; loose fetch stays the fallback. Smallest change, largest win on dumb hosts.</li><li><b>A zip backend for the object store</b> (<code>bare/data.zip</code>, append on write, read by offset), behind the existing store interface; <code>refs/</code>, <code>indexes/</code>, <code>cache/</code> stay as files. Memory-FS's provider is the model.</li><li><b>Range reads of a zip over HTTP</b> in the static transport: directory then member; test for <code>206</code> and fall back to a whole-file fetch. And <code>sgit serve --static</code> should answer <code>Range</code> with <code>206</code>, which it does not today.</li><li><b><code>sgit vault pack</code> / <code>unpack</code></b> as the user-facing verbs (a backup that a clone can open), or fold them into <code>publish --bundles</code> and <code>clone</code>.</li><li><b>A <code>--host</code> recipe for Drive and Dropbox</b>: publish as zip + manifest, and the read path for each, once <code>Range</code> is confirmed.</li></ol>
+<p>If you keep many small files in a vault, or need one on a file host that has no API, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>Draft for the newsroom and a brief for the CLI team, 20 Oct 2026, from a voice memo of mine. Facts from the CLI at <code>dev</code> 37218af, OSBot-Utils 3.75.0, Memory-FS, and measurements made that day from a cloud sandbox against the hosted API, direct S3 and a local file server. Nothing proposed is built; what exists is named as such.</p>
+<p>Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/20/article-draft__native-zip-support.md"><code>team/humans/dinis_cruz/claude-code-web/10/20/article-draft__native-zip-support.md</code></a> in SGit-AI__CLI at <code>5473571</code>, on the branch <code>claude/charming-babbage-5hzcxq</code>. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: <a href="../research/topics/write-path.html">/research/topics/write-path.html</a>.</p>
+<div class="pagenav"><a href="../articles/the-cli-gets-its-own-site.html">← The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a><a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/a-vault-in-one-file.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/a-vault-in-one-file.md"><code>admin/content/articles/a-vault-in-one-file.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/a-vault-in-one-file.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Streaming changes into a vault: a thousand small writes, one commit, every line attributed · cli.sgit.ai</title>
+<meta name="description" content="Every change in a vault is a commit, and a commit is a tree rebuild, a signature and a compare-and-swap on one ref. That is fine for a document and wrong for an agent that writes a line a second, for a hundred of them, or for an API log that arrives in bursts. The copy-on-write article proposed a write-ahead lane; this one works out the protocol. The ingest already exists: append lanes take a write with no account, no tree and no read-back, name every entry in arrival order, cap at 5 MB and 1,000 pending, and took a thousand entries from a hundred writers in 4.9 seconds on the in-memory server. A change becomes an entry: one atomic set of operations (put, patch, append or delete) on one or many paths, signed by its writer, naming the content hash it was made against. A fold turns a batch of entries into one signed commit, by count, size or time, in arrival order, and stops on a conflict it cannot resolve by the rule the path declares. Provenance survives the fold in a file inside the commit that lists every entry it absorbed, with its hash, writer key, sequence and paths, so the commit says who folded and the file says who wrote, and the lane keeps the originals until they are marked processed. Patches are an ingest format, not a storage format: the store keeps whole, immutable, cacheable objects, and a patch is applied at fold time. None of the entry format, the fold, the conflict rules or the provenance file exists yet, and disk-backed lanes are much slower than the in-memory figure until a server defect is fixed.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/streaming-changes-into-a-vault.html">
+<link rel="alternate" type="text/markdown" href="../articles/streaming-changes-into-a-vault.md">
+<meta property="og:title" content="Streaming changes into a vault: a thousand small writes, one commit, every line attributed">
+<meta property="og:description" content="Every change in a vault is a commit, and a commit is a tree rebuild, a signature and a compare-and-swap on one ref. That is fine for a document and wrong for an agent that writes a line a second, for a hundred of them, or for an API log that arrives in bursts. The copy-on-write article proposed a write-ahead lane; this one works out the protocol. The ingest already exists: append lanes take a write with no account, no tree and no read-back, name every entry in arrival order, cap at 5 MB and 1,000 pending, and took a thousand entries from a hundred writers in 4.9 seconds on the in-memory server. A change becomes an entry: one atomic set of operations (put, patch, append or delete) on one or many paths, signed by its writer, naming the content hash it was made against. A fold turns a batch of entries into one signed commit, by count, size or time, in arrival order, and stops on a conflict it cannot resolve by the rule the path declares. Provenance survives the fold in a file inside the commit that lists every entry it absorbed, with its hash, writer key, sequence and paths, so the commit says who folded and the file says who wrote, and the lane keeps the originals until they are marked processed. Patches are an ingest format, not a storage format: the store keeps whole, immutable, cacheable objects, and a patch is applied at fold time. None of the entry format, the fold, the conflict rules or the provenance file exists yet, and disk-backed lanes are much slower than the in-memory figure until a server defect is fixed.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/streaming-changes-into-a-vault.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl here" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / Streaming changes into a vault: a thousand small writes, one commit, every line attributed</div>
+<h1 id="streaming-changes-into-a-vault-a-thousand-small-writes-one-c">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</h1>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-16 · published · site v0.2.0</p><p class="lead"><b>Summary:</b> Every change in a vault is a commit, and a commit is a tree rebuild, a signature and a compare-and-swap on one ref. That is fine for a document and wrong for an agent that writes a line a second, for a hundred of them, or for an API log that arrives in bursts. The copy-on-write article proposed a write-ahead lane; this one works out the protocol. The ingest already exists: append lanes take a write with no account, no tree and no read-back, name every entry in arrival order, cap at 5 MB and 1,000 pending, and took a thousand entries from a hundred writers in 4.9 seconds on the in-memory server. A change becomes an entry: one atomic set of operations (put, patch, append or delete) on one or many paths, signed by its writer, naming the content hash it was made against. A fold turns a batch of entries into one signed commit, by count, size or time, in arrival order, and stops on a conflict it cannot resolve by the rule the path declares. Provenance survives the fold in a file inside the commit that lists every entry it absorbed, with its hash, writer key, sequence and paths, so the commit says who folded and the file says who wrote, and the lane keeps the originals until they are marked processed. Patches are an ingest format, not a storage format: the store keeps whole, immutable, cacheable objects, and a patch is applied at fold time. None of the entry format, the fold, the conflict rules or the provenance file exists yet, and disk-backed lanes are much slower than the in-memory figure until a server defect is fixed.</p><p class="chips"><span class="chip">streaming</span> <span class="chip">append-lanes</span> <span class="chip">write-path</span> <span class="chip">provenance</span> <span class="chip">signatures</span> <span class="chip">conflicts</span> <span class="chip">logs</span> <span class="chip">agents</span> <span class="chip">protocol</span></p>
+<figure class="shot"><img src="../articles/images/streaming-changes-into-a-vault.svg" alt="A thousand small writes, one commit. On the left, many writers each append signed entries to the vault&#x27;s append lane, in arrival order. In the middle, a fold takes a batch by count, size or time and applies it. On the right, one signed commit, with a provenance file inside it listing every entry the fold absorbed: its hash, its writer&#x27;s key, its sequence and its paths. The lane exists; the entry format, the fold and the provenance file are proposed." loading="lazy"><figcaption>A thousand small writes, one commit. On the left, many writers each append signed entries to the vault&#x27;s append lane, in arrival order. In the middle, a fold takes a batch by count, size or time and applies it. On the right, one signed commit, with a provenance file inside it listing every entry the fold absorbed: its hash, its writer&#x27;s key, its sequence and its paths. The lane exists; the entry format, the fold and the provenance file are proposed.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>The problem is real and has a shape.</b> Every change is a commit; a commit is a tree rebuild, a signature and a compare-and-swap on one ref. Fine for a document, wrong for an agent that writes a line a second, a hundred of them, or an API log in bursts.</li><li><b>The ingest already exists.</b> Append lanes take a write with no account, no tree and no read-back, name every entry in arrival order, cap at 5 MB and 1,000 pending, and were measured at a thousand entries from a hundred writers in 4.9 s.</li><li><b>A change is an entry: one atomic set of operations, signed by its writer, naming what it assumed.</b> Put, patch, append or delete, on one or many paths, with the content hash the change was made against.</li><li><b>A fold turns a batch of entries into one signed commit</b> by count, size or time, in arrival order, and stops on a conflict it cannot resolve by the declared rule.</li><li><b>Provenance survives the fold</b> in a file inside the commit that lists every entry it absorbed: hash, writer key, sequence, paths. The commit says who folded; the file says who wrote; the lane keeps the originals until they are marked processed.</li><li><b>Patches are an ingest format, not a storage format.</b> The store keeps whole, immutable, cacheable objects; a patch entry is applied at fold time.</li></ul>
+<h2 id="commit-per-change">Why one commit per change does not scale, in numbers</h2>
+<p><code>sgit write</code> is a commit, a spine rebuild and a push. In ruv.sgit's ledger, against a local server, a write is 0.4 to 1.6 s and a push 0.6 to 1.5 s, most of it Python start-up and the 600k-iteration key derivation. Hosted, add the round trips. Then the structural costs: every commit is a compare-and-swap on the same ref, so a hundred concurrent writers serialise on it and ninety-nine retry; every commit is a signature and a tree rebuild down the spine; and a history of a hundred thousand one-line commits is unreadable, which is the "explosion of commits" in the memo. Scion's post says the same about its own scale: "the cost of creating a commit … has to scale with the size of the change, not the overall size of the repo".</p>
+<p>Two more wants from the memo: <b>atomicity across files</b> (today <code>sgit write --also</code> commits several files in one commit, which is the atomic unit, but still one commit per write), and <b>many changes to one file</b> (a log appended to a thousand times should not be a thousand versions of the file).</p>
+<h2 id="ingest-that-exists">The ingest that exists</h2>
+<p>An append lane is a write-only channel on a vault: <code>POST /append/write</code> with a hex <code>append_token</code> in the body, no account, a blind <code>{"ok": true}</code> back. The server names each entry <code>{epoch_ms}_{24-hex}.enc</code>, chronologically sortable, which is what makes cursor pagination stable; listing without content reads no payloads; <code>mark-processed</code> is idempotent, so a retried batch is safe. Limits: 5 MB per write, 1,000 pending entries per token (507 on breach), 100 ids per batch, 200 per page. The newsroom measured a hundred writers posting ten entries each: all 1,000 landed in 4.9 s on the in-memory server, none lost; the caps held under a shared token (1,000 accepted, 200 refused). Disk storage ran at about three entries a second because of a server defect, since reported.</p>
+<p>Signatures on lane entries are also already practised: the two-team messaging in September put "a fresh signing key per session, published in a key registry … pinned once" on every message, and refused an old key by the registry's serial.</p>
+<p>So the stream has a transport, an order, back-pressure and a signature convention. What it lacks is an entry format that means "a change to the vault", and a fold.</p>
+<h2 id="entry">The entry</h2>
+<p>One entry is one atomic change set, as JSON, encrypted under the vault's read key like every lane payload, signed by the writer:</p>
+<pre><code class="lang-text">{
+  &quot;stream&quot;:  &quot;logs/api&quot;,                 # which stream; folds are per stream
+  &quot;writer&quot;:  &quot;sha256:3f9a…&quot;,             # the writer&#x27;s signing key id (a clone&#x27;s branch key, or a pki key)
+  &quot;seq&quot;:     4172,                       # the writer&#x27;s own sequence number: gap detection, intent order
+  &quot;base&quot;:    &quot;obj-cas-imm-…&quot;,            # the commit (or per-path content hash) the change assumed; &quot;&quot; for append-only
+  &quot;ops&quot;: [
+    {&quot;op&quot;: &quot;append&quot;, &quot;path&quot;: &quot;logs/api/2026-10-16.jsonl&quot;, &quot;content&quot;: &quot;&lt;one line&gt;&quot;},
+    {&quot;op&quot;: &quot;put&quot;,    &quot;path&quot;: &quot;state/last-seen.json&quot;,      &quot;hash&quot;: &quot;sha256:…&quot;, &quot;content&quot;: &quot;…&quot;},
+    {&quot;op&quot;: &quot;patch&quot;,  &quot;path&quot;: &quot;notes/run.md&quot;,              &quot;base_hash&quot;: &quot;sha256:…&quot;, &quot;patch&quot;: &quot;&lt;unified diff&gt;&quot;},
+    {&quot;op&quot;: &quot;delete&quot;, &quot;path&quot;: &quot;tmp/lock&quot;}
+  ],
+  &quot;ts&quot;:      &quot;2026-10-16T14:02:11.311Z&quot;,
+  &quot;sig&quot;:     &quot;&lt;ECDSA over the canonical bytes above&gt;&quot;
+}</code></pre>
+<ul><li><b>Atomic:</b> the four operations land together or not at all, which is <code>write --also</code> without the commit.</li><li><b>Attributed:</b> the key id and signature are inside the entry, checked at fold, so the lane's token says who may write and the signature says who did, the same two-part rule the messaging write-up established.</li><li><b>Ordered twice:</b> the server's filename gives arrival order; <code>seq</code> gives the writer's intent order and shows a lost entry (the write is blind, so the writer keeps a local journal and the fold reports gaps per writer).</li><li><b>Base-aware where it matters:</b> a <code>patch</code> carries the hash of the content it was made against; a <code>put</code> carries the hash it replaces; an <code>append</code> carries nothing, because appends commute.</li></ul>
+<p>Lanes: one token per writer, or per shard of writers, exactly as the CI article did for test shards ("one token per test shard, each adding to its own inbox, none able to read"). A reader with the enum key sees all of them.</p>
+<h2 id="fold">The fold</h2>
+<p>A normaliser (a scheduled job, the host of a hive, or a <code>sgit stream fold</code> run by hand) turns entries into commits:</p>
+<ol><li><b>Pick a batch:</b> by count (the memo's 50, 100, 1,000), by bytes, by age, or when a reader asks. Below the 1,000-pending cap, always.</li><li><b>Verify</b> every entry's signature against the writer set (or the vault policy's rows, which is where the policy draft and this one meet: a writer whose key may not touch a path is refused at fold, and the refusal is itself recorded).</li><li><b>Apply in arrival order, per path:</b> appends concatenate; puts replace when the replaced hash matches, else conflict; patches apply when the base hash matches the current content, else conflict; deletes delete. The result is one tree, built once.</li><li><b>One signed commit</b>, pushed with one compare-and-swap, with a provenance file (below).</li><li><b>Mark the entries processed.</b> Idempotent, so a fold that dies after the push and before the mark is safe to rerun: the second run finds the entries already in HEAD by hash and marks them.</li></ol>
+<p>Costs: one commit per batch (one to two seconds locally, a few hosted), one CAS, and a window between a write and its commit bounded by the batch rule, the same kind of window as the ref's freshness window for readers. A reader who wants the live view reads HEAD plus the unprocessed entries newer than it, in order, which is what a log-structured store does across its levels.</p>
+<h2 id="conflicts-by-declared">Conflicts, by declared rule</h2>
+<p>The memo's instinct is right: the happy path should be conflict-free and the fold should stop when it is not. Which rule applies is declared per path prefix, in the same policy file the other draft proposes, so that it is a decision somebody made and not a default nobody chose:</p>
+<div class="tablewrap"><table><thead><tr><th>Rule</th><th>Meaning</th><th>For</th></tr></thead><tbody><tr><td><code>append-only</code></td><td>entries append; order is arrival order; never a conflict</td><td>logs, telemetry, receipts, chat</td></tr><tr><td><code>owner</code></td><td>only one key writes the path (the policy row); other writers' entries are refused</td><td>an agent's own state, a worker's folder</td></tr><tr><td><code>last-writer-wins</code></td><td>the latest arrival replaces; the losers are kept in provenance</td><td>counters, presence, "last seen"</td></tr><tr><td><code>base-match</code></td><td>a put or patch applies only if its base hash is current; else stop</td><td>documents several agents edit</td></tr><tr><td><code>stop</code> (default)</td><td>any second writer to a path in one batch halts the fold with both entries named</td><td>anything not declared</td></tr></tbody></table></div>
+<p>A halted fold leaves the lane intact and writes one entry to the evidence lane naming the conflict. Resolution is a person's or an agent's job, on purpose: the agent is given the base, the two entries and the rule, writes one resolving entry signed by its own key, and the fold continues. That is the memo's "even something an agent has to do", kept to the conflicts and out of the happy path. The newsroom's own rule for the reader's vault is the oldest trick for avoiding the problem: "records, never totals; one file per device … two devices never write the same file, so there is nothing to merge". Per-writer files plus <code>append-only</code> is where most streams should start.</p>
+<h2 id="provenance-after-fold">Provenance after the fold</h2>
+<p>A folded commit has one <code>author_key_id</code>, the normaliser's. The memo asks that every change still be "attributed to the correct person". Three ways, and the third is the one to take:</p>
+<ol><li><b>One commit per writer per batch.</b> Keeps today's one-author commits exact: twenty writers in a batch become twenty chained commits, one push. Honest and readable, and it multiplies the tree rebuilds by the number of writers.</li><li><b>One commit per batch, attribution in a provenance file.</b> The commit carries <code>.stream/folds/&lt;fold-id&gt;.json</code> listing every absorbed entry: its lane filename, hash, writer key id, <code>seq</code>, paths and rule applied, plus the hash of the fold's own input list. The commit is signed by the folder; the file is what a reader checks to see who wrote which line, and <code>history log --author &lt;key&gt;</code> can be taught to read it.</li><li><b>Both, by size.</b> Per-writer commits when a batch holds a few writers with large changes; one commit with a provenance file when it holds many small ones. The rule is declared with the stream.</li></ol>
+<p>Option 2 is git's own author-versus-committer distinction, which sgit's commit does not carry yet (one key per commit). Adding an <code>authors</code> list to the commit object is a format question for the thread; the provenance file needs no format change and works today.</p>
+<p>The lane entries are the originals. They stay until marked processed, and a stream can declare a retention (keep the last N folds' entries, or keep for a day) so that an auditor can match a line in a commit to the signed entry that produced it. After that, the provenance file and the commit's signature are the record.</p>
+<h2 id="api-log-case">The API-log case, worked</h2>
+<p>An agent that proxies API traffic writes one entry per request: about 1 KB, <code>append</code> to <code>logs/api/&lt;day&gt;/&lt;hour&gt;.jsonl</code>, <code>seq</code> per writer, signed. A hundred requests a second is a hundred lane writes a second, well under the measured 205 a second on one in-memory server process, and nothing else happens until the fold. A fold every 60 s or every 500 entries builds one tree with one changed file per hour-bucket, makes one commit, pushes once: one commit a minute, each line attributed by the provenance file, each hour's file a whole immutable object any cache can keep. A day is 1,440 commits, which is a history a person can read, instead of 8.6 million. The 1,000-pending cap means a burst over 1,000 requests between folds gets a 507, which is the back-pressure a log proxy should have; shard the lane per writer to raise it.</p>
+<h2 id="patches-stored">Patches, and what is stored</h2>
+<p>The memo asks whether diffs can be stored. The answer splits: <b>patches travel, objects are stored whole.</b> A <code>patch</code> entry is a cheap way to say "change these ten lines of a 2 MB file" without sending 2 MB, and the fold applies it. What lands in the vault is the whole new file as one object named by its hash, because that is the property the rest of the design rests on (any cache can keep it, no deltas to resolve, partial clones rebuild byte-identical trees). Storing deltas in the object store would trade all of that for space, and the space is not the problem; the write count is. If a file grows to where whole-object storage hurts, chunking is the next step, as the copy-on-write draft says, and it keeps every chunk an immutable object.</p>
+<h2 id="limits">What this does not claim</h2>
+<ul><li>No entry format, fold, conflict rule or provenance file exists; <code>write --also</code> and append lanes do.</li><li>The 205 entries a second is the in-memory server on one process; disk storage measured about three a second until the server's listing defect is fixed (reported 14 Oct).</li><li>A folded commit's single author key is a format limit; the provenance file is the answer that needs no format change.</li><li>Conflicts are not solved here, they are declared and stopped on. That is the design.</li></ul>
+<h2 id="questions-thread-code">Questions for the thread (each a code change)</h2>
+<ol><li><b><code>sgit stream write</code></b>: build, sign and post an entry (one or many ops) to a lane; a local journal for <code>seq</code>.</li><li><b><code>sgit stream fold</code></b>: batch, verify, apply by rule, one commit with the provenance file, mark processed; rerunnable.</li><li><b>Per-path rules</b> in the vault policy file (<code>append-only</code>, <code>owner</code>, <code>last-writer-wins</code>, <code>base-match</code>, <code>stop</code>), shared with the policy draft.</li><li><b><code>sgit cat --live</code></b> and the page equivalent: HEAD plus unprocessed entries.</li><li><b><code>authors</code> on the commit object</b>, or not: whether attribution stays in the provenance file.</li><li><b>Retention</b> of processed entries per stream.</li></ol>
+<p>If you have a stream you would like to keep in a vault, a log, an agent's notes or an API's captures, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>Draft for the newsroom, 16 Oct 2026, from a voice memo of mine, a companion to the copy-on-write draft, which proposed the write-ahead lane. Facts from the sgit.ai append lane reference, the newsroom's swarm measurements, the ruv.sgit ledger and the CLI at <code>dev</code> 37218af. Nothing proposed is built.</p>
+<p>Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__streaming-changes.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/article-draft__streaming-changes.md</code></a> in SGit-AI__CLI at <code>5473571</code>, on the branch <code>claude/charming-babbage-5hzcxq</code>. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: <a href="../research/topics/write-path.html">/research/topics/write-path.html</a>.</p>
+<div class="pagenav"><a href="../articles/a-vault-in-one-file.html">← A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a><a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/streaming-changes-into-a-vault.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/streaming-changes-into-a-vault.md"><code>admin/content/articles/streaming-changes-into-a-vault.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/streaming-changes-into-a-vault.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

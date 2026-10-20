@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="300" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">Everything from one hash: a file is four GETs computed from the read key</text>
+<rect x="24" y="64" width="132" height="96" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="86" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">vault key</text>
+<text x="36" y="106" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">passphrase:id</text>
+<rect x="168" y="64" width="132" height="96" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="180" y="86" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">read key</text>
+<text x="180" y="106" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">derived one way,</text>
+<text x="180" y="123" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">publishable</text>
+<line x1="156" y1="112" x2="166" y2="112" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="312" y="64" width="132" height="96" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="324" y="86" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">ref</text>
+<text x="324" y="106" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">name: HMAC of</text>
+<text x="324" y="123" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the read key</text>
+<text x="324" y="140" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">-muw-: refetch</text>
+<line x1="300" y1="112" x2="310" y2="112" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="456" y="64" width="132" height="96" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="468" y="86" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">commit</text>
+<text x="468" y="106" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">-imm-</text>
+<line x1="444" y1="112" x2="454" y2="112" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="600" y="64" width="132" height="96" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="612" y="86" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">tree</text>
+<text x="612" y="106" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">-imm-, names</text>
+<text x="612" y="123" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">encrypted</text>
+<line x1="588" y1="112" x2="598" y2="112" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="744" y="64" width="132" height="96" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="756" y="86" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">blob</text>
+<text x="756" y="106" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">-imm-, the file</text>
+<line x1="732" y1="112" x2="742" y2="112" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="24" y="186" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">derived locally, nothing discovered</text>
+<text x="312" y="186" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">GET   GET   GET   GET  of fixed paths: S3, GitHub Pages, a CDN, a folder</text>
+<rect x="24" y="206" width="410" height="66" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="36" y="228" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">-imm- objects</text>
+<text x="36" y="248" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">named by the SHA-256 of their ciphertext:</text>
+<text x="36" y="265" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">anyone in the path may keep them for ever</text>
+<rect x="460" y="206" width="416" height="66" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="472" y="228" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">-muw- pointers</text>
+<text x="472" y="248" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the ref and the branch index: refetched;</text>
+<text x="472" y="265" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">writing needs one compare-and-swap, the API</text>
+</svg>

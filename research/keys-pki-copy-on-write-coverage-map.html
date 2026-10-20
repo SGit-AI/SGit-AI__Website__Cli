@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not · cli.sgit.ai</title>
+<meta name="description" content="Before writing two articles, a map of what is already published on keys the way git does them, PKI access to a vault and copy-on-write: seven questions from the memo, where each stands, the facts the articles must not get wrong, and seven code questions for the thread.">
+<link rel="canonical" href="https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html">
+<link rel="alternate" type="text/markdown" href="../research/keys-pki-copy-on-write-coverage-map.md">
+<meta property="og:title" content="Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not">
+<meta property="og:description" content="Before writing two articles, a map of what is already published on keys the way git does them, PKI access to a vault and copy-on-write: seven questions from the memo, where each stands, the facts the articles must not get wrong, and seven code questions for the thread.">
+<meta property="og:url" content="https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not</div>
+<h1 id="keys-the-way-git-does-them-pki-access-to-a-vault-and-copy-on">Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-16 · 16:26 UTC</span><span class="k">Kind</span><span class="v">coverage map</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/keys.html">keys</a> <a class="chip" href="../research/topics/write-path.html">write-path</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md</code></a> in SGit-AI__CLI at <code>5473571</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 16 Oct 2026. <b>For:</b> the agent that manages sgit; input to one or two newsroom articles. <b>No code changes:</b> this is research and mapping. Anything that would need code is listed in §5 as a question for the thread. <b>Sources read:</b> every newsroom article on keys and identity (11), the sgit.ai pages on PKI, credentials, key management, messaging, authentication and history purging (14), the threat model and the CLI at <code>dev</code> 37218af, RuVector's and RVF's READMEs, ruv.sgit.ai.</p>
+<h2 id="1-the-questions-in-the-memo-and-where-each-stands">1. The questions in the memo, and where each stands</h2>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Question (from the memo)</th><th>Already published?</th><th>Where</th><th>Gap</th></tr></thead><tbody><tr><td>1</td><td>Native public/private keys for a vault (read key pair, write key pair)</td><td><b>Yes, as a design (RFC)</b></td><td>newsroom <i>RFC 0001: two ways to add public-key cryptography to sgit</i> (9 Oct): Design 1, native PKI vault mode, two key pairs neither derivable from the other, data key sealed to the read public key, heads signed by the write private key, a write-only depositor; Design 2, sealed files; a shared first step, a vault signing key on today's vaults. Effort estimates and 11 reviewer questions.</td><td>Not built. The memo's "public key as read key, private key as write key" is the exact construction the RFC corrects ("whatever decrypts must be secret"): two pairs, not one.</td></tr><tr><td>2</td><td>The git + SSH + GitHub model: authenticate once, then anything goes; no per-commit check unless signed; local copies are unrestricted</td><td><b>Partly.</b> The server-side half is documented (<code>api/authentication</code>: six capability headers, SHA-256 hash comparison, reads open by default; <code>docs/credentials</code>: what a read key can and cannot do). The git comparison is not written anywhere.</td><td>sgit.ai <code>api/authentication</code>, <code>docs/credentials</code>, <code>docs/sgit-for-git-users</code> (no auth row)</td><td><b>No article maps git's SSH/HTTPS authorisation onto sgit's write key, read key, access token and signatures.</b> That is the article to write (§2 of the draft).</td></tr><tr><td>3</td><td>"The read key locally does not prevent changes", like a git clone</td><td><b>Yes, as a threat-model fact, not as prose.</b> A read-only clone holds the read key on disk (TM-R15, KI-SEC-03); it cannot push (the server wants the write key hash); the host cannot tell a reader from a writer by the bytes (RFC 0001 "The honest problem").</td><td>threat model TM-R15, TM-R12; RFC 0001</td><td>Same as 2: the comparison is the missing piece, and it is a good one, because the answer is "exactly like git, and here is what git adds on the server that sgit adds with signatures".</td></tr><tr><td>4</td><td>A vault's members get in with their own key pair: a file per member, sealed to their public key, holding the read (or write) key</td><td><b>Yes, three times, in three shapes.</b> (a) RFC 0001 Design 1 "Rotation": an owner key signs a <b>writer set</b>; removing a reader is a new read pair and data key "sealed to the remaining members". (b) <i>The passkey opens the vault</i> (11 Oct): a <b>door per path</b>, one file holding the master's key encrypted under the door's read key, "retired by deleting its one file"; built and tested against a real vault server. (c) <i>secrets.sgit.ai on public keys</i> (14 Oct), way 8: "A team. One inbox per member… with revocation by rotating and re-sharing"; and "The private key lives in a vault". Also <code>docs/pki</code> "Where public keys live in a vault": <code>bare/keys/key-rnd-imm-*</code>.</td><td>RFC 0001; passkey article §"A lost device", "Moving keys between masters"; secrets article; <code>docs/pki</code></td><td>The pieces are published separately. <b>Nobody has written the membership pattern as one thing</b>: a members folder (or branch), join by adding a file, leave by deleting it, and the honest limit.</td></tr><tr><td>5</td><td>Revocation: delete the member's file; but history keeps it</td><td><b>Yes, the problem is stated, and the current rule is "rotate".</b> Passkey article: "The catch is history. Vaults keep their versions, so an entry deleted from A is still in A's past for anyone who can open A. The rule: keys that move for security reasons get rotated." <code>docs/key-management</code>: "Rotation is not retroactive." TM-R12: "Read access cannot be revoked: a read key reads all history forever." <code>case-studies/purging-history</code>: how a git history rewrite works and why "rotate the secret, then rewrite".</td><td>passkey article; key-management; credentials; TM-R12; purging-history</td><td><b>The feature the memo asks for, files that exist only at the current version, is not designed anywhere.</b> §3 of the draft lays out the three ways to get it and which one is already a primitive in the code.</td></tr><tr><td>6</td><td>The key never stored locally, only in memory for the run</td><td><b>Partly.</b> <code>sgit clone -</code> reads the key from stdin "keeps it out of argv and history" (0.21.0); the passkey design computes the door key from PRF bytes and stores nothing; <i>Handing secrets to agents</i>: the session makes its key pair, the secret is piped "into the tool, not the chat". But every clone still writes <code>.sg_vault/local/vault_key</code> (0600) and a read-only clone writes the read key to <code>clone_mode.json</code> (TM-R15).</td><td>CHANGELOG 0.21.0; passkey article; handing-secrets; TM-R15</td><td><b>A "no key on disk" clone mode</b> (derive at start, hold in memory, re-derive from the member's private key next time) is not designed. It falls out of §3's pattern.</td></tr><tr><td>7</td><td>Copy-on-write, as asked for by rUv's team</td><td><b>No.</b> The only mention anywhere is a secure-unlink debrief noting that on btrfs/APFS/ZFS an overwrite does not erase. ruv.sgit.ai records that RuVector "already has snapshots and copy-on-write branching (rvf derive)" and that POC2 "adds an sgit vault around the memory files", without saying what copy-on-write would mean for the vault itself.</td><td>ruv.sgit.ai <code>ruv-stack</code>; RuVector README ("Copy on write branches: isolated memory experiments without full copies"); RVF README (COW_MAP, lineage)</td><td><b>A whole article</b>: what copy-on-write is, how sgit's object model already is one, what RVF's version adds, and where sgit would need a write-ahead lane and compaction to keep up. §4 and the second draft.</td></tr></tbody></table></div>
+<h2 id="2-what-the-code-does-today-the-facts-the-articles-must-not-g">2. What the code does today (the facts the articles must not get wrong)</h2>
+<ul><li><b>Three credentials, one derivation.</b> <code>passphrase:vault_id</code> → PBKDF2 (600k) → read key (encrypts everything, AES-256-GCM) and write key (a bearer the server compares as a SHA-256 hash in <code>x-sgraph-vault-write-key</code>); a separate account token <code>x-sgraph-access-token</code>. Reads on the shared host need no credential; the ciphertext is the protection (<code>api/authentication</code>).</li><li><b>The server authorises a write by a shared secret, not by who you are.</b> Every writer presents the same write-key hash. The server cannot tell writers apart; nor can a reader tell whether a head was written by a writer or by the host (RFC 0001).</li><li><b>Commits are signed already.</b> Each clone has an ECDSA P-256 branch key pair (<code>Vault__Key_Manager</code>, raw r||s for Web Crypto); the public half is stored as <code>bare/keys/key-rnd-imm-*</code>; commits carry <code>author_key_id</code>; <code>sgit check verify</code> classifies every commit (verified / bad / unsigned / unknown key); the vault feature <code>signatures-required</code> makes <code>pull</code> refuse the first unsigned incoming commit, and <code>signed-since-&lt;hex&gt;</code> records where the policy began (0.19.0). <code>sgit pki</code> separately makes RSA-4096 encryption pairs and ECDSA signing pairs, encrypts to a recipient (RSA-OAEP wrapping AES-256-GCM), signs and verifies files; no revocation, no expiry, no directory (<code>docs/pki</code>).</li><li><b>The named branch only moves forward</b> (<code>last_remote_head</code>, rewind detection, <code>--accept-rewind</code>), and the branch index is a shared document merged by every client under compare-and-swap (0.19.0).</li><li><b>Mutable objects exist and are a first-class pattern.</b> Refs (<code>ref-pid-muw-*</code>), the branch index, the cache layer's value and pointer objects (<code>bare/cache/</code>, written directly to a path-derived id, random IV, "derived, never authoritative", D10), and the door file in the passkey design. These are the objects that have no history by construction.</li><li><b>Deletion exists.</b> <code>DELETE</code> of one object with the write key; <code>destroy</code> of a vault with a tombstone (<code>api/vault-objects</code>); <code>sgit vault delete-on-remote</code>; <code>sgit vault rekey</code> (wipe, init, commit under a new key: a new vault); <code>sgit vault move</code>.</li><li><b>History cannot be rewritten in place.</b> <code>history reset</code> + <code>push --force</code> rewinds a branch, but the old objects stay on the host until deleted, and every reader keeps what it fetched (TM-R12). The purge case study is about git, and its rule applies here: rotate first.</li></ul>
+<h2 id="3-the-membership-pattern-assembled-from-what-exists-for-the-">3. The membership pattern, assembled from what exists (for the first article)</h2>
+<p>What the memo describes is RFC 0001's writer set plus the passkey article's door, applied to a vault's members. In one place:</p>
+<ul><li>A member is a public key (the <code>sgit pki</code> export, or an SSH key: Ed25519 SSH keys sign and X25519-convert for sealing; RSA SSH keys seal with RSA-OAEP as <code>pki encrypt</code> does today).</li><li>The vault keeps, per member, one small object holding the data key (today's read key; under Design 1 the sealed data key) <b>encrypted to that member's public key</b>, at a location derived from the member's fingerprint. Opening the vault = fetch that one object, unwrap it with the private key, hold the data key in memory, never write it to disk.</li><li>Join = a writer adds the member's object (it needs only the public key). Leave = delete it. Nothing else changes for the other members.</li><li>The honest limit, stated by every existing page: deletion stops the next open, it does not undo a copy already made (TM-R12, <code>docs/credentials</code>). A member removed for cause means a rotation of the data key and re-sealing to the rest, which is RFC 0001's "removing a reader" step, and which <code>rekey</code> approximates today at the cost of a new vault.</li><li>For writing, Design 1's write key pair: the server verifies a signature from a key in the writer set instead of comparing a shared hash. That is the "GitHub-equivalent": the SSH key authorises the push, and the commit signature says who wrote it.</li></ul>
+<p>The piece that is genuinely new is <b>where the member objects live</b>: in the Merkle tree they would be in history forever (the passkey article's catch), so they must be mutable objects outside it, like refs and the cache layer, which already exist, or a branch with a feature flag that says "no history here". §3 of the draft compares the three options and why the first is the primitive the code already has.</p>
+<h2 id="4-copy-on-write-in-one-paragraph-each-for-the-second-article">4. Copy-on-write, in one paragraph each (for the second article)</h2>
+<ul><li><b>What it is.</b> Share until you write; copy only the part you change. Filesystems (ZFS, btrfs, APFS) use it for snapshots; virtual machines for disk images; the kernel for <code>fork()</code>; git for its object store (a commit is a new tree that shares every unchanged subtree by hash). The cost moves from the copy to the first write, and the gain is that a snapshot or a branch is free.</li><li><b>What RVF does.</b> A <code>.rvf</code> child file "shares all parent data; only changed vectors are copied: a 1M-vector parent with 100 edits produces a ~2.5 MB child instead of a 512 MB copy" (<code>COW_MAP</code> segment, cluster granularity, lineage recorded parent to child with hashes, a hash-linked witness chain, append-only so a crash never corrupts). That is a file format doing what a filesystem does, for one memory artefact. <code>rvf derive</code> is the verb.</li><li><b>What sgit already is.</b> A branch is a ref to a commit: creating one copies nothing. A commit stores only the new blobs and the rebuilt spine; every unchanged folder keeps its tree id. A scoped clone takes the spine and its folder. So sgit is copy-on-write at the object level with Merkle sharing, which is git's design, and the newsroom's <i>Agent workflows on ephemeral vaults</i> measured the consequence ("scoped clones that barely grow with the vault").</li><li><b>What it is not.</b> Two things RVF and the filesystems have that sgit does not: copy-on-write <b>inside a file</b> (a changed byte in a 100 MB file is a new 100 MB object in sgit; RVF copies the changed cluster), and a <b>cheap derived vault</b> (a vault cannot share objects with another vault, because they are encrypted under different keys; a fork is a branch, or a re-encryption). And a write path that is one commit per write (<code>sgit write</code>: a commit, a spine rebuild, a push, 0.5 to 1.5 s against a local server in the ruv.sgit ledger), which is fine for a hundred writes an hour and not for a hundred a second.</li><li><b>The memo's proposal, and why it is the right one.</b> Writes go to an append lane first (the newsroom measured 205 entries a second with none lost; caps of 1,000 waiting entries and 5 MB each), and a normaliser folds them into commits later. That is a write-ahead log with compaction, the shape of every LSM store, of RuVector's own <code>ruvector-lsm-ann</code> ("mutable L0 memory plus background L1 and L2 compaction") and of Scion's changeset log. The second draft sets out the semantics (what a reader sees between compactions, who signs the folded commit, de-duplication by hash) and the numbers.</li></ul>
+<h2 id="5-questions-for-the-thread-each-would-be-a-code-change-none-">5. Questions for the thread (each would be a code change; none is made here)</h2>
+<ol><li><b>Member objects outside the tree.</b> Add a <code>bare/members/</code> class of mutable objects (the cache layer's D10 pattern: path-derived id from the member's fingerprint, random IV, deletable), holding the data key sealed to the member's public key. Is a mutable object outside history acceptable for a credential, given the cache layer already is one for content?</li><li><b>Or a <code>no-history</code> branch feature.</b> A branch whose ref moves without keeping parents and whose superseded objects the client deletes on push. Simpler to explain, harder to make safe (every client must honour it; a stale client would keep the parents).</li><li><b>A no-key-on-disk open.</b> <code>sgit open --member &lt;fingerprint&gt;</code>: unwrap the data key with the local private key (or an SSH agent), hold it in memory, write nothing under <code>.sg_vault/local/</code>. The read-only clone's <code>clone_mode.json</code> (TM-R15) is the thing this replaces.</li><li><b>Signed writes (RFC 0001 Design 1, first three phases).</b> Server verifies an Ed25519 (or the existing ECDSA P-256) signature from the writer set on each batch and CAS, instead of the shared write-key hash. Server work with the SG/Send team.</li><li><b>SSH keys as sgit keys.</b> Accept an <code>~/.ssh/id_ed25519</code> (sign; X25519-convert to seal) or <code>id_rsa</code> (RSA-OAEP, as <code>pki encrypt</code> already does) as a member identity, and an SSH agent for signing. Pure client work; the RFC's "an ssh key" box in Design 2's provider list.</li><li><b>Copy-on-write write path.</b> <code>sgit write --lane</code>: append-lane first, <code>sgit lane compact</code> (or a scheduled normaliser) folds entries into one signed commit. Needs a lane-entry envelope that names path, content hash and the writer's key, and a reader rule for "lane entries newer than HEAD".</li><li><b>In-file copy-on-write for large files.</b> Content-defined chunking of blobs over a threshold, so a changed region is a new chunk, not a new file; keeps every chunk a <code>-imm-</code> object. The trade is against the whole-object simplicity the Scion response praised; probably a later step, and only for the large-file case.</li></ol>
+<div class="pagenav"><span></span><a href="../research/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/keys-pki-copy-on-write-coverage-map.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/keys-pki-copy-on-write-coverage-map.md"><code>admin/content/research/keys-pki-copy-on-write-coverage-map.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/keys-pki-copy-on-write-coverage-map.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

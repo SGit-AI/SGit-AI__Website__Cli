@@ -12,6 +12,11 @@
 //   7. key-leak tripwire — nothing in the tree may look like a vault key, a private key, or a cloud or
 //      provider API key. The site discusses keys constantly; it must never contain one.
 //   8. advisory: em-dashes in the prose of this site's own pages (not the moved or published-verbatim ones)
+//   9. articles in the newsroom's format (send.sgit.ai, "Every site its own articles"): the front matter it
+//      lists, a summary of 220 to 360 words, tags ending in "article", the In short, limits and sources
+//      anchors, a lead figure that exists, and no em-dash anywhere. Research is published as written and is
+//      not held to this, on purpose.
+// Pages left at a moved address (meta sgit:moved-to) are checked for one thing: that where they send exists.
 // Any failure exits 1: no tag, no publish.
 'use strict';
 const fs = require('fs');
@@ -35,7 +40,13 @@ function walk(dir, out = []) {
 }
 
 const files = walk(ROOT);
-const htmlFiles = files.filter(f => f.endsWith('.html'));
+const isStub = f => /<meta name="sgit:moved-to"/.test(fs.readFileSync(f, 'utf8'));
+const stubs = files.filter(f => f.endsWith('.html') && isStub(f));
+const htmlFiles = files.filter(f => f.endsWith('.html') && !stubs.includes(f));
+for (const f of stubs) {
+  const to = fs.readFileSync(f, 'utf8').match(/<meta name="sgit:moved-to" content="([^"]+)"/)[1];
+  if (!fs.existsSync(path.join(ROOT, to))) errors.push(`${rel(f)}: moved to ${to}, which does not exist`);
+}
 
 // --- 1. the build is current ---------------------------------------------
 {
@@ -139,12 +150,37 @@ for (const f of files) {
 
 // --- 8. advisory: em-dashes in this site's own prose -----------------------
 for (const f of walk(path.join(ROOT, 'admin/content'))) {
-  if (!f.endsWith('.md') || /\/articles\/(?!index\.md|README\.md)/.test(f)) continue;
+  if (!f.endsWith('.md') || /\/(articles|research)\/(?!index\.md|README\.md)/.test(f)) continue;
   const t = fs.readFileSync(f, 'utf8');
   if (/^moved_from:/m.test(t)) continue;
   const prose = t.replace(/```[\s\S]*?```/g, '').replace(/`[^`]*`/g, '');
   const n = (prose.match(/—/g) || []).length;
   if (n) advisories.push(`${rel(f)}: ${n} em-dash(es) in prose`);
+}
+
+// --- 9. articles in the newsroom's format ------------------------------------
+{
+  const dir = path.join(ROOT, 'admin/content/articles');
+  const REQUIRED = ['title', 'date', 'author', 'author_url', 'summary', 'version', 'license', 'tags', 'status'];
+  for (const name of fs.readdirSync(dir)) {
+    if (!name.endsWith('.md') || name === 'index.md' || name === 'README.md') continue;
+    const where = `admin/content/articles/${name}`;
+    const t = fs.readFileSync(path.join(dir, name), 'utf8');
+    const fm = (t.match(/^---\n([\s\S]*?)\n---/) || [, ''])[1];
+    const meta = Object.fromEntries(fm.split('\n').filter(l => l.includes(':')).map(l => [l.slice(0, l.indexOf(':')).trim(), l.slice(l.indexOf(':') + 1).trim()]));
+    for (const k of REQUIRED) if (!meta[k]) errors.push(`${where}: no ${k} in the front matter`);
+    if (meta.status === 'draft') continue;
+    const words = (meta.summary || '').split(/\s+/).filter(Boolean).length;
+    if (words < 220 || words > 360) errors.push(`${where}: the summary is ${words} words; the format asks for 220 to 360`);
+    if (!/^\[.*,\s*article\]$/.test(meta.tags || '')) errors.push(`${where}: tags must be a [list] whose last tag is "article"`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(meta.date || '')) errors.push(`${where}: date is not YYYY-MM-DD`);
+    for (const a of ['in-short', 'limits', 'sources']) if (!t.includes(`{#${a}}`)) errors.push(`${where}: no {#${a}} section`);
+    const shot = t.match(/^!shot\s+([^|]+?)\s*\|\s*([^|]+?)\s*\|/m);
+    if (!shot) errors.push(`${where}: no lead figure (!shot FILE | DIR | CAPTION)`);
+    else if (!fs.existsSync(path.join(ROOT, shot[2].replace(/^\//, ''), shot[1]))) errors.push(`${where}: the lead figure ${shot[2]}${shot[1]} does not exist`);
+    const dashes = (t.match(/\u2014/g) || []).length;
+    if (dashes) errors.push(`${where}: ${dashes} em-dash(es); the format has none`);
+  }
 }
 
 // --- report ---------------------------------------------------------------

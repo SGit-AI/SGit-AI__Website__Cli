@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Copy-on-write, and what it would mean for a vault: what rUv&#x27;s team asked for, what sgit already does, and the write-ahead lane that would do the rest · cli.sgit.ai</title>
+<meta name="description" content="After I presented ruv.sgit to the Agentics Foundation, rUv&#x27;s team asked whether sgit could add copy-on-write. I wanted to know what that would mean for a vault before saying yes or no. Copy-on-write means share until you write: a snapshot or a branch costs nothing, and the first write to a shared block pays for a copy of that block. Filesystems, virtual disks, the kernel&#x27;s fork() and git&#x27;s object store all work that way. RuVector&#x27;s version is a file that forks: an RVF child shares all its parent&#x27;s data and copies only the changed vectors, with lineage hashes back to the parent. sgit is already copy-on-write where git is. A branch is a pointer, a commit stores the new blobs and the rebuilt spine, unchanged folders keep their ids, and a scoped clone takes one folder, so nothing is copied to fork a vault&#x27;s history. There are two places it is not. Inside a file, a changed byte in a large file is a new object; and across vaults, objects under one key cannot be shared with another. Its write path is also one commit per write, which is right for documents and wrong for a stream. The answer for the stream is a write-ahead lane: writes go to an append lane, measured at two hundred entries a second, and a normaliser folds them into signed commits later, which is the shape of an LSM store, of RuVector&#x27;s own lsm-ann and of Scion&#x27;s changeset log. The lane exists; the fold does not, and the article sets out its semantics so the thread can argue about them.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html">
+<link rel="alternate" type="text/markdown" href="../articles/copy-on-write-and-the-vault.md">
+<meta property="og:title" content="Copy-on-write, and what it would mean for a vault: what rUv&#x27;s team asked for, what sgit already does, and the write-ahead lane that would do the rest">
+<meta property="og:description" content="After I presented ruv.sgit to the Agentics Foundation, rUv&#x27;s team asked whether sgit could add copy-on-write. I wanted to know what that would mean for a vault before saying yes or no. Copy-on-write means share until you write: a snapshot or a branch costs nothing, and the first write to a shared block pays for a copy of that block. Filesystems, virtual disks, the kernel&#x27;s fork() and git&#x27;s object store all work that way. RuVector&#x27;s version is a file that forks: an RVF child shares all its parent&#x27;s data and copies only the changed vectors, with lineage hashes back to the parent. sgit is already copy-on-write where git is. A branch is a pointer, a commit stores the new blobs and the rebuilt spine, unchanged folders keep their ids, and a scoped clone takes one folder, so nothing is copied to fork a vault&#x27;s history. There are two places it is not. Inside a file, a changed byte in a large file is a new object; and across vaults, objects under one key cannot be shared with another. Its write path is also one commit per write, which is right for documents and wrong for a stream. The answer for the stream is a write-ahead lane: writes go to an append lane, measured at two hundred entries a second, and a normaliser folds them into signed commits later, which is the shape of an LSM store, of RuVector&#x27;s own lsm-ann and of Scion&#x27;s changeset log. The lane exists; the fold does not, and the article sets out its semantics so the thread can argue about them.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / Copy-on-write, and what it would mean for a vault: what rUv&#x27;s team asked for, what sgit already does, and the write-ahead lane that would do the rest</div>
+<h1 id="copy-on-write-and-what-it-would-mean-for-a-vault-what-ruv-s-">Copy-on-write, and what it would mean for a vault: what rUv's team asked for, what sgit already does, and the write-ahead lane that would do the rest</h1>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-16 · published · site v0.2.0</p><p class="lead"><b>Summary:</b> After I presented ruv.sgit to the Agentics Foundation, rUv&#x27;s team asked whether sgit could add copy-on-write. I wanted to know what that would mean for a vault before saying yes or no. Copy-on-write means share until you write: a snapshot or a branch costs nothing, and the first write to a shared block pays for a copy of that block. Filesystems, virtual disks, the kernel&#x27;s fork() and git&#x27;s object store all work that way. RuVector&#x27;s version is a file that forks: an RVF child shares all its parent&#x27;s data and copies only the changed vectors, with lineage hashes back to the parent. sgit is already copy-on-write where git is. A branch is a pointer, a commit stores the new blobs and the rebuilt spine, unchanged folders keep their ids, and a scoped clone takes one folder, so nothing is copied to fork a vault&#x27;s history. There are two places it is not. Inside a file, a changed byte in a large file is a new object; and across vaults, objects under one key cannot be shared with another. Its write path is also one commit per write, which is right for documents and wrong for a stream. The answer for the stream is a write-ahead lane: writes go to an append lane, measured at two hundred entries a second, and a normaliser folds them into signed commits later, which is the shape of an LSM store, of RuVector&#x27;s own lsm-ann and of Scion&#x27;s changeset log. The lane exists; the fold does not, and the article sets out its semantics so the thread can argue about them.</p><p class="chips"><span class="chip">copy-on-write</span> <span class="chip">storage</span> <span class="chip">ruvector</span> <span class="chip">rvf</span> <span class="chip">append-lanes</span> <span class="chip">lsm</span> <span class="chip">write-path</span> <span class="chip">branches</span> <span class="chip">agents</span></p>
+<figure class="shot"><img src="../articles/images/copy-on-write-and-the-vault.svg" alt="Share until you write. On the left, two commits of a vault: the second has a new tree for the one folder that changed, and points at the first commit&#x27;s trees and blobs for everything else, so a branch or a new commit copies nothing. On the right, the proposed write-ahead lane for streams: many small writes land in an append lane, and a fold later turns a batch of them into one signed commit. The lane exists; the fold is proposed." loading="lazy"><figcaption>Share until you write. On the left, two commits of a vault: the second has a new tree for the one folder that changed, and points at the first commit&#x27;s trees and blobs for everything else, so a branch or a new commit copies nothing. On the right, the proposed write-ahead lane for streams: many small writes land in an append lane, and a fold later turns a batch of them into one signed commit. The lane exists; the fold is proposed.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>Copy-on-write means share until you write.</b> A snapshot or a branch costs nothing; the first write to a shared block pays for a copy of that block. Filesystems, virtual disks, the kernel's <code>fork()</code> and git's object store all do it.</li><li><b>RuVector's version is a file that forks.</b> An RVF child "shares all parent data; only changed vectors are copied", at cluster granularity, with lineage hashes back to the parent and a witness chain. That is what "add copy-on-write" meant.</li><li><b>sgit is already copy-on-write where git is.</b> A branch is a pointer; a commit stores the new blobs and the rebuilt spine; unchanged folders keep their ids; a scoped clone takes one folder. Nothing is copied to fork a vault's history.</li><li><b>Two places it is not.</b> Inside a file (a changed byte in a large file is a new object), and across vaults (objects under one key cannot be shared with another). And its write path is one commit per write, which is right for documents and wrong for a stream.</li><li><b>The answer for the stream is a write-ahead lane.</b> Writes go to an append lane, measured at two hundred entries a second; a normaliser folds them into signed commits later. That is an LSM store's shape, RuVector's own <code>lsm-ann</code> shape, and Scion's changeset log.</li><li><b>Nothing here is built.</b> The lane exists, the compaction does not; the semantics are set out below so the thread can argue about them.</li></ul>
+<h2 id="copy-on-write">What copy-on-write is</h2>
+<p>The idea is forty years old and shows up wherever copies are expensive. A ZFS or btrfs or APFS snapshot is free because it only records "this is what the tree looked like"; blocks are copied when something later writes to them, and the snapshot keeps the old ones. A virtual machine's disk image is a chain of layers for the same reason. <code>fork()</code> gives the child the parent's pages and copies a page only when one of them writes to it. The cost moves from the copy, which may never be needed, to the first write, which is small; the gain is that snapshots and branches are instant and most of the data is shared.</p>
+<p>Git is copy-on-write at the object level. A commit points at a tree; a tree points at blobs and subtrees by hash; a new commit that changes one file writes one blob and the trees on the path to it, and shares everything else. Branching is writing a 40-byte pointer. The one thing git adds is delta compression in packfiles, which is a storage optimisation, not the model.</p>
+<h2 id="ruvector-means-by">What RuVector means by it</h2>
+<p>The memo's request came from rUv's team, so the reference is theirs. RuVector's README lists "Copy on write branches: isolated memory experiments without full copies" under the RVF file format, and the RVF README says what that is: "Git-like branching. Create a child file that shares all parent data. Only changed vectors are copied. A 1M-vector parent with 100 edits produces a ~2.5 MB child instead of a 512 MB copy", implemented as a <code>COW_MAP</code> segment at cluster granularity, with "DNA-style lineage" (every file records its parent and derivation with hashes) and a SHAKE-256 witness chain over every operation; append-only, so a crash cannot corrupt it. The verb is <code>rvf derive</code>. ruv.sgit.ai records that RuVector "already has snapshots and copy-on-write branching (<code>rvf derive</code>)", and that POC2 wraps those memory files in an sgit vault.</p>
+<p>So the request is: when an agent's memory lives in a vault, forking it for an experiment, or snapshotting it before a run, should cost nothing, keep its lineage, and be verifiable. That is a fair ask, and most of it is already there.</p>
+<h2 id="sgit-already">Where sgit already is one</h2>
+<div class="tablewrap"><table><thead><tr><th>Operation</th><th>What is copied</th><th>Why</th></tr></thead><tbody><tr><td><code>sgit branch new</code></td><td>a ref</td><td>a branch is a pointer to a commit, as in git</td></tr><tr><td>a commit that changes one file</td><td>the new blob and the trees on the spine</td><td>an unchanged folder is one tree id across every commit it survives, so it is stored and fetched once</td></tr><tr><td>a clone of one folder (<code>--path</code>)</td><td>the spine and the folder</td><td>the rest is carried by id and never downloaded</td></tr><tr><td>a snapshot before a run</td><td>nothing</td><td>the commit id is the snapshot; <code>history reset</code> goes back to it; <code>vault tag</code> names it and signs it</td></tr><tr><td>lineage</td><td>nothing extra</td><td>every commit names its parents and is signed by the clone's key; <code>sgit check verify</code> walks the chain</td></tr><tr><td>the witness chain</td><td>nothing extra</td><td>content addressing: every object is named by the hash of its ciphertext, so a tampered byte fails before it is read</td></tr></tbody></table></div>
+<p>The newsroom measured the consequence under <i>Agent workflows on ephemeral vaults</i>: ten scoped clones at once in 1.9 s; a one-folder clone that went from 0.59 s at 100 files to 0.77 s at 2,000 while a full clone went from 0.95 s to 5.55 s. Forking an agent's memory in sgit is <code>sgit branch new</code>; snapshotting it is the commit that already happened.</p>
+<h2 id="not-honestly">Where it is not, honestly</h2>
+<p><b>Inside a file.</b> sgit's unit is the whole object. A changed byte in a 100 MB file is a new 100 MB object, and a clone that wants the new version fetches all of it. RVF copies the changed cluster. This is the trade the Scion response praised from the other side: a whole object named by its hash is something any cache can keep blindly, with no deltas to resolve. For documents and code-sized files it is the right trade. For a 512 MB vector store edited a hundred times it is not, and the fix would be content-defined chunking of blobs over a threshold, so that a changed region is a new chunk and every chunk stays an immutable <code>-imm-</code> object. That is a format addition and a later step; the memo's question about performance is really about the next point.</p>
+<p><b>Across vaults.</b> Objects are encrypted under the vault's data key, so a second vault cannot point at the first vault's objects. A derived vault is either a branch of the same vault or a re-encryption. The sub-vault convention (one vault referencing another by key, as git submodules do) covers the "compose" case; it does not give a cheap fork across a key boundary, and it should not, because that boundary is the point.</p>
+<p><b>The write path.</b> <code>sgit write</code> is a commit, a spine rebuild and a push: in the ruv.sgit ledger, 0.4 to 1.5 s an operation against a local server, including Python start-up and key derivation. That is right for a document, a debrief, a policy. It is wrong for an agent that writes a memory entry every second, or a swarm of a hundred that each write a line: a hundred commits a second would mean a hundred compare-and-swaps on one ref, and the tree would be rebuilt a hundred times. Scion's post says the same about its own scale: "the cost of creating a commit … has to scale with the size of the change, not the overall size of the repo, or the server can't keep up."</p>
+<h2 id="write-ahead-lane">The write-ahead lane</h2>
+<p>The memo's proposal is the right shape, and it has a name in every storage system: a write-ahead log with compaction. Writes land in something cheap and append-only; a background step folds them into the structured store. Log-structured merge trees do this (RuVector's <code>ruvector-lsm-ann</code>: "mutable L0 memory plus background L1 and L2 compaction"); Scion's changesets are an append-only write-ahead log that derived indexes are built from; even RVF's "append-only design" is the same instinct.</p>
+<p>sgit already has the cheap append-only thing: the <b>append lane</b>, a write-only channel on a vault gated by a token, with no account and no tree. The newsroom measured a hundred writers landing a thousand entries in 4.9 s on the in-memory server, none lost, and the caps are 1,000 waiting entries per inbox and 5 MB per entry. So the design is:</p>
+<ol><li><b><code>write</code> goes to the lane</b>, not to a commit: one POST carrying the path, the content (or a content hash and the blob), the writer's key id and a signature. Sub-second, no CAS, no tree.</li><li><b>A normaliser folds the lane into commits</b>: on a schedule, on a count, or when a reader asks. It reads the lane with the enum key, verifies each entry's signature, de-duplicates by content hash, builds one tree with all the changes, makes one signed commit, pushes it with one compare-and-swap, and marks the entries processed. A hundred writes become one commit, which is also what a human would have wanted to read.</li><li><b>A reader between compactions</b> sees HEAD plus the lane entries newer than HEAD, in order, which is what an LSM read does across levels. <code>sgit cat</code> can do that merge; a page can too.</li><li><b>Lineage is kept twice</b>: the lane entry names the writer's key and the folded commit names the entries it absorbed (their hashes), so a line of memory can be traced from the commit back to the entry and the key that wrote it. That is RVF's lineage, in sgit's vocabulary.</li></ol>
+<p>What it costs: a window in which the committed history is behind the lane (bounded by the compaction interval, like the ref's freshness window for readers); a normaliser that holds the write key and runs somewhere; and the lane's own caps, which mean compaction has to keep up or writers get refused at 1,000 waiting entries, which is the back-pressure you want. What it buys: writes at the lane's speed, one commit per batch, no change to the object model, and the copy-on-write property intact, because the folded commit still shares every unchanged subtree.</p>
+<h2 id="limits">What this does not claim</h2>
+<ul><li>Nothing above the lane is built: no <code>write --lane</code>, no normaliser, no read-across-levels.</li><li>Chunked blobs are a sketch, not a design; the whole-object model is kept on purpose until the large-file case needs it.</li><li>A derived <i>vault</i> that shares objects with its parent is not possible across keys and is not proposed; the fork is a branch.</li><li>The RuVector and RVF facts are from their READMEs as read on 16 October; "per its README" means read, not run.</li></ul>
+<p>If you have a workload that writes to a vault many times a second, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>Draft for the newsroom, 16 Oct 2026, from a voice memo of mine after presenting ruv.sgit to the Agentics Foundation. Facts from RuVector's and RVF's READMEs, ruv.sgit.ai, the sgit.ai pages it links and the CLI at <code>dev</code> 37218af. Nothing proposed here is built. The research behind it is <a href="../research/keys-pki-copy-on-write-coverage-map.html">the coverage map</a>.</p>
+<p>Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__copy-on-write-and-the-vault.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/article-draft__copy-on-write-and-the-vault.md</code></a> in SGit-AI__CLI at <code>5473571</code>, on the branch <code>claude/charming-babbage-5hzcxq</code>. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: <a href="../research/topics/write-path.html">/research/topics/write-path.html</a>.</p>
+<div class="pagenav"><a href="../articles/keys-the-way-git-does-it.html">← Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member</a><span></span></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/copy-on-write-and-the-vault.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/copy-on-write-and-the-vault.md"><code>admin/content/articles/copy-on-write-and-the-vault.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/copy-on-write-and-the-vault.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

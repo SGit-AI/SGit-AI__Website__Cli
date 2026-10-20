@@ -237,3 +237,12 @@ main.doc a code{color:var(--accent-dk)}
 main.doc .card h3{margin:.25rem 0 .45rem;font-size:.95rem;font-family:var(--sans)}
 main.doc .card p{margin:0;font-size:.82rem;color:var(--dim);line-height:1.55}
 main.doc a.card:hover{text-decoration:none}
+
+/* v0.2.0: articles in the newsroom's format, and the research area */
+main.doc .byline{font-size:.82rem;color:var(--dim);margin:-.3rem 0 .8rem}
+main.doc .lead{font-size:1rem;color:#34363c;border-left:3px solid var(--accent);padding:.1rem 0 .1rem .9rem}
+main.doc .chips{margin:.6rem 0 1.4rem}
+main.doc a.chip{text-decoration:none}
+figure.shot{margin:1.4rem 0 1.8rem}
+figure.shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+figure.shot figcaption{font-size:.8rem;color:var(--dim);margin-top:.55rem;line-height:1.55}

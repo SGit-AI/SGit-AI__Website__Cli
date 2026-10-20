@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://cli.sgit.ai/about/participant.html</loc></url>
+  <url><loc>https://cli.sgit.ai/about/team.html</loc></url>
   <url><loc>https://cli.sgit.ai/admin/corrections.html</loc></url>
   <url><loc>https://cli.sgit.ai/admin/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/admin/moved.html</loc></url>
@@ -12,31 +13,19 @@
   <url><loc>https://cli.sgit.ai/api/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/api/transfers.html</loc></url>
   <url><loc>https://cli.sgit.ai/api/vault-objects.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/branches-and-test-suite-review.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/clone-refetched-shared-subtrees.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/compatibility-matrix-cli-web-ui-api.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/future-features-after-0-21.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/git-to-sgit-security-mapping.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/history-integrity-cost-and-compatibility.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/a-vault-in-one-file.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/index.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/native-pki-vault-mode.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/non-ascii-paths-refuse-dont-rewrite.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/keys-the-way-git-does-it.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/partial-clones-scope-and-depth.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/pull-discarded-uncommitted-edits.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/read-write-keys-as-pki.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/response-to-scion-and-sgit.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/sealed-files-layer.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/security-ci-and-ai-review.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/security-review-case-study.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/security-review-plan.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/security-review-skills.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/policies-the-vault-enforces.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/research-is-not-an-article.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/sgit-issues-2026-10-14.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/sgit-serve-container-first.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/sgit-serve-running-a-vault-locally.html</loc></url>
-  <url><loc>https://cli.sgit.ai/articles/threat-modeling-tools.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/streaming-changes-into-a-vault.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/the-cli-gets-its-own-site.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/what-shipped-in-v0-1-and-v0-2.html</loc></url>
   <url><loc>https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html</loc></url>
+  <url><loc>https://cli.sgit.ai/briefs/2026-10-20__research-and-articles.html</loc></url>
   <url><loc>https://cli.sgit.ai/briefs/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/agents-sharing-one-vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/agents.html</loc></url>
@@ -94,5 +83,35 @@
   <url><loc>https://cli.sgit.ai/reference/vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/version.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/write.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/branches-and-test-suite-review.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/clone-refetched-shared-subtrees.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/compatibility-matrix-cli-web-ui-api.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/future-features-after-0-21.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-to-sgit-security-mapping.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/index.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/native-pki-vault-mode.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/partial-clones-scope-and-depth.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pull-discarded-uncommitted-edits.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/read-write-keys-as-pki.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/response-to-scion-and-sgit.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/sealed-files-layer.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/security-ci-and-ai-review.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/security-review-case-study.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/security-review-plan.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/security-review-skills.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/sgit-issues-2026-10-14.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/sgit-serve-container-first.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/sgit-serve-running-a-vault-locally.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/threat-modeling-tools.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/correctness.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/integrity.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/keys.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/scale.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/security-review.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/serve.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/write-path.html</loc></url>
   <url><loc>https://cli.sgit.ai/security/index.html</loc></url>
 </urlset>

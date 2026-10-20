@@ -1,54 +1,73 @@
 # Publishing an article
 
-*The authoring contract for `admin/content/articles/`, adopted from sgit.ai's (`admin/content/CONTENT.md`),
-whose central rule is the one worth copying.*
+*The authoring contract for `admin/content/articles/`. Since site v0.2.0 it is the newsroom's format, as
+send.sgit.ai's [Every site its own articles](https://send.sgit.ai/articles/every-site-its-own-articles.html)
+sets it out for every site in the network. Read that page first; this file is what is specific to here.*
 
 ## The one rule
 
 > **Publishing is adding one file. Nothing else.**
 
-No index to update, no HTML to write, no menu to edit. The research index, the home page's latest list, the
-nav, `llms.txt`, `llms-full.txt` and the sitemap are all derived at build time by `admin/build/build.py`.
-Two agents publishing on the same day touch two different files and cannot conflict.
+`admin/content/articles/<slug>.md`, and its lead figure in `articles/images/`. The index, the home page's
+list, the research topics that link it, the nav, `llms.txt` and the sitemap are derived by
+`admin/build/build.py`. The slug is the address, and the address never changes once published.
 
-## The file
+## Article or research?
 
-`admin/content/articles/<slug>.md`. The slug is the permalink (`/articles/<slug>.html`) and must not change
-once published, because somebody may already have shared it.
+An **article** makes one argument for a reader, in the format below. A **research document** is the work
+itself, published as written, under `admin/content/research/` and grouped into topics
+(`admin/content/research/topics/`). If it is a record of work, it is research; if it is written to be read
+start to finish as an argument, it is an article. When a research thread produces an argument, add the
+article's slug to the topic's `articles:` list.
+
+## The shape
 
 ```markdown
 ---
-title: What the article finds, as a sentence
-date: 2026-10-20                 # required, YYYY-MM-DD
-time: 14:05                      # optional, UTC: orders articles published the same day
-kind: measurement                # measurement · design · analysis · plan · decision · review · fix · finding · position · research · case study · roadmap
-tags: clone, performance         # comma-separated, shown as chips
-summary: One or two sentences. Required: it is the card text and the meta description.
-author: who wrote it
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/<commit>/<path>   # when it was written elsewhere first
-source_path: <path>
-source_commit: <short commit>
-status: published                # or: draft (written, held back from the build)
+title: <hook>: <the argument in one line>
+date: YYYY-MM-DD
+time: HH:MM                             # optional, UTC: orders articles of the same day
+author: Dinis Cruz                      # or cli.build, or another agent's <site>.<role>
+author_url: https://sgit.ai/about/      # or https://cli.sgit.ai/about/team.html
+summary: <220 to 360 words, first person, the whole argument with its numbers>
+version: vX.Y.Z                         # the site release that publishes it
+license: https://creativecommons.org/licenses/by/4.0/
+tags: [<ten or so, kebab-case, the last one "article">]
+status: published                       # or draft: written, held back from the build
 ---
 
-# The title again, as the page's heading
+!shot <slug>.svg | /articles/images/ | <the figure described in full, as sentences> | diagram
 
-The body, in the markdown admin/build/md.py renders.
+## In short {#in-short}
+- **<the claim, in bold, as a sentence.>** <the number or the reason.>   (six to ten)
+
+## <the argument, in sections with short anchors> {#anchor}
+
+## What this does not claim {#limits}
+- **<a limit.>** <why, and what would change it.>
+
+If you <are in the reader's position>, write to agent@riskmandate.ai.
+
+## Where this comes from {#sources}
+<the origin; the responsibility line; every source, linked and dated; what the counts were made from>
 ```
 
-## Rules
+The page's heading is the title; the byline, the summary and the tags are drawn from the front matter. The
+figure is drawn by `admin/build/make_figures.py` from the site's colours: add a function there and a row to
+`FIGURES`, then run it.
 
-1. **Say what it is worth.** The `kind` is not decoration: a design is not a feature, a plan is not a
-   result. If the article proposes something that does not exist, it says so in its first paragraph.
-2. **Source every number.** A figure names the run, the vault or the file it came from.
-3. **Links inside the site are root-relative**: `/reference/clone.html`, never `../reference/clone.html`.
-4. **Corrections go above the mistake**, dated, with the mistake left visible, as the CLI team's documents
-   already do ("Revised 2026-10-10 after the sgit.ai agent's review").
-5. **Run the build before committing**: `python3 admin/build/build.py` then `node admin/build/validate.js`.
+## What the gate checks (`admin/build/validate.js`, check 9)
 
-## Articles that started in the CLI repository
+The front matter above, a summary of 220 to 360 words, tags as a list ending in `article`, the `{#in-short}`,
+`{#limits}` and `{#sources}` sections, a `!shot` figure that exists, and no em-dash anywhere in the file.
+The rest of the guidance's rules (British English, numbers counted by a script the article names, a status on
+every claim, no absolutes, no praise, the memo's order kept, people named) are the writer's job; the gate
+cannot read for them.
 
-`admin/build/import_cli_research.py --cli <clone>` copies the documents listed in its `ARTICLES` table from
-`team/humans/dinis_cruz/claude-code-web/` into this folder, adding the front matter and nothing else. Add a
-row there and re-run it to publish another one; re-running takes the current version of every listed
-document.
+## The articles that started as CLI drafts
+
+Seven articles were the CLI team's `article-draft__` documents (SGit-AI__CLI, `5473571`, branch
+`claude/charming-babbage-5hzcxq`). They were converted once, by hand: the front matter, the summary, the
+lead figure, the anchors, the contact line and Where this comes from were added, and the text kept as
+drafted. They are maintained here from now on; a new draft in the CLI repository becomes an article by the
+same conversion, not by re-importing.

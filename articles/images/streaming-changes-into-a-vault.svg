@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="320" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">A thousand small writes, one commit, every line attributed</text>
+<rect x="24" y="56" width="150" height="46" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">writer 1</text>
+<text x="36" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">signs its entries</text>
+<line x1="174" y1="79" x2="236" y2="150" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="24" y="114" width="150" height="46" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="136" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">writer 2</text>
+<text x="36" y="156" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">signs its entries</text>
+<line x1="174" y1="137" x2="236" y2="150" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="24" y="172" width="150" height="46" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="194" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">writer 3</text>
+<text x="36" y="214" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">signs its entries</text>
+<line x1="174" y1="195" x2="236" y2="150" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="24" y="230" width="150" height="46" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="252" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">writer 4</text>
+<text x="36" y="272" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">signs its entries</text>
+<line x1="174" y1="253" x2="236" y2="150" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="240" y="100" width="200" height="110" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="252" y="122" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">append lane</text>
+<text x="252" y="142" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">exists</text>
+<text x="252" y="159" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">entries in arrival order</text>
+<text x="252" y="176" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">5 MB, 1,000 pending</text>
+<text x="252" y="193" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">1,000 from 100 writers: 4.9 s</text>
+<rect x="490" y="100" width="160" height="110" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="502" y="122" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">fold</text>
+<text x="502" y="142" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">proposed</text>
+<text x="502" y="159" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">by count, size or time</text>
+<text x="502" y="176" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">stops on a conflict</text>
+<text x="502" y="193" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the rule cannot settle</text>
+<rect x="700" y="70" width="176" height="80" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="712" y="92" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">one signed commit</text>
+<text x="712" y="112" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">proposed</text>
+<text x="712" y="129" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">says who folded</text>
+<rect x="700" y="170" width="176" height="80" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="712" y="192" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">provenance file</text>
+<text x="712" y="212" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">inside the commit:</text>
+<text x="712" y="229" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">hash, key, seq, paths</text>
+<line x1="440" y1="155" x2="488" y2="155" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<line x1="650" y1="140" x2="698" y2="112" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<line x1="650" y1="170" x2="698" y2="206" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="24" y="300" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">Patches are an ingest format: the store keeps whole, immutable objects; a patch is applied at fold time.</text>
+</svg>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="360" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">Requests against one file: a vault as a zip</text>
+<text x="24" y="66" font-size="12" font-weight="700" fill="#1c1d21" text-anchor="start">12 MB vault, local server</text>
+<text x="240" y="91" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">106 separate GETs</text>
+<rect x="250" y="76" width="270.0" height="20" rx="4" fill="#0f766e"/>
+<text x="528.0" y="91" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">2.0 to 2.5 s</text>
+<text x="240" y="121" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">one 12.7 MB zip</text>
+<rect x="250" y="106" width="15.6" height="20" rx="4" fill="#b45309"/>
+<text x="273.6" y="121" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">0.05 s fetch + 0.08 s unpack</text>
+<text x="24" y="160" font-size="12" font-weight="700" fill="#1c1d21" text-anchor="start">35,000-object vault, local disk</text>
+<text x="240" y="185" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">object by object</text>
+<rect x="250" y="170" width="399.6" height="20" rx="4" fill="#0f766e"/>
+<text x="657.6" y="185" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">111 s</text>
+<text x="240" y="215" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">one 430 MB head zip</text>
+<rect x="250" y="200" width="10.8" height="20" rx="4" fill="#b45309"/>
+<text x="268.8" y="215" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">3 s</text>
+<rect x="24" y="256" width="70" height="40" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">obj</text>
+<rect x="100" y="256" width="70" height="40" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="112" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">obj</text>
+<rect x="176" y="256" width="70" height="40" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="188" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">obj</text>
+<rect x="252" y="256" width="70" height="40" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="264" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">obj</text>
+<rect x="328" y="256" width="70" height="40" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="340" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">obj</text>
+<rect x="404" y="256" width="110" height="40" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="416" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">… appended</text>
+<rect x="520" y="256" width="170" height="40" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="532" y="278" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">central directory</text>
+<text x="24" y="330" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">The directory sits at the end: one range request reads it, one more reads any member. Appending costs 0.25 s.</text>
+</svg>

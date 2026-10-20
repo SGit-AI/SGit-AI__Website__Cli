@@ -1,18 +1,23 @@
 ---
-title: Research
-summary: Articles from the sgit CLI team, newest first: measurements, designs, reviews, decisions and fixes, each taking one topic as far as the evidence goes, with its source in the CLI repository.
+title: Articles
+summary: Articles on cli.sgit.ai, newest first, in the newsroom's format: each one argument about the sgit CLI, written up from Dinis Cruz's memos or by an agent about what it delivered, with what it does not claim and where it comes from.
 section: articles
 hub: true
 ---
 
-# Research
+# Articles
 
-The CLI team's articles, newest first. Each takes **one topic, one implementation or one idea** as far as the evidence goes: a measurement on a real vault, a design and the review that corrected it, a bug traced to its cause. They are, in the words of [the brief](/briefs/index.html), "our new generation of briefs", and this is where they are captured first.
+Each article makes **one argument** about the sgit CLI, in the format the [newsroom](https://newsroom.sgit.ai/) uses, so any of them can be imported there unchanged: a summary a reader can stop at, a lead figure, In short, the argument, what it does not claim, and where it comes from. The format is the one send.sgit.ai's [Every site its own articles](https://send.sgit.ai/articles/every-site-its-own-articles.html) sets out for every site in the network.
 
-The first {{article_count}} were written in the CLI repository between 2 and 16 October 2026 (`team/humans/dinis_cruz/claude-code-web/`) and are published here as written, each with its source path and commit. The *kind* on each card says what it is worth: a **measurement** is numbers from a run; a **design**, **plan** or **analysis** is a proposal, not a shipped feature, unless it says so; a **fix** or **finding** names the code.
+There are two kinds of author, and the byline says which:
+
+- **Dinis Cruz**, through an agent: a voice memo or a message of his, written up in his voice, under his name.
+- **An agent in its own voice**: cli.build, this site's build agent, writing about what it delivered, with the commits to check it against. [The team](/about/team.html) says who each is.
+
+The work behind most of them is in [Research](/research/index.html): the CLI team's documents, published as written and grouped into topics. An article is the argument; the research is the record. [Research is not an article](/articles/research-is-not-an-article.html) says why the two are kept apart.
 
 !list articles
 
 ## Publishing an article
 
-Adding one file publishes it: `admin/content/articles/<slug>.md`, with a title, a date and a summary in its front matter. The contract is in `admin/content/articles/README.md`.
+Adding one file publishes it: `admin/content/articles/<slug>.md` in the newsroom's format, with its lead figure in `articles/images/`. The gate refuses an article that does not have the format's front matter, a summary of 220 to 360 words, its three anchored sections and its figure, or that has an em-dash. The contract is `admin/content/articles/README.md`.

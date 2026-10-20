@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="340" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">How cli.sgit.ai is made: four sources, one generator, one gate, five areas</text>
+<rect x="24" y="56" width="210" height="52" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">sgit.ai&#x27;s twins</text>
+<text x="36" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">27 pages</text>
+<line x1="234" y1="82" x2="298" y2="180" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="24" y="120" width="210" height="52" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="142" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">sgit help --format json</text>
+<text x="36" y="162" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">158 commands</text>
+<line x1="234" y1="146" x2="298" y2="180" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="24" y="184" width="210" height="52" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="206" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">SGit-AI__CLI</text>
+<text x="36" y="226" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">22 documents, 7 drafts</text>
+<line x1="234" y1="210" x2="298" y2="180" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="24" y="248" width="210" height="52" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="270" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">the briefs</text>
+<text x="36" y="290" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">published in full</text>
+<line x1="234" y1="274" x2="298" y2="180" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="300" y="140" width="150" height="80" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="312" y="162" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">build.py</text>
+<text x="312" y="182" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">pages, twins,</text>
+<text x="312" y="199" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">llms.txt, sitemap</text>
+<rect x="490" y="140" width="130" height="80" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="502" y="162" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">validate.js</text>
+<text x="502" y="182" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the gate</text>
+<line x1="450" y1="180" x2="488" y2="180" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="680" y="46" width="196" height="42" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="692" y="68" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">docs and guides</text>
+<line x1="620" y1="180" x2="678" y2="67" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="680" y="100" width="196" height="42" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="692" y="122" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">command reference</text>
+<line x1="620" y1="180" x2="678" y2="121" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="680" y="154" width="196" height="42" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="692" y="176" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">HTTP API</text>
+<line x1="620" y1="180" x2="678" y2="175" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="680" y="208" width="196" height="42" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="692" y="230" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">research, by topic</text>
+<line x1="620" y1="180" x2="678" y2="229" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="680" y="262" width="196" height="42" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="692" y="284" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">articles</text>
+<line x1="620" y1="180" x2="678" y2="283" stroke="#5c5f66" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="300" y="300" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">deployed by GitHub Pages from dev: validate, tag vX.Y.Z, deploy</text>
+</svg>

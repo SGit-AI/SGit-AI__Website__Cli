@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many · cli.sgit.ai</title>
-<meta name="description" content="What sgit does when the repository is big and the clients are many: the comms vault, 35,000 encrypted objects and ten agents, cloned eight ways and measured from a cloud sandbox.">
+<meta name="description" content="When the clients are agents they are always online, there are many of them, and the expensive thing is moving bytes nobody needs. Anthropic&#x27;s post on Scion answers that with a server that does the work and three tiers of cache in front of it. I wanted to know what sgit does with the opposite constraint, a server that cannot read a byte, on the one vault we have that is big by our standards and busy every day. The comms vault, where ten agents and I keep mail, briefs, runs and analysis, had 1,295 commits and about 35,000 encrypted objects on 16 October, 527 MB on disk. Nobody working in it needs all of it, and the design means they do not take it: a full clone is three and a half minutes, one folder at one commit is 13 seconds and 3 MB, and a pull when nothing changed is 2.5 seconds. The one real edge is a scoped clone that asks for a folder&#x27;s whole history, which walks 1,295 commits one request at a time; the fix, a small object that records the commit chain, is designed and not shipped, and the depth flag is the answer until it is. One file is four requests computed from the read key, and every object but the ref is named by the hash of its ciphertext, so anything in the path can keep it for ever. Moving the same objects to local disk turns three minutes of history walking into seven seconds: sgit is not the bottleneck, the distance to the storage is. None of this is proven at Scion&#x27;s scale, and the article says so.">
 <link rel="canonical" href="https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html">
 <link rel="alternate" type="text/markdown" href="../articles/one-vault-ten-agents-measured.md">
 <meta property="og:title" content="One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many">
-<meta property="og:description" content="What sgit does when the repository is big and the clients are many: the comms vault, 35,000 encrypted objects and ten agents, cloned eight ways and measured from a cloud sandbox.">
+<meta property="og:description" content="When the clients are agents they are always online, there are many of them, and the expensive thing is moving bytes nobody needs. Anthropic&#x27;s post on Scion answers that with a server that does the work and three tiers of cache in front of it. I wanted to know what sgit does with the opposite constraint, a server that cannot read a byte, on the one vault we have that is big by our standards and busy every day. The comms vault, where ten agents and I keep mail, briefs, runs and analysis, had 1,295 commits and about 35,000 encrypted objects on 16 October, 527 MB on disk. Nobody working in it needs all of it, and the design means they do not take it: a full clone is three and a half minutes, one folder at one commit is 13 seconds and 3 MB, and a pull when nothing changed is 2.5 seconds. The one real edge is a scoped clone that asks for a folder&#x27;s whole history, which walks 1,295 commits one request at a time; the fix, a small object that records the commit chain, is designed and not shipped, and the depth flag is the answer until it is. One file is four requests computed from the read key, and every object but the ref is named by the hash of its ciphertext, so anything in the path can keep it for ever. Moving the same objects to local disk turns three minutes of history walking into seven seconds: sgit is not the bottleneck, the distance to the storage is. None of this is proven at Scion&#x27;s scale, and the article says so.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html">
 <meta property="og:type" content="article">
 <link rel="stylesheet" href="../assets/site.css">
@@ -65,22 +65,37 @@
       </div>
     </div>
     <div class="ni ni-has">
-      <a class="nl here" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
       <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
-      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
       <a class="sl here" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
-      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
-      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
-      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
-      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
       </div>
     </div>
     <div class="ni ni-has">
       <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
       <a class="sl" href="../admin/versions.html">Release history</a>
       <a class="sl" href="../admin/index.html">Engineering</a>
       <a class="sl" href="../admin/reality.html">Reality</a>
@@ -94,62 +109,55 @@
 </div></nav>
 
 <main class="doc">
-<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Research</a> / One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</div>
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</div>
 <h1 id="one-vault-ten-agents-35-000-objects-what-sgit-does-when-the-">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</h1>
-<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-16 · 10:21 UTC</span><span class="k">Kind</span><span class="v">measurement</span><span class="k">Topics</span><span class="v"><span class="chip">performance</span> <span class="chip">clone</span> <span class="chip">agents</span></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/559752641bc520986fb0851b4a43875b6ad0d4ad/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md</code></a> in SGit-AI__CLI at <code>5597526</code>. Published here as written; the CLI repository is where the work happened.</span></div>
-<p><i>Draft for the newsroom, 16 Oct 2026. Companion to "Scion and sgit" (No. 141). Numbers from the response note in this folder; every one was measured on the live vault from a cloud sandbox, so a plain connection does better. Placeholders in [brackets] are filled from the measurement table.</i></p>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-16 · published · site v0.2.0</p><p class="lead"><b>Summary:</b> When the clients are agents they are always online, there are many of them, and the expensive thing is moving bytes nobody needs. Anthropic&#x27;s post on Scion answers that with a server that does the work and three tiers of cache in front of it. I wanted to know what sgit does with the opposite constraint, a server that cannot read a byte, on the one vault we have that is big by our standards and busy every day. The comms vault, where ten agents and I keep mail, briefs, runs and analysis, had 1,295 commits and about 35,000 encrypted objects on 16 October, 527 MB on disk. Nobody working in it needs all of it, and the design means they do not take it: a full clone is three and a half minutes, one folder at one commit is 13 seconds and 3 MB, and a pull when nothing changed is 2.5 seconds. The one real edge is a scoped clone that asks for a folder&#x27;s whole history, which walks 1,295 commits one request at a time; the fix, a small object that records the commit chain, is designed and not shipped, and the depth flag is the answer until it is. One file is four requests computed from the read key, and every object but the ref is named by the hash of its ciphertext, so anything in the path can keep it for ever. Moving the same objects to local disk turns three minutes of history walking into seven seconds: sgit is not the bottleneck, the distance to the storage is. None of this is proven at Scion&#x27;s scale, and the article says so.</p><p class="chips"><span class="chip">performance</span> <span class="chip">clone</span> <span class="chip">partial-clones</span> <span class="chip">agents</span> <span class="chip">scale</span> <span class="chip">caching</span> <span class="chip">scion</span> <span class="chip">measurement</span> <span class="chip">comms-vault</span></p>
+<figure class="shot"><img src="../articles/images/one-vault-ten-agents-measured.svg" alt="What an agent fetches from the comms vault, 35,000 objects, measured from a cloud sandbox on the hosted service. Each bar is one way of cloning, its length the time it took: the full clone three and a half minutes, the whole tree at one commit 57 seconds, one folder at one commit 13 seconds, structure only plus one file 30 seconds, and a pull when nothing changed 2.5 seconds. The objects and megabytes each one took are written beside the bar." loading="lazy"><figcaption>What an agent fetches from the comms vault, 35,000 objects, measured from a cloud sandbox on the hosted service. Each bar is one way of cloning, its length the time it took: the full clone three and a half minutes, the whole tree at one commit 57 seconds, one folder at one commit 13 seconds, structure only plus one file 30 seconds, and a pull when nothing changed 2.5 seconds. The objects and megabytes each one took are written beside the bar.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>Nobody needs the whole vault, and nobody has to take it.</b> On the 35,000-object comms vault a full clone is 3½ minutes; one folder at one commit is 13 s and 3 MB.</li><li><b>A depth costs seconds however big the vault is.</b> <code>--depth 1</code> asks for the spine of trees down to the folder and the blobs under it, and nothing else.</li><li><b>The one real edge is a folder's whole history.</b> 227 s for 130 files, almost all of it walking 1,295 commits one request at a time; a commit-chain object would make it 26 batched requests, designed and not shipped.</li><li><b>The daily path got fast where the agents reported it slow.</b> A pull fetches the head in batches of fifty with sixteen requests in flight: 186 s from empty, a few requests when a few commits behind.</li><li><b>One file is four requests computed from the read key,</b> and every object but the ref is named by the hash of its ciphertext, so anything in the path can keep it for ever.</li><li><b>The time is the distance to the storage.</b> The same history walk is 181 s hosted and 7 s against a local server.</li></ul>
 <p>Anthropic's post on Scion makes one observation that survives contact with any version control system: when the clients are agents, they are always online, there are a great many of them, and the expensive thing is moving bytes nobody needs. Scion answers with a server that does the work and three tiers of cache in front of it. This is what sgit does with the opposite constraint, a server that cannot read a byte, on the one vault we have that is big by our standards and busy every day.</p>
-<h2 id="the-vault">The vault</h2>
+<h2 id="vault">The vault</h2>
 <p>The comms vault is where ten agents and one human keep their mail, briefs, runs and analysis. On 16 October it had 1,295 commits, 68 of them from the last two days, 5,101 files, 16,315 blobs and 16,391 trees: about 35,000 encrypted objects, 527 MB when every one of them is on disk. Its biggest folder is <code>mail</code> (3,200 files, 68 MB); <code>docs</code> has twelve files. It lives on the hosted server, S3 behind CloudFront, and the agents reach it through the CLI.</p>
-<h2 id="what-an-agent-fetches">What an agent fetches</h2>
+<h2 id="agent-fetches">What an agent fetches</h2>
 <p>Nobody working in this vault needs all of it, and the point of the design is that they do not have to take it.</p>
 <div class="tablewrap"><table><thead><tr><th>What was asked for</th><th>Time</th><th>Objects</th><th>On disk</th></tr></thead><tbody><tr><td>Everything (full clone, 14 Oct)</td><td>3½ min</td><td>35,423</td><td>527 MB</td></tr><tr><td>The whole tree, one commit of history (<code>--depth 1</code>)</td><td>57 s</td><td>6,248</td><td>142 MB</td></tr><tr><td>One folder, one commit (<code>--path security --depth 1</code>, 130 files)</td><td>13 s</td><td>137</td><td>3 MB</td></tr><tr><td>One folder, all its history (<code>--path security</code>)</td><td>227 s</td><td>3,364</td><td>64 MB</td></tr><tr><td>The biggest folder, all its history (<code>--path mail</code>, 3,275 files)</td><td>264 s</td><td>25,110</td><td>274 MB</td></tr><tr><td>Structure only, one commit (<code>--sparse --depth 1</code>), then one file on demand</td><td>27 s + 2.9 s</td><td>968</td><td>6 MB</td></tr><tr><td>A headless clone, then one file (<code>clone-headless</code> + <code>cat</code>; the first <code>cat</code> brings all history down)</td><td>0.4 s + 202 s, then 2.5 s a file</td><td>18,300</td><td>116 MB</td></tr><tr><td>Widening a scoped clone by a folder (<code>fetch security</code>, 130 files)</td><td>7.8 s</td><td>+135</td><td>+2 MB</td></tr><tr><td>A pull when nothing changed</td><td>2.5 s</td><td>0</td><td></td></tr></tbody></table></div>
 <p>Two things stand out. A clone that carries a depth costs seconds and megabytes however large the vault is, because it asks for the spine of trees down to its folder and the blobs under it, and nothing else; this is the pattern the documentation gives agents, and the one the agents use. And a clone that carries the whole history of a folder pays for the history, not the folder: 227 seconds for 130 files, almost all of it walking 1,295 commits one request at a time, because a partial clone cannot do what a full clone does (list the store once and fetch everything in bulk) without holding objects it must not hold. That is the one real edge in the numbers, and the fix is a small encrypted object that records the commit chain, so a clone can fetch the chain in 26 batched requests instead of discovering it. Until it ships, the depth flag is the answer.</p>
-<h2 id="what-an-agent-does-every-session">What an agent does every session</h2>
+<h2 id="agent-does-every">What an agent does every session</h2>
 <p>The command an agent runs most is not clone but pull: come back to the vault, take what changed, go on. Until 14 October that was the slow path on this vault, one request per commit and one per blob, and an agent a day behind was waiting most of an hour. It now fetches the whole head into an empty store in 186 seconds, blobs in batches of fifty with sixteen requests in flight, and a pull that is a few commits behind takes the few requests it needs. The agents reported the slowness; the vault they reported it on is the one it was fixed and measured on.</p>
-<h2 id="one-file-four-requests">One file, four requests</h2>
+<h2 id="file-four-requests">One file, four requests</h2>
 <p>The question Scion's API answers for jobs that never check out is "give me this file at this commit". In sgit that is four GETs computed from the read key: the ref, the commit, the trees on the path, the blob. No listing, no index, no account; the server could be GitHub Pages, and on sgit.ai it sometimes is. The site's documentation pages are a vault read exactly this way in the browser: a cold load fetches 18 objects, the next load fetches one 69-byte ref, and a load inside the two-minute freshness window fetches nothing, because every object but the ref is named by the hash of its ciphertext and carries <code>-imm-</code> in its name, so whoever fetched it can keep it for ever without reading it. The browser app is fast for exactly that reason: it caches every <code>-imm-</code> object on sight. The trade is that there are no deltas; a changed file is a new object. The CLI does the same from a sparse or headless clone, with one caveat the table shows: on a long history it walks the commits first, which is the same edge as above with the same fix.</p>
-<h2 id="where-the-server-is-and-what-it-is">Where the server is, and what it is</h2>
+<h2 id="server">Where the server is, and what it is</h2>
 <p>The same vault and the same client, with the objects moved to local disk, say where the time goes:</p>
 <div class="tablewrap"><table><thead><tr><th></th><th>Hosted (Lambda, S3, CloudFront)</th><th>Plain file server, local</th><th>Local API server, one process</th></tr></thead><tbody><tr><td>Full clone</td><td>3½ min</td><td>111 s</td><td>69 s</td></tr><tr><td><code>--depth 1</code></td><td>57 s</td><td>25 s</td><td>12 s</td></tr><tr><td>One folder, one commit</td><td>13 s</td><td>2.3 s</td><td>0.8 s</td></tr><tr><td>One folder, all history (1,227 commits)</td><td>181 s</td><td></td><td>7 s</td></tr><tr><td>One file on demand</td><td>2.5 s</td><td>1.8 s</td><td>1.8 s</td></tr></tbody></table></div>
 <p>The history walk that costs three minutes hosted costs seven seconds locally, because it is the same 1,227 requests at a millisecond each. What remains with no network at all is the client decrypting 16,000 trees, which is most of the 69 s. sgit is not the bottleneck; the distance to the storage is.</p>
 <p>The hosted server is S3 behind a CDN and a small API that accepts batches of fifty objects, moves refs by compare-and-swap, and can read none of what it stores. The same image runs on a laptop (<code>sgit serve</code>, in Docker, Podman, Apple's container runtime, or as a plain Python process), in a CI job as a sidecar, on a Mac mini next to the agents, in Kubernetes, or not at all: a published vault is plain files on any host that answers a GET. Ten scoped clones at once took 1.9 seconds on a single server process; ten full clones queued to 21 seconds, which is the single process, not the protocol, and the deployment note says so.</p>
-<h2 id="what-this-does-not-claim">What this does not claim</h2>
+<h2 id="limits">What this does not claim</h2>
 <ul><li>Not proven at Scion's scale. 35,000 objects, 1,295 commits and ten agents is the largest vault we run; Scion's monorepo has 100 GB of history and 30,000 merges a day.</li><li>No blame or bisect. Path history, signed commits, signed tags and verification exist; blame is a fold over path history that nobody has written yet.</li><li>A partial clone of a long history is slow without a depth, today. The fix is designed, not shipped.</li><li>One run each, from a sandbox whose every request goes through a proxy.</li></ul>
-<div class="pagenav"><a href="../articles/response-to-scion-and-sgit.html">← Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a><a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report →</a></div>
+<p>If you run agents on one shared vault and would like these numbers measured on yours, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>Draft for the newsroom, 16 Oct 2026, a companion to "Scion and sgit" (newsroom article No. 141). Numbers from the response note in the same folder, <a href="../research/response-to-scion-and-sgit.html">Response to "Scion and sgit"</a>; every one was measured on the live vault from a cloud sandbox, so a plain connection does better.</p>
+<p>Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/article-draft__one-vault-ten-agents-measured.md</code></a> in SGit-AI__CLI at <code>5473571</code>, on the branch <code>claude/charming-babbage-5hzcxq</code>. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the In short, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: <a href="../research/topics/scale.html">/research/topics/scale.html</a>.</p>
+<div class="pagenav"><a href="../articles/policies-the-vault-enforces.html">← Policies the vault enforces: from a rule agents keep to a folder only one key can write</a><a href="../articles/keys-the-way-git-does-it.html">Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../articles/one-vault-ten-agents-measured.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/one-vault-ten-agents-measured.md"><code>admin/content/articles/one-vault-ten-agents-measured.md</code></a></p>
 </main>
 
 <footer class="site"><div class="cols">
   <div>
     <div class="brandline">cli<span>.sgit.ai</span></div>
-    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
     <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
     <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
     <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/one-vault-ten-agents-measured.md">this page as markdown</a></p>
   </div>
   <div>
-    <h4>Get started</h4>
+    <h4>Docs</h4>
     <a href="../docs/what-is-sgit.html">What is sgit</a>
     <a href="../docs/installation.html">Installation</a>
     <a href="../docs/quickstart.html">Quickstart</a>
     <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
     <a href="../docs/two-branch-model.html">The two-branch model</a>
     <a href="../docs/limitations.html">When NOT to use sgit</a>
-  </div>
-  <div>
-    <h4>Guides</h4>
-    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
-    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
-    <a href="../docs/agents.html">Working with AI agents</a>
-    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
-    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
-    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
-    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
-    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
-    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
-    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
-    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+    <a href="../docs/index.html#guides">All the guides</a>
   </div>
   <div>
     <h4>Reference</h4>
@@ -162,12 +170,23 @@
   </div>
   <div>
     <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
-    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
-    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
-    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
-    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
-    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
   </div>
   <div>
     <h4>Site</h4>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="400" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">Where each check happens: git and GitHub, sgit today, and a door per member (proposed)</text>
+<rect x="24" y="56" width="410" height="150" rx="9" fill="#f2f0e9" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="36" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">git + GitHub: checked on the server</text>
+<text x="36" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">SSH key or token: the account</text>
+<text x="36" y="115" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">push permission on the repository</text>
+<text x="36" y="132" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">branch protection: signed commits, no force push</text>
+<text x="36" y="149" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">commit author: a string, unless signed</text>
+<text x="36" y="166" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">a clone is yours: nothing on your disk is protected</text>
+<rect x="466" y="56" width="410" height="150" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+<text x="478" y="78" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">sgit: the server checks a shared hash</text>
+<text x="478" y="98" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">access token, write-key hash, compare-and-swap</text>
+<text x="478" y="115" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">on every client: commits signed by the clone&#x27;s key</text>
+<text x="478" y="132" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">signatures-required refuses unsigned commits on pull</text>
+<text x="478" y="149" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the named branch only moves forward</text>
+<text x="478" y="166" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the server cannot tell one writer from another</text>
+<rect x="24" y="236" width="852" height="136" rx="9" fill="#fbefe3" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="36" y="258" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">Proposed: a door per member, outside the tree</text>
+<rect x="48" y="270" width="176" height="70" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="60" y="292" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">door: alice</text>
+<text x="60" y="312" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">data key sealed to</text>
+<text x="60" y="329" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">alice&#x27;s public key</text>
+<rect x="244" y="270" width="176" height="70" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="256" y="292" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">door: agent 7</text>
+<text x="256" y="312" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">data key sealed to</text>
+<text x="256" y="329" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">agent 7&#x27;s public key</text>
+<rect x="440" y="270" width="176" height="70" rx="9" fill="#ffffff" stroke="#d5d0c2" stroke-width="1.5"/>
+<text x="452" y="292" font-size="14" font-weight="700" fill="#1c1d21" text-anchor="start">door: bob</text>
+<text x="452" y="312" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">data key sealed to</text>
+<text x="452" y="329" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">bob&#x27;s public key</text>
+<text x="660" y="292" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">join: add a door</text>
+<text x="660" y="312" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">leave: delete it</text>
+<text x="660" y="332" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">the key held in memory only</text>
+<text x="660" y="352" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">a copy already made stays</text>
+</svg>

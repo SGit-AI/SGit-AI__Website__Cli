@@ -65,22 +65,37 @@
       </div>
     </div>
     <div class="ni ni-has">
-      <a class="nl" href="../articles/index.html">Research<span class="caret">&#9662;</span></a>
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
       <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
-      <a class="sl" href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
       <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
-      <a class="sl" href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
-      <a class="sl" href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
-      <a class="sl" href="../articles/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</a>
-      <a class="sl" href="../articles/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results</a>
       </div>
     </div>
     <div class="ni ni-has">
       <a class="nl here" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
       <a class="sl" href="../admin/versions.html">Release history</a>
       <a class="sl here" href="../admin/index.html">Engineering</a>
       <a class="sl" href="../admin/reality.html">Reality</a>
@@ -98,16 +113,16 @@
 <h1 id="engineering-how-this-site-is-built-and-released">Engineering: how this site is built and released</h1>
 <p>One folder of content, one generator, one gate, one version number. Deployed to https://cli.sgit.ai by GitHub Pages on every push to <code>dev</code>, the same pipeline as <a href="https://github.com/SGit-AI/SGit-AI__Website">sgit.ai</a> and <a href="https://github.com/SGit-AI/SGit-AI__Website__PKI">pki.sgit.ai</a>.</p>
 <h2 id="the-shape">The shape</h2>
-<div class="tablewrap"><table><thead><tr><th>Path</th><th>What it is</th></tr></thead><tbody><tr><td><code>admin/content/&lt;path&gt;.md</code></td><td>the source of the page at <code>&lt;path&gt;.html</code>: flat front matter, then markdown</td></tr><tr><td><code>admin/content/articles/&lt;slug&gt;.md</code></td><td>one article; adding the file publishes it (<a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/README.md">the contract</a>)</td></tr><tr><td><code>admin/content/reference/sgit-cli-reference.json</code></td><td>the output of <code>sgit help all --format json</code>; the command reference is generated from it</td></tr><tr><td><code>REALITY.md</code>, <code>BRIEF-CORRECTIONS.md</code></td><td>at the repository root, published as <a href="../admin/reality.html">Reality</a> and <a href="../admin/corrections.html">Corrections</a></td></tr><tr><td><code>admin/build/build.py</code></td><td>the generator: pages, markdown twins, nav and footer, <code>llms.txt</code>, <code>llms-full.txt</code>, sitemap, <code>assets/version.js</code></td></tr><tr><td><code>admin/build/md.py</code></td><td>the markdown renderer, from pki.sgit.ai and newsroom.sgit.ai; escapes everything, so content cannot carry HTML</td></tr><tr><td><code>admin/build/validate.js</code></td><td>the gate</td></tr><tr><td><code>admin/build/import_sgit_ai.py</code></td><td>moves pages from sgit.ai, from their markdown twins (<a href="../admin/moved.html">what moved</a>)</td></tr><tr><td><code>admin/build/import_cli_research.py</code></td><td>publishes documents from the CLI repository as articles</td></tr><tr><td><code>admin/build/version.txt</code></td><td>the site version, the one place it is written</td></tr><tr><td><code>.github/workflows/deploy-pages.yml</code></td><td>validate, tag, deploy</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Path</th><th>What it is</th></tr></thead><tbody><tr><td><code>admin/content/&lt;path&gt;.md</code></td><td>the source of the page at <code>&lt;path&gt;.html</code>: flat front matter, then markdown</td></tr><tr><td><code>admin/content/articles/&lt;slug&gt;.md</code></td><td>one article in the newsroom's format; adding the file publishes it (<a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/README.md">the contract</a>)</td></tr><tr><td><code>admin/content/research/&lt;slug&gt;.md</code></td><td>one research document from the CLI repository, as written, with its topics</td></tr><tr><td><code>admin/content/research/topics/&lt;id&gt;.md</code></td><td>one research topic: the question, where it stands, and the <code>!topic</code> list of its documents and articles</td></tr><tr><td><code>admin/content/reference/sgit-cli-reference.json</code></td><td>the output of <code>sgit help all --format json</code>; the command reference is generated from it</td></tr><tr><td><code>REALITY.md</code>, <code>BRIEF-CORRECTIONS.md</code></td><td>at the repository root, published as <a href="../admin/reality.html">Reality</a> and <a href="../admin/corrections.html">Corrections</a></td></tr><tr><td><code>admin/build/build.py</code></td><td>the generator: pages, markdown twins, nav and footer, <code>llms.txt</code>, <code>llms-full.txt</code>, sitemap, <code>assets/version.js</code></td></tr><tr><td><code>admin/build/md.py</code></td><td>the markdown renderer, from pki.sgit.ai and newsroom.sgit.ai; escapes everything, so content cannot carry HTML</td></tr><tr><td><code>admin/build/validate.js</code></td><td>the gate</td></tr><tr><td><code>admin/build/import_sgit_ai.py</code></td><td>moves pages from sgit.ai, from their markdown twins (<a href="../admin/moved.html">what moved</a>)</td></tr><tr><td><code>admin/build/import_cli_research.py</code></td><td>publishes documents from the CLI repository in the research area</td></tr><tr><td><code>admin/build/make_figures.py</code></td><td>draws the articles' lead figures as SVG</td></tr><tr><td><code>admin/build/version.txt</code></td><td>the site version, the one place it is written</td></tr><tr><td><code>.github/workflows/deploy-pages.yml</code></td><td>validate, tag, deploy</td></tr></tbody></table></div>
 <p>Every generated file is listed in <code>admin/build/generated.json</code>, and the build deletes a listed file it no longer produces, so removing a content file removes its page and its twin.</p>
 <h2 id="releasing">Releasing</h2>
 <ol><li>Bump <code>admin/build/version.txt</code> (vX.Y.Z, once per release) and add a row to <code>admin/content/admin/versions.md</code> with one sentence on what changed and why.</li><li><code>python3 admin/build/build.py</code></li><li><code>node admin/build/validate.js</code></li><li><code>git commit -am "site vX.Y.Z: ..." &amp;&amp; git push origin dev</code>. The <code>site vX.Y.Z:</code> prefix is load-bearing: the tag job finds the release commit by it and refuses a release whose newest prefix disagrees with <code>version.txt</code>.</li><li>Check that https://cli.sgit.ai/assets/version.js serves the new version. A clean push is not a release.</li></ol>
 <h2 id="the-gate">The gate</h2>
 <p><code>node admin/build/validate.js</code> fails the build on any of these, in CI on every push and pull request, before anything is tagged or deployed:</p>
-<div class="tablewrap"><table><thead><tr><th>Check</th><th>Why</th></tr></thead><tbody><tr><td>The build is current (<code>build.py --check</code>)</td><td>a page edited by hand, or content committed without building, ships something the source does not say</td></tr><tr><td>The version agrees: <code>version.txt</code>, <code>assets/version.js</code>, <code>llms.txt</code>, one row in the release history</td><td>the badge on every page reads <code>version.js</code>; a release without its row has no record</td></tr><tr><td>Every internal link and asset resolves</td><td>an orphaned or misspelled link is a page nobody can reach</td></tr><tr><td>Every page has a canonical link on the CNAME host, and a markdown twin, and is in <code>llms.txt</code></td><td>pages agents cannot read, or that claim to live elsewhere</td></tr><tr><td>No page is an orphan: every page is linked from another page</td><td>a page nothing links to is unpublished in practice</td></tr><tr><td>The leak tripwire: vault-key shapes, private-key markers, cloud and provider key prefixes, across every file</td><td>this site discusses keys constantly; it must never contain one</td></tr><tr><td>Advisory, not failing: em-dashes in prose on this site's own pages</td><td>the estate's writing rule; pages moved or published verbatim keep their authors' punctuation</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Check</th><th>Why</th></tr></thead><tbody><tr><td>The build is current (<code>build.py --check</code>)</td><td>a page edited by hand, or content committed without building, ships something the source does not say</td></tr><tr><td>The version agrees: <code>version.txt</code>, <code>assets/version.js</code>, <code>llms.txt</code>, one row in the release history</td><td>the badge on every page reads <code>version.js</code>; a release without its row has no record</td></tr><tr><td>Every internal link and asset resolves</td><td>an orphaned or misspelled link is a page nobody can reach</td></tr><tr><td>Every page has a canonical link on the CNAME host, and a markdown twin, and is in <code>llms.txt</code></td><td>pages agents cannot read, or that claim to live elsewhere</td></tr><tr><td>No page is an orphan: every page is linked from another page</td><td>a page nothing links to is unpublished in practice</td></tr><tr><td>The leak tripwire: vault-key shapes, private-key markers, cloud and provider key prefixes, across every file</td><td>this site discusses keys constantly; it must never contain one</td></tr><tr><td>Every article is in the newsroom's format: its front matter, a summary of 220 to 360 words, In short, limits and sources, a lead figure that exists, no em-dash</td><td>the format is what lets the newsroom import an article unchanged (<a href="https://send.sgit.ai/articles/every-site-its-own-articles.html">the guidance</a>)</td></tr><tr><td>A page left at a moved address points at a page that exists</td><td>the 21 research documents that were under /articles/ in v0.1</td></tr><tr><td>Advisory, not failing: em-dashes in prose on this site's own pages</td><td>the estate's writing rule; pages moved or published verbatim, and research, keep their authors' punctuation</td></tr></tbody></table></div>
 <h2 id="against-the-estate-s-guidance">Against the estate's guidance</h2>
-<p><a href="https://sgit.ai/docs/guidance/repositories.html">Every sgit repository</a> lists what each repository carries. Where this one stands at v0.1.0:</p>
-<div class="tablewrap"><table><thead><tr><th>The guidance asks for</th><th>Here</th></tr></thead><tbody><tr><td>The brief, published in full</td><td><a href="../briefs/index.html">yes</a>, with the initial prompt</td></tr><tr><td>A reality file and a corrections file</td><td><a href="../admin/reality.html">yes</a>, <a href="../admin/corrections.html">yes</a></td></tr><tr><td>One version, up on every push, shown on every page</td><td>yes: <code>version.txt</code>, the badge, the <a href="../admin/versions.html">release history</a></td></tr><tr><td>A gate that fails the build</td><td>yes, above</td></tr><tr><td>Machine-readable twins and <code>llms.txt</code></td><td>yes, generated from the same source</td></tr><tr><td>Licences and a participant disclosure</td><td>yes: Apache-2.0 for code, CC BY 4.0 for content, <a href="../about/participant.html">the disclosure</a></td></tr><tr><td>Nav and footer injected at build</td><td>yes, from one definition in <code>build.py</code></td></tr><tr><td>A credentials tier that is never committed</td><td><code>.local/</code> is gitignored; nothing in this repository needs a secret to build</td></tr><tr><td>The review folder (<code>review/</code>)</td><td><b>not yet</b>, recorded in <a href="../admin/reality.html">the reality file</a></td></tr><tr><td>Roles and a board, as files</td><td><b>not yet</b>, recorded in the reality file</td></tr><tr><td>A release script that verifies the live site</td><td><b>not yet</b>: step 5 above is by hand</td></tr></tbody></table></div>
+<p><a href="https://sgit.ai/docs/guidance/repositories.html">Every sgit repository</a> lists what each repository carries. Where this one stands at v0.2.0:</p>
+<div class="tablewrap"><table><thead><tr><th>The guidance asks for</th><th>Here</th></tr></thead><tbody><tr><td>The brief, published in full</td><td><a href="../briefs/index.html">yes</a>, with the initial prompt</td></tr><tr><td>A reality file and a corrections file</td><td><a href="../admin/reality.html">yes</a>, <a href="../admin/corrections.html">yes</a></td></tr><tr><td>One version, up on every push, shown on every page</td><td>yes: <code>version.txt</code>, the badge, the <a href="../admin/versions.html">release history</a></td></tr><tr><td>A gate that fails the build</td><td>yes, above</td></tr><tr><td>Machine-readable twins and <code>llms.txt</code></td><td>yes, generated from the same source</td></tr><tr><td>Licences and a participant disclosure</td><td>yes: Apache-2.0 for code, CC BY 4.0 for content, <a href="../about/participant.html">the disclosure</a></td></tr><tr><td>Nav and footer injected at build</td><td>yes, from one definition in <code>build.py</code></td></tr><tr><td>A credentials tier that is never committed</td><td><code>.local/</code> is gitignored; nothing in this repository needs a secret to build</td></tr><tr><td>The review folder (<code>review/</code>)</td><td><b>not yet</b>, recorded in <a href="../admin/reality.html">the reality file</a></td></tr><tr><td>Roles and a board, as files</td><td><b>in part</b>: <a href="../about/team.html">the team</a> names who writes; roles as files and a board are not yet here</td></tr><tr><td>A release script that verifies the live site</td><td><b>not yet</b>: step 5 above is by hand</td></tr></tbody></table></div>
 <div class="pagenav"><span></span><a href="../admin/versions.html">Release history →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../admin/index.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/admin/index.md"><code>admin/content/admin/index.md</code></a></p>
 </main>
@@ -115,33 +130,20 @@
 <footer class="site"><div class="cols">
   <div>
     <div class="brandline">cli<span>.sgit.ai</span></div>
-    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
     <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
     <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
     <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../admin/index.md">this page as markdown</a></p>
   </div>
   <div>
-    <h4>Get started</h4>
+    <h4>Docs</h4>
     <a href="../docs/what-is-sgit.html">What is sgit</a>
     <a href="../docs/installation.html">Installation</a>
     <a href="../docs/quickstart.html">Quickstart</a>
     <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
     <a href="../docs/two-branch-model.html">The two-branch model</a>
     <a href="../docs/limitations.html">When NOT to use sgit</a>
-  </div>
-  <div>
-    <h4>Guides</h4>
-    <a href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
-    <a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
-    <a href="../docs/agents.html">Working with AI agents</a>
-    <a href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
-    <a href="../docs/vault-messaging.html">Sending messages between vaults</a>
-    <a href="../docs/append-lane-messaging.html">Append-lane messaging between agents that hold no one else&#x27;s vault key</a>
-    <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>
-    <a href="../docs/send-a-vault-key.html">Send a vault key to the registry</a>
-    <a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist</a>
-    <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>
-    <a href="../docs/update-to-0-18-0.html">Update sgit-ai to 0.18.0</a>
+    <a href="../docs/index.html#guides">All the guides</a>
   </div>
   <div>
     <h4>Reference</h4>
@@ -154,12 +156,23 @@
   </div>
   <div>
     <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
-    <a href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
-    <a href="../articles/response-to-scion-and-sgit.html">Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</a>
-    <a href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
-    <a href="../articles/sgit-issues-2026-10-14.html">Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a>
-    <a href="../articles/security-ci-and-ai-review.html">Security CI: a dedicated pipeline, and an AI review that can break the build</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
   </div>
   <div>
     <h4>Site</h4>

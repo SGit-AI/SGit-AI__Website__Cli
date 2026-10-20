@@ -23,11 +23,23 @@ content file removes its page.
 Links in content are root-relative (/docs/quickstart.html). The build rewrites each to a depth-relative
 path for the page it lands on, and to .md in the twin, so the site works from any mount point.
 
+Two areas hold writing, and they are kept apart on purpose (v0.2.0):
+  · articles/  articles in the newsroom's format (send.sgit.ai's "Every site its own articles"): front matter with
+               author and author_url, a lead figure, In short, the argument, What this does not claim, Where this
+               comes from; the gate holds them to it;
+  · research/  the CLI team's research documents, published as written, each tagged with research topics
+               (research/topics/<id>.md), one page per topic with the question and where it stands.
+The research documents that were under articles/ in v0.1.x keep their old addresses as redirect pages
+(MOVED_TO_RESEARCH), because a published address is a contract.
+
 Content directives, each alone on a line:
-  !list SECTION [N]  cards for the pages in that section, in order (articles: newest first), the first N
+  !list SECTION [N]  cards for the pages in that section, in order (articles, research: newest first), the first N
+  !topic ID          the articles and the research documents of one research topic
+  !shot FILE | DIR | CAPTION | KIND   a figure with its caption (the newsroom's block; the twin gets the caption)
   !commands          the command reference index, grouped
   !moved             the table of pages moved from sgit.ai, from their front matter
-and tokens anywhere: {{site_version}} {{cli_version}} {{command_count}} {{article_count}} {{page_count}}
+and tokens anywhere: {{site_version}} {{cli_version}} {{command_count}} {{article_count}} {{research_count}}
+{{topic_count}} {{page_count}}
 """
 import datetime
 import html
@@ -57,7 +69,9 @@ SECTIONS = {
     "security":  ("Security",          "security/index.html"),
     "reference": ("Command reference", "reference/index.html"),
     "api":       ("HTTP API",          "api/index.html"),
-    "articles":  ("Research",          "articles/index.html"),
+    "articles":  ("Articles",          "articles/index.html"),
+    "research":  ("Research",          "research/index.html"),
+    "topics":    ("Research",          "research/index.html"),
     "briefs":    ("Briefs",            "briefs/index.html"),
     "site":      ("Site",              "admin/index.html"),
 }
@@ -74,27 +88,29 @@ NAV = [
         ("&#9679; Every command", "reference/index.html"), ("sgit vault", "reference/vault.html"),
         ("sgit history", "reference/history.html"), ("sgit pki", "reference/pki.html"),
         ("sgit serve", "reference/serve.html"), ("&#9679; The HTTP API", "api/index.html"), ("@api", 6)]),
-    ("Research", "articles/index.html", ("articles",), [
-        ("&#9679; All articles", "articles/index.html"), ("@articles", 7)]),
+    ("Research", "research/index.html", ("research", "topics"), [
+        ("&#9679; All research, by topic", "research/index.html"), ("@topics", 8)]),
+    ("Articles", "articles/index.html", ("articles",), [
+        ("&#9679; All articles", "articles/index.html"), ("@articles", 8)]),
     ("Site", "admin/index.html", ("site", "briefs"), [
-        ("The brief", "briefs/index.html"), ("Release history", "admin/versions.html"),
+        ("The brief", "briefs/index.html"), ("The team", "about/team.html"), ("Release history", "admin/versions.html"),
         ("Engineering", "admin/index.html"), ("Reality", "admin/reality.html"),
         ("Corrections", "admin/corrections.html"), ("What moved from sgit.ai", "admin/moved.html"),
         ("Participant disclosure", "about/participant.html")]),
 ]
 
 FOOTER = [
-    ("Get started", [("@start", 6)]),
-    ("Guides", [("@guides", 11)]),
+    ("Docs", [("@start", 6), ("All the guides", "docs/index.html#guides")]),
     ("Reference", [("Every command", "reference/index.html"), ("@security", 4), ("The HTTP API", "api/index.html")]),
-    ("Research", [("All articles", "articles/index.html"), ("@articles", 5)]),
+    ("Research", [("All research", "research/index.html"), ("@topics", 7)]),
+    ("Articles", [("All articles", "articles/index.html"), ("@articles", 5)]),
     ("Site", [("The brief", "briefs/index.html"), ("Release history", "admin/versions.html"),
               ("Engineering", "admin/index.html"), ("Reality", "admin/reality.html"),
               ("Corrections", "admin/corrections.html"), ("llms.txt", "llms.txt")]),
 ]
 
 BLURB = ("The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the "
-         "HTTP API it is a client of, the guides, and the CLI team's research as articles. Part of the "
+         "HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the "
          "<a href=\"https://sgit.ai\" style=\"display:inline;padding:0\"><b>sgit.ai</b></a> network. "
          "Content CC BY 4.0, code Apache-2.0.")
 NETLINE = ('<a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · '
@@ -119,7 +135,32 @@ COMMAND_GROUPS = [
 ]
 
 LINK = re.compile(r"\]\((/[^)\s]*)\)")
-TOKEN = re.compile(r"\{\{(site_version|cli_version|command_count|article_count|page_count)\}\}")
+TOKEN = re.compile(r"\{\{(site_version|cli_version|command_count|article_count|research_count|topic_count|page_count)\}\}")
+SHOT = re.compile(r"^!shot\s+([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+?)(?:\s*\|\s*(\w+))?\s*$")
+
+# The research documents that were published under articles/ in v0.1.x: their old address becomes a page that
+# sends the reader to the new one, so nothing anybody shared stops working.
+MOVED_TO_RESEARCH = [
+    "branches-and-test-suite-review", "clone-refetched-shared-subtrees", "compatibility-matrix-cli-web-ui-api",
+    "future-features-after-0-21", "git-to-sgit-security-mapping", "history-integrity-cost-and-compatibility",
+    "native-pki-vault-mode", "non-ascii-paths-refuse-dont-rewrite", "partial-clones-scope-and-depth",
+    "pull-discarded-uncommitted-edits", "read-write-keys-as-pki", "response-to-scion-and-sgit", "sealed-files-layer",
+    "security-ci-and-ai-review", "security-review-case-study", "security-review-plan", "security-review-skills",
+    "sgit-issues-2026-10-14", "sgit-serve-container-first", "sgit-serve-running-a-vault-locally", "threat-modeling-tools",
+]
+
+
+def as_list(v):
+    return [x.strip() for x in (v if isinstance(v, list) else (v or "").split(",")) if x.strip()]
+
+
+def teaser(text, limit=230):
+    """A card's text: the summary up to the sentence that crosses the limit. An article's summary is its
+    abstract, 220 to 360 words, which is too long for a card."""
+    if len(text) <= limit:
+        return text
+    cut = text.find(". ", limit)
+    return text[:cut + 1] if 0 < cut < limit + 160 else text[:limit].rsplit(" ", 1)[0] + "…"
 
 
 class Page:
@@ -147,8 +188,8 @@ def content_pages():
         rel = f.relative_to(CONTENT).with_suffix(".html").as_posix()
         if rel.startswith("articles/") and rel != "articles/index.html":
             meta.setdefault("section", "articles")
-            if meta.get("status") == "draft":
-                continue
+        if meta.get("status") == "draft":
+            continue
         pages.append(Page(rel, meta, body, f.relative_to(ROOT).as_posix()))
     for src, out in ROOT_SOURCES.items():
         meta, body = front_matter((ROOT / src).read_text())
@@ -218,7 +259,7 @@ def section_pages(pages, section):
     """The pages of a section in reading order: articles newest first, everything else by `order`. A hub
     (front matter `hub: true`, the page that lists a section) is not one of its own entries."""
     ps = [p for p in pages if p.section == section and p.meta.get("hub") != "true"]
-    if section == "articles":
+    if section in ("articles", "research"):
         return sorted(ps, key=lambda p: (p.meta.get("date", ""), p.meta.get("time", "00:00"), p.rel), reverse=True)
     return sorted(ps, key=lambda p: (p.order, p.rel))
 
@@ -237,18 +278,34 @@ def tokens(text, ctx):
     return TOKEN.sub(lambda m: str(ctx[m.group(1)]), text)
 
 
-def card_html(p, up):
+def topic_members(pages, tid):
+    docs = [p for p in section_pages(pages, "research") if tid in as_list(p.meta.get("topics"))]
+    topic = next((p for p in pages if p.rel == f"research/topics/{tid}.html"), None)
+    by_rel = {p.rel: p for p in pages}
+    arts = [by_rel[f"articles/{a}.html"] for a in as_list(topic.meta.get("articles")) if f"articles/{a}.html" in by_rel] if topic else []
+    return docs, arts
+
+
+def card_html(p, up, pages=()):
     m = p.meta
+    summary = p.summary
     if p.section == "articles":
-        kind = m.get("kind", "article")
-        tag = f'<span class="tag">{html.escape(kind)}</span>'
+        tag = f'<span class="tag">article · {html.escape(m.get("author", ""))}</span>'
         meta = f'<span class="meta">{m.get("date", "")}</span>'
+        summary = teaser(p.summary)
+    elif p.section == "research":
+        tag = f'<span class="tag">{html.escape(m.get("kind", "research"))}</span>'
+        meta = f'<span class="meta">{m.get("date", "")} · ' + ", ".join(as_list(m.get("topics"))) + "</span>"
+    elif p.section == "topics":
+        docs, arts = topic_members(pages, p.rel.split("/")[-1][:-5])
+        tag = '<span class="tag">research topic</span>'
+        meta = f'<span class="meta">{len(docs)} document{"s" if len(docs) != 1 else ""}' + (f' · {len(arts)} article{"s" if len(arts) != 1 else ""}' if arts else "") + "</span>"
     elif m.get("moved_from"):
         tag, meta = "", '<span class="meta">moved from sgit.ai</span>'
     else:
         tag, meta = "", ""
     return (f'<a class="card" href="{up}{p.rel}">{tag}<h3>{inline(p.title)}</h3>'
-            f'<p>{html.escape(p.summary)}</p>{meta}</a>')
+            f'<p>{html.escape(summary)}</p>{meta}</a>')
 
 
 def commands_md():
@@ -281,7 +338,32 @@ def expand(page, pages, twin, up):
             if twin:
                 lines += [f"- [{p.title}](/{p.rel}): {p.summary}" for p in ps]
             else:
-                blocks.append('<div class="cards inpage">' + "".join(card_html(p, up) for p in ps) + "</div>")
+                blocks.append('<div class="cards inpage">' + "".join(card_html(p, up, pages) for p in ps) + "</div>")
+                lines.append(f"@@BLOCK{len(blocks) - 1}@@")
+            continue
+        m = re.match(r"^!topic ([\w-]+)\s*$", line)
+        if m:
+            docs, arts = topic_members(pages, m.group(1))
+            for head, ps in (("Articles from this topic", arts), ("The research documents, newest first", docs)):
+                if not ps:
+                    continue
+                lines += [f"## {head}", ""]
+                if twin:
+                    lines += [f"- [{p.title}](/{p.rel}): {teaser(p.summary)}" for p in ps] + [""]
+                else:
+                    blocks.append('<div class="cards inpage">' + "".join(card_html(p, up, pages) for p in ps) + "</div>")
+                    lines += [f"@@BLOCK{len(blocks) - 1}@@", ""]
+            continue
+        m = SHOT.match(line)
+        if m:
+            name, folder, caption = m.group(1), m.group(2), m.group(3)
+            src = folder.rstrip("/") + "/" + name
+            if twin:
+                lines += [f"![{caption}]({src})", "", f"*{caption}*", ""]
+            else:
+                img = (up + src[1:]) if src.startswith("/") else src
+                blocks.append(f'<figure class="shot"><img src="{img}" alt="{html.escape(caption, quote=True)}" loading="lazy">'
+                              f'<figcaption>{html.escape(caption)}</figcaption></figure>')
                 lines.append(f"@@BLOCK{len(blocks) - 1}@@")
             continue
         if line.strip() == "!commands":
@@ -367,22 +449,42 @@ def provenance_html(page, up):
                 f'moved here on {when} as cli.sgit.ai becomes the CLI\'s main documentation. The text is as it was; '
                 f'links to pages that moved now stay on this site. <a href="{up}admin/moved.html">What moved, and why</a>.</div>')
     if page.section == "articles" and m.get("hub") != "true":
+        author = html.escape(m.get("author", ""))
+        if m.get("author_url"):
+            url = m["author_url"]
+            author = f'<a href="{up + url[1:] if url.startswith("/") else url}">{author}</a>'
+        chips = " ".join(f'<span class="chip">{html.escape(t)}</span>' for t in as_list(m.get("tags")) if t != "article")
+        return (f'<p class="byline">By {author} · {m.get("date", "")} · {html.escape(m.get("status", ""))}'
+                f'{" · site " + html.escape(m["version"]) if m.get("version") else ""}</p>'
+                f'<p class="lead"><b>Summary:</b> {html.escape(m.get("summary", ""))}</p>'
+                f'<p class="chips">{chips}</p>')
+    if page.section == "research" and m.get("hub") != "true":
+        topics = " ".join(f'<a class="chip" href="{up}research/topics/{t}.html">{t}</a>' for t in as_list(m.get("topics")))
         rows = [("Date", m.get("date", "") + (f" · {m['time']} UTC" if m.get("time") else "")),
-                ("Kind", html.escape(m.get("kind", "article"))),
-                ("Topics", " ".join(f'<span class="chip">{html.escape(t.strip())}</span>' for t in m.get("tags", "").split(",") if t.strip())),
+                ("Kind", html.escape(m.get("kind", "research"))),
+                ("Research topics", topics),
                 ("Written by", html.escape(m.get("author", "")))]
         if m.get("source"):
+            branch = m.get("source_branch", "dev")
             rows.append(("Source", f'<a href="{m["source"]}"><code>{html.escape(m.get("source_path", ""))}</code></a> '
-                                   f'in SGit-AI__CLI at <code>{html.escape(m.get("source_commit", ""))}</code>. Published here as written; '
-                                   f'the CLI repository is where the work happened.'))
+                                   f'in SGit-AI__CLI at <code>{html.escape(m.get("source_commit", ""))}</code>'
+                                   + (f' (branch <code>{html.escape(branch)}</code>, not yet merged to dev)' if branch != "dev" else "")
+                                   + '. Published here as written; the CLI repository is where the work happened.'))
         return '<div class="docmeta">' + "".join(f'<span class="k">{k}</span><span class="v">{v}</span>' for k, v in rows if v) + "</div>"
     return ""
+
+
+def with_title(page, body):
+    """A newsroom-format article has no heading of its own: the title is its front matter. Give the page one."""
+    if re.search(r"^# ", body, re.M):
+        return body
+    return f"# {page.title}\n\n{body}"
 
 
 def page_html(page, pages, ctx):
     up = "../" * page.rel.count("/")
     body, blocks = expand(page, pages, False, up)
-    body = relink(tokens(body, ctx), page.rel, False)
+    body = relink(tokens(with_title(page, body), ctx), page.rel, False)
     content = render(body)
     for i, b in enumerate(blocks):
         content = content.replace(f"<p>@@BLOCK{i}@@</p>", b)
@@ -418,7 +520,7 @@ def page_html(page, pages, ctx):
 <meta property="og:title" content="{html.escape(title, quote=True)}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="https://{HOST}/{page.rel}">
-<meta property="og:type" content="{'article' if page.section == 'articles' else 'website'}">
+<meta property="og:type" content="{'article' if page.section in ('articles', 'research') else 'website'}">
 <link rel="stylesheet" href="{up}assets/site.css">
 </head>
 <body>
@@ -442,6 +544,11 @@ def page_html(page, pages, ctx):
 
 def twin_md(page, pages, ctx):
     body, _ = expand(page, pages, True, "")
+    m = page.meta
+    if page.section == "articles" and m.get("hub") != "true":
+        byline = (f"By [{m.get('author', '')}]({m.get('author_url', '')}) · {m.get('date', '')} · {m.get('status', '')}"
+                  if m.get("author_url") else f"By {m.get('author', '')} · {m.get('date', '')} · {m.get('status', '')}")
+        body = f"{byline}\n\n**Summary:** {m.get('summary', '')}\n\n{body}"
     body = relink(tokens(body, ctx), page.rel, True)
     head = [f"# {page.title}, cli.sgit.ai", ""]
     if page.summary:
@@ -449,7 +556,6 @@ def twin_md(page, pages, ctx):
     # No site version here: stamping it into every twin rewrote ~100 files per release, the problem pki.sgit.ai
     # solved with assets/version.js. llms.txt and version.js carry it.
     src = f"*Source: <https://{HOST}/{page.rel}> · generated from the same content as the page, so the two cannot drift."
-    m = page.meta
     if m.get("moved_from"):
         src += f" Moved from <{m['moved_from']}> (sgit.ai {m['moved_version']}) on {m['moved_on']}."
     if m.get("source"):
@@ -476,14 +582,14 @@ def llms_txt(pages, ctx):
            "  exactly what changed. Your installed version answers the same question: `sgit help all --format json`.",
            "- Never write a vault key into a tracked file. Read keys may be published; vault keys never.",
            "- The project, the vault platform and the network of sites: https://sgit.ai/llms.txt", ""]
-    order = ["home", "start", "guides", "security", "reference", "api", "articles", "briefs", "site"]
+    order = ["home", "start", "guides", "security", "reference", "api", "topics", "research", "articles", "briefs", "site"]
     for sec in order:
         ps = [p for p in pages if p.section == sec]
         if not ps:
             continue
         hubs = [p for p in ps if p.meta.get("hub") == "true"]
         listed = hubs + section_pages(pages, sec)
-        out.append(f"## {SECTIONS[sec][0]}")
+        out.append("## " + {"topics": "Research topics", "research": "Research documents"}.get(sec, SECTIONS[sec][0]))
         out += [f"- [{p.title}](/{p.twin}): {p.summary}" for p in listed]
         out.append("")
     return "\n".join(out)
@@ -503,7 +609,8 @@ def build():
         seen[p.rel] = p.source
     ctx = {"site_version": VERSION, "cli_version": REFERENCE["cli_version"],
            "command_count": REFERENCE["command_count"],
-           "article_count": len(section_pages(pages, "articles")), "page_count": len(pages)}
+           "article_count": len(section_pages(pages, "articles")), "research_count": len(section_pages(pages, "research")),
+           "topic_count": len(section_pages(pages, "topics")), "page_count": len(pages)}
     out = {}
     for p in pages:
         out[p.rel] = page_html(p, pages, ctx)
@@ -514,7 +621,38 @@ def build():
     out["robots.txt"] = f"User-agent: *\nAllow: /\nSitemap: https://{HOST}/sitemap.xml\n"
     out["assets/version.js"] = f'window.SITE_VERSION = "{VERSION}";\n'
     out["reference/sgit-cli-reference.json"] = (CONTENT / "reference/sgit-cli-reference.json").read_text()
+    for slug in MOVED_TO_RESEARCH:
+        out[f"articles/{slug}.html"], out[f"articles/{slug}.md"] = moved_stub(slug, seen)
     return out, pages
+
+
+def moved_stub(slug, seen):
+    """The page left at a v0.1.x article address whose document moved to research/ in v0.2.0."""
+    new = f"research/{slug}.html"
+    if new not in seen:
+        raise SystemExit(f"build: articles/{slug}.html is listed as moved, but {new} is not built")
+    url = f"https://{HOST}/{new}"
+    page = f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moved to research · cli.sgit.ai</title>
+<meta name="sgit:moved-to" content="{new}">
+<link rel="canonical" href="{url}">
+<meta http-equiv="refresh" content="0; url=../{new}">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<main class="doc">
+<p>This document moved to <a href="../{new}">{url}</a> on 20 October 2026 (site v0.2.0), when research got its own
+area on this site. Research documents are published as written; articles are written for a reader.</p>
+</main>
+</body>
+</html>
+"""
+    twin = f"# Moved, cli.sgit.ai\n\nThis document moved to <{url[:-5]}.md> (site v0.2.0).\n"
+    return page, twin
 
 
 def main():

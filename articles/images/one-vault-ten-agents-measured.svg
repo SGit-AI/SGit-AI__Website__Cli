@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" font-family="ui-sans-serif, system-ui, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5c5f66"/></marker></defs>
+<rect width="900" height="330" fill="#faf9f5"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1c1d21" text-anchor="start">What an agent fetches from a 35,000-object vault (hosted, from a cloud sandbox)</text>
+<text x="240" y="77" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">full clone</text>
+<rect x="250" y="62" width="336.0" height="20" rx="4" fill="#b45309"/>
+<text x="594.0" y="77" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">3½ min · 35,423 objects · 527 MB</text>
+<text x="240" y="121" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">--depth 1</text>
+<rect x="250" y="106" width="91.2" height="20" rx="4" fill="#0f766e"/>
+<text x="349.2" y="121" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">57 s · 6,248 objects · 142 MB</text>
+<text x="240" y="165" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">--sparse --depth 1 + one file</text>
+<rect x="250" y="150" width="47.8" height="20" rx="4" fill="#0f766e"/>
+<text x="305.84000000000003" y="165" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">27 s + 2.9 s · 968 objects · 6 MB</text>
+<text x="240" y="209" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">--path security --depth 1</text>
+<rect x="250" y="194" width="20.8" height="20" rx="4" fill="#0f766e"/>
+<text x="278.8" y="209" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">13 s · 137 objects · 3 MB</text>
+<text x="240" y="253" font-size="12" font-weight="400" fill="#1c1d21" text-anchor="end">pull, nothing changed</text>
+<rect x="250" y="238" width="4.0" height="20" rx="4" fill="#0f766e"/>
+<text x="262.0" y="253" font-size="12" font-weight="400" fill="#5c5f66" text-anchor="start">2.5 s · 0 objects</text>
+<text x="24" y="300" font-size="11" font-weight="400" fill="#5c5f66" text-anchor="start">Source: the article&#x27;s table, measured 14 to 16 October 2026 on the comms vault (1,295 commits).</text>
+</svg>

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security CI: a dedicated pipeline, and an AI review that can break the build · cli.sgit.ai</title>
+<meta name="description" content="A dedicated security pipeline on every pull request, and a keyless AI security review that can break the build on anything new: why, how it is wired, and what it costs per reviewed change.">
+<link rel="canonical" href="https://cli.sgit.ai/research/security-ci-and-ai-review.html">
+<link rel="alternate" type="text/markdown" href="../research/security-ci-and-ai-review.md">
+<meta property="og:title" content="Security CI: a dedicated pipeline, and an AI review that can break the build">
+<meta property="og:description" content="A dedicated security pipeline on every pull request, and a keyless AI security review that can break the build on anything new: why, how it is wired, and what it costs per reviewed change.">
+<meta property="og:url" content="https://cli.sgit.ai/research/security-ci-and-ai-review.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Security CI: a dedicated pipeline, and an AI review that can break the build</div>
+<h1 id="security-ci-a-dedicated-pipeline-and-an-ai-review-that-can-b">Security CI: a dedicated pipeline, and an AI review that can break the build</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-13 · 12:49 UTC</span><span class="k">Kind</span><span class="v">design</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/security-review.html">security-review</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md"><code>team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md</code></a> in SGit-AI__CLI at <code>5473571</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Your questions (13 Oct):</b></p>
+<ol><li>Is a dedicated security pipeline worth it?</li><li>Can some of the checks and AI security reviews run in CI and break the build on anything new?</li><li>What would that cost, on a cheaper model?</li><li>How do you create a Claude key for it?</li></ol>
+<p><b>Short answers:</b></p>
+<ol><li>Yes. It is now <code>.github/workflows/security.yml</code>.</li><li>Yes. The AI review is built, tested without spending anything, and switched <b>off</b> until you connect it. It is keyless: GitHub's OIDC token through workload identity federation.</li><li>About <b>$0.20–0.65 per reviewed PR on Sonnet 5.5</b>, or <b>1–16 cents on Haiku 5.5</b>. Changes that touch none of the 45 security-slice files cost nothing.</li><li>No key is needed: workload identity federation, steps in §6.</li></ol>
+<h2 id="1-why-a-dedicated-pipeline">1. Why a dedicated pipeline</h2>
+<p>Three reasons:</p>
+<ul><li><b>Nothing ran on a pull request.</b> <code>ci-pipeline.yml</code> runs on push to <code>dev</code> and <code>main</code> only, so every gate, including the security job, could only fail after the merge. <code>security.yml</code> runs on every PR into <code>dev</code> or <code>main</code>, so a red result blocks the merge rather than reporting it, and on every push to <code>dev</code>, since that is where changes land here (updated 13 Oct).</li><li><b>New advisories and rules arrive without code changes.</b> A weekly run (Mondays 05:17 UTC) on <code>dev</code> catches a new CVE in <code>cryptography</code> or a new Semgrep rule even when nobody pushes.</li><li><b>The workflows themselves had findings.</b> zizmor found 4 high and 13 medium issues in our Actions. They are fixed or recorded (§3).</li></ul>
+<p>The release pipeline keeps its own security-tests job, since that job gates publishing. The new workflow does not replace it.</p>
+<h2 id="2-the-gates-each-fails-only-on-what-is-new">2. The gates (each fails only on what is new)</h2>
+<div class="tablewrap"><table><thead><tr><th>Job</th><th>What it runs</th><th>Fails when</th></tr></thead><tbody><tr><td>Security &amp; adversarial tests</td><td><code>pytest tests/security</code></td><td>a <code>Fixed__*</code> attack works again, or a <code>Known_Gaps</code> gap moved</td></tr><tr><td>Bandit (baseline)</td><td><code>bandit -r sgit_ai -b tests/security/bandit-baseline.json</code> (1.9.4)</td><td>a finding not in the committed baseline</td></tr><tr><td>Semgrep (new lines)</td><td><code>p/python</code>, <code>p/security-audit</code>, <code>p/secrets</code>, <code>r/python.cryptography</code> (1.178.0) on <code>sgit_ai</code> and <code>review/tools</code>, <code>--baseline-commit</code> = the PR's base</td><td>a finding on a line the PR adds or moves. The weekly run reports everything as SARIF and does not fail</td></tr><tr><td>pip-audit</td><td><code>--strict</code> on the runtime dependencies, now <b>read from <code>pyproject.toml</code></b> (the release job hardcodes them)</td><td>any known advisory</td></tr><tr><td>zizmor</td><td>the workflows and the composite action, <code>--min-severity medium</code>, ignores in <code>.github/zizmor.yml</code></td><td>a new medium or high finding</td></tr><tr><td>actionlint</td><td><code>actionlint</code> (1.7.12) on the workflows</td><td>a workflow GitHub would reject. Added after the first <code>dev</code> run of this change failed at load: a duplicated <code>with:</code> in the mutation job passed every YAML parser and zizmor</td></tr><tr><td>review/ graph current</td><td><code>review/tools/derive.py --check</code></td><td>never fails: a warning, because a stale graph is a docs debt, not a defect</td></tr><tr><td>AI security review</td><td><code>review/tools/ai_review.py</code> (§4)</td><td>a new, confident, medium-or-worse finding that survives a second opinion</td></tr></tbody></table></div>
+<p>Calibrated here:</p>
+<ul><li><b>Semgrep's PR mode</b> run against the merge I pushed today flagged the three <code>urlopen</code> lines in the <code>serve</code> code. Bandit already had reviewed <code>nosec</code> reasons for those lines; they now carry <code># nosemgrep</code> as well.</li><li><b>Bandit, zizmor and pip-audit</b> are clean on the branch.</li></ul>
+<h2 id="3-what-zizmor-found-in-our-workflows-and-what-changed">3. What zizmor found in our workflows, and what changed</h2>
+<ul><li><b>template-injection (high, 4).</b> The composite test action pasted <code>${{ inputs.* }}</code> into shell text. The values are our own constants today, but the pattern is the classic Actions injection.</li><li>Fix: the inputs now reach the shell as environment variables, with <code>set -f</code>.</li><li>Side effect: the integration jobs' <code>'mcp&lt;2'</code> lost its quotes (<code>mcp&lt;2</code>). A variable expansion never parses <code>&lt;</code> as a redirection; I checked the word-splitting in bash.</li><li><b>artipacked (medium).</b> Every read-only job now sets <code>persist-credentials: false</code>.</li><li>The tag job and the two publish jobs keep their credentials, because they push the tag and run <code>git__update_branch</code>. Each has an inline ignore with that reason.</li><li><b>secrets-inherit, excessive-permissions (medium).</b> The <code>dev</code> and <code>main</code> callers pass every secret and run with default token permissions. Narrowing them changes the publishing path, so they are ignored with reasons and left for a release check (follow-up under TM-R21).</li></ul>
+<p><b>Risk:</b> these edits touch the release pipeline's test action. They parse, zizmor is clean, and the word-splitting is checked. The first <code>dev</code> run after the merge is the real check, so watch it.</p>
+<h2 id="4-the-ai-review-review-tools-ai-review-py">4. The AI review (<code>review/tools/ai_review.py</code>)</h2>
+<h3 id="flow">Flow</h3>
+<ol><li><b>Scope.</b> Take the PR's changed files that are in the security slice (<code>review/slice.json</code>, 45 files: crypto, host and local boundaries, verify-then-accept, key stores, supply chain). If there are none, stop: it costs nothing.</li><li><b>Request.</b> One request to Claude:</li></ol>
+<ul><li><i>System part (cached):</i> the rules, <code>review/intent/*.json</code>, and the threat model.</li><li><i>User part:</i> the diff (15 lines of context), each touched file whole, and the function dossiers for those files from <code>review/context/functions/</code>.</li><li>Settings: adaptive thinking; effort <code>medium</code>; output forced to a JSON schema; server-side fallback on (<code>fallbacks: "default"</code>), so a safety-classifier decline is retried on another model instead of failing. Haiku has no fallback.</li></ul>
+<ol><li><b>Findings.</b> Each finding has a file and line, a function, a category, a severity, a confidence, and <b><code>register</code></b>: the threat-model row it is (TM-F/TM-R), or <code>new</code>.</li><li><b>The gate.</b></li></ol>
+<ul><li>It counts only findings that are <code>new</code>, at least medium severity and at least 0.8 confidence.</li><li>If any remain, a <b>second call tries to refute them</b>: is the input reachable, is it handled elsewhere, did it exist before the diff? Only what survives fails the build.</li><li>Clean PRs never pay for that second call.</li></ul>
+<ol><li><b>Waivers.</b> You accept a finding by adding its id (12 hex: file, function and category, not the wording) with a reason to <code>review/findings/ai-waivers.json</code>. Exit codes:</li></ol>
+<p>| Code | Meaning | |---|---| | 0 | pass | | 1 | new findings | | 2 | error | | 3 | inconclusive: the model declined or ran out of tokens; nothing was reviewed, which is not a pass |</p>
+<h3 id="what-it-is-not">What it is not</h3>
+<p>The diff is attacker-controlled text and the model reads it. A hostile change can argue its way past the reviewer. So the AI review catches mistakes by honest contributors and agents; the deterministic gates are the controls. The model gets no tools, so injected text can only change the verdict. The prompt also asks it to report steering text as a finding.</p>
+<p>The job runs only:</p>
+<ul><li>on pushes to <code>dev</code>, and on PRs from branches of this repository (a fork's PR never gets an OIDC token);</li><li>when the repository variable <code>SECURITY_AI_REVIEW</code> is <code>true</code> and a federation rule id is set for that event.</li></ul>
+<p>Never move it to <code>pull_request_target</code>.</p>
+<h3 id="tested-without-spending-anything">Tested without spending anything</h3>
+<ul><li><b>Wire shape.</b> A loopback server stood in for the API. It confirmed that the request carries the <code>server-side-fallback-2026-07-01</code> beta, <code>fallbacks: "default"</code>, adaptive thinking, the JSON-schema output and the cached system prompt.</li><li><b>Paths.</b> I ran it through the four outcomes:</li><li>confirmed finding → exit 1 (only the high, new one gates; a low one does not);</li><li>refuted finding → pass;</li><li>waived finding → pass, one call only;</li><li>refusal → exit 3.</li><li><b>Unit tests.</b> <code>tests/unit/review/test_Review__AI_Review.py</code> covers the gate rules, waivers, the fingerprint, the Haiku price tier, the skip, and a dry run that calls nothing.</li></ul>
+<h3 id="the-off-the-shelf-alternative">The off-the-shelf alternative</h3>
+<p><a href="https://github.com/anthropics/claude-code-security-review"><code>anthropics/claude-code-security-review</code></a> runs Claude Code as an agent over the PR (up to 20 minutes) and comments on it.</p>
+<ul><li>It does not fail the build itself. It outputs <code>findings-count</code>, so you would add your own step to fail on it.</li><li>Its default model is an older Opus. Its README says it is <i>"not hardened against prompt injection attacks and should only be used to review trusted PRs"</i>.</li></ul>
+<p>It is good for PR comments. As a gate, ours is cheaper and predictable, because it is one call with no tools and known inputs. It also knows our threat model and register, so it can tell new from known. Both can run if you want PR comments as well.</p>
+<h2 id="5-cost-measured-inputs-list-prices-as-of-2026-10">5. Cost (measured inputs, list prices as of 2026-10)</h2>
+<p>Dry runs (<code>--dry-run</code>: counts what would be sent, sends nothing) on five real commits:</p>
+<div class="tablewrap"><table><thead><tr><th>Commit</th><th>Slice files</th><th>Input tokens (~)</th><th>Sonnet 5.5 clean / with findings</th><th>Haiku 5.5 clean / with findings</th><th>Opus 5.5 clean / with findings</th></tr></thead><tbody><tr><td><code>b32a6ba</code> sgit serve</td><td>2</td><td>61k</td><td>$0.19 / $0.32</td><td>$0.01 / $0.02</td><td>$0.38 / $0.64</td></tr><tr><td><code>9362a25</code> TM-F32..36</td><td>4</td><td>75k</td><td>$0.22 / $0.38</td><td>$0.01 / $0.02</td><td>$0.44 / $0.76</td></tr><tr><td><code>fbd550f</code> pull guard</td><td>4</td><td>75k</td><td>$0.22 / $0.38</td><td>$0.01 / $0.02</td><td>$0.44 / $0.76</td></tr><tr><td><code>eb7941c</code> bulk fetch</td><td>4</td><td>109k</td><td>$0.29 / $0.51</td><td>$0.07 / $0.13</td><td>$0.57 / $1.03</td></tr><tr><td><code>a5e6043</code> partial clones</td><td>7</td><td>144k</td><td>$0.36 / $0.65</td><td>$0.09 / $0.16</td><td>$0.71 / $1.30</td></tr></tbody></table></div>
+<p><b>How the numbers are built:</b></p>
+<ul><li>Input is about 16k tokens of system (design plus threat model) plus the change.</li><li>Output is assumed at 6k tokens per review and 4k per verification, including thinking. The real figure is printed in the job summary once it runs.</li><li>Prices per million tokens (input / output):</li><li>Sonnet 5.5: $2 / $10.</li><li>Haiku 5.5: $0.10 / $0.50, or $0.50 / $2.50 past 100k input tokens, which is why the larger commits jump.</li><li>Opus 5.5: $4 / $20.</li></ul>
+<p><b>Per month</b>, at 60 PRs that touch the slice:</p>
+<div class="tablewrap"><table><thead><tr><th>Model</th><th>Per month</th><th>Before your first top-up</th><th>Spend limit to set</th></tr></thead><tbody><tr><td>Sonnet</td><td>about $15–40</td><td>a $10 credit covers about 30 reviews</td><td>$25</td></tr><tr><td>Haiku</td><td>about $1–5</td><td></td><td></td></tr></tbody></table></div>
+<p><b>Which model.</b></p>
+<ul><li>Start with <b>Sonnet 5.5</b>, the default (<code>SECURITY_AI_REVIEW_MODEL</code> changes it with no code edit). Haiku 5.5 is about 20 times cheaper per token, but finding security bugs is reasoning work, and a gate that misses or invents findings costs more in attention than it saves.</li><li><b>Measure before you choose.</b> Your branch gives a ready-made test with known answers: review the five fixes <i>backwards</i>, so the "change" re-introduces TM-F32..F36. Commands are in §6. A model that does not flag them is not worth its price at any price. That is under $1 on Sonnet and a few cents on Haiku.</li><li>Batch pricing (50% off) does not suit a PR gate, which needs the answer in minutes. It would suit a later weekly sweep of the whole slice: about 150k tokens of code, roughly $1.30 on Sonnet, $0.65 batched.</li></ul>
+<h2 id="6-switching-it-on-keyless-with-workload-identity-federation">6. Switching it on: keyless, with workload identity federation</h2>
+<p><i>Updated 13 Oct. This replaces the API-key setup first written here.</i></p>
+<p>The CI job holds <b>no API key</b>. It asks GitHub for a short-lived OIDC token (about 5 minutes) for the audience <code>https://api.anthropic.com</code>, and the SDK exchanges that token once for an Anthropic token bound to a service account. Billing goes to the organization that owns the service account (the one with the credits), attributed to the rule's workspace.</p>
+<p>The job runs on every <b>push to <code>dev</code></b>, since that is where changes land here. It can also run on PRs. It reviews <code>before..after</code> of the push. A push that touches no security-slice file (release-badge commits, docs) is skipped at no cost.</p>
+<h3 id="in-the-claude-console-organization-admin">In the Claude Console (organization admin)</h3>
+<ol><li><b>Settings → Workspaces → Create workspace</b> <code>sgit-ci</code>. Click the workspace, then <b>Spend limits</b>, and set the monthly cap, for example $25 with an alert at 50%.</li><li><b>Settings → Workload identity → Connect workload → GitHub Actions.</b> The wizard creates the issuer, the service account and the rule together. It is better than the bare <i>Register issuer</i> dialog.</li></ol>
+<ul><li><b>Issuer:</b> name <code>github-actions</code>, issuer URL <code>https://token.actions.githubusercontent.com</code>, JWKS source <i>OIDC discovery</i>. Leave the discovery URL and CA certificate empty.</li><li><b>Service account:</b> for example <code>sgit-ci-security-review</code>, member of workspace <code>sgit-ci</code>.</li><li><b>Rule for pushes to dev</b> (the one the job needs):</li><li>subject: <code>repo:SGit-AI/SGit-AI__CLI:ref:refs/heads/dev</code> (exact, no <code>*</code>);</li><li>audience: <code>https://api.anthropic.com</code>;</li><li>claims: <code>repository_id</code> = <code>1187093532</code>, <code>repository_owner_id</code> = <code>269696930</code>, <code>ref</code> = <code>refs/heads/dev</code> (numeric ids survive a rename);</li><li>workspace <code>sgit-ci</code>, scope <code>workspace:developer</code>, token lifetime 600 s.</li><li><b>Optional second rule for PRs:</b> subject <code>repo:SGit-AI/SGit-AI__CLI:pull_request</code>, same audience and id claims, no <code>ref</code>.</li></ul>
+<ol><li>Note the ids: rule <code>fdrl_…</code>, service account <code>svac_…</code>, workspace <code>wrkspc_…</code>, and the organization id (Settings → Organization).</li></ol>
+<h3 id="in-github-settings-secrets-and-variables-actions-variables-t">In GitHub (Settings → Secrets and variables → Actions → <i>Variables</i> tab)</h3>
+<p>None of these values is a secret: without a GitHub token that matches the rule, they mint nothing.</p>
+<div class="tablewrap"><table><thead><tr><th>Variable</th><th>Value</th></tr></thead><tbody><tr><td><code>SECURITY_AI_REVIEW</code></td><td><code>true</code></td></tr><tr><td><code>ANTHROPIC_ORGANIZATION_ID</code></td><td>the organization id</td></tr><tr><td><code>ANTHROPIC_SERVICE_ACCOUNT_ID</code></td><td><code>svac_…</code></td></tr><tr><td><code>ANTHROPIC_WORKSPACE_ID</code></td><td><code>wrkspc_…</code></td></tr><tr><td><code>ANTHROPIC_FEDERATION_RULE_ID</code></td><td>the dev-push rule, <code>fdrl_…</code></td></tr><tr><td><code>ANTHROPIC_FEDERATION_RULE_ID_PR</code></td><td>optional: the PR rule</td></tr><tr><td><code>SECURITY_AI_REVIEW_MODEL</code></td><td>optional: <code>claude-haiku-5-5</code> (the default is Sonnet 5.5)</td></tr></tbody></table></div>
+<p>Do <b>not</b> add an <code>ANTHROPIC_API_KEY</code> secret. A set key, even an empty one, takes precedence over federation; the job unsets it anyway.</p>
+<p><b>Who can spend.</b> Anyone who can push to <code>dev</code> can run a workflow that mints a token. Forks cannot: a fork's PR gets no OIDC token. The workspace spend limit is the backstop.</p>
+<p><b>Tested here without spending anything.</b> I ran the job's exact shell step against a local stand-in for both GitHub's token endpoint and Anthropic's token exchange:</p>
+<ul><li>the GitHub token is requested with the right audience;</li><li>it is exchanged <b>once</b>, with the rule, organization, service-account and workspace ids;</li><li>API calls carry the federated bearer token;</li><li>an empty API key is unset;</li><li>an all-zero push base falls back to the parent commit;</li><li>the token file is deleted afterwards;</li><li>a gating finding gives two API calls on one exchange, and the step exits 1.</li></ul>
+<p><code>ai_review.py</code> now makes one SDK client per run. Before this fix, the second call created a new client, which would have re-presented the single-use GitHub token and been refused (<code>jti_reused</code>).</p>
+<p><b>Locally</b>, with your own key and never in a repo file, the commands in §5 still work: <code>export ANTHROPIC_API_KEY=…</code> and <code>python3 review/tools/ai_review.py --base 9362a25 --head 9362a25^</code>.</p>
+<h2 id="7-next-steps-not-done-here">7. Next steps (not done here)</h2>
+<ul><li>A weekly whole-slice AI sweep through the Batch API, with findings written as records under <code>review/findings/</code>.</li><li>Narrowing <code>secrets: inherit</code> and the default token permissions in the dev and main callers, with a release check.</li><li>A committed lockfile, so pip-audit checks what is installed, not what could be (TM-R21).</li><li><code>review/tools/derive.py</code> running in CI and committing the graph, rather than warning.</li></ul>
+<div class="pagenav"><a href="../research/sgit-issues-2026-10-14.html">← Response to &quot;sgit issues found on 14 October 2026&quot;, and the comms-vault performance report</a><a href="../research/non-ascii-paths-refuse-dont-rewrite.html">AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/security-ci-and-ai-review.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/security-ci-and-ai-review.md"><code>admin/content/research/security-ci-and-ai-review.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/security-ci-and-ai-review.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

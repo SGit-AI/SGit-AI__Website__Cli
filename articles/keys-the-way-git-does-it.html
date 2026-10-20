@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member · cli.sgit.ai</title>
+<meta name="description" content="I asked how git actually handles keys, because I suspected sgit was closer to it than people assume. Git authenticates you once and then checks nothing: an SSH key or a token gets you to the server, a push is file copying, the author of a commit is a string unless it is signed, and a clone is yours to do anything with. sgit is the same shape with the names changed. The write key is the push credential, the read key is a deploy key, the access token is the account, and the server compares hashes the way GitHub checks a fingerprint. A read-only clone cannot push and cannot stop you editing files locally, exactly like a git clone, so that is not a gap, it is git&#x27;s rule. Where sgit already goes further is on the client: every commit is signed by the clone&#x27;s own key, a vault can require signatures, and the named branch only moves forward. Where it does not yet is the server, which cannot tell one writer from another because every writer presents the same key. The GitHub version of sgit is RFC 0001&#x27;s Design 1, a write key pair per writer and a writer set the server trusts, and an SSH key fits it directly. The PKI version is a door per member: one small object per member holding the vault&#x27;s data key sealed to that member&#x27;s public key, join by adding one, leave by deleting one, and the key never written to disk. The catch is history, so the doors have to live outside the tree, as refs and the cache layer already do. Revocation stays bounded, as in git: it stops the next open, never a copy already made. None of the member pattern is built.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/keys-the-way-git-does-it.html">
+<link rel="alternate" type="text/markdown" href="../articles/keys-the-way-git-does-it.md">
+<meta property="og:title" content="Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member">
+<meta property="og:description" content="I asked how git actually handles keys, because I suspected sgit was closer to it than people assume. Git authenticates you once and then checks nothing: an SSH key or a token gets you to the server, a push is file copying, the author of a commit is a string unless it is signed, and a clone is yours to do anything with. sgit is the same shape with the names changed. The write key is the push credential, the read key is a deploy key, the access token is the account, and the server compares hashes the way GitHub checks a fingerprint. A read-only clone cannot push and cannot stop you editing files locally, exactly like a git clone, so that is not a gap, it is git&#x27;s rule. Where sgit already goes further is on the client: every commit is signed by the clone&#x27;s own key, a vault can require signatures, and the named branch only moves forward. Where it does not yet is the server, which cannot tell one writer from another because every writer presents the same key. The GitHub version of sgit is RFC 0001&#x27;s Design 1, a write key pair per writer and a writer set the server trusts, and an SSH key fits it directly. The PKI version is a door per member: one small object per member holding the vault&#x27;s data key sealed to that member&#x27;s public key, join by adding one, leave by deleting one, and the key never written to disk. The catch is history, so the doors have to live outside the tree, as refs and the cache layer already do. Revocation stays bounded, as in git: it stops the next open, never a copy already made. None of the member pattern is built.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/keys-the-way-git-does-it.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member</div>
+<h1 id="keys-the-way-git-does-them-and-the-way-a-vault-could-what-ss">Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member</h1>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-16 · published · site v0.2.0</p><p class="lead"><b>Summary:</b> I asked how git actually handles keys, because I suspected sgit was closer to it than people assume. Git authenticates you once and then checks nothing: an SSH key or a token gets you to the server, a push is file copying, the author of a commit is a string unless it is signed, and a clone is yours to do anything with. sgit is the same shape with the names changed. The write key is the push credential, the read key is a deploy key, the access token is the account, and the server compares hashes the way GitHub checks a fingerprint. A read-only clone cannot push and cannot stop you editing files locally, exactly like a git clone, so that is not a gap, it is git&#x27;s rule. Where sgit already goes further is on the client: every commit is signed by the clone&#x27;s own key, a vault can require signatures, and the named branch only moves forward. Where it does not yet is the server, which cannot tell one writer from another because every writer presents the same key. The GitHub version of sgit is RFC 0001&#x27;s Design 1, a write key pair per writer and a writer set the server trusts, and an SSH key fits it directly. The PKI version is a door per member: one small object per member holding the vault&#x27;s data key sealed to that member&#x27;s public key, join by adding one, leave by deleting one, and the key never written to disk. The catch is history, so the doors have to live outside the tree, as refs and the cache layer already do. Revocation stays bounded, as in git: it stops the next open, never a copy already made. None of the member pattern is built.</p><p class="chips"><span class="chip">keys</span> <span class="chip">pki</span> <span class="chip">ssh</span> <span class="chip">git</span> <span class="chip">access-control</span> <span class="chip">membership</span> <span class="chip">revocation</span> <span class="chip">signatures</span> <span class="chip">rfc-0001</span></p>
+<figure class="shot"><img src="../articles/images/keys-the-way-git-does-it.svg" alt="Where each check happens. On the left, git and GitHub: the SSH key, the push permission and branch protection are all checked on the server, and the commit author is a string unless signed. On the right, sgit: the server checks only a shared write-key hash and a compare-and-swap, while signatures, signatures-required and forward-only branches are checked by every client. Below, the proposed door per member: one object per member, outside the tree, holding the vault&#x27;s data key sealed to that member&#x27;s public key." loading="lazy"><figcaption>Where each check happens. On the left, git and GitHub: the SSH key, the push permission and branch protection are all checked on the server, and the commit author is a string unless signed. On the right, sgit: the server checks only a shared write-key hash and a compare-and-swap, while signatures, signatures-required and forward-only branches are checked by every client. Below, the proposed door per member: one object per member, outside the tree, holding the vault&#x27;s data key sealed to that member&#x27;s public key.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>Git authenticates you once and then checks nothing.</b> An SSH key or an HTTPS token gets you to the server; after that a push is file copying. Who wrote a commit is a string in the commit unless it is signed. A clone is unrestricted by design.</li><li><b>sgit is the same shape with the names changed.</b> The write key is the push credential, the read key is a deploy key, the access token is the account, and the server compares hashes the way GitHub checks an SSH fingerprint. A read-only clone cannot push, and it cannot stop you editing files locally, exactly like a git clone.</li><li><b>Where sgit already goes further:</b> every commit is signed by the clone's own key, a vault can require signatures, and the named branch can only move forward. Where it does not yet: the server cannot tell one writer from another, because every writer presents the same key.</li><li><b>The "GitHub" version of sgit is RFC 0001's Design 1.</b> A write key pair per writer, a writer set the server trusts, signed heads. That is what it would take to copy git's model properly.</li><li><b>The PKI version is a door per member.</b> One small object per member, holding the vault's data key sealed to that member's public key. Join by adding one, leave by deleting one, and never write the key to disk. The pieces exist (sealing, the door, <code>bare/keys</code>); the one new thing is objects that have no history.</li><li><b>Revocation is bounded, as in git.</b> Deleting a door stops the next open; it does not take back what was fetched. For that, rotate, as every sgit page already says.</li></ul>
+<h2 id="git-actually-checks">What git actually checks</h2>
+<p>Git over SSH is two systems glued together. SSH authenticates: your private key proves you hold the key the server lists in <code>authorized_keys</code>, and on GitHub that key is tied to an account. Then <code>git-receive-pack</code> runs on the server with whatever rights that account has on the repository, and the push is a transfer of objects plus an update of refs. Nothing in that transfer says who made the commits. A commit's author and committer are strings you typed into your config; git will happily push a commit that says it was written by anyone. The only thing that binds a commit to a person is a signature (GPG, S/MIME, or since git 2.34 an SSH key), and the only thing that makes signatures matter is a server rule that requires them.</p>
+<p>A clone is a complete copy, and git does nothing to restrict what you do with it. "Read-only access" in git means the server will not accept your push; it never meant the files on your disk were protected. A deploy key is an SSH key tied to one repository, read-only by default: it gets you the clone and nothing else.</p>
+<p>So git's model, written out: <b>authentication at the door, authorisation by account on the server, nothing on the objects themselves unless signed, and a local copy that is yours.</b></p>
+<h2 id="sgit-with-names">sgit, with the names changed</h2>
+<p>sgit arrives at the same place from the encryption side. A vault key is <code>passphrase:vault_id</code>, and from the passphrase two keys are derived: a <b>read key</b>, which encrypts every object, and a <b>write key</b>, which the server stores as a SHA-256 hash and compares on every write (<code>x-sgraph-vault-write-key</code>). A third thing, the <b>access token</b>, is the account: on the shared host it gates writes; on a single-key self-hosted server it gates everything.</p>
+<div class="tablewrap"><table><thead><tr><th>git + GitHub</th><th>sgit</th><th>Where it is checked</th></tr></thead><tbody><tr><td>SSH key / HTTPS token</td><td>access token</td><td>server, hash comparison</td></tr><tr><td>push permission on the repo</td><td>write key</td><td>server, hash comparison</td></tr><tr><td>deploy key (read-only)</td><td>read key</td><td>nowhere: the ciphertext is the protection, and reads on the shared host are open</td></tr><tr><td><code>git clone</code></td><td><code>sgit clone</code> with the read key or the vault key</td><td>a clone is yours; the read key does not stop local edits, and it cannot</td></tr><tr><td><code>git push</code></td><td><code>sgit push</code>: batch write + compare-and-swap on the ref</td><td>server: write-key hash, then CAS</td></tr><tr><td>commit author string</td><td>commit author key id</td><td>client: every commit is signed by the clone's ECDSA key; <code>sgit check verify</code> classifies each one</td></tr><tr><td>branch protection "require signed commits"</td><td>vault feature <code>signatures-required</code></td><td>client, on pull: the first unsigned incoming commit is refused</td></tr><tr><td>branch protection "no force push"</td><td>the named branch only moves forward (<code>last_remote_head</code>)</td><td>client: a rewind is refused unless <code>--accept-rewind</code></td></tr><tr><td><code>git filter-repo</code> + force push</td><td><code>history reset</code> + <code>push --force</code>; old objects stay until deleted</td><td>the host keeps what it was given; readers keep what they fetched</td></tr></tbody></table></div>
+<p>Read the table down the last column and the difference with git is visible: <b>git checks on the server, sgit checks on the client, and the server can only ever check a shared hash.</b> Every writer of a vault presents the same write key, so the server cannot tell them apart, and a reader cannot tell whether a head was written by a writer or by the host. RFC 0001 calls this the honest problem, and it is the one thing git's server has that sgit's does not.</p>
+<p>The read-key-does-not-prevent-local-changes observation is therefore not a gap. It is git's rule. What stops a reader's edits from going anywhere is the push, which needs the write key, and what will stop a <i>writer</i> from pretending to be another writer is a signature the server can check, which is the next section.</p>
+<h2 id="github-version-key">The GitHub version: a key per writer</h2>
+<p>To copy git's model properly, a vault needs what GitHub has and the shared write key cannot give: a per-writer identity the server verifies. RFC 0001's Design 1 is that, already designed:</p>
+<ul><li>two key pairs, neither derivable from the other: a <b>read pair</b> (X25519) that the data key is sealed to, and a <b>write pair</b> (Ed25519) that signs the refs and the branch index;</li><li>the server accepts a write only when the head it moves is signed by a key in the vault's <b>writer set</b>, instead of comparing a hash;</li><li>a reader holds the read private key and the write public key, so it can read and verify and cannot write; a writer holds both private halves; a host holds ciphertext and the write public key and can refuse unsigned writes but not forge one;</li><li>a <b>write-only depositor</b> becomes possible, which git cannot express at all: a key that can add to an inbox branch and read nothing.</li></ul>
+<p>In git terms: the writer set is <code>authorized_keys</code>, a signed head is a signed push, and the depositor is a contributor who can open a pull request into a repository they cannot clone. The RFC's effort estimate for the first three phases, the ones that give "a reader cannot write and a host cannot forge", is about three weeks of client work plus the server accepting signed writes.</p>
+<p>An SSH key fits this directly. An Ed25519 SSH key signs; it converts to X25519 for sealing; an RSA SSH key seals with RSA-OAEP, which <code>sgit pki encrypt</code> already does. The RFC lists "an ssh key" as one of the places a private key can live. Nothing stops <code>sgit</code> reading <code>~/.ssh/id_ed25519</code> or asking an SSH agent to sign, the way git does for signed commits today. That is the smallest version of "the public key becomes the write key": not a read key, a <b>write identity</b>, which is what SSH keys are in git too.</p>
+<h2 id="pki-version-door">The PKI version: a door per member</h2>
+<p>The second thing in the memo is not git at all. It is: let a vault's members get in with their own key pairs, and let membership be a file. Three published pieces say how, and nobody has yet put them together:</p>
+<ol><li><b>Sealing.</b> <code>sgit pki encrypt --recipient</code> wraps an AES key to an RSA-4096 public key; RFC 0001 Design 2 seals a file key to named recipients (age-style). Either seals a 32-byte data key to a member.</li><li><b>The door.</b> The passkey article (11 Oct) built and tested exactly this shape on a real vault server: a vault whose address and key are derived from something only the member has (there, the passkey's PRF bytes), holding <b>one file</b>, the master's key encrypted under the door's key; "a door is retired by deleting its one file, never by destroying its address".</li><li><b>Where public keys live.</b> <code>bare/keys/key-rnd-imm-*</code> already holds public keys as immutable objects, "public by construction".</li></ol>
+<p>Put together, membership is a folder of doors inside the vault:</p>
+<pre><code class="lang-text">members/
+  &lt;fingerprint-of-alice-pub&gt;   = data key, sealed to alice&#x27;s public key
+  &lt;fingerprint-of-agent-7-pub&gt; = data key, sealed to agent 7&#x27;s public key</code></pre>
+<ul><li><b>Open:</b> fetch your door by your fingerprint, unwrap the data key with your private key, hold it in memory. Nothing under <code>.sg_vault/local/</code> ever holds the key: that is the "never stored locally" the memo asks for, and it is what the passkey page already does in the browser ("Where is the door key stored? Nowhere.").</li><li><b>Join:</b> a writer adds a door. Sealing needs only the public key, so a writer can admit a member it has never met, from a key in a directory or a signed registry (the registry handover in <i>Where the vault keys live</i> is already PKI in daily use).</li><li><b>Leave:</b> delete the door. From the next open, that member finds nothing.</li><li><b>Write access:</b> a member's door can hold the write identity too, which under Design 1 is a place in the writer set rather than a shared secret.</li></ul>
+<p>This is also the "messages for you" idea in the memo: a folder per public key, with things only that key can open, is a door that holds a message instead of a key. The vault-messaging page's append lanes are the write-only half of the same thing.</p>
+<h2 id="catch-history-three">The catch is history, and the three ways out</h2>
+<p>Everything above has one problem, and the passkey article states it plainly: "Vaults keep their versions, so an entry deleted from A is still in A's past for anyone who can open A." A door deleted in a commit is a door that every later clone still carries in history. The memo's question is the right one: can some files exist only at the current version?</p>
+<p>Three ways to get that, from least to most new:</p>
+<ol><li><b>Doors as mutable objects outside the tree.</b> sgit already has a class of objects with no history by construction: refs (<code>ref-pid-muw-*</code>), the branch index, and the cache layer's value and pointer objects, which are written directly to a path-derived id, never through the content-addressed store, with a random IV, and deleted with the ordinary delete route. A door is exactly that: a mutable object at an id derived from the member's fingerprint, outside the Merkle tree, so no commit ever points at it and deleting it leaves nothing behind on the server. The code pattern exists (contract 08/12, rule D10); what is missing is the member object kind and the open command.</li><li><b>A branch with a <code>no-history</code> feature.</b> The branch index already carries features (<code>signatures-required</code>). A branch flagged <code>no-history</code> would move its ref without keeping parents, and the client would delete the superseded objects on push. Easier to explain, harder to make safe: every client has to honour it, and an old client would keep the parents.</li><li><b>A separate tiny vault per membership</b>, the way the passkey design keeps doors apart from the master. Works today with no new code; costs a vault id per door and a second key to manage.</li></ol>
+<p>The first is the one to take: it is the primitive the code already has, and it keeps the vault's own history intact and signed, which the memo also wants. A membership <i>log</i> can still be kept, signed, in the tree, as long as it holds fingerprints and dates and never a key.</p>
+<h2 id="revocation-can-cannot">What revocation can and cannot do</h2>
+<p>The same as git, and every sgit page already says it: deleting a door, or a deploy key, stops the next access. It does not take back a copy. A member who already fetched the objects keeps them (TM-R12, <code>docs/credentials</code>: "revocation is not retroactive"). A member removed for cause therefore means the RFC's rotation step: a new data key, sealed to the remaining members, and the content re-encrypted for future commits; today <code>sgit vault rekey</code> does that at the cost of a new vault id. A door deleted from a server that runs on a copy-on-write filesystem or keeps backups can also survive in those, which is the same caution the secure-unlink work recorded. None of that is a reason not to have doors. It is the reason the door is the <i>authorisation</i> layer and rotation stays the <i>confidentiality</i> layer, which is also how the memo describes it.</p>
+<h2 id="limits">What this does not claim</h2>
+<ul><li>Nothing in the member-door pattern is built. Sealing, signing, <code>bare/keys</code>, mutable objects and the door test exist; the member object kind, the open command and signed writes do not.</li><li>SSH keys are not accepted by <code>sgit</code> today; <code>sgit pki</code> makes its own RSA-4096 and ECDSA P-256 pairs.</li><li>A vault cannot yet tell its writers apart on the server. That is RFC 0001's Design 1, estimated, not scheduled.</li></ul>
+<p>If you manage keys for a team of people or agents and would like to try the door pattern when it exists, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>Draft for the newsroom, 16 Oct 2026, from a voice memo of mine. Facts checked against the CLI at <code>dev</code> 37218af, the sgit.ai pages it links, RFC 0001 and the passkey article. Nothing here is built beyond what is named as built. The research behind it is <a href="../research/keys-pki-copy-on-write-coverage-map.html">the coverage map</a>.</p>
+<p>Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/article-draft__keys-the-way-git-does-it.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/article-draft__keys-the-way-git-does-it.md</code></a> in SGit-AI__CLI at <code>5473571</code>, on the branch <code>claude/charming-babbage-5hzcxq</code>. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: <a href="../research/topics/keys.html">/research/topics/keys.html</a>.</p>
+<div class="pagenav"><a href="../articles/one-vault-ten-agents-measured.html">← One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a><a href="../articles/copy-on-write-and-the-vault.html">Copy-on-write, and what it would mean for a vault: what rUv&#x27;s team asked for, what sgit already does, and the write-ahead lane that would do the rest →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/keys-the-way-git-does-it.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/keys-the-way-git-does-it.md"><code>admin/content/articles/keys-the-way-git-does-it.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/keys-the-way-git-does-it.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

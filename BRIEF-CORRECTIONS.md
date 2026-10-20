@@ -9,6 +9,13 @@ order: 5
 
 The brief is [published as given](/briefs/index.html). Where it was wrong, unclear or overtaken, the finding goes here, dated, newest first, and the brief stays as it was.
 
+## 2026-10-20, the second brief, while building v0.2.0
+
+8. **"send.sk.ai" is send.sgit.ai**, and its articles guidance is [Every site its own articles](https://send.sgit.ai/articles/every-site-its-own-articles.html). "The main official repo" is read as SGit-AI/SGit-AI__CLI, as in the first brief.
+9. **The recent research was not on `dev`.** The six documents of 16 and 20 October were on the CLI's working branch `claude/charming-babbage-5hzcxq` at `5473571`, not yet merged; they were published from there, and every page from them names the branch.
+10. **"Research documents that should now be articles" were two different things.** Five of the six were drafts written as newsroom articles; one was a coverage map. The drafts became articles; the map, and every earlier research document, went to a new research area. [Research is not an article](/articles/research-is-not-an-article.html) gives the reasoning.
+11. **Correction 5 below is overtaken.** v0.1.0 published 23 research documents as articles. In v0.2.0, 21 of them moved to `/research/` and their old addresses send the reader on; the two that were newsroom drafts stayed as articles, converted to the newsroom's format.
+
 ## 2026-10-20, while building v0.1.0
 
 1. **The names in the transcript are transcription errors.** "cli.sketo.ai" is `cli.sgit.ai` (the repository's README says so); "Escrip. AI" and "sk.ai" are `sgit.ai`; "the Skit" is sgit. Read throughout as such.

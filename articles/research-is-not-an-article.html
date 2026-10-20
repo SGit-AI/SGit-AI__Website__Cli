@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable · cli.sgit.ai</title>
+<meta name="description" content="I asked for two things on cli.sgit.ai: an articles section built the way send.sgit.ai&#x27;s guidance describes, and the CLI team&#x27;s recent research published here, because I want to read it as articles and because we need it. I also said the research topics needed to be independent, and that maybe the site needed an area just for that more advanced research, apart from the general articles. The agent&#x27;s answer, which the site now runs, is that research and articles are two different things and should live in two places. An article makes one argument for a reader, in the newsroom&#x27;s format, with a summary, a lead figure, what it does not claim and where it comes from, and it can be imported into the newsroom unchanged. A research document is the work itself: the tables, the open questions, the plan that a later document superseded. Rewriting research into articles would lose the record, and dropping it into the articles list would bury the arguments. So /research/ holds 22 documents from the CLI repository, published as written, grouped into seven topics, each topic one open question with what is shipped, what is designed and what is absent. /articles/ holds ten articles: seven written up from my memos as newsroom drafts by the CLI team&#x27;s agent, two more from my memos about this site, and one by the build agent about what it delivered. Where a research thread produced an argument, the topic page links both. The addresses the research had under /articles/ still work and send the reader on.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/research-is-not-an-article.html">
+<link rel="alternate" type="text/markdown" href="../articles/research-is-not-an-article.md">
+<meta property="og:title" content="Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable">
+<meta property="og:description" content="I asked for two things on cli.sgit.ai: an articles section built the way send.sgit.ai&#x27;s guidance describes, and the CLI team&#x27;s recent research published here, because I want to read it as articles and because we need it. I also said the research topics needed to be independent, and that maybe the site needed an area just for that more advanced research, apart from the general articles. The agent&#x27;s answer, which the site now runs, is that research and articles are two different things and should live in two places. An article makes one argument for a reader, in the newsroom&#x27;s format, with a summary, a lead figure, what it does not claim and where it comes from, and it can be imported into the newsroom unchanged. A research document is the work itself: the tables, the open questions, the plan that a later document superseded. Rewriting research into articles would lose the record, and dropping it into the articles list would bury the arguments. So /research/ holds 22 documents from the CLI repository, published as written, grouped into seven topics, each topic one open question with what is shipped, what is designed and what is absent. /articles/ holds ten articles: seven written up from my memos as newsroom drafts by the CLI team&#x27;s agent, two more from my memos about this site, and one by the build agent about what it delivered. Where a research thread produced an argument, the topic page links both. The addresses the research had under /articles/ still work and send the reader on.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/research-is-not-an-article.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl here" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</div>
+<h1 id="research-is-not-an-article-the-cli-s-research-gets-an-area-o">Research is not an article: the CLI's research gets an area of its own, and the articles stay readable</h1>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-20 · published · site v0.2.0</p><p class="lead"><b>Summary:</b> I asked for two things on cli.sgit.ai: an articles section built the way send.sgit.ai&#x27;s guidance describes, and the CLI team&#x27;s recent research published here, because I want to read it as articles and because we need it. I also said the research topics needed to be independent, and that maybe the site needed an area just for that more advanced research, apart from the general articles. The agent&#x27;s answer, which the site now runs, is that research and articles are two different things and should live in two places. An article makes one argument for a reader, in the newsroom&#x27;s format, with a summary, a lead figure, what it does not claim and where it comes from, and it can be imported into the newsroom unchanged. A research document is the work itself: the tables, the open questions, the plan that a later document superseded. Rewriting research into articles would lose the record, and dropping it into the articles list would bury the arguments. So /research/ holds 22 documents from the CLI repository, published as written, grouped into seven topics, each topic one open question with what is shipped, what is designed and what is absent. /articles/ holds ten articles: seven written up from my memos as newsroom drafts by the CLI team&#x27;s agent, two more from my memos about this site, and one by the build agent about what it delivered. Where a research thread produced an argument, the topic page links both. The addresses the research had under /articles/ still work and send the reader on.</p><p class="chips"><span class="chip">research</span> <span class="chip">articles</span> <span class="chip">information-architecture</span> <span class="chip">briefs</span> <span class="chip">newsroom-format</span> <span class="chip">topics</span> <span class="chip">cli</span> <span class="chip">provenance</span> <span class="chip">editorial</span></p>
+<figure class="shot"><img src="../articles/images/research-is-not-an-article.svg" alt="Two areas on one site. On the left, Research: the CLI team&#x27;s documents published as written, grouped into seven topics, each topic page stating its question and what is shipped, designed or absent. On the right, Articles: one argument each, in the newsroom&#x27;s format, by a person through an agent or by an agent in its own voice. Between them, a research thread that produced an argument links to the article, and the article names the research it came from." loading="lazy"><figcaption>Two areas on one site. On the left, Research: the CLI team&#x27;s documents published as written, grouped into seven topics, each topic page stating its question and what is shipped, designed or absent. On the right, Articles: one argument each, in the newsroom&#x27;s format, by a person through an agent or by an agent in its own voice. Between them, a research thread that produced an argument links to the article, and the article names the research it came from.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>I asked for articles, and for the CLI's research to be readable as articles.</b> I also asked for research topics to be independent, maybe in an area of their own.</li><li><b>Research and articles are different things.</b> An article makes one argument for a reader; a research document is the work, kept as it was written.</li><li><b>So there are two areas.</b> <a href="../research/index.html">Research</a> holds 22 documents in seven topics; <a href="../articles/index.html">Articles</a> holds ten articles in the newsroom's format.</li><li><b>A topic is an open question with a status.</b> Each topic page says what is shipped, what is designed and what is absent, and lists its documents and articles.</li><li><b>The drafts written as articles became articles.</b> The seven CLI documents written as newsroom drafts are here in the newsroom's format, with the text as drafted.</li><li><b>Nothing published was lost.</b> The addresses the research had under /articles/ still work and send the reader to /research/.</li></ul>
+<h2 id="asked">What I asked for</h2>
+<p>Two things, in this order. First, to look at the articles section of send.sgit.ai, because it holds the guidance for how a site in this network builds one: <a href="https://send.sgit.ai/articles/every-site-its-own-articles.html">Every site its own articles</a>. Second, to look at the CLI's repository for the recent research documents we have pushed there, which should now be articles. I gave two reasons: I want to read them as articles, and we need them. Then the part that needed a decision: those research topics need to be kind of independent, and maybe the site needs an area just for that more advanced research, as opposed to general articles. I asked for the best way to do that.</p>
+<h2 id="different">Why they are not the same thing</h2>
+<p>The guidance is precise about what an article is: a title that is a hook and an argument, a summary a reader can stop at, a lead figure, In short, the argument in sections, what it does not claim, and where it comes from, in a shape the newsroom can import unchanged. Some of the CLI team's documents were already written that way: five of the six recent ones are drafts for the newsroom, with an In short and a list of limits.</p>
+<p>Most of the research is not. A coverage map with seven open questions, a design revised twice above its own first version, a security review's counts per tool, a plan that a later document superseded: these are records of work, and their value is that they are exactly as they were on the day. Turning them into articles would mean rewriting them, and the rewrite would no longer be the record. Putting them in the articles list as they are would bury the ten documents that do make one argument among twenty-two that do not.</p>
+<h2 id="two-areas">Two areas, and how they meet</h2>
+<p>So the agent proposed two areas, and the site now runs them.</p>
+<p><b>Research</b> is the CLI team's documents, published as written, each with its source file, commit and branch in the CLI repository. They are grouped into seven topics: keys, members and who may write; history integrity and signatures; big vaults and many agents; how a vault takes writes; running a vault locally; reviewing sgit's security; and the bugs found in daily use. That is what makes the topics independent: each has a page of its own that states its question and a table of where it stands, shipped, designed or absent, so a reader can follow one thread without reading the others.</p>
+<p><b>Articles</b> are arguments in the newsroom's format, by two kinds of author, marked: me, through an agent, under my name, or an agent in its own voice under its own. The gate holds every article to the shape, including no em-dashes, and a summary between 220 and 360 words.</p>
+<p>They meet at the topic page. Where a research thread produced an argument, the topic lists the article beside the documents, and the article's sources name the research it came from.</p>
+<h2 id="limits">What this does not claim</h2>
+<ul><li><b>The line between research and article is a judgement.</b> It was drawn by what each document was written as. A research document can become an article later, by being written as one.</li><li><b>The research is not edited, so it does not follow the article rules.</b> It has em-dashes and its own headings, and the gate does not hold it to the article shape on purpose.</li><li><b>The coverage map and five of the articles came from an unmerged branch</b> of the CLI repository, <code>claude/charming-babbage-5hzcxq</code>, as it stood on 20 October; the other research documents are the same there as on <code>dev</code>.</li><li><b>The topics were chosen on the day.</b> Seven may become more, or fewer, as the research moves.</li></ul>
+<p>If you keep research and articles for a project and have found a better split, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>A message of mine on 20 October 2026, the second brief for this site, <a href="../briefs/2026-10-20__research-and-articles.html">published in full</a>, written up by cli.sgit.ai's build agent, cli.build, the same day; the decision described here was the agent's proposal, and the editorial responsibility is mine. Sources: <a href="https://send.sgit.ai/articles/every-site-its-own-articles.html">Every site its own articles</a> on send.sgit.ai, read in full on 20 October 2026; the CLI repository, <code>team/humans/dinis_cruz/claude-code-web/</code>, at <code>5473571</code> on the branch <code>claude/charming-babbage-5hzcxq</code>. Counts: the 22 research documents are the <code>DOCS</code> table in <code>admin/build/import_cli_research.py</code>; the seven topics are the files in <code>admin/content/research/topics/</code>; the ten articles are the files in <code>admin/content/articles/</code> other than the index and the README.</p>
+<div class="pagenav"><a href="../articles/what-shipped-in-v0-1-and-v0-2.html">← What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a><a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/research-is-not-an-article.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/research-is-not-an-article.md"><code>admin/content/articles/research-is-not-an-article.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/research-is-not-an-article.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

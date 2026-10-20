@@ -41,6 +41,6 @@ status: accepted, first version built the same day
 |---|---|
 | 1. The CLI's main documentation | [the docs](/docs/index.html) and [the command reference](/reference/index.html), every command generated from the CLI's own parser |
 | 2. Move the technical content | {{page_count}} pages in all; the ones that moved, with where each was: [What moved from sgit.ai](/admin/moved.html) |
-| 3. A place for topic articles | [Research](/articles/index.html); publishing one is adding one file, the contract is in `admin/content/articles/README.md` |
-| 4. The CLI repository's research | {{article_count}} articles, each with its source path and commit in the CLI repository |
+| 3. A place for topic articles | [Articles](/articles/index.html), in the newsroom's format since v0.2.0; publishing one is adding one file, the contract is in `admin/content/articles/README.md` |
+| 4. The CLI repository's research | [Research](/research/index.html): {{research_count}} documents in {{topic_count}} topics since v0.2.0, each with its source path and commit; in v0.1 they were under Articles |
 | 5. The estate's guidance | [Every sgit repository](https://sgit.ai/docs/guidance/repositories.html), followed item by item on [the engineering page](/admin/index.html), with what is not done yet in [the reality file](/admin/reality.html) |

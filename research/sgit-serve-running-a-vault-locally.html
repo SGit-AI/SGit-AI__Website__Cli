@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit serve: running a vault locally — research and plan · cli.sgit.ai</title>
+<meta name="description" content="How to run a vault locally: the vault server&#x27;s API inventory, the browser modes, when TLS is and is not needed, and how much plumbing sgit would need.">
+<link rel="canonical" href="https://cli.sgit.ai/research/sgit-serve-running-a-vault-locally.html">
+<link rel="alternate" type="text/markdown" href="../research/sgit-serve-running-a-vault-locally.md">
+<meta property="og:title" content="sgit serve: running a vault locally — research and plan">
+<meta property="og:description" content="How to run a vault locally: the vault server&#x27;s API inventory, the browser modes, when TLS is and is not needed, and how much plumbing sgit would need.">
+<meta property="og:url" content="https://cli.sgit.ai/research/sgit-serve-running-a-vault-locally.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / sgit serve: running a vault locally — research and plan</div>
+<h1 id="sgit-serve-running-a-vault-locally-research-and-plan"><code>sgit serve</code>: running a vault locally — research and plan</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-12 · 16:17 UTC</span><span class="k">Kind</span><span class="v">research</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/serve.html">serve</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/12/research__sgit-serve-local-vault-server.md"><code>team/humans/dinis_cruz/claude-code-web/10/12/research__sgit-serve-local-vault-server.md</code></a> in SGit-AI__CLI at <code>5473571</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 2026-10-12 · <b>Status:</b> research and design, no code yet · <b>Asked:</b> "how can I run a vault locally … just clone a vault and run it from there … <code>sgit serve</code> … SSL if needed … how much plumbing do we need to add to sgit".</p>
+<blockquote><p><b>Superseded in part (same day):</b> Dinis chose to run the SG/Send <b>container image</b> rather than re-implement the server in sgit. See <a href="../research/sgit-serve-container-first.html"><code>options__sgit-serve-container-and-static.md</code></a>. The API inventory (§3), browser modes (§5) and TLS notes (§6) below still apply.</p></blockquote>
+<h2 id="1-short-answer">1. Short answer</h2>
+<p>It is very doable, mostly with what we already have.</p>
+<ul><li><b>Server side:</b> a vault server is a small API (§3): read, write, delete, batch with compare-and-swap, list, health and destroy, all over a key-value store. sgit already has a stdlib HTTP server (<code>sgit vault serve</code>, read-only) and an in-memory model of the API. A native, stdlib-only <code>sgit serve</code> that adds the write side and a disk store is about <b>600–900 lines plus tests</b>. It needs <b>no new dependencies</b> and runs on Python 3.11.</li><li><b>The web UI:</b> the SG/Send team already builds a static copy of it that talks to its own origin. The docker image <code>diniscruz/sg-send-vault</code> uses that build (<code>VAULT_DEFAULT_ENDPOINT=""</code> → relative <code>/api/...</code> paths). sgit can ship or fetch that build and serve it beside the API.</li><li><b>TLS:</b> <b>not needed for the default setup.</b> Serve the UI and the API from one origin, <code>http://localhost:&lt;port&gt;</code>. Browsers treat <code>localhost</code> as a secure context, so Web Crypto works, and nothing is cross-origin. TLS (or the CORS mode, §5) matters for two cases only: using the <b>hosted</b> UI (vault.sgraph.ai) against a local API from Safari, and reaching the server from another machine. For those we add <code>--tls</code> (§6).</li></ul>
+<p><b>Estimate:</b></p>
+<ul><li>an MVP (local API, the UI, serving a clone) in about <b>3 days</b>;</li><li>the full version (CORS mode for the hosted UI, TLS, docs, threat model) in about <b>5 days</b>.</li></ul>
+<h2 id="2-what-exists-today">2. What exists today</h2>
+<div class="tablewrap"><table><thead><tr><th>Piece</th><th>Where</th><th>What it gives us</th></tr></thead><tbody><tr><td><code>sgit vault serve</code></td><td><code>sgit_ai/cli/CLI__Serve.py</code>, <code>sgit_ai/core/serve/Vault__Static_Server.py</code></td><td>A stdlib <code>ThreadingHTTPServer</code>, read-only (GET/HEAD; anything else is 405), bound to 127.0.0.1, with a Host-header check against DNS rebinding and a path guard. It serves the published static loader and maps <code>/api/vault/read/&lt;id&gt;/bare/*</code> onto <code>.sg_vault/bare/</code>.</td></tr><tr><td><code>Vault__API__In_Memory</code></td><td><code>sgit_ai/network/api/</code></td><td>The API semantics the CLI relies on (batch, <code>write-if-match</code> conflicts, list, tombstones), in process. It does not check write keys.</td></tr><tr><td>Real SG/Send server</td><td><code>sgraph-ai-app-send</code> (PyPI, <b>Python ≥ 3.12</b>; fastapi, uvicorn, osbot-aws, mcp …)</td><td>Our integration suite already runs it in-process with in-memory storage. It also has <b>disk</b> storage.</td></tr><tr><td>SG/Send container</td><td><code>diniscruz/sg-send-vault</code> (~250 MB; source <code>sgraph_ai_app_send__docker/</code>)</td><td><b>The whole local stack already exists as an image:</b> the vault UI at <code>/</code> plus the API on one port. Disk storage goes to <code>/data</code> (layout in §3.4). It has an optional access token, can terminate TLS itself if given a cert/key, and its README covers the secure-context and Web Crypto issue.</td></tr><tr><td>Vault UI</td><td><code>sgraph_ai_app_send__ui__vault</code> (inside the server package; v0.2.3 is 2.6 MB unbuilt)</td><td>The endpoint comes from <code>window.SG_ENDPOINT</code>, then <code>sessionStorage['sg-vault-endpoint']</code> (there is an <b>endpoint field</b> on the entry form), then <code>https://dev.send.sgraph.ai</code>. A <code>/#&lt;key&gt;</code> hash opens a vault directly. It calls only vault endpoints, plus the transfer and presigned endpoints for other features.</td></tr></tbody></table></div>
+<p>So "run a vault locally" works <b>today</b> with docker:</p>
+<pre><code class="lang-bash">docker run --rm -p 8080:8080 -v &quot;$PWD/_sg-send_data:/data&quot; diniscruz/sg-send-vault:latest
+sgit clone &lt;vault-key&gt; my-vault --base-url http://localhost:8080   # or push an existing clone there</code></pre>
+<p>What is missing:</p>
+<ul><li>the one-command experience;</li><li>no docker requirement;</li><li>starting from a clone you already have.</li></ul>
+<h2 id="3-the-api-a-local-server-must-speak">3. The API a local server must speak</h2>
+<p>This is from the code of <code>sgraph-ai-app-send</code> 0.33.0, the user lambda: <code>lambda__user/fast_api/routes/Routes__Vault__Pointer.py</code> and <code>service/Service__Vault__Pointer.py</code>.</p>
+<h3 id="3-1-routes">3.1 Routes</h3>
+<div class="tablewrap"><table><thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Notes</th></tr></thead><tbody><tr><td>GET</td><td><code>/api/vault/read/{vault_id}/{file_id:path}</code></td><td>public</td><td>raw bytes; 404 if missing</td></tr><tr><td>PUT</td><td><code>/api/vault/write/{vault_id}/{file_id:path}</code></td><td>write key</td><td>an empty body gives 400; returns <code>{file_id, vault_id, status:"completed"}</code></td></tr><tr><td>DELETE</td><td><code>/api/vault/delete/{vault_id}/{file_id:path}</code></td><td>write key</td><td>403 for a key mismatch <b>and</b> for a missing file</td></tr><tr><td>POST</td><td><code>/api/vault/batch/{vault_id}</code></td><td>public if every op is <code>read</code>, otherwise write key</td><td>1–100 ops; <b>always HTTP 200</b> (§3.3)</td></tr><tr><td>GET</td><td><code>/api/vault/list/{vault_id}?prefix=</code></td><td>public</td><td><code>{vault_id, prefix, files:[…]}</code>, sorted</td></tr><tr><td>GET</td><td><code>/api/vault/health/{vault_id}</code></td><td>public</td><td>200 if <code>manifest.json</code> exists, otherwise 404</td></tr><tr><td>DELETE</td><td><code>/api/vault/destroy/{vault_id}</code></td><td>write key</td><td>body <code>{vault_id, purge?}</code>; writes a tombstone</td></tr><tr><td>GET</td><td><code>/api/info/health</code></td><td>public</td><td><code>{"status":"ok"}</code></td></tr></tbody></table></div>
+<p><code>vault_id</code> must match <code>^[a-z0-9]{8,24}$</code>.</p>
+<p>Extras the local server does not need for vaults:</p>
+<ul><li><b>Presigned upload/download:</b> S3 only. Other modes answer 400 "Presigned URLs not available", and sgit and the UI already fall back to direct writes.</li><li><code>read-base64</code>, zip, inbox, public-info.</li><li>The <code>/api/transfers/*</code> family, which is Send's file transfer and not vaults.</li></ul>
+<h3 id="3-2-auth">3.2 Auth</h3>
+<ul><li><b>Write key, trusted on first write:</b></li><li>The server stores <code>sha256(&lt;write-key header string&gt;)</code> in <code>manifest.json</code> on the first write or batch. After that, the hashes must match, or the server answers 403.</li><li>A <code>deleted.json</code> tombstone refuses every write.</li><li><b>Access token</b> (<code>x-sgraph-access-token</code>):</li><li>It is checked only when configured; empty means open, which is what local dev uses.</li><li>The container can gate every route, reads included.</li></ul>
+<h3 id="3-3-batch">3.3 Batch</h3>
+<p>Ops are <code>read</code>, <code>write</code> (b64), <code>write-if-match</code> (<code>match</code> b64, or null for "must not exist") and <code>delete</code>.</p>
+<ul><li>A conflict returns <code>{op, file_id, status:"conflict", current:b64|null}</code> and <b>stops</b> the batch.</li><li>The batch is ordered and best-effort: ops before a conflict stay applied.</li><li>The comparison is on whole bytes.</li></ul>
+<p>This is exactly what sgit's CAS code already handles; it is the live server's behaviour.</p>
+<h3 id="3-4-disk-layout-container-and-lambda-disk-mode">3.4 Disk layout (container and lambda disk mode)</h3>
+<pre><code class="lang-text">&lt;root&gt;/vault/&lt;vault_id[:2]&gt;/&lt;vault_id&gt;/manifest.json          {vault_id, write_key_hash, created_at}
+&lt;root&gt;/vault/&lt;vault_id[:2]&gt;/&lt;vault_id&gt;/deleted.json           tombstone
+&lt;root&gt;/vault/&lt;vault_id[:2]&gt;/&lt;vault_id&gt;/&lt;file_id&gt;/payload      e.g. bare/data/obj-cas-imm-…/payload</code></pre>
+<p>If the native server uses <b>the same layout</b>, a data folder works with both <code>sgit serve</code> and <code>docker run -v &lt;folder&gt;:/data diniscruz/sg-send-vault</code>. That gives an exact-parity fallback for free.</p>
+<p>Note that this is <b>not</b> the clone's own layout: <code>.sg_vault/bare/data/&lt;id&gt;</code> is a file, not <code>&lt;id&gt;/payload</code>. Section 4 explains why the server keeps its own store anyway.</p>
+<h3 id="3-5-cors">3.5 CORS</h3>
+<ul><li>The lambda sends <code>allow_origins=["*"]</code> with <code>allow_credentials=False</code>, the usual methods, and the headers <code>x-sgraph-access-token</code> and <code>x-sgraph-vault-write-key</code>, among others.</li><li><b>No <code>Access-Control-Allow-Private-Network</code> handling exists anywhere</b> (relevant to §5).</li></ul>
+<h2 id="4-clone-a-vault-and-run-it-from-there-the-model">4. "Clone a vault and run it from there": the model</h2>
+<p>Recommendation: <b>the server has its own store, seeded from the clone; the clone talks to it as a remote.</b> The server should not read and write the clone's <code>.sg_vault/bare/</code> directly.</p>
+<p>Why not serve the clone's <code>bare/</code> directly:</p>
+<ul><li>A clone's <code>bare/refs/&lt;named-ref&gt;</code> is the clone's <i>accepted</i> copy of the server ref. Since 0.21 only a pull that passed verification moves it, and the rewind baselines depend on it.</li><li>A web UI writing into that same file would move the clone's named ref behind its back. <code>status</code> would say "in sync" while nothing was pulled, the signature policy would be bypassed, and the next pull would see a "rewind".</li><li>That is the exact class of bug the last five review rounds closed.</li></ul>
+<p>So:</p>
+<pre><code class="lang-text">my-vault/                      the clone (unchanged behaviour)
+my-vault/.sg_vault/serve/      the local server&#x27;s store, in SG/Send disk layout (§3.4)
+                               (inside .sg_vault, so it is never committed; excluded from uninit backups)</code></pre>
+<p><code>sgit serve</code>, run inside a clone:</p>
+<ol><li><b>Seeds the store</b> if it is empty:</li></ol>
+<ul><li>every object in <code>.sg_vault/bare/data/</code> is <b>hard-linked</b>. Objects are content-addressed and immutable, so this costs no space or time; it falls back to copying across filesystems;</li><li>refs, indexes and keys are <i>copied</i>, because they are mutable;</li><li>it writes <code>manifest.json</code> with <code>sha256(write_key)</code>. The clone holds the vault key, so the write key is known, and the CLI and the UI can write.</li><li>The named ref the server starts from is the one the clone last <b>accepted</b>, so the local server is "the remote as this clone last verified it".</li></ul>
+<ol><li><b>Starts the server</b> on <code>http://localhost:8420</code>, with both the API and the UI.</li><li><b>Prints:</b></li></ol>
+<ul><li>the UI URL;</li><li>how to open this vault in it: <code>--open</code> launches the browser with the vault key in the URL hash, which the UI reads; the hash never reaches the server;</li><li>the remote line: <code>sgit remote add local http://localhost:8420</code>, or a flag that adds it.</li></ul>
+<p>Then:</p>
+<ul><li><code>sgit pull --remote local</code> brings edits made in the browser into the clone, with full verify-then-accept.</li><li><code>sgit push --remote local</code> shows clone commits in the browser.</li><li><code>sgit push</code> (origin) publishes everything to the real server.</li></ul>
+<p>Outside a clone, <code>sgit serve --data &lt;dir&gt;</code> is a <b>general local SG/Send-compatible server</b>:</p>
+<ul><li>any vault can be created, cloned (<code>--base-url http://localhost:8420</code>), pushed or pulled;</li><li>its folder is interchangeable with the docker image's <code>/data</code>.</li></ul>
+<h2 id="5-browser-access-three-ways-and-what-each-needs">5. Browser access: three ways, and what each needs</h2>
+<div class="tablewrap"><table><thead><tr><th>Mode</th><th>URL the user opens</th><th>Cross-origin?</th><th>Needs</th></tr></thead><tbody><tr><td><b>A. Same origin (default)</b></td><td><code>http://localhost:8420/</code> (UI served by sgit)</td><td>no</td><td>nothing. <code>localhost</code> is a secure context, so Web Crypto works in Chrome, Firefox and Safari.</td></tr><tr><td><b>B. Hosted UI → local API</b></td><td><code>https://vault.sgraph.ai</code>, endpoint field set to <code>http://localhost:8420</code></td><td>yes</td><td>CORS on the local server (<code>*</code> or an allow-list, as production does).<br>Chrome 141/142+: a one-time <b>Local Network Access</b> permission prompt per site.<br>Safari: blocks https→<code>http://localhost</code> as mixed content (WebKit bug 279249), so it needs <code>https://localhost</code> (§6).</td></tr><tr><td><b>C. Another machine / LAN</b></td><td><code>https://&lt;host&gt;:8443</code></td><td>–</td><td>TLS (Web Crypto refuses plain http on non-localhost hosts) <b>and</b> an access token</td></tr></tbody></table></div>
+<ul><li><b>Mode A</b> is the product: it works offline, does not depend on the hosted UI version, and needs no permissions or certs.</li><li><b>Mode B</b> is useful for testing the hosted UI against local data, and it is what "it has CORS enabled so you can load it from the other side" refers to.</li><li><b>Mode C</b> is opt-in, with warnings.</li></ul>
+<p>For B, the local server should also answer preflights with <code>Access-Control-Allow-Private-Network: true</code>. Older Chrome Private Network Access preflights need it, and it is harmless otherwise.</p>
+<h2 id="6-tls">6. TLS</h2>
+<ul><li><b>Default: none</b> (modes A and B in Chrome/Firefox).</li><li><b><code>sgit serve --tls</code>:</b></li><li>sgit generates a local CA and a <code>localhost</code>/<code>127.0.0.1</code> leaf cert with <code>cryptography</code>, already a dependency, under <code>~/.sgit/tls/</code>, and serves https on 8443 through stdlib <code>ssl</code>.</li><li>If <code>mkcert</code> is installed it uses mkcert's CA instead, which is already trusted.</li><li><code>--cert/--key</code> use the user's own pair.</li><li><b>Trust:</b> a browser <i>page</i> can click through an untrusted cert, but a cross-origin <code>fetch</code> (mode B) cannot. So mode B over https needs the CA trusted.</li><li><code>sgit serve trust</code> prints the exact per-OS command (macOS <code>security add-trusted-cert</code>, Windows <code>certutil -addstore</code>, Linux <code>update-ca-certificates</code>, plus <code>certutil -d sql:…</code> for the Chrome/Firefox NSS store).</li><li>It runs that command only on explicit confirmation, because changing the trust store is a system change.</li></ul>
+<h2 id="7-the-ui-where-its-files-come-from">7. The UI: where its files come from</h2>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>Wheel size</th><th>Network at runtime</th><th>Risk</th></tr></thead><tbody><tr><td><b>Vendor a pinned, flattened build into the sgit wheel</b> (recommended)</td><td>+~1 MB zipped</td><td>none, works offline</td><td>must be refreshed per UI release; covered by a script, a pinned version and a SHA-256 manifest</td></tr><tr><td>Download on first <code>serve</code> into <code>~/.sgit/ui/&lt;version&gt;/</code>, hash-pinned</td><td>none</td><td>once</td><td>supply chain (mitigated by the pinned hash); fails offline the first time</td></tr><tr><td>Use the docker image for the UI</td><td>–</td><td>docker</td><td>not "just sgit"</td></tr></tbody></table></div>
+<ul><li>The flattening is what <code>scripts/build-vault-static.sh</code> in SG/Send does, with <code>VAULT_DEFAULT_ENDPOINT=""</code>.</li><li>sgit would add a <code>scripts/vendor-vault-ui.sh</code> that takes a pinned UI version and writes <code>sgit_ai/serve/ui/</code> plus <code>ui-version.json</code>.</li><li><code>--ui-dir PATH</code> lets UI developers serve a working tree instead.</li><li>The server injects nothing; with <code>VAULT_DEFAULT_ENDPOINT=""</code> the UI uses its own origin.</li></ul>
+<p><b>Ask of the SG/Send team:</b> publish the flattened vault UI as a versioned release asset (zip + SHA-256). Then sgit vendors from it rather than rebuilding from their source tree.</p>
+<h2 id="8-implementation-plan">8. Implementation plan</h2>
+<h3 id="components">Components</h3>
+<div class="tablewrap"><table><thead><tr><th>Component</th><th>Layer</th><th>Size</th></tr></thead><tbody><tr><td><code>Vault__Local_Store</code>: the §3.4 layout; atomic writes (temp + rename); a per-vault lock for batch and CAS; list by prefix; manifest, write-key hash, tombstone</td><td>storage</td><td>~200 lines</td></tr><tr><td><code>Vault__Local_Server</code>: stdlib <code>ThreadingHTTPServer</code>; the §3.1 routes with matching status codes and JSON; batch semantics (§3.3); access-token option; Host check (from <code>Vault__Static_Server</code>); Origin allow-list on writes in mode A; CORS and PNA preflight; static UI; optional <code>ssl</code> wrap</td><td>core/serve</td><td>~350 lines</td></tr><tr><td><code>Vault__Serve__Seed</code>: hard-link objects, copy refs/indexes/keys, write the manifest</td><td>core/serve</td><td>~100 lines</td></tr><tr><td><code>Vault__Local_TLS</code>: CA and leaf generation, mkcert detection, trust instructions</td><td>crypto</td><td>~120 lines</td></tr><tr><td><code>CLI__Serve</code>: <code>sgit serve [--data DIR] [--port] [--bind] [--open] [--tls] [--cert/--key] [--cors-origin …] [--token] [--no-ui] [--ui-dir] [--add-remote]</code>; <code>sgit serve trust</code>; keep <code>vault serve</code> as the static-publish server</td><td>cli</td><td>~200 lines</td></tr></tbody></table></div>
+<p>Command placement (rule 9):</p>
+<ul><li><code>serve</code> is a daily-use verb, so it goes at the <b>top level</b>. That is a deliberate edit to <code>TOP_LEVEL_COMMANDS</code>.</li><li><code>sgit vault serve</code> stays, because it serves a <i>published</i> folder; its help points to <code>sgit serve</code>.</li></ul>
+<h3 id="tests">Tests</h3>
+<ul><li><b>Unit:</b> store, routes, status codes, batch CAS, the write-key first-write rule, tombstones, the Host check, the Origin check, CORS and PNA preflights, TLS against a generated cert, seeding (hard links, mutable files copied).</li><li><b>Contract:</b> one API test module that runs against <b>both</b> the native server and the real <code>sgraph-ai-app-send</code> test server, in the 3.12 integration job. That is how the native server stays in step with production.</li><li><b>End to end:</b></li><li><code>sgit clone/push/pull --base-url http://localhost:&lt;port&gt;</code> against <code>sgit serve</code>;</li><li>a Playwright smoke test in the preinstalled Chromium: the UI opens a vault served by <code>sgit serve</code> and lists its files; mode B fetch with CORS.</li></ul>
+<h3 id="phases">Phases</h3>
+<div class="tablewrap"><table><thead><tr><th>Phase</th><th>Work</th><th>Estimate</th></tr></thead><tbody><tr><td>0</td><td>Spike: vendored UI v0.2.3 + the real server on <code>localhost</code>, driven by Playwright; confirm modes A and B in Chromium</td><td>½ day</td></tr><tr><td>1</td><td>Store + API server + seeding + <code>sgit serve</code> (API only); CLI interop; contract tests</td><td>1½–2 days</td></tr><tr><td>2</td><td>UI vendoring + serving; <code>--open</code></td><td>1 day</td></tr><tr><td>3</td><td>Mode B: CORS allow-list, PNA header, Origin checks</td><td>½ day</td></tr><tr><td>4</td><td>TLS: generated CA/leaf, mkcert, <code>--cert/--key</code>, <code>serve trust</code></td><td>1 day</td></tr><tr><td>5</td><td>Docs, threat model rows, CHANGELOG</td><td>½ day</td></tr></tbody></table></div>
+<p><b>MVP = phases 0–2 (~3 days). Full = ~5 days.</b></p>
+<h2 id="9-security-notes-to-become-threat-model-rows">9. Security notes (to become threat-model rows)</h2>
+<ul><li><b>Binding:</b> 127.0.0.1 by default. <code>--bind 0.0.0.0</code> requires <code>--token</code> and warns loudly; over plain http it also warns that the token travels in clear.</li><li><b>DNS rebinding:</b> keep the Host-header check (already in <code>Vault__Static_Server</code>).</li><li><b>Writes from other websites (mode A):</b></li><li>Writes need the write key, which only someone holding the vault key can derive.</li><li>On top of that, refuse writes whose <code>Origin</code> is neither the server's own nor on the <code>--cors-origin</code> list.</li><li>Reads expose ciphertext only, which is the same as the public read API in production.</li><li><b>The vault key in the <code>--open</code> URL hash:</b> the hash is never sent to the server. The UI stores the key in <code>localStorage</code>, which is the UI's existing behaviour; the docs should say so.</li><li><b>The server store lives in <code>.sg_vault/serve/</code>:</b> never committed, excluded from uninit backups, so a backup does not double in size.</li><li><b>Nothing changes for the clone:</b> it reaches the local server only as a remote, through the same verify-then-accept path as any server.</li></ul>
+<h2 id="10-decisions-for-you">10. Decisions for you</h2>
+<ol><li><b>UI files:</b> vendor into the wheel (recommended), download on first run, or rely on docker?</li><li><b>Store location:</b> per clone in <code>.sg_vault/serve/</code> (recommended for "serve this clone"), with <code>--data DIR</code> for a shared multi-vault store?</li><li><b><code>local</code> remote:</b> should <code>sgit serve</code> add it automatically, or only print the command?</li><li><b>Default port:</b> 8420, the same as today's <code>vault serve</code>, or 8080 like the container?</li><li><b>Asks of SG/Send:</b></li></ol>
+<ul><li>a versioned UI release asset;</li><li><code>Access-Control-Allow-Private-Network: true</code> on preflights;</li><li>optionally a <code>?endpoint=</code> URL parameter in the UI, so mode B links can be shared.</li></ul>
+<h2 id="sources">Sources</h2>
+<ul><li>Chrome Local Network Access: <a href="https://developer.chrome.com/blog/local-network-access">https://developer.chrome.com/blog/local-network-access</a>; rollout notes <a href="https://piunikaweb.com/2026/02/09/chrome-local-network-permission-explained/">https://piunikaweb.com/2026/02/09/chrome-local-network-permission-explained/</a>, <a href="https://support.beyondidentity.com/hc/en-us/articles/34457691192215-Managing-the-Chrome-v142Local-Network-Access-Prompt">https://support.beyondidentity.com/hc/en-us/articles/34457691192215-Managing-the-Chrome-v142Local-Network-Access-Prompt</a></li><li>Safari blocking https→<code>http://localhost</code>: <a href="https://bugs.webkit.org/show_bug.cgi?id=279249">https://bugs.webkit.org/show_bug.cgi?id=279249</a>, <a href="https://developer.apple.com/forums/thread/736105">https://developer.apple.com/forums/thread/736105</a></li><li>The SG/Send code and container README: from the installed <code>sgraph-ai-app-send</code> 0.33.0 package.</li></ul>
+<div class="pagenav"><a href="../research/sgit-serve-container-first.html">← sgit serve: container first. Options map and spike results</a><a href="../research/security-review-case-study.html">Case study — a tool-assisted security review of sgit-ai 0.21.0 (round 1) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/sgit-serve-running-a-vault-locally.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/sgit-serve-running-a-vault-locally.md"><code>admin/content/research/sgit-serve-running-a-vault-locally.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/sgit-serve-running-a-vault-locally.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

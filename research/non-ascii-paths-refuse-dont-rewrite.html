@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens · cli.sgit.ai</title>
+<meta name="description" content="Characters outside a narrow set in a path are silently rewritten, so one vault gets two roots and a false push conflict. What really happens, reproduced, and a fix that raises an alarm instead of rewriting.">
+<link rel="canonical" href="https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html">
+<link rel="alternate" type="text/markdown" href="../research/non-ascii-paths-refuse-dont-rewrite.md">
+<meta property="og:title" content="AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens">
+<meta property="og:description" content="Characters outside a narrow set in a path are silently rewritten, so one vault gets two roots and a false push conflict. What really happens, reproduced, and a fix that raises an alarm instead of rewriting.">
+<meta property="og:url" content="https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / AC-L-001 / TM-R36 — characters outside [a-zA-Z0-9/\_.- ] in paths: what really happens</div>
+<h1 id="ac-l-001-tm-r36-characters-outside-a-za-z0-9-in-paths-what-r">AC-L-001 / TM-R36 — characters outside <code>[a-zA-Z0-9/\_.- ]</code> in paths: what really happens</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-13 · 12:49 UTC</span><span class="k">Kind</span><span class="v">finding</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/security-review.html">security-review</a> <a class="chip" href="../research/topics/correctness.html">correctness</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/13/AC-L-001__non-ascii-paths__refuse-dont-rewrite.md"><code>team/humans/dinis_cruz/claude-code-web/10/13/AC-L-001__non-ascii-paths__refuse-dont-rewrite.md</code></a> in SGit-AI__CLI at <code>5473571</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Status:</b> documented, <b>not fixed in this push</b> (your call, 13 Oct). Reproduced on <code>dev</code> at 81a4176 with the Python API over the in-memory host. The fix proposal below follows your instinct: <b>raise an alarm, never rewrite silently</b>. It is narrower than "refuse every such character", for the reason in §3.</p>
+<p>It is worse than the round-1 record (<code>review/findings/audit-context-local.json</code> AC-L-001) says. Two different things share the bug: <b>where the vault lives</b> (the host path of the clone) and <b>names inside the vault</b> (file and folder names in the trees).</p>
+<h2 id="1-the-vault-root-broken-and-silently-in-the-wrong-place">1. The vault root: broken, and silently in the wrong place</h2>
+<p><code>Safe_Str__Vault_Path</code> and <code>Safe_Str__File_Path</code> both use <code>[^a-zA-Z0-9/\\_.\- ]</code> in <i>replace</i> mode: every other character becomes <code>_</code>. The working directory of the clone, pull, fetch, push and move workflows (<code>directory : Safe_Str__File_Path</code>), <code>Vault__Context.vault_path</code> and <code>Vault__Storage</code> go through them; other code uses the raw <code>str</code>. So one vault gets two roots.</p>
+<div class="tablewrap"><table><thead><tr><th>Step, under <code>/tmp/x/josé/vault</code></th><th>What happened</th></tr></thead><tbody><tr><td><code>init</code></td><td>the working copy and <code>.sg_vault/{bare,local}</code> are under <code>josé/vault</code>, <b>and</b> a second tree <code>jos_/vault/</code> is created next to it</td></tr><tr><td><code>commit</code>, <code>status</code></td><td>ok, <code>clean</code></td></tr><tr><td>first <code>push</code></td><td><b><code>Vault__Push_Conflict_Error</code>: "the branch moved on the server while this push was in flight"</b> — false; nothing was pushed</td></tr><tr><td><code>clone</code> into <code>josé/clone</code></td><td>reports success; <b>the whole clone is written to <code>jos_/clone</code></b>; <code>josé/clone</code> does not exist</td></tr><tr><td><code>pull</code> in <code>josé/clone</code></td><td><code>FileNotFoundError: …/josé/clone/.sg_vault/local/vault_key</code></td></tr><tr><td>second <code>commit</code> + <code>push</code> in <code>josé/vault</code></td><td><code>FileNotFoundError: …/jos_/vault/.sg_vault/work/pull-…/.tmp-…</code></td></tr></tbody></table></div>
+<p>It is not only accents. What the type does to real folder names:</p>
+<div class="tablewrap"><table><thead><tr><th>Path</th><th>Becomes</th></tr></thead><tbody><tr><td><code>/Users/x/Dropbox (Personal)/v</code></td><td><code>/Users/x/Dropbox _Personal_/v</code></td></tr><tr><td><code>/Users/x/OneDrive - Acme, Inc/v</code></td><td><code>/Users/x/OneDrive - Acme_ Inc/v</code></td></tr><tr><td><code>/home/first.last@corp/v</code></td><td><code>/home/first.last_corp/v</code></td></tr><tr><td><code>/home/u/my+vault</code></td><td><code>/home/u/my_vault</code></td></tr><tr><td><code>C:\Users\Zoë\v</code></td><td><code>C_\Users\Zo_\v</code></td></tr></tbody></table></div>
+<p><b>The last row needs a check on Windows.</b> The colon of every drive letter is rewritten, so if any of these fields carries an absolute Windows path, every Windows user is affected, not just users with accented names. I could not run Windows here.</p>
+<p>Security reading: a write lands in a directory the user never named. Two roots that sanitise alike share one store (<code>josé/</code> and <code>josè/</code> and a real <code>jos_/</code>), so one vault's objects, refs and <code>work/</code> files can mix with another's. A local process (A6) that can create <code>jos_/</code> next to <code>josé/</code> decides where the store goes. Likelihood M (any European or company folder name, any Dropbox or OneDrive folder); impact H (a false "conflict", a clone in the wrong place, failures on the next command). I have raised TM-R36 from M / M to M / H.</p>
+<h2 id="2-names-inside-the-vault-the-core-is-right-the-display-and-p">2. Names inside the vault: the core is right; the display and <code>--path</code> are not</h2>
+<p>Tree entry names are encrypted strings, not <code>Safe_Str</code> fields, so the sync path never touches them. With <code>café.md</code>, <code>naïve dir/résumé.md</code>, <code>a+b@c.md</code>, <code>日本語.txt</code> and a <code>caf_.md</code> beside <code>café.md</code>:</p>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>Result</th></tr></thead><tbody><tr><td>status, commit, push, clone</td><td>every file round-trips byte for byte, with the exact name; <code>café.md</code> and <code>caf_.md</code> stay two files</td></tr><tr><td>edit in the clone, push, pull in the first clone</td><td>ok; content and name exact</td></tr><tr><td><code>stash</code> / <code>stash pop</code></td><td>ok</td></tr><tr><td><b><code>sgit diff</code></b> (<code>Schema__Diff_File.path</code>)</td><td><b>lists <code>caf_.md</code> and <code>na_ve/r_sum_.md</code></b>: the display lies</td></tr><tr><td><b><code>sgit clone --path naïve</code></b> (<code>scope_paths : list[Safe_Str__File_Path]</code>)</td><td><b>records the scope <code>na_ve</code>, checks out nothing, and says nothing</b></td></tr><tr><td>history file lists, publish entries, stash metadata</td><td>typed with the same class, so they rewrite the same way (not each one run)</td></tr></tbody></table></div>
+<p>So "what happens if the vault creates that": another client, or the web UI, can put such a name in a vault. This CLI clones, edits and syncs it correctly. Its listings show the wrong name, and a scoped clone of that folder is silently empty.</p>
+<p>Hostile names in a vault are a separate question with an existing answer: <code>Vault__Path_Guard</code> refuses absolute paths, <code>..</code> on either separator, <code>.git</code> / <code>.sg_vault</code>, and writes through a symlink at checkout (TM-F series). Nothing in this finding weakens that.</p>
+<h2 id="3-the-decision-proposed-for-the-next-push">3. The decision proposed for the next push</h2>
+<p><b>The rule:</b> a type that names a place must <b>refuse</b> what it cannot represent, never rewrite it. A rewritten path is a silent data change: the user asked for one place and got another. Worth a line in CLAUDE.md's Type_Safe rules.</p>
+<ol><li><b>Vault roots: the alarm now, the real fix right behind it.</b></li></ol>
+<ul><li><i>Stop-gap (S):</i> at the CLI boundary, before any command uses a vault root (<code>init</code>, <code>clone*</code>, and resolving the root of every other command), refuse a root the type would change: &gt; <code>sgit cannot work in a folder whose path contains 'é' (…/josé/vault) yet. Move the vault, or clone it, to a path made of letters a-z, digits, space, '.', '_' and '-'. (TM-R36)</code></li><li><i>Fix (M):</i> type the host-side fields (<code>directory</code>, <code>vault_path</code>, the storage root) with <code>Safe_Str__Host_Path</code>. It already exists, added for <code>sgit serve</code>: any printable text, control characters refused, never rewritten. Then the alarm is no longer needed.</li></ul>
+<ol><li><b>Names inside a vault: do not refuse them.</b> They work today, other clients create them, and refusing would lock people out of their own vaults. That is the lock-out lesson of R1 and TM-F35. Instead:</li></ol>
+<ul><li>a content-path type (Unicode allowed; NUL, control characters, absolute paths and <code>..</code> refused) for the display and scope schemas: <code>Schema__Diff_File</code>, history lists, <code>scope_paths</code>, publish entries, stash metadata;</li><li><code>clone --path</code> refuses a folder that is not in the tree, rather than cloning nothing.</li></ul>
+<ol><li><b>Where an alarm is right for content: names that will not survive another OS.</b> Add a check (rule 9 puts it under <code>check</code>), and a warning at <code>commit</code> time for new names only (an alarm, not a refusal). It covers:</li></ol>
+<ul><li>case-only collisions (<code>A.md</code> and <code>a.md</code> are one file on macOS and Windows);</li><li>Unicode normalisation twins (NFC and NFD <code>café</code>; macOS can hand back the other form, so status shows a delete and an add);</li><li>Windows-reserved names (<code>CON</code>, <code>AUX</code>, <code>NUL</code>, <code>COM1</code>…, a trailing dot or space, <code>&lt;&gt;:"|?*</code>);</li><li>control characters and newlines;</li><li>paths too long for Windows.</li></ul>
+<ol><li><b>Tests that land with the fix:</b></li></ol>
+<ul><li>init, commit, push, clone and pull under a root with <code>é</code>, <code>+</code>, <code>@</code>, <code>(</code> and a space;</li><li>clone into <code>josé/</code>;</li><li><code>clone --path naïve</code>;</li><li><code>diff</code> listing the exact names;</li><li>a <code>Fixed</code> security test that two roots that used to sanitise alike no longer share a store;</li><li>the check's cases.</li></ul>
+<p>Sizes: the stop-gap is under a day. The type change is a day or two, because the type is used by every path field; the check is about a day.</p>
+<h2 id="where-this-is-recorded">Where this is recorded</h2>
+<ul><li>Threat model TM-R36: likelihood/impact raised, this evidence linked.</li><li>CHANGELOG <code>[Unreleased]</code> → "Known issue".</li><li>Probe scripts were run from the session scratchpad. Their steps are in the tables above.</li></ul>
+<div class="pagenav"><a href="../research/security-ci-and-ai-review.html">← Security CI: a dedicated pipeline, and an AI review that can break the build</a><a href="../research/sgit-serve-container-first.html">sgit serve: container first. Options map and spike results →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/non-ascii-paths-refuse-dont-rewrite.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/non-ascii-paths-refuse-dont-rewrite.md"><code>admin/content/research/non-ascii-paths-refuse-dont-rewrite.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/non-ascii-paths-refuse-dont-rewrite.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

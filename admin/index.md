@@ -14,14 +14,17 @@ One folder of content, one generator, one gate, one version number. Deployed to 
 | Path | What it is |
 |---|---|
 | `admin/content/<path>.md` | the source of the page at `<path>.html`: flat front matter, then markdown |
-| `admin/content/articles/<slug>.md` | one article; adding the file publishes it ([the contract](https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/README.md)) |
+| `admin/content/articles/<slug>.md` | one article in the newsroom's format; adding the file publishes it ([the contract](https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/README.md)) |
+| `admin/content/research/<slug>.md` | one research document from the CLI repository, as written, with its topics |
+| `admin/content/research/topics/<id>.md` | one research topic: the question, where it stands, and the `!topic` list of its documents and articles |
 | `admin/content/reference/sgit-cli-reference.json` | the output of `sgit help all --format json`; the command reference is generated from it |
 | `REALITY.md`, `BRIEF-CORRECTIONS.md` | at the repository root, published as [Reality](../admin/reality.md) and [Corrections](../admin/corrections.md) |
 | `admin/build/build.py` | the generator: pages, markdown twins, nav and footer, `llms.txt`, `llms-full.txt`, sitemap, `assets/version.js` |
 | `admin/build/md.py` | the markdown renderer, from pki.sgit.ai and newsroom.sgit.ai; escapes everything, so content cannot carry HTML |
 | `admin/build/validate.js` | the gate |
 | `admin/build/import_sgit_ai.py` | moves pages from sgit.ai, from their markdown twins ([what moved](../admin/moved.md)) |
-| `admin/build/import_cli_research.py` | publishes documents from the CLI repository as articles |
+| `admin/build/import_cli_research.py` | publishes documents from the CLI repository in the research area |
+| `admin/build/make_figures.py` | draws the articles' lead figures as SVG |
 | `admin/build/version.txt` | the site version, the one place it is written |
 | `.github/workflows/deploy-pages.yml` | validate, tag, deploy |
 
@@ -47,11 +50,13 @@ Every generated file is listed in `admin/build/generated.json`, and the build de
 | Every page has a canonical link on the CNAME host, and a markdown twin, and is in `llms.txt` | pages agents cannot read, or that claim to live elsewhere |
 | No page is an orphan: every page is linked from another page | a page nothing links to is unpublished in practice |
 | The leak tripwire: vault-key shapes, private-key markers, cloud and provider key prefixes, across every file | this site discusses keys constantly; it must never contain one |
-| Advisory, not failing: em-dashes in prose on this site's own pages | the estate's writing rule; pages moved or published verbatim keep their authors' punctuation |
+| Every article is in the newsroom's format: its front matter, a summary of 220 to 360 words, In short, limits and sources, a lead figure that exists, no em-dash | the format is what lets the newsroom import an article unchanged ([the guidance](https://send.sgit.ai/articles/every-site-its-own-articles.html)) |
+| A page left at a moved address points at a page that exists | the 21 research documents that were under /articles/ in v0.1 |
+| Advisory, not failing: em-dashes in prose on this site's own pages | the estate's writing rule; pages moved or published verbatim, and research, keep their authors' punctuation |
 
 ## Against the estate's guidance
 
-[Every sgit repository](https://sgit.ai/docs/guidance/repositories.html) lists what each repository carries. Where this one stands at v0.1.0:
+[Every sgit repository](https://sgit.ai/docs/guidance/repositories.html) lists what each repository carries. Where this one stands at v0.2.0:
 
 | The guidance asks for | Here |
 |---|---|
@@ -64,7 +69,7 @@ Every generated file is listed in `admin/build/generated.json`, and the build de
 | Nav and footer injected at build | yes, from one definition in `build.py` |
 | A credentials tier that is never committed | `.local/` is gitignored; nothing in this repository needs a secret to build |
 | The review folder (`review/`) | **not yet**, recorded in [the reality file](../admin/reality.md) |
-| Roles and a board, as files | **not yet**, recorded in the reality file |
+| Roles and a board, as files | **in part**: [the team](../about/team.md) names who writes; roles as files and a board are not yet here |
 | A release script that verifies the live site | **not yet**: step 5 above is by hand |
 
 ---

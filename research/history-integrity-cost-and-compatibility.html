@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>History integrity: what the three fixes would cost, and how to ship them without a vault move · cli.sgit.ai</title>
+<meta name="description" content="What signature verification, ref monotonicity and 128-bit ids would cost, measured on a real vault, and how to ship all three without a vault move.">
+<link rel="canonical" href="https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html">
+<link rel="alternate" type="text/markdown" href="../research/history-integrity-cost-and-compatibility.md">
+<meta property="og:title" content="History integrity: what the three fixes would cost, and how to ship them without a vault move">
+<meta property="og:description" content="What signature verification, ref monotonicity and 128-bit ids would cost, measured on a real vault, and how to ship all three without a vault move.">
+<meta property="og:url" content="https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
+      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / History integrity: what the three fixes would cost, and how to ship them without a vault move</div>
+<h1 id="history-integrity-what-the-three-fixes-would-cost-and-how-to">History integrity: what the three fixes would cost, and how to ship them without a <code>vault move</code></h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-07 · 12:32 UTC</span><span class="k">Kind</span><span class="v">measurement</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/integrity.html">integrity</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md"><code>team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md</code></a> in SGit-AI__CLI at <code>5473571</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 7 Oct 2026 · <b>Vault measured:</b> the DC / CRM collaboration vault (<code>y8pwtjlw</code>), fresh full clone this session · <b>Ask:</b> "do a set of performance tests to see the implications [of signature verification, ref monotonicity, 128-bit ids], and can we add those fixes in a forward-compatible way, supporting existing vaults without a move?"</p>
+<h2 id="0-the-vault-today">0. The vault today</h2>
+<div class="tablewrap"><table><tbody><tr><td>commits reachable from the named head</td><td>674 (626 yesterday)</td></tr><tr><td>unique trees / tree entries</td><td>8,589 / 107,445 (59,944 blob refs, 47,501 tree refs)</td></tr><tr><td>objects in the store</td><td>19,780 · 146 MB</td></tr><tr><td>branches in the index / public keys on disk</td><td>30 / 29</td></tr><tr><td>full clone from this sandbox (0.18.0)</td><td>93 s</td></tr><tr><td><code>sgit status</code>, up to date</td><td>2.5 s (network-bound)</td></tr></tbody></table></div>
+<h2 id="1-cost-of-each-fix-measured">1. Cost of each fix, measured</h2>
+<p>All local work, this sandbox's CPU. Network is unchanged by any of the three.</p>
+<div class="tablewrap"><table><thead><tr><th>Fix</th><th>What it adds per command</th><th>Measured</th><th>Verdict</th></tr></thead><tbody><tr><td><b>Signature verification</b> on pull / status / fsck</td><td>one ECDSA P-256 verify per <i>new</i> commit (pull) or per commit (fsck)</td><td>verify 66 µs, sign 23 µs; the whole 674-commit history verifies in <b>39 ms</b>; decrypting and parsing the whole history is 155 ms (230 µs/commit)</td><td>free</td></tr><tr><td><b>Ref monotonicity</b> (the new remote head must descend from the last known one)</td><td>an ancestry walk from the new head to the last known head, i.e. over the N new commits</td><td>status already does this walk since 0.18.0 (0 object reads when up to date, N when N behind); worst case the whole history: <b>155 ms</b></td><td>free</td></tr><tr><td><b>128-bit object ids</b> (32 hex instead of 12)</td><td>nothing in compute (sha256 is already computed; the truncation is what goes away); more bytes in trees, commits and listings</td><td>+2.18 MB on 34.5 MB of tree+commit objects (<b>+6.3 %</b> of those, <b>+1.5 %</b> of the 146 MB store); the store listing grows 396 KB; expected clone cost ≈ +1.5 % of bytes, under 2 s</td><td>negligible</td></tr></tbody></table></div>
+<p>And the exposure the third fix removes, on this vault: accidental collision among 19,780 ids at 48 bits ≈ 7×10⁻⁷ (not the problem); a <i>second-preimage</i> by someone holding the read key is 2⁴⁸ sha256 ≈ 8 hours at 10¹⁰ hashes/s on a GPU (the problem).</p>
+<h3 id="what-signature-verification-would-actually-cover-today">What signature verification would actually cover today</h3>
+<div class="tablewrap"><table><thead><tr><th>commits</th><th></th></tr></thead><tbody><tr><td>signed</td><td>562 of 674</td></tr><tr><td>signed and verifiable (the branch index still maps the branch to its public key)</td><td><b>247</b> (all verify; 0 bad)</td></tr><tr><td>signed, but the index no longer lists the branch</td><td>315</td></tr><tr><td>unsigned</td><td>112: 10 with no <code>branch_id</code> (web UI), 102 from CLI clone branches that had no local signing key</td></tr></tbody></table></div>
+<p>Two consequences for the design: the commit's reserved <code>author_key_id</code> field has to be populated from now on (the key is in <code>bare/keys/</code>, but the only branch→key mapping is the index, and clone branches leave it), and a "signatures required" policy can only apply from a checkpoint commit forward, since 427 of the 674 commits here cannot be verified whatever we do.</p>
+<h3 id="a-side-finding-sgit-check-fsck-was-quadratic">A side finding: <code>sgit check fsck</code> was quadratic</h3>
+<p>Full verification is the thing that makes "always detect corruption" practical, and it took <b>270 s</b> on this vault: the walk kept a per-commit set of visited trees, so 8,589 unique trees were checked 282,202 times and every blob was re-hashed once per commit. One global set for trees and one for blobs: <b>12.2 s</b>, identical findings (42 missing objects; they are the pre-0.18.0 push bug and are recoverable only from the clones that created them, via <code>sgit check upload-objects</code>). Fixed on the branch; 32 fsck tests pass, full suite green.</p>
+<h2 id="2-compatibility-what-exists-what-does-not">2. Compatibility: what exists, what does not</h2>
+<p><b>Today there is no vault-level "minimum client version".</b></p>
+<ul><li>Objects carry a <code>schema</code> tag (<code>commit_v1</code>, <code>tree_v1</code>, <code>branch_index_v1</code>). Nothing reads it except <code>vault move</code>.</li><li>The migration ledger (<code>sgit migrate</code>) is <b>local</b> (<code>.sg_vault/local/migrations.json</code>); the vault itself does not say which migrations it has had.</li><li>Old clients drop unknown fields silently (<code>Schema__Branch_Index.from_json</code> with a <code>format</code> or <code>min_client</code> key just loses them), so a flag written today is invisible to 0.18.0 and older. They fail only when they meet data they cannot parse: a 32-hex id raises <code>ValueError … exceeds maximum length of 24</code> and the CLI prints <code>incompatible vault data … hint: re-clone the vault with the current CLI</code>, which is the wrong remedy for that case.</li></ul>
+<p>So: forward-incompatible vaults are <i>possible</i> today only by accident, and the failure mode for an old client is a confusing error, not a "please upgrade".</p>
+<h2 id="3-proposal-a-format-gate-then-each-fix-on-top-of-it">3. Proposal: a format gate, then each fix on top of it</h2>
+<h3 id="3-1-the-gate-no-format-change-ships-first">3.1 The gate (no format change; ships first)</h3>
+<p>Add to <code>Schema__Branch_Index</code> (encrypted, written by init/push, loaded first by every command):</p>
+<pre><code class="lang-text">format     : Safe_UInt           = 1        # absent == 1: every existing vault
+min_client : Safe_Str__Semver    = None     # refuse below this, naming it
+features   : list[Safe_Str__Feature]        # e.g. &#x27;ids-128&#x27;, &#x27;signatures-required&#x27;</code></pre>
+<ul><li>A client at or above the release that ships the gate refuses a vault whose <code>min_client</code> is newer than itself: <code>this vault needs sgit-ai ≥ 0.20.0 (you have 0.19.1): sgit update</code>.</li><li>Existing vaults carry no field, read as format 1, and behave exactly as now. <b>No move.</b></li><li>Clients older than the gate cannot be taught anything retroactively; the one thing we can do for them now is fix the hint on the pattern error to say <code>sgit update</code> first.</li><li>Raising <code>min_client</code> on a vault is a deliberate owner action (<code>sgit vault format --min-client 0.20.0</code>), recorded in the index, so a team is never surprised by a vault that stops working for their older agents.</li></ul>
+<h3 id="3-2-each-fix-against-the-gate">3.2 Each fix against the gate</h3>
+<div class="tablewrap"><table><thead><tr><th>Fix</th><th>Format change?</th><th>Needs <code>vault move</code>?</th><th>Old clients on an upgraded vault</th><th>Notes</th></tr></thead><tbody><tr><td>Verify signatures (pull, status, fsck) and populate <code>author_key_id</code></td><td>none; both fields already exist in <code>commit_v1</code> (<code>author_key_id</code> reserved)</td><td>no</td><td>unaffected: they ignore signatures as they do now</td><td>policy per vault in <code>features</code>: <code>signatures: warn</code> → <code>required</code> from a checkpoint commit; the web UI must sign before <code>required</code></td></tr><tr><td>Ref monotonicity</td><td>none</td><td>no</td><td>unaffected</td><td>client rule; <code>push --force</code> records the intent so the next pull can tell a rewind from an attack; a signed ref log is a later, format-2 addition</td></tr><tr><td>128-bit ids</td><td><b>format 2</b>: new objects get 32-hex ids, old objects keep theirs, references mix</td><td><b>no</b>: mixed-id vault; <code>vault move</code> (which already rewrites every id) is the optional "rewrite everything" path</td><td><b>break at the first long id</b> → this is what <code>min_client</code> is for</td><td>prerequisites outside the CLI: the server must accept the longer <code>file_id</code> (unverified from here), the web UI must read and write both lengths (interop requirement)</td></tr></tbody></table></div>
+<h3 id="3-3-order">3.3 Order</h3>
+<ol><li><b>0.19</b>: the gate, the hint fix, <code>author_key_id</code> on every new commit, fsck dedupe. No vault changes behaviour; every client keeps working on every vault.</li><li><b>0.20</b>: signature verification (<code>warn</code> default, <code>required</code> opt-in per vault), ref monotonicity. Still format 1.</li><li><b>format 2</b>: 128-bit ids for new vaults and opted-in vaults, once the server and web UI accept both lengths. Existing vaults stay format 1 until their owner raises them; raising never requires a move.</li></ol>
+<p>The measurements say none of this is a performance decision: the costs are milliseconds and a few percent of bytes on a vault that was impractical to clone a week ago and now clones in 93 s.</p>
+<div class="pagenav"><a href="../research/compatibility-matrix-cli-web-ui-api.html">← Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out</a><a href="../research/partial-clones-scope-and-depth.html">Partial clones — a folder scope and a history depth (6 Oct 2026) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/history-integrity-cost-and-compatibility.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/history-integrity-cost-and-compatibility.md"><code>admin/content/research/history-integrity-cost-and-compatibility.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/history-integrity-cost-and-compatibility.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

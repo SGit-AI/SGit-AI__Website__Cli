@@ -449,6 +449,7 @@ def nav_html(page, pages, up):
             f'  <a class="ver" href="{up}admin/versions.html" title="Site release history" data-site-version></a>\n'
             f'  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>\n'
             f'  <div class="nav-items">\n{rows}\n  </div>\n'
+            f'  <div class="theme-pick"></div>\n'
             f'  <a class="gh" href="{GH}">★ GitHub</a>\n'
             f'</div></nav>')
 
@@ -555,6 +556,8 @@ def page_html(page, pages, ctx):
 <meta property="og:url" content="https://{HOST}/{page.rel}">
 <meta property="og:type" content="{'article' if page.section in ('articles', 'research') else 'website'}">
 <link rel="stylesheet" href="{up}assets/site.css">
+<link rel="stylesheet" href="{up}assets/themes/themes.css">
+<script src="{up}assets/themes/themes.js"></script>
 </head>
 <body>
 
@@ -675,6 +678,8 @@ def moved_stub(slug, seen):
 <link rel="canonical" href="{url}">
 <meta http-equiv="refresh" content="0; url=../{new}">
 <link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/themes/themes.css">
+<script src="../assets/themes/themes.js"></script>
 </head>
 <body>
 <main class="doc">

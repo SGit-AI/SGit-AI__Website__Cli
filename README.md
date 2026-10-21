@@ -25,6 +25,7 @@ deploy), the same pipeline as [SGit-AI__Website](https://github.com/SGit-AI/SGit
 | `admin/build/make_figures.py` | draws the v0.2.0 articles' lead figures (`articles/images/`) |
 | `admin/build/render_figures.mjs` | renders `admin/build/figures/*.html` to webp and every mermaid diagram to SVG; run it when one changes and commit the output |
 | `admin/build/version.txt` | the site version |
+| `assets/themes/` | the five reading themes from newsroom.sgit.ai and their picker; a colour in `assets/site.css` is always a token defined there |
 
 Every other `.html`, `.md`, `llms*.txt` and `sitemap.xml` at the root and in `about/ admin/ api/ articles/
 briefs/ docs/ reference/ research/ security/` is generated (listed in `admin/build/generated.json`).

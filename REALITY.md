@@ -5,7 +5,7 @@ section: site
 order: 4
 ---
 
-# Reality: what exists, at v0.2.1 (21 October 2026)
+# Reality: what exists, at v0.2.2 (21 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -25,6 +25,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **Machine-readable twins** | A `.md` twin for every page, `llms.txt`, `llms-full.txt`, `sitemap.xml`, all generated |
 | **The gate** | `admin/build/validate.js`: build freshness, version agreement, links, canonical host, twins, orphans, leak tripwire; runs in CI before tag and deploy |
 | **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it |
+| **Five themes** | Newsprint, Night, Paper, Blueprint, Ember, ported from newsroom.sgit.ai with the same tokens; a picker in the nav; the choice kept in the browser only (since v0.2.2). Figures and diagrams are light in every theme, by design |
 | **Versioning** | `admin/build/version.txt`, badge on every page via `assets/version.js`, release history, tags `vX.Y.Z` made by CI |
 
 ## Does not exist yet

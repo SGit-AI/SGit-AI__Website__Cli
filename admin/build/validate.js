@@ -16,6 +16,9 @@
 //      lists, a summary of 220 to 360 words, tags ending in "article", the In short, limits and sources
 //      anchors, a lead figure that exists, and no em-dash anywhere. Research is published as written and is
 //      not held to this, on purpose.
+//  10. the themes (assets/themes/, from newsroom.sgit.ai): assets/site.css names no colour outside its :root
+//      (which holds only the terminal palette, the type and the measures); every token is defined in all five
+//      themes in themes.css; themes.js offers exactly the themes themes.css defines; every page loads both.
 // Pages left at a moved address (meta sgit:moved-to) are checked for one thing: that where they send exists.
 // Any failure exits 1: no tag, no publish.
 'use strict';
@@ -182,6 +185,36 @@ for (const f of walk(path.join(ROOT, 'admin/content'))) {
     else if (!fs.existsSync(path.join(ROOT, shot[2].replace(/^\//, ''), shot[1]))) errors.push(`${where}: the lead figure ${shot[2]}${shot[1]} does not exist`);
     const dashes = (t.match(/\u2014/g) || []).length;
     if (dashes) errors.push(`${where}: ${dashes} em-dash(es); the format has none`);
+  }
+}
+
+// --- 10. the themes -----------------------------------------------------------
+{
+  const COLOUR = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/g;
+  const css = fs.readFileSync(path.join(ROOT, 'assets/site.css'), 'utf8');
+  const rootEnd = css.indexOf('}', css.indexOf(':root{'));
+  css.slice(rootEnd + 1).split('\n').forEach((line, i) => {
+    const found = line.replace(/\/\*.*?\*\//g, '').match(COLOUR);
+    if (found) errors.push(`assets/site.css: a literal colour (${found.join(', ')}) near line ${css.slice(0, rootEnd).split('\n').length + i}; name it through a token in assets/themes/themes.css`);
+  });
+  const themes = fs.readFileSync(path.join(ROOT, 'assets/themes/themes.css'), 'utf8');
+  const blocks = {};
+  for (const m of themes.matchAll(/:root\[data-theme="([a-z]+)"\]\s*\{([^}]*)\}/g)) {
+    blocks[m[1]] = new Set([...m[2].matchAll(/(--[a-z0-9-]+)\s*:/g)].map(x => x[1]));
+  }
+  const names = Object.keys(blocks);
+  if (names.length !== 5) errors.push(`assets/themes/themes.css defines ${names.length} themes, not five: ${names.join(', ')}`);
+  const all = new Set(names.flatMap(n => [...blocks[n]]));
+  for (const n of names) for (const t of all) if (!blocks[n].has(t)) errors.push(`assets/themes/themes.css: theme ${n} leaves out ${t}`);
+  const used = new Set([...css.matchAll(/var\((--[a-z0-9-]+)/g)].map(m => m[1]));
+  const local = new Set([...css.slice(0, rootEnd).matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1]));
+  for (const t of used) if (!all.has(t) && !local.has(t)) errors.push(`assets/site.css uses ${t}, which no theme defines`);
+  const js = fs.readFileSync(path.join(ROOT, 'assets/themes/themes.js'), 'utf8');
+  const offered = [...js.slice(js.indexOf('var THEMES')).split('};')[0].matchAll(/^\s*([a-z]+):\s*\{/gm)].map(m => m[1]);
+  if (offered.sort().join() !== names.slice().sort().join()) errors.push(`themes.js offers ${offered.join(', ')}; themes.css defines ${names.join(', ')}`);
+  for (const f of htmlFiles.concat(stubs)) {
+    const t = fs.readFileSync(f, 'utf8');
+    if (!/assets\/themes\/themes\.css/.test(t) || !/assets\/themes\/themes\.js/.test(t)) errors.push(`${rel(f)}: does not load the themes`);
   }
 }
 

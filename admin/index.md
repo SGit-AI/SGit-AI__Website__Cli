@@ -27,6 +27,7 @@ One folder of content, one generator, one gate, one version number. Deployed to 
 | `admin/build/make_figures.py` | draws the v0.2.0 articles' lead figures as SVG |
 | `admin/build/render_figures.mjs`, `admin/build/figures/` | renders the drawn figures (one HTML page each) to webp, and every mermaid diagram in the content to SVG, with Playwright; run by hand, its output committed, so CI needs no browser |
 | `admin/build/version.txt` | the site version, the one place it is written |
+| `assets/themes/themes.css`, `assets/themes/themes.js` | the five themes of newsroom.sgit.ai (Newsprint, Night, Paper, Blueprint, Ember): every colour token in every theme, and the picker in the nav. The choice is kept in this browser only (`cli.theme` in local storage); with none chosen, a system set to dark gets Night. Print is always Newsprint |
 | `.github/workflows/deploy-pages.yml` | validate, tag, deploy |
 
 Every generated file is listed in `admin/build/generated.json`, and the build deletes a listed file it no longer produces, so removing a content file removes its page and its twin.
@@ -53,6 +54,7 @@ Every generated file is listed in `admin/build/generated.json`, and the build de
 | The leak tripwire: vault-key shapes, private-key markers, cloud and provider key prefixes, across every file | this site discusses keys constantly; it must never contain one |
 | Every article is in the newsroom's format: its front matter, a summary of 220 to 360 words, In short, limits and sources, a lead figure that exists, no em-dash | the format is what lets the newsroom import an article unchanged ([the guidance](https://send.sgit.ai/articles/every-site-its-own-articles.html)) |
 | A page left at a moved address points at a page that exists | the 21 research documents that were under /articles/ in v0.1 |
+| The themes: no literal colour in `site.css` outside its `:root`, every token in all five themes, the picker offers exactly those five, every page loads them | a theme with a hole inherits Newsprint's value silently and ships half-applied, which is how a dark theme gets one light panel nobody can explain (the newsroom's rule) |
 | Advisory, not failing: em-dashes in prose on this site's own pages | the estate's writing rule; pages moved or published verbatim, and research, keep their authors' punctuation |
 
 ## Against the estate's guidance

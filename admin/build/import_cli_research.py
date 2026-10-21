@@ -31,6 +31,16 @@ GH = "https://github.com/SGit-AI/SGit-AI__CLI/blob"
 
 # source (under FOLDER), slug, kind, research topics (admin/content/research/topics/<id>.md), tags, summary
 DOCS = [
+    ('10/21/spec__pack-mode.md', 'pack-mode-spec', 'spec',
+     'write-path, scale', 'packs, zip, push, pull, clone, compaction, s3',
+     'The specification for pack mode: every push writes one zip pack, a snapshot pack compacts them, nothing is '
+     'deleted, large packs go straight to S3 by presigned URL, and a gated packs-only vault needs no server '
+     'change. Commands, layout, failure handling, tests and the four performance runs.'),
+    ('10/20/brief__to-sg-send-team__zip-append-via-s3.md', 'zip-append-via-s3-brief', 'brief',
+     'write-path', 'zip, s3, presigned, multipart, sg-send, server',
+     'A brief to the SG/Send team: a presigned append route that grows a zip on S3 by UploadPartCopy, '
+     'conditional completes with If-Match and If-None-Match, and size and ETag with the read URL. Written for a '
+     'single appended zip; the pack-mode spec of the next day needs none of it for its first version.'),
     ('10/16/research__keys-pki-cow__coverage-map.md', 'keys-pki-copy-on-write-coverage-map', 'coverage map',
      'keys, write-path', 'keys, pki, copy-on-write, membership',
      'Before writing two articles, a map of what is already published on keys the way git does them, PKI '
@@ -133,6 +143,7 @@ ARTICLE_DRAFTS = {
     "article-draft__policies-the-vault-enforces.md": "policies-the-vault-enforces",
     "article-draft__streaming-changes.md": "streaming-changes-into-a-vault",
     "article-draft__native-zip-support.md": "a-vault-in-one-file",
+    "article-draft__a-pack-per-push.md": "a-pack-per-push",
 }
 
 

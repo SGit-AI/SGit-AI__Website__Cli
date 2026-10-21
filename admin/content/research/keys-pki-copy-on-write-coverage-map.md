@@ -8,9 +8,9 @@ topics: [keys, write-path]
 tags: keys, pki, copy-on-write, membership
 summary: Before writing two articles, a map of what is already published on keys the way git does them, PKI access to a vault and copy-on-write: seven questions from the memo, where each stands, the facts the articles must not get wrong, and seven code questions for the thread.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md
-source_commit: 5473571
+source_commit: 6702521
 source_branch: claude/charming-babbage-5hzcxq
 status: published
 ---

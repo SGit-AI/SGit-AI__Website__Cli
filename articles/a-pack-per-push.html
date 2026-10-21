@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change · cli.sgit.ai</title>
+<meta name="description" content="For three days I have been talking with the CLI team about keeping a vault&#x27;s objects in zip files, and this is where it landed. A vault&#x27;s objects are immutable and named by their hash, so a set of them is a zip and the set only ever grows, which is also what a git packfile is. The cost of a vault over the network is the number of requests, not the number of bytes: from a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3. So the proposal is a mode where every push writes one pack, the commit with its new trees and blobs, and the ref moves as today: one upload and one compare-and-swap instead of batches of fifty objects. Compaction writes a snapshot pack of everything reachable from a commit and moves the packs it absorbed to an archive; nothing is ever deleted. The folders are the index: a clone takes the newest snapshot and everything in the commits folder, and a pull lists that folder and takes what it lacks, with no commit walk. Small packs go through the API and large ones straight to S3 by presigned URL, with Range reads, all of which the server already does, so there is no server change. The trial is CLI-only, in a vault of its own, gated by a feature flag and a minimum client, so every reader that does not know packs refuses it by name. The number to beat is the 35,000-object vault&#x27;s clone of three and a half minutes; its snapshot is one 430 MB file that eight parallel ranges from S3 would deliver to that sandbox in about forty seconds. Nothing here is built yet.">
+<link rel="canonical" href="https://cli.sgit.ai/articles/a-pack-per-push.html">
+<link rel="alternate" type="text/markdown" href="../articles/a-pack-per-push.md">
+<meta property="og:title" content="A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change">
+<meta property="og:description" content="For three days I have been talking with the CLI team about keeping a vault&#x27;s objects in zip files, and this is where it landed. A vault&#x27;s objects are immutable and named by their hash, so a set of them is a zip and the set only ever grows, which is also what a git packfile is. The cost of a vault over the network is the number of requests, not the number of bytes: from a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3. So the proposal is a mode where every push writes one pack, the commit with its new trees and blobs, and the ref moves as today: one upload and one compare-and-swap instead of batches of fifty objects. Compaction writes a snapshot pack of everything reachable from a commit and moves the packs it absorbed to an archive; nothing is ever deleted. The folders are the index: a clone takes the newest snapshot and everything in the commits folder, and a pull lists that folder and takes what it lacks, with no commit walk. Small packs go through the API and large ones straight to S3 by presigned URL, with Range reads, all of which the server already does, so there is no server change. The trial is CLI-only, in a vault of its own, gated by a feature flag and a minimum client, so every reader that does not know packs refuses it by name. The number to beat is the 35,000-object vault&#x27;s clone of three and a half minutes; its snapshot is one 430 MB file that eight parallel ranges from S3 would deliver to that sandbox in about forty seconds. Nothing here is built yet.">
+<meta property="og:url" content="https://cli.sgit.ai/articles/a-pack-per-push.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl here" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../articles/index.html">Articles</a> / A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</div>
+<h1 id="a-pack-per-push-git-s-packfiles-applied-to-an-encrypted-vaul">A pack per push: git's packfiles, applied to an encrypted vault, with no server change</h1>
+<p class="byline">By <a href="https://sgit.ai/about/">Dinis Cruz</a> · 2026-10-21 · published · site v0.2.1</p><p class="lead"><b>Summary:</b> For three days I have been talking with the CLI team about keeping a vault&#x27;s objects in zip files, and this is where it landed. A vault&#x27;s objects are immutable and named by their hash, so a set of them is a zip and the set only ever grows, which is also what a git packfile is. The cost of a vault over the network is the number of requests, not the number of bytes: from a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3. So the proposal is a mode where every push writes one pack, the commit with its new trees and blobs, and the ref moves as today: one upload and one compare-and-swap instead of batches of fifty objects. Compaction writes a snapshot pack of everything reachable from a commit and moves the packs it absorbed to an archive; nothing is ever deleted. The folders are the index: a clone takes the newest snapshot and everything in the commits folder, and a pull lists that folder and takes what it lacks, with no commit walk. Small packs go through the API and large ones straight to S3 by presigned URL, with Range reads, all of which the server already does, so there is no server change. The trial is CLI-only, in a vault of its own, gated by a feature flag and a minimum client, so every reader that does not know packs refuses it by name. The number to beat is the 35,000-object vault&#x27;s clone of three and a half minutes; its snapshot is one 430 MB file that eight parallel ranges from S3 would deliver to that sandbox in about forty seconds. Nothing here is built yet.</p><p class="chips"><span class="chip">packs</span> <span class="chip">zip</span> <span class="chip">packfiles</span> <span class="chip">push</span> <span class="chip">pull</span> <span class="chip">clone</span> <span class="chip">compaction</span> <span class="chip">s3</span> <span class="chip">storage</span></p>
+<figure class="shot"><img src="../articles/images/pk-architecture.webp" alt="A pack per push, in one picture. On the left, the four operations and what each costs in requests: a push uploads one pack and moves the ref, a pull lists the commit packs and takes those it lacks, a clone takes the newest snapshot and the packs since it, and compaction folds packs into a new snapshot. In the middle, what the host holds: three folders of zips under bare/packs/, and the small mutable objects that stay as they are. On the right, the routes: packs of 4 MB or less through the API, larger ones straight to S3. Dashed boxes are proposed; the routes exist today." loading="lazy"><figcaption>A pack per push, in one picture. On the left, the four operations and what each costs in requests: a push uploads one pack and moves the ref, a pull lists the commit packs and takes those it lacks, a clone takes the newest snapshot and the packs since it, and compaction folds packs into a new snapshot. In the middle, what the host holds: three folders of zips under bare/packs/, and the small mutable objects that stay as they are. On the right, the routes: packs of 4 MB or less through the API, larger ones straight to S3. Dashed boxes are proposed; the routes exist today.</figcaption></figure>
+<h2 id="in-short">In short</h2>
+<ul><li><b>A vault's objects are immutable and named by their hash, so a set of them is a zip and the set only ever grows.</b> That is also what a git packfile is.</li><li><b>The mode: every push writes one pack.</b> <code>bare/packs/commits/&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</code>, the commit with its new trees and blobs. The ref moves as today. A push is one upload and one compare-and-swap instead of batches of fifty objects.</li><li><b>Compaction is a snapshot pack</b>: every object reachable from a commit, in one zip, written to <code>snapshots/</code>; the commit packs it absorbed move to <code>archive/</code>. Nothing is ever deleted.</li><li><b>The folders are the index.</b> A clone fetches the newest snapshot and everything in <code>commits/</code>. A pull lists <code>commits/</code> and takes what it lacks. No commit walk, no listing of thirty-five thousand objects.</li><li><b>Small packs go through the API, large ones straight to S3</b> by presigned URL, with <code>Range</code> for partial reads; the server already does both, and listing, and delete. <b>No server change.</b></li><li><b>CLI-only, gated, in its own vault.</b> A pack vault carries a feature flag and a minimum client in its branch index, so every reader that does not know packs refuses it by name. The web app and the static readers come later, once the numbers are in.</li><li><b>The numbers to beat:</b> the 35k-object vault clones in 3½ minutes through the API today; its snapshot is one 430 MB file that a local server delivered in 3 s and that eight parallel ranges from S3 would deliver from here in about 40 s.</li></ul>
+<h2 id="cost-today">Where the cost is today</h2>
+<p>Three days of measuring the same vault from the same sandbox gave one answer: the cost of a vault over the network is the number of requests, not the number of bytes. A 28-byte object costs 0.5 s whether it comes through the Lambda or straight from S3; a 2 MB object costs 1.5 s; eight objects in parallel reach 12 MB/s together. The CLI already batches fifty objects a request and runs sixteen requests in flight, which is why a full clone of 35,423 objects takes 3½ minutes and not an hour. But a push is still as many requests as it has new objects divided by fifty, a pull that is far behind still lists the whole store, and a vault of a hundred thousand small objects (logs, stats, API captures, the shape we are now building) pays all of it.</p>
+<p>Git met the same wall twenty years ago and answered with the packfile: many objects in one file, written once, never changed, with an index beside it. Scion, Anthropic's replacement for git, went the other way and has "no equivalent of packfiles"; it can, because its servers are a cache fleet that never leaves one company. A vault's server is a bucket. For a bucket, the packfile is the right answer, and the one thing a zip does well, appending, is the one thing an immutable store needs.</p>
+<h2 id="mode">The mode</h2>
+<p>Nothing about a vault's content changes. Commits, trees, blobs, their encryption, their ids, the signatures, the ref and its compare-and-swap, the branch index, scopes, status, history: all as today. What changes is how objects travel and where the host keeps them.</p>
+<pre><code class="lang-text">bare/packs/
+  commits/    &lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip   one per push: the commit, its new trees, its new blobs
+  snapshots/  &lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip   every object reachable from &lt;commit&gt;
+  archive/    &lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip   commit packs a snapshot has absorbed; kept
+bare/refs/, bare/indexes/, bare/cache/         unchanged: small, mutable, compare-and-swap</code></pre>
+<p>Two things are in every name because they are free and useful: an epoch, so a plain listing comes back in time order (the append lane's entries are named the same way), and the size, so a client knows before it fetches whether to go through the API (under 4 MB) or straight to S3 (over it).</p>
+<p><b>Push.</b> Build the pack from the commit's new objects, as <code>publish --bundles</code> already builds a per-commit delta zip: <code>ZIP_STORED</code> because ciphertext does not compress, sorted members, fixed timestamps, so the same commit always gives the same bytes. Upload it: one batch write when it is small, one multipart upload straight to S3 when it is large. Then move the ref, with the same compare-and-swap as today. Two or three requests, whatever the commit's size.</p>
+<figure class="diagram"><img src="../articles/images/mermaid/7e923ed987a1.svg" alt="A push in pack mode: one pack per pushed commit, sent by the route its size picks, then the same compare-and-swap on the ref as today." loading="lazy"><figcaption>A push in pack mode: one pack per pushed commit, sent by the route its size picks, then the same compare-and-swap on the ref as today.</figcaption></figure>
+<p><b>Pull.</b> List <code>bare/packs/commits/</code>. The names the client has already absorbed are recorded locally, the way a clone records the last remote head it accepted. Fetch the difference, small ones in a batch, large ones from S3, in parallel. Verify every member against its id as the bundle extractor already does, write the objects into the local store, then the ref. A pull that is a day behind on the comms vault is a listing of a few hundred names and a few dozen fetches, not a walk of a hundred commits one request each.</p>
+<figure class="diagram"><img src="../articles/images/mermaid/2afe8414fe21.svg" alt="A pull in pack mode: one listing, the packs this clone has not absorbed, each verified member by member before anything is written." loading="lazy"><figcaption>A pull in pack mode: one listing, the packs this clone has not absorbed, each verified member by member before anything is written.</figcaption></figure>
+<p><b>Clone.</b> List <code>snapshots/</code>, take the newest, fetch it (one file, or several parallel ranges of it). List <code>commits/</code>, fetch everything there: by construction that is exactly what the snapshot does not hold. No walk, no listing of the object store. For the comms vault that is the 430 MB snapshot and a few packs.</p>
+<figure class="diagram"><img src="../articles/images/mermaid/25b60883502e.svg" alt="A clone in pack mode: the newest snapshot, then every commit pack since it, then a local walk that confirms nothing is missing." loading="lazy"><figcaption>A clone in pack mode: the newest snapshot, then every commit pack since it, then a local walk that confirms nothing is missing.</figcaption></figure>
+<p><b>Compaction.</b> Any writer with the write key can run it, when <code>commits/</code> holds more than some number of packs or more than some fraction of the snapshot's size; the trial will find the numbers. It writes the snapshot to <code>snapshots/</code>, reads it back from the host and checks every expected id is in its directory (a <code>Range</code> read of the tail, no members downloaded), and only then moves each absorbed pack to <code>archive/</code>: an upload there and a delete from <code>commits/</code>, in that order, so a crash between the two leaves a pack in both places, which is harmless. Old snapshots stay. The archive stays. Nothing is deleted in this mode; a separate, explicit prune can come later if storage ever matters, and ciphertext is cheap.</p>
+<figure class="diagram"><img src="../articles/images/mermaid/308dd82f3690.svg" alt="Compaction: build and upload a snapshot, read its directory back before anything moves, then copy each absorbed pack to archive/ before deleting it from commits/. A crash between the last two steps leaves a pack in both places, which is harmless." loading="lazy"><figcaption>Compaction: build and upload a snapshot, read its directory back before anything moves, then copy each absorbed pack to archive/ before deleting it from commits/. A crash between the last two steps leaves a pack in both places, which is harmless.</figcaption></figure>
+<p><b>Reading.</b> First version: packs are extracted into the loose store on arrival, so every read path in the CLI is untouched. Second version, if it pays: keep the packs and read objects by offset through a local index over them, which is git's <code>.idx</code>. The first version is enough to measure everything in this article.</p>
+<h2 id="gated">Why a separate vault, and why it is gated</h2>
+<p>A vault that holds only packs is unreadable to the web app and to every static reader, which look up loose objects by id. Dual-writing (loose objects and packs) would keep them working and would also keep the cost the mode exists to remove: every push would still upload its objects in batches. So the trial is packs-only, in a vault of its own, and the vault says so: the branch index already carries a format gate (<code>min_client</code>, <code>features</code>) that 0.19.0 built for 128-bit ids and required signatures, and a pack vault sets <code>features: [packs]</code> and a minimum client. Every older CLI, the web app and the static readers then refuse it by name ("this vault needs sgit-ai &gt;= X: run sgit update") instead of seeing an empty vault. Once the mode has proved itself, the web side learns to read packs, and an in-place migration (one snapshot, flip the flag, loose objects left as the archive) becomes the production path.</p>
+<figure class="diagram"><img src="../articles/images/mermaid/458edfd9f368.svg" alt="The gate: a pack vault says so in its branch index, and every reader that does not know packs refuses it by name instead of seeing an empty vault." loading="lazy"><figcaption>The gate: a pack vault says so in its branch index, and every reader that does not know packs refuses it by name instead of seeing an empty vault.</figcaption></figure>
+<p><b>Importing a vault</b> is a full clone, the re-encryption <code>vault move</code> already does (the read key is derived from the passphrase and the vault id, so a new vault means new keys and new ids for every object, walked blobs first, then trees, then commits, history intact), one snapshot pack, the ref, and the index with the flag. The source vault is untouched. The two then live apart, which for a trial is what you want.</p>
+<figure class="diagram"><img src="../articles/images/mermaid/278db8aefb2b.svg" alt="Importing a vault: a full clone, re-encrypted under a new key the way vault move does it, written as one snapshot pack. The source is not touched." loading="lazy"><figcaption>Importing a vault: a full clone, re-encrypted under a new key the way vault move does it, written as one snapshot pack. The source is not touched.</figcaption></figure>
+<h2 id="should-cost">What it should cost, and how we will know</h2>
+<div class="tablewrap"><table><thead><tr><th></th><th>Today (API, loose objects)</th><th>Pack mode (expected)</th></tr></thead><tbody><tr><td>push of one small change</td><td>2 to 4 requests</td><td>2 to 3 requests</td></tr><tr><td>push of 500 new objects</td><td>10 batch requests + ref</td><td>1 upload + ref</td></tr><tr><td>pull, 50 pushes behind</td><td>up to 50 commit requests, then batches</td><td>1 listing + 50 small fetches in batches</td></tr><tr><td>cold clone, 35k objects</td><td>21 s listing + 700 batch requests, 3½ min</td><td>1 listing + 1 snapshot (430 MB) + a few packs; ~40 s from this sandbox at 12 MB/s, seconds on a good link</td></tr><tr><td>a vault of 100k objects of 300 bytes</td><td>2,000 batch requests</td><td>one 30 MB snapshot</td></tr></tbody></table></div>
+<figure class="shot"><img src="../articles/images/pk-costs.webp" alt="Requests, not bytes. Each row is one operation on a vault: the grey bar is today&#x27;s request count through the batch route, the orange bar the expected count in pack mode, on the same scale. Pack mode wins on large pushes, far-behind pulls and cold clones. The red row is what the bars hide: a scoped clone of one folder is 3 MB today and would be the whole 430 MB snapshot in pack mode&#x27;s first version. The pack-mode figures are arithmetic, not measurements." loading="lazy"><figcaption>Requests, not bytes. Each row is one operation on a vault: the grey bar is today&#x27;s request count through the batch route, the orange bar the expected count in pack mode, on the same scale. Pack mode wins on large pushes, far-behind pulls and cold clones. The red row is what the bars hide: a scoped clone of one folder is 3 MB today and would be the whole 430 MB snapshot in pack mode&#x27;s first version. The pack-mode figures are arithmetic, not measurements.</figcaption></figure>
+<p>The tests, on the CLI side, against the dev server with direct S3: a cold clone of the imported comms vault, pack mode against the batch route; a push loop of a hundred one-file commits, time and requests per push; pulls after 10, 100 and 1,000 pushes without compaction, then after it, to set the trigger; two writers pushing at once, which the ref's compare-and-swap already keeps straight and the packs never collide on. The numbers go in the article that follows this one.</p>
+<h2 id="limits">What this does not claim</h2>
+<ul><li>Nothing is built; the per-commit and head zips exist in <code>publish --bundles</code>, the routes exist, the rest is the spec.</li><li>The expected costs above are arithmetic from measured request floors and throughputs, from one cloud sandbox.</li><li>The web app and static readers cannot read a pack vault; that is by design for the trial.</li><li>A pack vault still has one writer at a time on the ref, as every vault does; packs themselves never conflict, because their names are commit ids.</li></ul>
+<p>If you keep a vault with tens of thousands of small objects and would like to be in the trial, write to agent@riskmandate.ai.</p>
+<h2 id="sources">Where this comes from</h2>
+<p>Draft for the newsroom, 21 Oct 2026, from three days of conversation of mine with the CLI team on zip storage. Facts from the CLI at <code>dev</code> 37218af, the SG/Send server code (0.34.0) and live tests on <code>dev.send.sgraph.ai</code> on 16 and 20 Oct. Nothing here is built.</p>
+<p>Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is <a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/21/article-draft__a-pack-per-push.md"><code>team/humans/dinis_cruz/claude-code-web/10/21/article-draft__a-pack-per-push.md</code></a> in SGit-AI__CLI at <code>6702521</code>, on the branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged. Published on cli.sgit.ai on 21 October 2026 in the newsroom's format: the front matter, the summary, the anchors, this section and the line above it were added, and so were the figures and the six flow diagrams, drawn by cli.sgit.ai's build agent from the draft and <a href="../research/pack-mode-spec.html">the spec</a>; the text is as drafted. The spec is the CLI team's for building it; <a href="../research/zip-append-via-s3-brief.html">the brief to the SG/Send team</a> of the evening before describes the earlier design this one replaced. The build agent's reading of all three, with five decisions to make, is <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely</a>. The research topic: <a href="../research/topics/write-path.html">How a vault takes writes</a>.</p>
+<div class="pagenav"><a href="../articles/pack-mode-read-closely.html">← Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a><a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../articles/a-pack-per-push.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/articles/a-pack-per-push.md"><code>admin/content/articles/a-pack-per-push.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../articles/a-pack-per-push.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+    <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

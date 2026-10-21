@@ -8,9 +8,9 @@ topics: [security-review]
 tags: security, threat-modeling
 summary: Threat-modeling tools for an agent-driven review: Matt Adams' stack (STRIDE GPT, the insider-threat model), the classics, and the house method, with the agent itself named as an actor.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/11/research__threat-modeling-tools.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/11/research__threat-modeling-tools.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/11/research__threat-modeling-tools.md
-source_commit: 5473571
+source_commit: 6702521
 source_branch: claude/charming-babbage-5hzcxq
 status: published
 ---

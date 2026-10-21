@@ -42,7 +42,9 @@ function walk(dir, out = []) {
 const files = walk(ROOT);
 const isStub = f => /<meta name="sgit:moved-to"/.test(fs.readFileSync(f, 'utf8'));
 const stubs = files.filter(f => f.endsWith('.html') && isStub(f));
-const htmlFiles = files.filter(f => f.endsWith('.html') && !stubs.includes(f));
+// admin/build/figures/ holds the sources render_figures.mjs draws the articles' figures from: inputs, not pages.
+const isFigureSource = f => rel(f).startsWith('admin/build/figures/');
+const htmlFiles = files.filter(f => f.endsWith('.html') && !stubs.includes(f) && !isFigureSource(f));
 for (const f of stubs) {
   const to = fs.readFileSync(f, 'utf8').match(/<meta name="sgit:moved-to" content="([^"]+)"/)[1];
   if (!fs.existsSync(path.join(ROOT, to))) errors.push(`${rel(f)}: moved to ${to}, which does not exist`);

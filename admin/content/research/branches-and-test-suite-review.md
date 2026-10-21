@@ -8,9 +8,9 @@ topics: [correctness]
 tags: branches, tests, quality
 summary: An end-to-end check found that branches did not work. What was fixed behind it, the tests that now cover it, and a review of the test suite's speed and quality.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md
-source_commit: 5473571
+source_commit: 6702521
 source_branch: claude/charming-babbage-5hzcxq
 status: published
 ---

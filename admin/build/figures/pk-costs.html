@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>td.op{width:290px;font-weight:600} td.v{width:560px} .num{white-space:nowrap}</style></head><body>
+<h1>Requests, not bytes: what each operation costs today and in pack mode</h1>
+<p class="sub">From one cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so the number of requests is the cost. Each row is one operation on a vault; the grey bar is today's request count with loose objects through the batch route, the orange bar the expected count in pack mode, drawn to the same scale (capped at 100). The pack-mode figures are arithmetic from measured floors, not measurements: nothing is built. The red row is the exception the bars hide: few requests, but 430 MB where today it is 3 MB.</p>
+<table class="t">
+<tr><th>Operation</th><th>Today: loose objects, batch route</th><th>Pack mode: expected</th></tr>
+<tr><td class="op">Push one small change</td><td class="v"><span class="bar g" style="width:12px"></span><span class="num">2 to 4 requests</span></td><td><span class="bar w" style="width:9px"></span><span class="num">2 to 3 requests</span></td></tr>
+<tr><td class="op">Push 500 new objects</td><td class="v"><span class="bar g" style="width:33px"></span><span class="num">10 batches + the ref</span></td><td><span class="bar w" style="width:6px"></span><span class="num">1 upload + the ref</span></td></tr>
+<tr><td class="op">Pull, 50 pushes behind</td><td class="v"><span class="bar g" style="width:165px"></span><span class="num">up to 50 commit requests, then batches</span></td><td><span class="bar w" style="width:9px"></span><span class="num">1 listing + 50 small packs, batched</span></td></tr>
+<tr><td class="op">Cold clone, 35,423 objects</td><td class="v"><span class="bar g" style="width:300px"></span><span class="num">listing + ~700 batches · 3½ min</span></td><td><span class="bar w" style="width:12px"></span><span class="num">listings + one 430 MB snapshot · ~40 s here</span></td></tr>
+<tr><td class="op">100,000 objects of 300 bytes</td><td class="v"><span class="bar g" style="width:300px"></span><span class="num">~2,000 batches</span></td><td><span class="bar w" style="width:3px"></span><span class="num">one 30 MB snapshot</span></td></tr>
+<tr><td class="op" style="color:var(--red)">Scoped clone: one folder, one commit</td><td class="v"><span class="bar g" style="width:45px"></span><span class="num">13 s · 137 objects · 3 MB</span></td><td><span class="bar w" style="width:16px;background:var(--red)"></span><span class="num" style="color:var(--red)">the whole 430 MB snapshot in version 1</span></td></tr>
+</table>
+<div class="foot"><b>Pack mode wins on pushes of many objects, far-behind pulls and cold clones; version 1 loses on the scoped clone agents use every day.</b><span>cli.sgit.ai · 21 October 2026 · rows 1 to 5 from the article's table; row 6 from the one-vault article and spec §4.4</span></div>
+</body></html>

@@ -1,13 +1,13 @@
 # A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists, cli.sgit.ai
 
-> A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article's 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip's directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute.
+> A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article's 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip's directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute. Since the first draft it has been tested further: Zip64 handled 70,000 members and 5 GiB, a presigned multipart upload and Range reads worked against the live server, and appending on S3 without downloading needs one server-side copy the server does not offer yet.
 
 *Source: <https://cli.sgit.ai/articles/a-vault-in-one-file.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
 By [Dinis Cruz](https://sgit.ai/about/) · 2026-10-20 · published
 
-**Summary:** A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article's 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip's directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute.
+**Summary:** A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article's 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip's directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute. Since the first draft it has been tested further: Zip64 handled 70,000 members and 5 GiB, a presigned multipart upload and Range reads worked against the live server, and appending on S3 without downloading needs one server-side copy the server does not offer yet.
 
 ![Requests against one file. Top, measured on the article's 12 MB vault from a local server: 106 separate GETs took 2.0 to 2.5 seconds, one 12.7 MB zip took 0.13 seconds to fetch and unpack. Middle, the 35,000-object vault from local disk: 111 seconds object by object, 3 seconds as one 430 MB zip. Bottom, the shape of the file: members appended one after another and the central directory at the end, so two range requests read the directory and any one member.](../articles/images/a-vault-in-one-file.svg)
 
@@ -181,6 +181,52 @@ a single blob, keyed by its own key. The cost is the whole-object rule: a change
 vault is a new blob of its full size. That is right for an archive, a run's evidence, a frozen
 release; wrong for an inner vault that changes often.
 
+## Appending to a zip on S3 without downloading it {#appending-zip-on}
+
+A zip's only write is an append, and S3 can do that server-side. A multipart upload's parts can
+be **copied from a byte range of an existing object** (`UploadPartCopy`) instead of uploaded, so
+"add 40 KB to a 430 MB zip" is one copy part (everything before the old central directory, done
+inside S3) plus one uploaded part (the new members and the new directory, about 3 MB here), then
+`CompleteMultipartUpload`: four requests and no download. Parts are 5 MB to 5 GB, up to 10,000
+of them, so the copied range can be one part up to 5 GB. S3's conditional writes (`If-Match` on
+the ETag at complete) give the compare-and-swap: two pushers racing on the zip, the second fails
+on the stale ETag, re-copies from the new version and retries, which is the ref's own rule, done
+by the storage. The mutable files (ref, index, cache) stay as separate small objects overwritten
+with the same `If-Match`, so nothing inside the zip is ever rewritten. Standard S3 has no in-place
+append (S3 Express One Zone does); the copy is the trick, and it needs no Lambda. These are
+documented S3 features, not exercised from this sandbox, which has no S3 credentials.
+
+## What works today, tested on the live server {#works-today-tested}
+
+Tested on 20 Oct against `dev.send.sgraph.ai` (S3 storage) on a throwaway vault, created and
+deleted in the same run, with the routes the CLI already has:
+
+| Step | Route | Result |
+|---|---|---|
+| start a multipart upload of a 12.6 MB object | `POST /api/vault/presigned/initiate` (write key) | S3 multipart created; two presigned `PUT` URLs for parts of 10 MB; 9.0 s (a cold Lambda) |
+| upload the parts straight to S3 | presigned `PUT` ×2 | 10.5 MB in 3.6 s, 2.1 MB in 1.2 s, from this sandbox |
+| assemble | `POST /api/vault/presigned/complete` | `status: ok`, 0.8 s |
+| read a slice | `GET /api/vault/presigned/read-url` then `GET` with `Range` | `206 Partial Content` for the head (0–1023), the tail (last 2 KB) and the middle (6,000,000–6,001,023); bytes matched |
+| read the whole object | `read_large` (the CLI's path) | matched, 12,582,912 bytes |
+
+So the download half of "a vault in one file" works now: a zip pushed as a vault object can be
+read by `Range`, which means the directory at its tail and then any member, through the existing
+read-url route. And the zip's determinism (sorted members, fixed timestamps) plus append-only
+growth give a second property for free: a client that holds version *N* of the zip knows the
+offset of *N*'s directory, and everything version *N+1* added sits between that offset and
+*N+1*'s directory. **An incremental pull from an appended zip is one `Range` request for the new
+tail.** A sidecar index (the manifest `publish` already writes, with member offsets added) turns
+"find the directory" into one small `GET`.
+
+What the server does not offer yet, read from its code (`Service__Vault__Presigned`): it signs
+`upload_part` only, never `upload_part_copy`, and it passes no `If-Match` to
+`complete_multipart_upload`. So append-by-copy needs one small server addition, and the clean
+shape is a route rather than a signed copy URL: `POST /api/vault/presigned/append` takes the
+source object, the expected ETag and the tail's size; the server itself issues one
+`UploadPartCopy` of the source (a server-side S3 call that moves no bytes through the Lambda),
+returns the upload id and part URLs for the tail, and `complete` passes `IfMatch` so a stale
+append fails instead of clobbering. Three functions in one service file.
+
 ## Where it does not fit {#does-not-fit}
 
 - **Many writers.** Every append rewrites the central directory, and concurrent appends to one
@@ -190,9 +236,11 @@ release; wrong for an inner vault that changes often.
   directory for a large vault is itself megabytes (35k entries is a few MB). Fine for "read
   three files from a published vault"; not a replacement for the batch route when a client
   wants half the objects.
-- **A zip has limits.** 65,535 members and 4 GB before Zip64, which Python's `zipfile` turns on
-  by itself and some other readers do not; the comms vault is already past half the member
-  limit.
+- **The classic zip limits do not apply, with one reader caveat.** The 1989 format counts
+  members in 16 bits and sizes and offsets in 32 bits (65,535 members, 4 GiB); Zip64, in the
+  spec since 2001, makes them 64-bit. Verified here: Python's `zipfile` wrote a 70,000-member
+  zip and a 5.00 GiB zip and Info-ZIP's `unzip` read both back. Only a reader that never
+  implemented Zip64 (some minimal or browser-side libraries) would refuse them.
 - **It changes nothing about security.** The members are the same ciphertext under the same
   names; a zip on a Drive is as readable to the host as the folder was, which is not at all.
 
@@ -205,6 +253,9 @@ release; wrong for an inner vault that changes often.
 
 ## Questions for the thread (each a code change) {#questions-thread-code}
 
+0. **Server: `presigned/append`** (one `UploadPartCopy` of the source object plus part URLs for the
+   tail) and `IfMatch` on complete. The only server change in this list; everything below is
+   client-side.
 1. **`clone --transport static` reads `bundles/head-*.zip` when it is there**, verifying each
    member by id; `pull` reads the delta bundles for missing commits; loose fetch stays the
    fallback. Smallest change, largest win on dumb hosts.
@@ -225,7 +276,7 @@ If you keep many small files in a vault, or need one on a file host that has no 
 
 Draft for the newsroom and a brief for the CLI team, 20 Oct 2026, from a voice memo of mine. Facts from the CLI at `dev` 37218af, OSBot-Utils 3.75.0, Memory-FS, and measurements made that day from a cloud sandbox against the hosted API, direct S3 and a local file server. Nothing proposed is built; what exists is named as such.
 
-Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is [`team/humans/dinis_cruz/claude-code-web/10/20/article-draft__native-zip-support.md`](https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/20/article-draft__native-zip-support.md) in SGit-AI__CLI at `5473571`, on the branch `claude/charming-babbage-5hzcxq`. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the anchors, this section and the line above it were added; the text is as drafted. The research topic it belongs to: [/research/topics/write-path.html](../research/topics/write-path.md).
+Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is [`team/humans/dinis_cruz/claude-code-web/10/20/article-draft__native-zip-support.md`](https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/20/article-draft__native-zip-support.md) in SGit-AI__CLI at `6702521`, on the branch `claude/charming-babbage-5hzcxq`. Published on cli.sgit.ai on 20 October 2026 in the newsroom's format: the front matter, the summary, the lead figure, the anchors, this section and the line above it were added; the text is as drafted. Updated on 21 October 2026 to the draft's revision of 20 October, which added Appending to a zip on S3, What works today and the Zip64 test, and the server route as question 0; the next step, a pack per push, is [its own article](../articles/a-pack-per-push.md). The research topic it belongs to: [/research/topics/write-path.html](../research/topics/write-path.md).
 
 ---
 

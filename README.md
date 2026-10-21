@@ -22,7 +22,8 @@ deploy), the same pipeline as [SGit-AI__Website](https://github.com/SGit-AI/SGit
 | `admin/build/validate.js` | the gate: build current, version, links, canonical host, twins, orphans, key-leak tripwire |
 | `admin/build/import_sgit_ai.py` | moves pages from sgit.ai (from its markdown twins) |
 | `admin/build/import_cli_research.py` | publishes documents from the CLI repository in the research area |
-| `admin/build/make_figures.py` | draws the articles' lead figures (`articles/images/`) |
+| `admin/build/make_figures.py` | draws the v0.2.0 articles' lead figures (`articles/images/`) |
+| `admin/build/render_figures.mjs` | renders `admin/build/figures/*.html` to webp and every mermaid diagram to SVG; run it when one changes and commit the output |
 | `admin/build/version.txt` | the site version |
 
 Every other `.html`, `.md`, `llms*.txt` and `sitemap.xml` at the root and in `about/ admin/ api/ articles/
@@ -30,7 +31,7 @@ briefs/ docs/ reference/ research/ security/` is generated (listed in `admin/bui
 
 ## Release
 
-1. Bump `admin/build/version.txt` and add a row to `admin/content/admin/versions.md`.
+1. Bump `admin/build/version.txt` (every release is a minor: v0.2.1, v0.2.2, …) and add a row to `admin/content/admin/versions.md`.
 2. `python3 admin/build/build.py && node admin/build/validate.js`
 3. `git commit -am "site vX.Y.Z: ..." && git push origin dev` (the `site vX.Y.Z:` prefix is what CI tags).
 4. Check https://cli.sgit.ai/assets/version.js serves the new version.

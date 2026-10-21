@@ -2,7 +2,7 @@
 
 > The decision to run the SG/Send container image rather than re-implement the server: the runtimes supported (including Apple's container and Podman), the spike results, and phase 1 as built.
 
-*Source: <https://cli.sgit.ai/research/sgit-serve-container-first.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/12/options__sgit-serve-container-and-static.md>.*
+*Source: <https://cli.sgit.ai/research/sgit-serve-container-first.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/12/options__sgit-serve-container-and-static.md>.*
 
 ---
 # `sgit serve`: container first. Options map and spike results

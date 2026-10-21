@@ -8,9 +8,9 @@ topics: [security-review]
 tags: security, review
 summary: The plan for a tool-assisted, data-producing security review of one slice of sgit-ai: the code the zero-knowledge guarantee and the trust boundaries live in.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/11/plan__security-review-with-skills.md
-source_commit: 5473571
+source_commit: 6702521
 source_branch: claude/charming-babbage-5hzcxq
 status: published
 ---

@@ -13,11 +13,13 @@
   <url><loc>https://cli.sgit.ai/api/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/api/transfers.html</loc></url>
   <url><loc>https://cli.sgit.ai/api/vault-objects.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/a-pack-per-push.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/a-vault-in-one-file.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/keys-the-way-git-does-it.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/pack-mode-read-closely.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/policies-the-vault-enforces.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/research-is-not-an-article.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html</loc></url>
@@ -93,6 +95,7 @@
   <url><loc>https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/native-pki-vault-mode.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-spec.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/partial-clones-scope-and-depth.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pull-discarded-uncommitted-edits.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/read-write-keys-as-pki.html</loc></url>
@@ -113,5 +116,6 @@
   <url><loc>https://cli.sgit.ai/research/topics/security-review.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/topics/serve.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/topics/write-path.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/zip-append-via-s3-brief.html</loc></url>
   <url><loc>https://cli.sgit.ai/security/index.html</loc></url>
 </urlset>

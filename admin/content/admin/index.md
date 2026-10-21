@@ -24,7 +24,8 @@ One folder of content, one generator, one gate, one version number. Deployed to 
 | `admin/build/validate.js` | the gate |
 | `admin/build/import_sgit_ai.py` | moves pages from sgit.ai, from their markdown twins ([what moved](/admin/moved.html)) |
 | `admin/build/import_cli_research.py` | publishes documents from the CLI repository in the research area |
-| `admin/build/make_figures.py` | draws the articles' lead figures as SVG |
+| `admin/build/make_figures.py` | draws the v0.2.0 articles' lead figures as SVG |
+| `admin/build/render_figures.mjs`, `admin/build/figures/` | renders the drawn figures (one HTML page each) to webp, and every mermaid diagram in the content to SVG, with Playwright; run by hand, its output committed, so CI needs no browser |
 | `admin/build/version.txt` | the site version, the one place it is written |
 | `.github/workflows/deploy-pages.yml` | validate, tag, deploy |
 
@@ -32,8 +33,8 @@ Every generated file is listed in `admin/build/generated.json`, and the build de
 
 ## Releasing
 
-1. Bump `admin/build/version.txt` (vX.Y.Z, once per release) and add a row to `admin/content/admin/versions.md` with one sentence on what changed and why.
-2. `python3 admin/build/build.py`
+1. Bump `admin/build/version.txt` and add a row to `admin/content/admin/versions.md` with one sentence on what changed and why. **Every release is a minor: the last number goes up by one** (v0.2.1, v0.2.2, v0.2.3). The middle number moves only when Dinis Cruz says so; this rule is his, from 20 October 2026. The tag job accepts exactly the next minor or a deliberate step of the middle number.
+2. If a figure or a diagram changed, `node admin/build/render_figures.mjs`; then `python3 admin/build/build.py`
 3. `node admin/build/validate.js`
 4. `git commit -am "site vX.Y.Z: ..." && git push origin dev`. The `site vX.Y.Z:` prefix is load-bearing: the tag job finds the release commit by it and refuses a release whose newest prefix disagrees with `version.txt`.
 5. Check that https://cli.sgit.ai/assets/version.js serves the new version. A clean push is not a release.

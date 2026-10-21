@@ -8,9 +8,9 @@ topics: [keys]
 tags: pki, vault-format, crypto
 summary: An architecture map for a second vault mode built on key pairs from the start, revised twice after review: sequence-number pinning, frozen hosts, concurrent writers.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/09/design__native-pki-vault-mode.md
-source_commit: 5473571
+source_commit: 6702521
 source_branch: claude/charming-babbage-5hzcxq
 status: published
 ---

@@ -4,7 +4,7 @@ summary: What happens when a vault reaches 35,000 objects and ten agents use it 
 section: topics
 order: 3
 question: What does sgit cost when the vault is big and the clients are many, and where does the time go?
-articles: [one-vault-ten-agents-measured, sgit-is-a-standard-one-hash-away, a-vault-in-one-file]
+articles: [one-vault-ten-agents-measured, sgit-is-a-standard-one-hash-away, a-vault-in-one-file, a-pack-per-push]
 ---
 
 # Big vaults and many agents

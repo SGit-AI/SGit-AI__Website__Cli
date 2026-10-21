@@ -246,3 +246,7 @@ main.doc a.chip{text-decoration:none}
 figure.shot{margin:1.4rem 0 1.8rem}
 figure.shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
 figure.shot figcaption{font-size:.8rem;color:var(--dim);margin-top:.55rem;line-height:1.55}
+/* v0.2.1: diagrams rendered from mermaid at authoring time, shown as images */
+figure.diagram{margin:1.4rem 0 1.8rem;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem;box-shadow:var(--shadow);text-align:center;overflow-x:auto}
+figure.diagram img{max-width:100%;height:auto;border:0;border-radius:0}
+figure.diagram figcaption{font-size:.8rem;color:var(--dim);margin-top:.6rem;text-align:left;line-height:1.55}

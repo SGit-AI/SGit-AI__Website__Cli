@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>
+.cols{grid-template-columns:1fr 1fr;gap:34px}
+.col h2{font:400 24px/1.25 var(--serif);margin:0 0 4px} .col .when{font:700 13px var(--mono);color:var(--dim);margin-bottom:14px}
+.step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.n{flex:none;width:28px;height:28px;border-radius:99px;background:var(--panel2);color:var(--dim);font:700 14px/28px var(--sans);text-align:center}
+.step .box{flex:1;padding:10px 14px} .step .box p{margin:0}
+.new{border-color:var(--red);background:var(--red-bg)} .new p b{color:var(--red)}
+.same{border-color:var(--teal)}
+.verdict{margin-top:14px;font-size:15px;color:#34363c}
+</style></head><body>
+<h1>Two designs from the same evening, and what each asks of the server</h1>
+<p class="sub">How a push would work in each. Red boxes need something the server does not do today; teal boxes use what it does. The brief to the SG/Send team was written for the design on the left; the spec 48 minutes later chose the one on the right, which needs nothing new, and kept the append route for later.</p>
+<div class="grid cols">
+  <div class="col">
+    <h2>Grow a zip in place</h2><div class="when">the brief · 20 Oct, 23:17 · one to three zips per vault</div>
+    <div class="step"><div class="n">1</div><div class="box new"><p><b>New route:</b> presigned append, the server copies the zip's prefix inside S3 by UploadPartCopy</p></div></div>
+    <div class="step"><div class="n">2</div><div class="box same"><p>Upload the new members and a rewritten central directory, a few MB on a large vault</p></div></div>
+    <div class="step"><div class="n">3</div><div class="box new"><p><b>New parameter:</b> complete with If-Match on the zip's ETag; a second writer fails and copies again</p></div></div>
+    <div class="step"><div class="n">4</div><div class="box same"><p>Then the ref, by compare-and-swap, as today</p></div></div>
+    <div class="verdict"><b>Gains:</b> a pull is one Range read of the new tail; no compaction. <b>Costs:</b> a server change, and every writer contends on one object.</div>
+  </div>
+  <div class="col">
+    <h2>A new pack per push</h2><div class="when">the spec · 21 Oct, 00:05 · commits/, snapshots/, archive/</div>
+    <div class="step"><div class="n">1</div><div class="box same"><p>Build one zip of the commit's new objects, deterministic, named by its commit id</p></div></div>
+    <div class="step"><div class="n">2</div><div class="box same"><p>Upload it: batch write under 4 MB, presigned multipart straight to S3 above; both routes exist</p></div></div>
+    <div class="step"><div class="n">3</div><div class="box same"><p>Then the ref, by compare-and-swap, as today; packs never collide</p></div></div>
+    <div class="verdict" style="margin-top:72px"><b>Gains:</b> no server change; contention only on the ref, as in every vault. <b>Costs:</b> a listing on pull, and compaction to keep the listing short.</div>
+  </div>
+</div>
+<div class="foot"><b>Build the right-hand design; the append route can come back later to grow a snapshot in place.</b><span>cli.sgit.ai · 21 October 2026 · from the brief and the spec, SGit-AI__CLI 6702521</span></div>
+</body></html>

@@ -8,9 +8,9 @@ topics: [scale]
 tags: clone, partial-clones, agents
 summary: Cloning just the folders an agent reads and writes, read and write, plus a shallow mode, without changing the full clone: the Merkle-spine idea and the measurements.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md
-source_commit: 5473571
+source_commit: 6702521
 source_branch: claude/charming-babbage-5hzcxq
 status: published
 ---

@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>
+.cols{grid-template-columns:330px 40px 470px 40px 400px}
+.ops .box{margin-bottom:14px} .ops .box:last-child{margin-bottom:0}
+.req{font-family:var(--mono);font-size:13px;color:var(--teal);margin-top:4px}
+</style></head><body>
+<h1>A pack per push: what the host holds, and what each operation costs</h1>
+<p class="sub">Every push uploads one zip of the commit's new objects; a clone takes the newest snapshot and the packs since it; compaction folds packs into a new snapshot and moves them to the archive, deleting nothing. The ref, the branch index and the cache stay as they are. Dashed boxes are proposed, not built; the routes on the right exist on the server today.</p>
+<div class="grid cols">
+  <div class="ops">
+    <div class="box teal proposed"><h3>1. Push</h3><p>Build one pack per commit, upload it, move the ref by compare-and-swap.</p><div class="req">2 to 3 requests, any size</div></div>
+    <div class="box teal proposed"><h3>2. Pull</h3><p>List <code>commits/</code>, fetch the packs not yet absorbed, verify every member by id.</p><div class="req">1 listing + the missing packs</div></div>
+    <div class="box teal proposed"><h3>3. Clone</h3><p>Newest snapshot, then everything in <code>commits/</code>. No commit walk.</p><div class="req">2 listings + 1 snapshot + a few packs</div></div>
+    <div class="box violet proposed"><h3>4. Compact</h3><p>Write a snapshot, read its directory back, then move the packs it absorbed to <code>archive/</code>.</p><div class="req">any writer, by count or size</div></div>
+  </div>
+  <div class="arrow">→</div>
+  <div>
+    <div class="box teal proposed" style="margin-bottom:16px"><h3>The host: <code>bare/packs/</code></h3>
+      <div class="folder">
+        commits/ &nbsp;&nbsp;<span class="c">&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</span><br>
+        <span class="c">&nbsp;&nbsp;one per push: the commit, its new trees and blobs</span><br>
+        snapshots/ <span class="c">&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</span><br>
+        <span class="c">&nbsp;&nbsp;every object reachable from a commit</span><br>
+        archive/ &nbsp;&nbsp;<span class="c">&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</span><br>
+        <span class="c">&nbsp;&nbsp;packs a snapshot absorbed, kept for ever</span>
+      </div></div>
+    <div class="box"><h3>Unchanged: small, mutable, compare-and-swap</h3><p><code>bare/refs/</code> &nbsp;<code>bare/indexes/</code> &nbsp;<code>bare/cache/</code> &nbsp;<code>bare/keys/</code></p><p style="color:var(--dim)">The branch index carries <code>features: [packs]</code> and <code>min_client</code>, so an older CLI, the web app and the static readers refuse the vault by name.</p></div>
+  </div>
+  <div class="arrow">↔</div>
+  <div>
+    <div class="box blue" style="margin-bottom:16px"><h3>≤ 4 MB: through the API</h3><p>Batch write and batch read, up to 50 packs a request, 16 requests in flight.</p></div>
+    <div class="box blue" style="margin-bottom:16px"><h3>&gt; 4 MB: straight to S3</h3><p><code>presigned/initiate</code>, part PUTs, <code>complete</code>; reads by <code>read-url</code> with parallel <code>Range</code> GETs.</p></div>
+    <div class="box muted"><h3>No server change</h3><p>Every route used is in sgraph-ai-app-send 0.34.0 and was exercised on the live dev server on 20 October.</p></div>
+  </div>
+</div>
+<div class="foot"><b>The size in the name picks the route before the fetch; the epoch in the name sorts the listing.</b><span>cli.sgit.ai · 21 October 2026 · from the pack-mode spec, SGit-AI__CLI 6702521</span></div>
+</body></html>

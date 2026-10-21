@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>
+.tl{position:relative;margin:10px 0 0 10px;padding-left:34px;border-left:3px solid var(--line)}
+.ev{position:relative;margin:0 0 16px}
+.ev:before{content:"";position:absolute;left:-45px;top:6px;width:16px;height:16px;border-radius:99px;background:var(--panel);border:3px solid var(--teal)}
+.ev.turn:before{border-color:var(--warm);background:var(--warm-bg)}
+.ev .when{font:700 13px/1 var(--mono);color:var(--dim);letter-spacing:.04em}
+.ev .what{font-size:17px;margin-top:4px} .ev .what b{color:var(--fg)}
+.ev .so{font-size:14px;color:var(--dim);margin-top:2px}
+</style></head><body>
+<h1>From "can a vault be a zip?" to "a pack per push", in eleven hours</h1>
+<p class="sub">The CLI team's commits on the branch <code>claude/charming-babbage-5hzcxq</code>, 20 and 21 October 2026, each a document or a revision of one. The orange points are where the design turned: from a vault in one to three growing zips, which needs a new server route, to one pack per push, which needs none.</p>
+<div class="tl">
+  <div class="ev"><div class="when">20 Oct · 13:04</div><div class="what"><b>A vault in one file</b>: native zip support, what exists, the request floor against one file</div><div class="so">106 GETs in 2.0 to 2.5 s against one 12.7 MB zip in 0.13 s</div></div>
+  <div class="ev"><div class="when">20 Oct · 13:17</div><div class="what"><b>Large-vault numbers</b>: the 35k-object vault's 430 MB head zip</div><div class="so">3 s from a local disk against 111 s object by object; an append in 0.25 s; Range reads in six requests</div></div>
+  <div class="ev"><div class="when">20 Oct · 22:57</div><div class="what"><b>Zip64 verified</b>, and appending on S3 by multipart copy with If-Match</div><div class="so">70,000 members and 5 GiB written and read back</div></div>
+  <div class="ev"><div class="when">20 Oct · 23:11</div><div class="what"><b>Live test on dev</b>: presigned multipart upload and Range reads work today</div><div class="so">an incremental pull of an appended zip would be one Range request; one server route is missing</div></div>
+  <div class="ev turn"><div class="when">20 Oct · 23:17</div><div class="what"><b>Brief to the SG/Send team</b>: a presigned append route and conditional completes</div><div class="so">for appended zips, <code>bare/pack/data-NNNN.zip</code></div></div>
+  <div class="ev turn"><div class="when">21 Oct · 00:05</div><div class="what"><b>Pack mode</b>: the article draft and the spec, a pack per push, no server change</div><div class="so">snapshots, an archive, a gated packs-only vault, import; the append route moves to "later"</div></div>
+</div>
+<div class="foot"><b>The brief to the server team was written 48 minutes before the design that no longer needs it.</b><span>cli.sgit.ai · 21 October 2026 · commit times from SGit-AI__CLI, UTC</span></div>
+</body></html>

@@ -1,0 +1,43 @@
+/* cli.sgit.ai figures: one small page per figure, 1,400 px wide, rendered to webp by render_figures.mjs.
+   The newsroom's figure style in this site's tokens: a serif title, a one-paragraph reading of the figure,
+   numbered boxes, dashed borders for what is proposed and not built, and a footer naming the source. */
+:root{
+  --bg:#faf9f5; --panel:#ffffff; --panel2:#f2f0e9; --line:#d5d0c2; --fg:#1c1d21; --dim:#5c5f66; --dim2:#8a8d94;
+  --teal:#0f766e; --teal-bg:#e6f2f0; --warm:#b45309; --warm-bg:#fbefe3; --red:#b91c1c; --red-bg:#fbeaea;
+  --blue:#1d4ed8; --blue-bg:#eaf0fd; --violet:#6d28d9; --violet-bg:#f1ebfd;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",ui-serif,serif; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{width:1400px;padding:36px 40px 26px;font:16px/1.5 var(--sans);color:var(--fg)}
+h1{font:400 34px/1.2 var(--serif);margin:0 0 10px;letter-spacing:-.01em}
+.sub{color:var(--dim);font-size:16px;max-width:1150px;margin:0 0 26px}
+.foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:22px;font-size:13px;color:var(--dim2)}
+.foot b{color:var(--fg);font-size:15px}
+code,.mono{font-family:var(--mono);font-size:.88em;white-space:nowrap}
+.grid{display:grid;gap:18px;align-items:stretch}
+.box{border:2px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 18px}
+.box h3{margin:0 0 8px;font-size:18px}
+.box p{margin:0 0 6px;font-size:15px;color:#34363c}
+.box ul{margin:4px 0 0;padding-left:18px;font-size:15px;color:#34363c}
+.box li{margin:3px 0}
+.teal{border-color:var(--teal)} .teal h3{color:var(--teal)}
+.warm{border-color:var(--warm);background:var(--warm-bg)} .warm h3{color:var(--warm)}
+.red{border-color:var(--red)} .red h3{color:var(--red)}
+.blue{border-color:var(--blue)} .blue h3{color:var(--blue)}
+.violet{border-color:var(--violet)} .violet h3{color:var(--violet)}
+.muted{background:var(--panel2)} .muted h3{color:var(--dim)}
+.proposed{border-style:dashed}
+.arrow{display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--dim)}
+.tag{display:inline-block;font:700 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;border-radius:99px;padding:5px 9px;margin-right:6px}
+.tag.ship{color:var(--teal);background:var(--teal-bg)} .tag.prop{color:var(--warm);background:var(--warm-bg)}
+.tag.risk{color:var(--red);background:var(--red-bg)} .tag.ask{color:var(--blue);background:var(--blue-bg)}
+table.t{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15px}
+table.t th{background:var(--panel2);text-align:left;padding:10px 14px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+table.t td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:middle}
+.bar{height:16px;border-radius:4px;background:var(--teal);display:inline-block;vertical-align:middle}
+.bar.w{background:var(--warm)} .bar.g{background:var(--line)}
+.num{font-family:var(--mono);font-size:14px;color:var(--dim);margin-left:8px}
+.folder{font-family:var(--mono);font-size:14px;line-height:1.7}
+.folder .c{color:var(--dim2)}

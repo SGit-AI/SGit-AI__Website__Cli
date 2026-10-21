@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brief to the SG/Send team: append to a vault object on S3 without re-uploading it, and conditional completes · cli.sgit.ai</title>
+<meta name="description" content="A brief to the SG/Send team: a presigned append route that grows a zip on S3 by UploadPartCopy, conditional completes with If-Match and If-None-Match, and size and ETag with the read URL. Written for a single appended zip; the pack-mode spec of the next day needs none of it for its first version.">
+<link rel="canonical" href="https://cli.sgit.ai/research/zip-append-via-s3-brief.html">
+<link rel="alternate" type="text/markdown" href="../research/zip-append-via-s3-brief.md">
+<meta property="og:title" content="Brief to the SG/Send team: append to a vault object on S3 without re-uploading it, and conditional completes">
+<meta property="og:description" content="A brief to the SG/Send team: a presigned append route that grows a zip on S3 by UploadPartCopy, conditional completes with If-Match and If-None-Match, and size and ETag with the read URL. Written for a single appended zip; the pack-mode spec of the next day needs none of it for its first version.">
+<meta property="og:url" content="https://cli.sgit.ai/research/zip-append-via-s3-brief.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
+      <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
+      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Brief to the SG/Send team: append to a vault object on S3 without re-uploading it, and conditional completes</div>
+<h1 id="brief-to-the-sg-send-team-append-to-a-vault-object-on-s3-wit">Brief to the SG/Send team: append to a vault object on S3 without re-uploading it, and conditional completes</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-20 · 23:17 UTC</span><span class="k">Kind</span><span class="v">brief</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/write-path.html">write-path</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md"><code>team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md</code></a> in SGit-AI__CLI at <code>6702521</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>From:</b> the sgit CLI agent, 20 Oct 2026, with Dinis's go-ahead. <b>Server read:</b> <code>sgraph_ai_app_send</code> 0.34.0, <code>lambda__user/service/Service__Vault__Presigned.py</code> and <code>fast_api/routes/Routes__Vault__Presigned.py</code>. <b>Why:</b> the CLI is going to try a storage mode where a vault's immutable objects live in one, two or three zip files on S3, read and written <b>directly against S3 with presigned URLs</b>, with only the small mutable objects (ref, branch index) going through the ordinary routes. The read half already works (tested 20 Oct: <code>read-url</code> + <code>Range</code> answers <code>206</code>). The write half needs one new route and one parameter, both below. Everything else stays as it is.</p>
+<h2 id="what-exists-verified-on-dev-send-sgraph-ai-on-20-oct">What exists, verified on <code>dev.send.sgraph.ai</code> on 20 Oct</h2>
+<div class="tablewrap"><table><thead><tr><th>Route</th><th>Does</th><th>Tested</th></tr></thead><tbody><tr><td><code>POST /api/vault/presigned/initiate/{vault_id}</code></td><td><code>create_multipart_upload</code> + one presigned <code>upload_part</code> URL per 10 MB part</td><td>12.6 MB object, 2 parts, PUT straight to S3</td></tr><tr><td><code>POST /api/vault/presigned/complete/{vault_id}</code></td><td><code>complete_multipart_upload</code></td><td>ok</td></tr><tr><td><code>POST /api/vault/presigned/cancel/{vault_id}</code></td><td><code>abort_multipart_upload</code></td><td>not exercised</td></tr><tr><td><code>GET /api/vault/presigned/read-url/{vault_id}/{file_id}</code></td><td>presigned GET</td><td><code>Range: bytes=0-1023</code>, <code>bytes=-2048</code>, a middle slice: all <code>206</code>, bytes correct</td></tr></tbody></table></div>
+<p>Not present: any <code>upload_part_copy</code>, and any <code>IfMatch</code> / <code>IfNoneMatch</code> on complete.</p>
+<h2 id="ask-1-post-api-vault-presigned-append-vault-id">Ask 1: <code>POST /api/vault/presigned/append/{vault_id}</code></h2>
+<p>Start a multipart upload whose first bytes are <b>copied server-side from an existing object</b> (<code>UploadPartCopy</code>), so a client can grow a large object by uploading only its new tail.</p>
+<p><b>Request</b> (write key header as on <code>initiate</code>):</p>
+<pre><code class="lang-json">{
+  &quot;source_file_id&quot;:  &quot;bare/pack/data-0001.zip&quot;,   // the object to copy the prefix from
+  &quot;file_id&quot;:         &quot;bare/pack/data-0001.zip&quot;,   // the target; same as source = append in place, or a new name
+  &quot;expected_etag&quot;:   &quot;\&quot;43187a65…-2\&quot;&quot;,           // the source&#x27;s ETag the client last saw
+  &quot;copy_bytes&quot;:      430392414,                   // how many leading bytes of the source to keep
+  &quot;tail_size_bytes&quot;: 3100000,                     // what the client will upload after them
+  &quot;num_tail_parts&quot;:  0                            // 0 = server picks (10 MB parts), as initiate does
+}</code></pre>
+<p><b>Server, in order:</b></p>
+<ol><li>Validate the write key (as <code>initiate</code>); validate the ids as <code>initiate</code> does.</li><li><code>head_object(source)</code>; if <code>ETag != expected_etag</code> → <code>412 {"error": "etag_mismatch", "etag": "&lt;current&gt;"}</code>. If <code>copy_bytes &gt; ContentLength</code> → <code>400</code>. If <code>copy_bytes &lt; 5 MiB</code> → <code>400 {"error": "too_small_to_copy"}</code> (S3 needs every non-final part ≥ 5 MiB; the client then rewrites the object whole, which at that size is cheap).</li><li><code>create_multipart_upload(target)</code>.</li><li>Split <code>[0, copy_bytes)</code> into copy parts: <code>k = ceil(copy_bytes / COPY_PART_MAX)</code> parts of <code>ceil(copy_bytes / k)</code> bytes each (all ≥ 5 MiB). For each, <code>upload_part_copy(Bucket, Key=target, UploadId, PartNumber=i, CopySource={'Bucket': bucket, 'Key': source_key}, CopySourceRange='bytes=a-b', CopySourceIfMatch=expected_etag)</code>. Record the returned ETags. <code>COPY_PART_MAX</code>: start at 1 GiB, not 5 GiB. The copy is server-side but the call blocks until it is done; API Gateway cuts a Lambda at 29 s, and S3 copies at a few hundred MB/s. A 430 MB prefix is one part and a few seconds; a 20 GB one is twenty calls, which this route should do in parallel threads, as the existing code does nothing in parallel.</li><li>Generate presigned <code>upload_part</code> URLs for the tail parts, numbered after the copy parts.</li><li>Return:</li></ol>
+<pre><code class="lang-json">{
+  &quot;upload_id&quot;:   &quot;…&quot;,
+  &quot;copied&quot;:      [{&quot;part_number&quot;: 1, &quot;etag&quot;: &quot;…&quot;}],             // the client passes these back on complete
+  &quot;part_urls&quot;:   [{&quot;part_number&quot;: 2, &quot;upload_url&quot;: &quot;…&quot;}],       // tail parts
+  &quot;part_size&quot;:   10485760
+}</code></pre>
+<p>The client uploads the tail parts and calls <code>complete</code> with the copied parts and its own.</p>
+<h2 id="ask-2-conditional-complete">Ask 2: conditional complete</h2>
+<p><code>POST /api/vault/presigned/complete/{vault_id}</code> gains two optional fields, passed straight to <code>complete_multipart_upload</code>:</p>
+<pre><code class="lang-json">{ &quot;file_id&quot;: &quot;...&quot;, &quot;upload_id&quot;: &quot;...&quot;, &quot;parts&quot;: [...],
+  &quot;if_match&quot;:      &quot;\&quot;&lt;etag&gt;\&quot;&quot;,     // in-place append: fail unless the target still has this ETag
+  &quot;if_none_match&quot;: &quot;*&quot; }             // new immutable name: fail if it already exists</code></pre>
+<p>Map S3's <code>PreconditionFailed</code> to <code>412 {"error": "precondition_failed"}</code> and abort the multipart upload on that path (or leave it for <code>cancel</code>; say which). These two headers are what give the zip its compare-and-swap, the same rule the ref already has in the batch route. boto3 has supported <code>IfMatch</code> on <code>CompleteMultipartUpload</code> since late 2024 and <code>IfNoneMatch='*'</code> since August 2024; the current pin is likely fine, please check.</p>
+<h2 id="ask-3-small-size-and-etag-with-the-read-url">Ask 3 (small): size and ETag with the read URL</h2>
+<p><code>read-url</code> currently returns the URL only. Add <code>size</code> and <code>etag</code> from one <code>head_object</code> (or a separate <code>GET /api/vault/presigned/head/{vault_id}/{file_id}</code>), so a client reading a zip's tail by <code>Range</code> does not need its own <code>HEAD</code> first, and an appender learns the ETag it must present. Range support needs nothing: it is S3's.</p>
+<h2 id="limits-to-state-in-the-api-docs">Limits to state in the API docs</h2>
+<ul><li>Object size up to S3's 5 TB; parts 5 MiB to 5 GiB, 10,000 per upload; presigned URL expiry as today.</li><li>One in-place append at a time per object: the second one fails on <code>if_match</code> and must re-read the ETag and copy again. That is the design, not a bug.</li><li><code>copy_bytes</code> under 5 MiB cannot be appended to; rewrite whole.</li><li>Nothing about these routes is readable by the server: the objects are ciphertext; the server copies bytes it cannot read.</li></ul>
+<h2 id="tests-we-would-like-to-see-in-the-server-s-suite">Tests we would like to see in the server's suite</h2>
+<ol><li>Append in place: a 12 MB object, append 1 MB, <code>if_match</code> current ETag → new ETag, size 13 MB, bytes <code>[0, 12 MB)</code> unchanged, tail present.</li><li>Append to a new name with <code>if_none_match: "*"</code> twice → second is <code>412</code>.</li><li>Stale <code>expected_etag</code> → <code>412</code> on <code>append</code>, nothing created.</li><li><code>copy_bytes</code> of 1 MB → <code>400 too_small_to_copy</code>.</li><li>Two clients appending in place from the same ETag → exactly one succeeds.</li><li><code>read-url</code> + <code>Range</code> → <code>206</code> with the right <code>Content-Range</code> (regression for what works today).</li></ol>
+<h2 id="what-the-cli-will-do-with-it-so-the-shape-fits">What the CLI will do with it (so the shape fits)</h2>
+<p>Storage mode <code>pack</code>: <code>bare/pack/data-NNNN.zip</code> holds the immutable objects (<code>ZIP_STORED</code>, sorted, deterministic, append-only, Zip64); <code>refs/</code>, <code>indexes/</code> and <code>cache/</code> stay as today. Push = <code>append</code> of the new members plus the rewritten central directory (a few MB), <code>complete</code> with <code>if_match</code>, then the ordinary ref CAS. Pull = <code>Range</code> for the new tail (from the last known directory offset to the end), then the ref. Clone = one GET (or a few parallel ranges) per zip, no listing, no walk. Then the performance tests Dinis asked for: full clone of the 35k-object vault as one GET against the batch route; append loops at 1, 10 and 100 MB tails on a 500 MB zip; incremental pulls; two appenders racing.</p>
+<div class="pagenav"><a href="../research/pack-mode-spec.html">← Spec: pack mode for sgit (CLI-only, packs-only vaults, no server change)</a><a href="../research/keys-pki-copy-on-write-coverage-map.html">Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/zip-append-via-s3-brief.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/zip-append-via-s3-brief.md"><code>admin/content/research/zip-append-via-s3-brief.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/zip-append-via-s3-brief.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+    <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+    <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

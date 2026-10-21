@@ -81,14 +81,14 @@
       <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
       <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
       <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
       <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
       <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
       <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
       <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
-      <a class="sl" href="../articles/policies-the-vault-enforces.html">Policies the vault enforces: from a rule agents keep to a folder only one key can write</a>
-      <a class="sl" href="../articles/one-vault-ten-agents-measured.html">One vault, ten agents, 35,000 objects: what sgit does when the repository is big and the clients are many</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -111,7 +111,7 @@
 <main class="doc">
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Response to &quot;Scion and sgit&quot; (newsroom.sgit.ai, article No. 141, v1.0.0)</div>
 <h1 id="response-to-scion-and-sgit-newsroom-sgit-ai-article-no-141-v">Response to "Scion and sgit" (newsroom.sgit.ai, article No. 141, v1.0.0)</h1>
-<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-16 · 10:21 UTC</span><span class="k">Kind</span><span class="v">review</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/scale.html">scale</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md</code></a> in SGit-AI__CLI at <code>5473571</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-16 · 10:21 UTC</span><span class="k">Kind</span><span class="v">review</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/scale.html">scale</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md"><code>team/humans/dinis_cruz/claude-code-web/10/16/response__scion-and-sgit-article.md</code></a> in SGit-AI__CLI at <code>6702521</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
 <p><b>Date:</b> 16 Oct 2026. <b>Code read:</b> <code>dev</code> at 881d6df (what 0.22.0 ships plus the 14 Oct fixes). <b>Vault measured:</b> the comms / DC collaboration vault (<code>y8pwtjlw</code> on <code>dev.send.sgraph.ai</code>), read-only: cloned eight ways from the hosted API, then the same objects served from local disk (static and a local API server); nothing pushed to the real server. <b>Also measured:</b> the vault the article used (<code>newsroom-synthetic-users</code>, <code>bg1opz3c</code>, public read key), from the same kind of sandbox. <b>Also read:</b> Anthropic's post in full, every sgit.ai page the article should link, and the eleven newsroom articles that already describe sgit's architecture and deployment.</p>
 <h2 id="verdict">Verdict</h2>
 <p>The Scion half is accurate: every figure the article quotes is in Anthropic's post. The sgit half is under-claimed where it should be strong (deployment models, reading files without a clone, the pull fix, history integrity) and over-claimed in one place (a CDN that caches for a year), and its measurement is the wrong one: an 83-file vault says nothing about the question the post raises, which is what happens when the repository is big and the clients are many. We have a vault that is big by sgit's standards and is used by ten agents every day. Its numbers are below, and they are the ones the article should carry.</p>
@@ -215,11 +215,11 @@
   <div>
     <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+    <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
     <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
     <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
     <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
-    <a href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
-    <a href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
   </div>
   <div>
     <h4>Site</h4>

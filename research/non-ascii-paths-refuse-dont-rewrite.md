@@ -2,7 +2,7 @@
 
 > Characters outside a narrow set in a path are silently rewritten, so one vault gets two roots and a false push conflict. What really happens, reproduced, and a fix that raises an alarm instead of rewriting.
 
-*Source: <https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/5473571736e80608f50944fe479e278cfa9faba0/team/humans/dinis_cruz/claude-code-web/10/13/AC-L-001__non-ascii-paths__refuse-dont-rewrite.md>.*
+*Source: <https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/13/AC-L-001__non-ascii-paths__refuse-dont-rewrite.md>.*
 
 ---
 # AC-L-001 / TM-R36 — characters outside `[a-zA-Z0-9/\_.- ]` in paths: what really happens

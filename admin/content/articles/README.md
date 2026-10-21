@@ -52,9 +52,25 @@ If you <are in the reader's position>, write to agent@riskmandate.ai.
 <the origin; the responsibility line; every source, linked and dated; what the counts were made from>
 ```
 
-The page's heading is the title; the byline, the summary and the tags are drawn from the front matter. The
-figure is drawn by `admin/build/make_figures.py` from the site's colours: add a function there and a row to
-`FIGURES`, then run it.
+The page's heading is the title; the byline, the summary and the tags are drawn from the front matter.
+
+## Figures and diagrams
+
+The newsroom's method (its `admin/content/articles/README.md`, "Figures"): a figure is the evidence, drawn,
+two to six an article, where the evidence is.
+
+- **A drawn figure** is one small page, `admin/build/figures/<prefix>-<name>.html`, using the shared
+  `figures/figures.css` (the site's colours, a serif title, a one-paragraph reading, numbered boxes, dashed
+  borders for what is proposed, a footer naming the source). `node admin/build/render_figures.mjs` renders it
+  at 1,400 px to `articles/images/<prefix>-<name>.webp`. Place it with
+  `!shot <prefix>-<name>.webp | /articles/images/ | <caption, two to four sentences> | <kind>`, kind one of
+  `architecture`, `comparison`, `decision`, `diagram`, `timeline`, `playbook`.
+- **A flow, a sequence or an architecture** can be a ```mermaid fence in the article. Its first line may be
+  `%% <caption>`. The same command renders it to `articles/images/mermaid/<hash>.svg`; the page shows the SVG
+  and loads no script, and the markdown twin keeps the mermaid source. Prefer top-down flowcharts: a wide one
+  shrinks to unreadable text in the column.
+- The v0.2.0 lead figures were drawn by `admin/build/make_figures.py` as SVG; that still works.
+- Commit what the renderer writes. The build stops if a mermaid diagram has not been rendered.
 
 ## What the gate checks (`admin/build/validate.js`, check 9)
 

@@ -36,12 +36,16 @@ Content directives, each alone on a line:
   !list SECTION [N]  cards for the pages in that section, in order (articles, research: newest first), the first N
   !topic ID          the articles and the research documents of one research topic
   !shot FILE | DIR | CAPTION | KIND   a figure with its caption (the newsroom's block; the twin gets the caption)
+and a ```mermaid fence, whose first line may be `%% <caption>`: the page shows the SVG that
+admin/build/render_figures.mjs rendered from it (articles/images/mermaid/<sha256, 12 hex>.svg), the twin keeps the
+source. The build stops if a diagram has not been rendered.
   !commands          the command reference index, grouped
   !moved             the table of pages moved from sgit.ai, from their front matter
 and tokens anywhere: {{site_version}} {{cli_version}} {{command_count}} {{article_count}} {{research_count}}
 {{topic_count}} {{page_count}}
 """
 import datetime
+import hashlib
 import html
 import json
 import re
@@ -331,7 +335,36 @@ def commands_md():
 def expand(page, pages, twin, up):
     """The body with directives expanded: markdown for the twin, placeholders for the HTML."""
     blocks, lines = [], []
+    fence, mermaid = None, None
     for line in page.body.splitlines():
+        if mermaid is not None:
+            if line.strip() != "```":
+                mermaid.append(line)
+                continue
+            src = "\n".join(mermaid)
+            mermaid = None
+            if twin:
+                lines += ["```mermaid", src, "```"]
+                continue
+            name = hashlib.sha256(src.encode()).hexdigest()[:12] + ".svg"
+            if not (ROOT / "articles/images/mermaid" / name).exists():
+                raise SystemExit(f"build: a mermaid diagram in {page.source} is not rendered: run node admin/build/render_figures.mjs")
+            first = src.splitlines()[0].strip() if src.strip() else ""
+            caption = first[2:].strip() if first.startswith("%%") else ""
+            blocks.append(f'<figure class="diagram"><img src="{up}articles/images/mermaid/{name}" alt="{html.escape(caption or "diagram", quote=True)}" loading="lazy">'
+                          + (f'<figcaption>{html.escape(caption)}</figcaption>' if caption else "") + "</figure>")
+            lines.append(f"@@BLOCK{len(blocks) - 1}@@")
+            continue
+        if fence is None and line.strip() == "```mermaid":
+            mermaid = []
+            continue
+        if line.strip().startswith("```"):
+            fence = None if fence is not None else line
+            lines.append(line)
+            continue
+        if fence is not None:
+            lines.append(line)
+            continue
         m = re.match(r"^!list (\w+)(?:\s+(\d+))?\s*$", line)
         if m:
             ps = [p for p in section_pages(pages, m.group(1)) if p is not page][:int(m.group(2) or 9999)]

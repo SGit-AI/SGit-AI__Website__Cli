@@ -11,9 +11,9 @@
 <meta property="og:description" content="A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article&#x27;s 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip&#x27;s directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute. Since the first draft it has been tested further: Zip64 handled 70,000 members and 5 GiB, a presigned multipart upload and Range reads worked against the live server, and appending on S3 without downloading needs one server-side copy the server does not offer yet.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/a-vault-in-one-file.html">
 <meta property="og:type" content="article">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
 </head>
 <body>
 
@@ -225,6 +225,6 @@
   </div>
 </div></footer>
 <script src="../assets/version.js" defer></script>
-<script src="../assets/nav.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
 </body>
 </html>

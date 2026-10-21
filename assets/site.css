@@ -63,7 +63,10 @@ nav.site .sub a.sl.here{color:var(--accent-dk);font-weight:600}
    opening it gives a vertical list with each group's children indented under it. */
 .nav-items{display:contents}
 .nav-toggle{display:none}
-@media (max-width:820px){
+/* The row collapses behind Menu below 1,200px. The full row measured 1,125px on the machine that built v0.2.2;
+   newsroom.sgit.ai learned that a limit measured on one machine's fonts is not a limit (CI's fonts were a few
+   percent wider), so the slack is kept. At 820px, the v0.1 value, an iPad wrapped the bar onto two rows. */
+@media (max-width:1199px){
   nav.site .row{position:relative;gap:.6rem}
   .nav-toggle{display:block;margin-left:auto;order:3;background:var(--panel);
     border:1px solid var(--line2);border-radius:6px;padding:.3rem .7rem;
@@ -73,7 +76,13 @@ nav.site .sub a.sl.here{color:var(--accent-dk);font-weight:600}
   nav.site .gh{order:4;margin-left:0}
   .nav-items{display:none;order:5;width:100%;flex-direction:column;gap:.1rem;
     padding:.5rem 0 .3rem;border-top:1px solid var(--line);margin-top:.4rem}
-  nav.site.open .nav-items{display:flex}
+  /* The open menu scrolls by itself (from newsroom.sgit.ai's site-nav.css). Without a height of its own the list
+     is taller than a phone's screen, and a swipe scrolls the page under the sticky bar instead of the menu,
+     which only starts to move once the page has reached its end. dvh follows the phone's toolbars; vh is
+     the fallback. */
+  nav.site.open .nav-items{display:flex;
+    max-height:calc(100vh - 7rem);max-height:calc(100dvh - 7rem);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   nav.site .ni{width:100%}
   nav.site .ni > .nl{display:block;padding:.42rem .2rem;font-size:.95rem}
   nav.site .caret{display:none}

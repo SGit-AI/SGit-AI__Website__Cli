@@ -21,7 +21,7 @@
        v0.1.73, the badge v0.1.72). Refetch past the cache and refill if it moved. Best-effort:
        any failure leaves the cached value, which is never blank. */
     try {
-      var tag = document.querySelector('script[src$="assets/version.js"]');
+      var tag = document.querySelector('script[src*="assets/version.js"]');
       if (tag && window.fetch) fetch(tag.getAttribute('src'), { cache: 'reload' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (s) {
         var m = /"(v\d+\.\d+\.\d+)"/.exec(s || '');
         if (m && m[1] !== window.SITE_VERSION) { window.SITE_VERSION = m[1]; fillVersion(m[1]); }

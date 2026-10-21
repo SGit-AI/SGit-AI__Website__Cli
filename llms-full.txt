@@ -241,7 +241,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.2 (21 October 2026)
+# Reality: what exists, at v0.2.3 (21 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -268,6 +268,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 
 | | |
 |---|---|
+| **HTTPS enforced** | `http://cli.sgit.ai` answers 200 instead of redirecting to HTTPS, so a browser that arrives by http shows "Not Secure"; sgit.ai and newsroom.sgit.ai redirect. The certificate works. The fix is the repository's Settings, Pages, "Enforce HTTPS", which needs a person with admin rights (checked 21 October 2026) |
 | **Redirects on sgit.ai** | The moved pages still exist on sgit.ai, and nothing there points here yet. Requested in [the corrections file](../admin/corrections.md) |
 | **The review folder** | `review/` (intent from the brief, code derived from the tree, commits read upwards) is required by the estate's guidance from the first commit and is not built |
 | **Roles and a board** | The team page names who writes; no roles as files and no board yet |
@@ -301,6 +302,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.2.3 | 2026-10-21 | sgit-ai v0.23.0 | Three fixes from reading the site on an iPad and an iPhone: every stylesheet and script is now asked for by a fingerprint of its contents, so a browser can no longer mix a cached v0.2.1 stylesheet with the new themes (which painted dark headings and grey text on Ember); the phone menu scrolls on its own instead of scrolling the page under it (the newsroom's fix); and the bar collapses behind Menu below 1,200px, where an iPad had wrapped it onto two rows. |
 | v0.2.2 | 2026-10-21 | sgit-ai v0.23.0 | Five reading themes, the newsroom's: Newsprint, Night, Paper, Blueprint and Ember, chosen from a picker in the nav and remembered in the browser, with the system's dark setting as the default. Every colour in the stylesheet is now a token defined in all five, and the gate holds it so; figures and diagrams stay on light paper in every theme, as prints. |
 | v0.2.1 | 2026-10-21 | sgit-ai v0.23.0 | The CLI team's pack-mode thread, made readable: [A pack per push](../articles/a-pack-per-push.md) as an article with two drawn figures and six flow diagrams; [a review of it with five decisions](../articles/pack-mode-read-closely.md) by the build agent; the spec and the brief to the SG/Send team under research; the zip article synced with its revised draft. Figures are now drawn the newsroom's way (an HTML page each, rendered to webp) and mermaid diagrams are rendered to SVG at authoring time. From here every release is a minor, at Dinis Cruz's instruction. |
 | v0.2.0 | 2026-10-20 | sgit-ai v0.23.0 | Research and articles become two areas, from [the second brief](../briefs/2026-10-20__research-and-articles.md): 22 research documents as written under `/research/` in seven topics, each topic a question with what is shipped, designed and absent; ten articles under `/articles/` in the newsroom's format send.sgit.ai's guidance sets out, seven of them converted from the CLI team's drafts of 16 and 20 October, with lead figures; the gate holds articles to the format; the 21 v0.1 addresses send the reader on. A minor-version step because addresses moved. |
@@ -5621,7 +5623,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.2. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.3. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

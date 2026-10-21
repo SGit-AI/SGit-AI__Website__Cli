@@ -154,6 +154,18 @@ MOVED_TO_RESEARCH = [
 ]
 
 
+def asset(rel):
+    """A stylesheet or script's address with a fingerprint of its contents: assets/site.css?h=1a2b3c4d.
+
+    GitHub Pages lets a browser keep a file for ten minutes. Without the fingerprint, a reader who loads a page
+    just after a release can get the new themes.css with the old site.css from the cache, and see the old
+    stylesheet's fixed colours on a dark theme: dark headings and grey text on a dark page, seen on an iPad on
+    21 October 2026 (v0.2.2). With it, a page asks for exactly the version it was built with. The fingerprint
+    is of the file, not of the release, so a release that does not change a file does not rewrite every page.
+    assets/version.js is left out on purpose: it changes every release, and nav.js re-fetches it already."""
+    return f"{rel}?h={hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()[:8]}"
+
+
 def as_list(v):
     return [x.strip() for x in (v if isinstance(v, list) else (v or "").split(",")) if x.strip()]
 
@@ -555,9 +567,9 @@ def page_html(page, pages, ctx):
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="https://{HOST}/{page.rel}">
 <meta property="og:type" content="{'article' if page.section in ('articles', 'research') else 'website'}">
-<link rel="stylesheet" href="{up}assets/site.css">
-<link rel="stylesheet" href="{up}assets/themes/themes.css">
-<script src="{up}assets/themes/themes.js"></script>
+<link rel="stylesheet" href="{up}{asset('assets/site.css')}">
+<link rel="stylesheet" href="{up}{asset('assets/themes/themes.css')}">
+<script src="{up}{asset('assets/themes/themes.js')}"></script>
 </head>
 <body>
 
@@ -572,7 +584,7 @@ def page_html(page, pages, ctx):
 
 {footer_html(page, pages, up)}
 <script src="{up}assets/version.js" defer></script>
-<script src="{up}assets/nav.js" defer></script>
+<script src="{up}{asset('assets/nav.js')}" defer></script>
 </body>
 </html>
 """
@@ -677,9 +689,9 @@ def moved_stub(slug, seen):
 <meta name="sgit:moved-to" content="{new}">
 <link rel="canonical" href="{url}">
 <meta http-equiv="refresh" content="0; url=../{new}">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../{asset('assets/site.css')}">
+<link rel="stylesheet" href="../{asset('assets/themes/themes.css')}">
+<script src="../{asset('assets/themes/themes.js')}"></script>
 </head>
 <body>
 <main class="doc">

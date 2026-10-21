@@ -178,4 +178,4 @@
   .theme-pick > button .name,.theme-pick > button .caret{display:none}
 }
 
-@media (max-width:820px){.theme-pick{order:4}}
+@media (max-width:1199px){.theme-pick{order:4}}

@@ -11,9 +11,9 @@
 <meta property="og:description" content="For three days I have been talking with the CLI team about keeping a vault&#x27;s objects in zip files, and this is where it landed. A vault&#x27;s objects are immutable and named by their hash, so a set of them is a zip and the set only ever grows, which is also what a git packfile is. The cost of a vault over the network is the number of requests, not the number of bytes: from a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3. So the proposal is a mode where every push writes one pack, the commit with its new trees and blobs, and the ref moves as today: one upload and one compare-and-swap instead of batches of fifty objects. Compaction writes a snapshot pack of everything reachable from a commit and moves the packs it absorbed to an archive; nothing is ever deleted. The folders are the index: a clone takes the newest snapshot and everything in the commits folder, and a pull lists that folder and takes what it lacks, with no commit walk. Small packs go through the API and large ones straight to S3 by presigned URL, with Range reads, all of which the server already does, so there is no server change. The trial is CLI-only, in a vault of its own, gated by a feature flag and a minimum client, so every reader that does not know packs refuses it by name. The number to beat is the 35,000-object vault&#x27;s clone of three and a half minutes; its snapshot is one 430 MB file that eight parallel ranges from S3 would deliver to that sandbox in about forty seconds. Nothing here is built yet.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/a-pack-per-push.html">
 <meta property="og:type" content="article">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
 </head>
 <body>
 
@@ -215,6 +215,6 @@ bare/refs/, bare/indexes/, bare/cache/         unchanged: small, mutable, compar
   </div>
 </div></footer>
 <script src="../assets/version.js" defer></script>
-<script src="../assets/nav.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
 </body>
 </html>

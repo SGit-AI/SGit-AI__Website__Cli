@@ -11,9 +11,9 @@
 <meta property="og:description" content="People read &quot;encrypted git&quot; and picture a product with a server in the middle. There is a server, and it is the least interesting part. A vault is a set of files laid out by a convention: blobs, trees, commits and one mutable ref per branch, all ciphertext, and every object except the ref and the branch index named by the SHA-256 of its own bytes. The name says which is which, `-imm-` or `-muw-`, so a browser, a proxy, a CDN or a CI cache can keep an object for ever by reading its name and never its content. Nothing in a vault has to be discovered: the read key gives the ref&#x27;s name, the ref gives the commit, the commit the tree, and a file is four plain GETs of fixed paths, so any storage that answers a GET implements the read half, from S3 to GitHub Pages to a folder. Writing needs one thing storage does not give, a compare-and-swap on the ref, and that is what the API is for. A shipped cache layer lets a reader compute where a hot file&#x27;s encrypted copy lives and fetch it in one batch. When you look at sgit&#x27;s timings you are looking at the storage: 317 ms a request through the hosted API, 44 ms from GitHub Pages, 0.8 s for a scoped clone against a local server that takes 13 s hosted. The work stays on the client, as it did in git, because a merge needs the context of the change. The server cannot read a byte, so every feature had to be objects a writer produces and a reader derives, and that constraint is why the design is small enough to be a standard.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/sgit-is-a-standard-one-hash-away.html">
 <meta property="og:type" content="article">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
 </head>
 <body>
 
@@ -209,6 +209,6 @@
   </div>
 </div></footer>
 <script src="../assets/version.js" defer></script>
-<script src="../assets/nav.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
 </body>
 </html>

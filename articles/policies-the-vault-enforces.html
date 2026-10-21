@@ -11,9 +11,9 @@
 <meta property="og:description" content="On ruv.sgit the vault is the record of a policy, not its enforcer. RiskMandate writes the mandate, the grant, the gap and the barrier; ruv.sgit compiles those rows into Ruflo&#x27;s policy engine, which decides and writes receipts; the Cedar policy vault keeps the rules, their history, their signed releases and the evidence. What stops an action is the harness, a hook or an engine, never the vault. I asked whether sgit itself could enforce some of it. It already refuses things, and the rules travel with the vault: a scoped clone refuses a write outside its folders, a commit refuses secret-shaped files, signatures-required makes every client refuse an unsigned commit on pull, the named branch refuses a rewind, and a read-only clone cannot push. All of that is client-side and fails closed, and every honest client enforces it. That is the hook. A policy row that says key K may write path/ is one more rule of the same kind: refused on commit by the writer&#x27;s own client and on pull by every other client, so a violating push stops the branch for the whole swarm until it is reverted, while the server stays blind. Labelled with RiskMandate&#x27;s barrier kinds there are four levels: a convention is an expectation, a clone scope is a setting the agent can widen, a policy row is a boundary for every honest client and evidence against a dishonest one, and a server that verifies signed writes is a boundary against everyone. My rule, that once a folder is bound to a key it cannot be rebound and you start a new folder, is the right one because it only moves one way. Levels two and three are not built.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/policies-the-vault-enforces.html">
 <meta property="og:type" content="article">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
 </head>
 <body>
 
@@ -228,6 +228,6 @@ rows:
   </div>
 </div></footer>
 <script src="../assets/version.js" defer></script>
-<script src="../assets/nav.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
 </body>
 </html>

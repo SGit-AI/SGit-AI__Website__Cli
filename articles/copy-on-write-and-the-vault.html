@@ -11,9 +11,9 @@
 <meta property="og:description" content="After I presented ruv.sgit to the Agentics Foundation, rUv&#x27;s team asked whether sgit could add copy-on-write. I wanted to know what that would mean for a vault before saying yes or no. Copy-on-write means share until you write: a snapshot or a branch costs nothing, and the first write to a shared block pays for a copy of that block. Filesystems, virtual disks, the kernel&#x27;s fork() and git&#x27;s object store all work that way. RuVector&#x27;s version is a file that forks: an RVF child shares all its parent&#x27;s data and copies only the changed vectors, with lineage hashes back to the parent. sgit is already copy-on-write where git is. A branch is a pointer, a commit stores the new blobs and the rebuilt spine, unchanged folders keep their ids, and a scoped clone takes one folder, so nothing is copied to fork a vault&#x27;s history. There are two places it is not. Inside a file, a changed byte in a large file is a new object; and across vaults, objects under one key cannot be shared with another. Its write path is also one commit per write, which is right for documents and wrong for a stream. The answer for the stream is a write-ahead lane: writes go to an append lane, measured at two hundred entries a second, and a normaliser folds them into signed commits later, which is the shape of an LSM store, of RuVector&#x27;s own lsm-ann and of Scion&#x27;s changeset log. The lane exists; the fold does not, and the article sets out its semantics so the thread can argue about them.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html">
 <meta property="og:type" content="article">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
 </head>
 <body>
 
@@ -204,6 +204,6 @@
   </div>
 </div></footer>
 <script src="../assets/version.js" defer></script>
-<script src="../assets/nav.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
 </body>
 </html>

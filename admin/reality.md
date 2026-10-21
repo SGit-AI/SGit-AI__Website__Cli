@@ -5,7 +5,7 @@
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.2 (21 October 2026)
+# Reality: what exists, at v0.2.3 (21 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -32,6 +32,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 
 | | |
 |---|---|
+| **HTTPS enforced** | `http://cli.sgit.ai` answers 200 instead of redirecting to HTTPS, so a browser that arrives by http shows "Not Secure"; sgit.ai and newsroom.sgit.ai redirect. The certificate works. The fix is the repository's Settings, Pages, "Enforce HTTPS", which needs a person with admin rights (checked 21 October 2026) |
 | **Redirects on sgit.ai** | The moved pages still exist on sgit.ai, and nothing there points here yet. Requested in [the corrections file](../admin/corrections.md) |
 | **The review folder** | `review/` (intent from the brief, code derived from the tree, commits read upwards) is required by the estate's guidance from the first commit and is not built |
 | **Roles and a board** | The team page names who writes; no roles as files and no board yet |

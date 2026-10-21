@@ -11,9 +11,9 @@
 <meta property="og:description" content="I asked how git actually handles keys, because I suspected sgit was closer to it than people assume. Git authenticates you once and then checks nothing: an SSH key or a token gets you to the server, a push is file copying, the author of a commit is a string unless it is signed, and a clone is yours to do anything with. sgit is the same shape with the names changed. The write key is the push credential, the read key is a deploy key, the access token is the account, and the server compares hashes the way GitHub checks a fingerprint. A read-only clone cannot push and cannot stop you editing files locally, exactly like a git clone, so that is not a gap, it is git&#x27;s rule. Where sgit already goes further is on the client: every commit is signed by the clone&#x27;s own key, a vault can require signatures, and the named branch only moves forward. Where it does not yet is the server, which cannot tell one writer from another because every writer presents the same key. The GitHub version of sgit is RFC 0001&#x27;s Design 1, a write key pair per writer and a writer set the server trusts, and an SSH key fits it directly. The PKI version is a door per member: one small object per member holding the vault&#x27;s data key sealed to that member&#x27;s public key, join by adding one, leave by deleting one, and the key never written to disk. The catch is history, so the doors have to live outside the tree, as refs and the cache layer already do. Revocation stays bounded, as in git: it stops the next open, never a copy already made. None of the member pattern is built.">
 <meta property="og:url" content="https://cli.sgit.ai/articles/keys-the-way-git-does-it.html">
 <meta property="og:type" content="article">
-<link rel="stylesheet" href="../assets/site.css">
-<link rel="stylesheet" href="../assets/themes/themes.css">
-<script src="../assets/themes/themes.js"></script>
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
 </head>
 <body>
 
@@ -216,6 +216,6 @@
   </div>
 </div></footer>
 <script src="../assets/version.js" defer></script>
-<script src="../assets/nav.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
 </body>
 </html>

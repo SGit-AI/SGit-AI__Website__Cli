@@ -241,7 +241,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.3 (21 October 2026)
+# Reality: what exists, at v0.2.7 (21 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -260,7 +260,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **The briefs** | Both published in full: the voice brief with the initial prompt, and the second brief of the same day |
 | **Machine-readable twins** | A `.md` twin for every page, `llms.txt`, `llms-full.txt`, `sitemap.xml`, all generated |
 | **The gate** | `admin/build/validate.js`: build freshness, version agreement, links, canonical host, twins, orphans, leak tripwire; runs in CI before tag and deploy |
-| **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it |
+| **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it. HTTPS is enforced since 21 October 2026: `http://` answers 301 to the same path on `https://` (checked after Dinis Cruz ticked "Enforce HTTPS" in the Pages settings) |
 | **Five themes** | Newsprint, Night, Paper, Blueprint, Ember, ported from newsroom.sgit.ai with the same tokens; a picker in the nav; the choice kept in the browser only (since v0.2.2). Figures and diagrams are light in every theme, by design |
 | **Versioning** | `admin/build/version.txt`, badge on every page via `assets/version.js`, release history, tags `vX.Y.Z` made by CI |
 
@@ -268,7 +268,6 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 
 | | |
 |---|---|
-| **HTTPS enforced** | `http://cli.sgit.ai` answers 200 instead of redirecting to HTTPS, so a browser that arrives by http shows "Not Secure"; sgit.ai and newsroom.sgit.ai redirect. The certificate works. The fix is the repository's Settings, Pages, "Enforce HTTPS", which needs a person with admin rights (checked 21 October 2026) |
 | **Redirects on sgit.ai** | The moved pages still exist on sgit.ai, and nothing there points here yet. Requested in [the corrections file](../admin/corrections.md) |
 | **The review folder** | `review/` (intent from the brief, code derived from the tree, commits read upwards) is required by the estate's guidance from the first commit and is not built |
 | **Roles and a board** | The team page names who writes; no roles as files and no board yet |
@@ -302,6 +301,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.2.7 | 2026-10-21 | sgit-ai v0.23.0 | HTTPS is enforced: Dinis Cruz ticked "Enforce HTTPS" in the repository's Pages settings, and `http://cli.sgit.ai` now answers 301 to `https://`, as sgit.ai and the newsroom do. The reality file moves it from "does not exist yet" to "exists". |
 | v0.2.6 | 2026-10-21 | sgit-ai v0.23.0 | [Is there any overhead?](../articles/is-there-any-overhead.md), an answer to a reader's question on LinkedIn about performance (the question quoted, its author not named): the fixed cost of a command, a CI job's clone as the vault grows, the big vault, the ruv.sgit hives' 603 operations, where sgit does less work than git and where git is faster, and what pack mode, compression and a commit-chain object add next; four drawn figures and a diagram for choosing the clone. |
 | v0.2.5 | 2026-10-21 | sgit-ai v0.23.0 | [A vault you can carry](../articles/a-vault-you-can-carry.md), from Dinis Cruz's message: the three kinds of object that let a vault mix mutable and immutable files, and a whole vault as one zip, sealed to a public key, with the round trip run and measured on a published vault. [A pack per push](../articles/a-pack-per-push.md#side-by-side) gains the two modes side by side; the review is updated above its text with the five decisions taken and one of its notes corrected; research re-imported at `477d328`. |
 | v0.2.4 | 2026-10-21 | sgit-ai v0.23.0 | Diagrams at a readable size: each is shown at 75% of its drawn size and no taller than 720px, where they had stretched to the column (a pull flowchart's labels reached 40px on a wide screen); flowchart decisions are hexagons instead of diamonds and the layout is tighter, so the pull flow went from 1,364 to 810 drawn pixels tall; the import flow is top-down. |
@@ -5952,7 +5952,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.6. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.7. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

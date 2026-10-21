@@ -2,7 +2,7 @@
 
 > The CLI, the vault web UI and the SG/Send API across the integrity roll-out, step by step: what each version reads, writes and loses, under the rule that no client may break another still writing.
 
-*Source: <https://cli.sgit.ai/research/compatibility-matrix-cli-web-ui-api.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/07/compatibility-matrix__cli-x-web-ui-x-api.md>.*
+*Source: <https://cli.sgit.ai/research/compatibility-matrix-cli-web-ui-api.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/07/compatibility-matrix__cli-x-web-ui-x-api.md>.*
 
 ---
 # Compatibility matrix: sgit CLI × vault web UI × SG/Send API, across the integrity roll-out

@@ -2,7 +2,7 @@
 
 > Before writing two articles, a map of what is already published on keys the way git does them, PKI access to a vault and copy-on-write: seven questions from the memo, where each stands, the facts the articles must not get wrong, and seven code questions for the thread.
 
-*Source: <https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md>.*
+*Source: <https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/16/research__keys-pki-cow__coverage-map.md>.*
 
 ---
 # Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not

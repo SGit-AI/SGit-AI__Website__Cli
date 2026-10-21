@@ -83,6 +83,7 @@
       <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
       <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
       <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
       <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
@@ -90,7 +91,6 @@
       <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
       <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
       <a class="sl" href="../articles/streaming-changes-into-a-vault.html">Streaming changes into a vault: a thousand small writes, one commit, every line attributed</a>
-      <a class="sl" href="../articles/sgit-is-a-standard-one-hash-away.html">sgit is a standard, not a server: everything in a vault is one hash away</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -114,7 +114,7 @@
 <main class="doc">
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Branches check, test performance, test quality — 8 Oct 2026</div>
 <h1 id="branches-check-test-performance-test-quality-8-oct-2026">Branches check, test performance, test quality — 8 Oct 2026</h1>
-<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-08 · 22:11 UTC</span><span class="k">Kind</span><span class="v">review</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/correctness.html">correctness</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md"><code>team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md</code></a> in SGit-AI__CLI at <code>6702521</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-08 · 22:11 UTC</span><span class="k">Kind</span><span class="v">review</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/correctness.html">correctness</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md"><code>team/humans/dinis_cruz/claude-code-web/10/08/test-suite__branches-performance-quality-review.md</code></a> in SGit-AI__CLI at <code>477d328</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
 <p><i>CLI team. Done as part of the 0.21.0 release.</i></p>
 <h2 id="1-branches-broken-now-fixed-and-covered">1. Branches: broken, now fixed and covered</h2>
 <p>An end-to-end check (create, list, switch in and out, work on a branch, push to it, pull from it, merge either way) found that <b>branches did not work</b>: push, pull and fetch looked up the named branch called <code>current</code> by name, so work committed on <code>feature</code> was pushed to main and the feature ref never reached the server. Fixed, together with everything the check turned up behind it (first push of a new branch, signing keys of new clone branches, switch dropping unpushed commits and tripping a false rewind, switch not fetching, duplicate names, <code>--from</code> not checking out, no way to merge a branch) and one bug that was not about branches at all: <b>every merge commit a pull created was unsigned</b>, because the pull state carried the key id in a type that turns <code>-</code> into <code>_</code>.</p>
@@ -175,11 +175,11 @@
   <div>
     <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
+    <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
     <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
     <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
     <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
     <a href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
-    <a href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
   </div>
   <div>
     <h4>Site</h4>

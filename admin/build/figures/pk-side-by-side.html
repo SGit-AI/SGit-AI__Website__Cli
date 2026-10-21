@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:1fr 1fr;gap:28px} .col h2{font:400 24px/1.25 var(--serif);margin:0 0 10px}
+.ev{margin-top:14px} .ev h3{font-size:15px;margin:0 0 6px;color:var(--fg)} .ev ol{margin:0;padding-left:20px;font-size:14.5px;color:#34363c} .ev li{margin:2px 0}
+.legend{font-size:14px;color:var(--dim);margin:-10px 0 18px}</style></head><body>
+<h1>The same vault, today and in pack mode: the files on the host, and what each operation does</h1>
+<p class="sub">The comms vault, 35,423 objects on 14 October. Only the immutable part changes shape: loose objects one file each, or the same objects in zips. The mutable part, a handful of small files, is the same in both modes and moves the same way. Pack mode is proposed, not built.</p>
+<div class="legend"><span class="kbadge imm">imm</span>immutable, named by its hash, written once &nbsp; <span class="kbadge muw">muw</span>mutable, many writers, compare-and-swap &nbsp; <span class="kbadge snw">snw</span>mutable, one writer, its owner overwrites it</div>
+<div class="grid cols">
+ <div class="col box"><h2>Today: loose objects</h2>
+<div class="tree">bare/
+  data/    <span class="k-imm">obj-cas-imm-…</span>     <span class="c">× 35,423, one file each</span>
+  keys/    <span class="k-imm">key-rnd-imm-…</span>     <span class="c">public keys</span>
+  refs/    <span class="k-muw">ref-pid-muw-…</span>     <span class="c">the named branch's head</span>
+           <span class="k-snw">ref-pid-snw-…</span>     <span class="c">each clone branch's head</span>
+  indexes/ <span class="k-muw">idx-pid-muw-…</span>     <span class="c">the branch index</span>
+  cache/   <span class="k-snw">value, pointer</span>    <span class="c">derived, never authoritative</span></div>
+  <div class="ev"><h3>Push of a commit with 500 new objects</h3><ol><li>batch write, 50 objects a request: 10 requests</li><li>compare-and-swap the <span class="k-muw">muw</span> ref</li></ol></div>
+  <div class="ev"><h3>Pull, 50 pushes behind</h3><ol><li>read the ref; walk new commits, one request each</li><li>batch read the trees and blobs it lacks</li><li>merge, then the ref</li></ol></div>
+  <div class="ev"><h3>Cold clone</h3><ol><li>list the store (21 s), then about 700 batch reads</li><li>3½ minutes from the sandbox</li></ol></div>
+ </div>
+ <div class="col box teal proposed"><h2>Pack mode</h2>
+<div class="tree">bare/
+  packs/commits/   <span class="k-imm">&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</span>  <span class="c">one per push</span>
+  packs/snapshots/ <span class="k-imm">&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</span>  <span class="c">all objects</span>
+  packs/archive/   <span class="k-imm">&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</span>  <span class="c">absorbed</span>
+  keys/    <span class="k-imm">key-rnd-imm-…</span>     <span class="c">unchanged</span>
+  refs/    <span class="k-muw">ref-pid-muw-…</span> <span class="k-snw">ref-pid-snw-…</span>  <span class="c">unchanged</span>
+  indexes/ <span class="k-muw">idx-pid-muw-…</span>     <span class="c">+ features: [packs]</span>
+  cache/   <span class="k-snw">value, pointer</span>    <span class="c">unchanged</span></div>
+  <div class="ev"><h3>Push of a commit with 500 new objects</h3><ol><li>build one zip of them: 1 upload, straight to S3 if over 4 MB</li><li>compare-and-swap the <span class="k-muw">muw</span> ref, as today</li></ol></div>
+  <div class="ev"><h3>Pull, 50 pushes behind</h3><ol><li>list <code>packs/commits/</code>: one request</li><li>fetch the 50 packs it lacks, batched; verify every member</li><li>merge, then the ref, as today</li></ol></div>
+  <div class="ev"><h3>Cold clone</h3><ol><li>newest snapshot (430 MB) and the packs since it</li><li>about 40 s from the sandbox, expected</li></ol></div>
+ </div>
+</div>
+<div class="foot"><b>The immutable set can be shipped in any shape because its names are its content; only the few mutable files need a host that can compare-and-swap.</b><span>cli.sgit.ai · 21 October 2026 · the layout from the CLI's code and the pack-mode spec, SGit-AI__CLI 477d328</span></div>
+</body></html>

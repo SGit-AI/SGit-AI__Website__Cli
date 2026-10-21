@@ -2,12 +2,12 @@
 
 > The specification for pack mode: every push writes one zip pack, a snapshot pack compacts them, nothing is deleted, large packs go straight to S3 by presigned URL, and a gated packs-only vault needs no server change. Commands, layout, failure handling, tests and the four performance runs.
 
-*Source: <https://cli.sgit.ai/research/pack-mode-spec.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/21/spec__pack-mode.md>.*
+*Source: <https://cli.sgit.ai/research/pack-mode-spec.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/21/spec__pack-mode.md>.*
 
 ---
 # Spec: pack mode for sgit (CLI-only, packs-only vaults, no server change)
 
-**Status:** proposal, 21 Oct 2026, agreed in conversation with Dinis; not built. **Scope:** a push,
+**Status:** proposal, 21 Oct 2026, agreed in conversation with Dinis; revised the same day after the review on cli.sgit.ai (*Pack mode, read closely*): decisions 1 to 5 taken as below; not built. **Scope:** a push,
 pull and clone mode plus an import and a compaction command. Everything else in the CLI is
 unchanged. **Server:** none of this needs a server change; the routes used are `batch`
 (write/read), `presigned/initiate|complete|read-url`, `list`, `delete`, all present in
@@ -26,20 +26,59 @@ extraction (version 2); mixed vaults (loose objects and packs written together);
 ## 2. Layout on the host
 
 ```
-bare/packs/commits/   <epoch_ms:013d>__<commit_id>__<bytes>.zip
-bare/packs/snapshots/ <epoch_ms:013d>__<commit_id>__<bytes>.zip
-bare/packs/archive/   <epoch_ms:013d>__<commit_id>__<bytes>.zip      (moved from commits/)
+bare/packs/commits/   <epoch_s:010d>__<commit_id>__<bytes>.zip
+bare/packs/snapshots/ <epoch_s:010d>__<commit_id>__<bytes>.zip
+bare/packs/archive/   <epoch_s:010d>__<commit_id>__<bytes>.zip      (moved from commits/)
 bare/refs/, bare/indexes/, bare/cache/, bare/keys/                   unchanged
 bare/data/                                                            not written in pack mode
 ```
 
-- `epoch_ms` is the writer's clock at pack creation; it orders listings, nothing depends on its
-  accuracy.
+- `epoch_s` is the writer's clock at pack creation, in whole seconds (review decision 5: a listing
+  shows the host each push's size and time; seconds order the listing as well as milliseconds and
+  say less). It orders listings; nothing depends on its accuracy, and names stay unique by commit
+  id. The security page gets one line when the mode ships: a host that can list sees, per push,
+  the commit id, the size it added and the writer's clock to the second.
 - `bytes` is the pack's size; the client chooses the route from it and checks it after fetch.
 - A pack's member paths are `bare/data/<object-id>`, exactly as `publish --bundles` writes them, so
   extraction is a copy into the loose store.
 - Zip rules as in `Vault__Publish__Bundles`: `ZIP_STORED`, members sorted by name, fixed
   timestamps, Zip64 allowed, deterministic bytes for the same object set.
+
+## 2a. Blob compression before encryption (option for the pack trial)
+
+Today blobs are encrypted uncompressed, and ciphertext does not compress (`publish --bundles`
+measured DEFLATE making it larger). Compressing the plaintext *before* encryption is where the gain
+is. Measured 21 Oct on the comms vault's working copy, per file (the way blobs are stored):
+
+| | Size | Ratio | CPU (120 MB) |
+|---|---|---|---|
+| raw | 120.3 MB | | |
+| deflate level 1 | 77.9 MB | 1.54× | 2.0 s |
+| deflate level 6 | 76.0 MB | 1.58× | 2.9 s |
+| deflate level 9 | 75.8 MB | 1.59× | 3.5 s |
+| lzma level 6 | 70.3 MB | 1.71× | 34.6 s |
+
+Images (53 MB of jpg and png) are the incompressible part; JSON goes 2.8×, markdown 2.5×, email 2×,
+JSONL logs 8.8×. The store's history is the same kinds of file, so a 527 MB store would be roughly
+330 MB. Rules if it is adopted:
+
+- **Blobs only.** Trees and commits stay as they are: their encryption is deterministic so that
+  rebuilt trees match byte for byte across clients, and a browser's deflate does not produce the
+  same bytes as zlib. Blobs use a random IV, so determinism is not needed there.
+- **Deflate, stdlib, level 6.** No new dependency; browsers decode it with `DecompressionStream`.
+  lzma buys 8 % for 12× the CPU.
+- **Keep the smaller.** Compress, compare, store whichever is shorter with a one-byte encoding
+  flag in the blob envelope (a new envelope version, gated by `min_client` like 128-bit ids), so
+  images and zips cost one fast pass and nothing more.
+- **Interop vectors** for the browser: deflate + AES-GCM round trips byte for byte, as for every
+  other primitive.
+- **Threat model row.** Compress-then-encrypt lets the host see how compressible a file is, and
+  an attacker who can place chosen bytes in the same file as a secret and watch the ciphertext's
+  size can learn about the secret (the CRIME family). Sizes are already visible to the host;
+  secrets are already refused at commit; a per-path opt-out (never compress under `inbox/`, say)
+  and optional padding close the rest. Record it as an accepted gap with those mitigations.
+- **Where to introduce it:** the pack trial vault is new and gated, so it is the cheap place to
+  turn the new blob envelope on; the packs themselves stay `ZIP_STORED`.
 
 ## 3. The vault flag
 
@@ -95,7 +134,12 @@ From a **full** clone of an existing vault (refuses on a partial clone, as `publ
 5. Record every pack name as absorbed; check out as today.
 
 Scoped and shallow clones: version 1 takes the snapshot whole and keeps the scope for checkout
-and later pushes; version 2 can read only the needed members by `Range` from the zip's directory.
+and later pushes. That is a step back in bytes for the agents' daily `--path <folder> --depth 1`
+clone (3 MB and 13 s on the loose comms vault against the whole 430 MB snapshot; review decision
+3), so: agents' working vaults stay loose until version 2, the trial measures it (run 5 in §10),
+and version 2 reads the snapshot's central directory by `Range` (2.7 MB for 34k members, measured)
+and then only the needed members, one `Range` each, 16 in flight. The seekable-HTTP reader that
+does this is about twenty lines and was exercised on 20 Oct.
 
 ### 4.5 `sgit pack compact [--when]`
 
@@ -109,7 +153,17 @@ Trigger (checked on push, run on demand or by a scheduled job): `commits/` holds
    set equals the expected id set. Abort on any difference, leaving everything as it was.
 4. For each commit pack absorbed (every pack whose commit is reachable from the snapshot's commit):
    upload the same bytes to `archive/` with the same name, then `delete` it from `commits/`.
-5. Old snapshots stay. Nothing else is deleted.
+5. Also move to `archive/` every pack in `commits/` whose commit is unreachable from the head and
+   whose epoch is older than `PACK_ORPHAN_AGE` (default one day): the pack an agent session left
+   behind when its ref move lost the race and the session ended (review decision 4). Nothing is
+   deleted; clones stop fetching it.
+6. Old snapshots stay. Nothing else is deleted.
+
+The move needs no download: a pack's bytes are a deterministic function of its commit (the objects
+that commit introduced, sorted, fixed timestamps, as `Vault__Publish__Bundles` already builds them),
+so the compacting clone rebuilds each pack from its loose store, checks the size against the name,
+and uploads that to `archive/` (review note 1). A rebuilt pack whose size differs from the name is
+downloaded instead and reported.
 
 Idempotent and crash-safe: a pack present in both `commits/` and `archive/` is removed from
 `commits/` on the next run after the archive copy is verified by size.
@@ -172,13 +226,16 @@ and the four performance runs in the article.
 2. 100 one-file pushes: seconds and requests per push, both modes.
 3. Pull after 10, 100, 1,000 pushes without compaction, then after; set the defaults in §4.5.
 4. Two writers pushing concurrently for a minute: no lost packs, ref always consistent.
+5. A scoped shallow clone (`--path security --depth 1`) of the pack vault against today's 13 s and
+   3 MB on the loose vault, to size the version-2 work.
 
 ## 11. Later (not this round)
 
 Reading packs by offset without extraction; scoped reads of a snapshot by `Range`; web app and
 static reader support; in-place migration of an existing vault (`vault format --feature packs`
 plus one snapshot, loose objects left as the archive); prune; the SG/Send `append` route for
-growing a snapshot in place instead of rewriting it.
+growing a snapshot in place instead of rewriting it (the 20 Oct brief, parked; review decisions 1
+and 2).
 
 ---
 

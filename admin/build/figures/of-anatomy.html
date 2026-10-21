@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:1.25fr 1fr;gap:26px} .n{font:700 13px var(--mono);color:var(--dim)}
+.out{border-color:var(--red);background:var(--red-bg)} .out h3{color:var(--red)}</style></head><body>
+<h1>A vault in one file: what goes in, and what must stay out</h1>
+<p class="sub">The file is the vault's <code>bare/</code> folder, zipped as it is: every immutable object, and the few mutable pointers frozen at the moment the file was made. Counted from the newsroom's synthetic-users vault, a published vault, on 21 October 2026: 111 files, 12.7 MB as one stored zip. The clone's own <code>local/</code> folder holds its credentials and must never go in.</p>
+<div class="grid cols">
+ <div class="box teal"><h3>vault.zip, the <code>bare/</code> folder</h3>
+<div class="tree">bare/
+  data/    <span class="k-imm">obj-cas-imm-…</span>   <span class="c">106  blobs, trees, commits</span>
+  keys/    <span class="k-imm">key-rnd-imm-…</span>     <span class="c">2  public keys</span>
+  refs/    <span class="k-muw">ref-pid-muw-…</span>     <span class="c">1  the named branch's head</span>
+           <span class="k-snw">ref-pid-snw-…</span>     <span class="c">1  a clone branch's head</span>
+  indexes/ <span class="k-muw">idx-pid-muw-…</span>     <span class="c">1  the branch index</span>
+  cache/                       <span class="c">0  (optional, derived)</span></div>
+  <p style="margin-top:12px"><span class="kbadge imm">imm</span>108 files that never change: any copy of them is as good as any other.<br><span class="kbadge muw">muw</span><span class="kbadge snw">snw</span>3 files that say where the history is. Frozen in the file, they make it a read-only snapshot of the vault at that moment.</p>
+ </div>
+ <div>
+  <div class="box out" style="margin-bottom:16px"><h3>Never in the file: <code>.sg_vault/local/</code></h3><p>This clone's own state, keys included: a read-only clone keeps its read key in <code>clone_mode.json</code>, a writable clone its vault key in <code>vault_key</code>. The file carries ciphertext only; the key travels separately, or sealed inside an envelope (next figure).</p></div>
+  <div class="box"><h3>Read it back</h3><p>Unzip anywhere, then <code>sgit clone --transport local --base-url &lt;folder&gt; &lt;read key&gt;</code>. Measured: 0.48 s, the same working tree and the same three commits as a clone from the hosted server, which took 13.7 s.</p></div>
+  <div class="box proposed" style="margin-top:16px"><h3>Not built yet</h3><p>One command to make the file, and a clone that reads the zip without unzipping it (by <code>Range</code> on a host that serves ranges).</p></div>
+ </div>
+</div>
+<div class="foot"><b>A snapshot pack is the data/ part of this file; the pointers are what turn it into a vault you can clone.</b><span>cli.sgit.ai · 21 October 2026 · counted with sgit-ai 0.23.0 from a clone of a vault whose read key is published</span></div>
+</body></html>

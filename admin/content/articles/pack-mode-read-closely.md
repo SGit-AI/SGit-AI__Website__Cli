@@ -13,6 +13,8 @@ status: published
 
 !shot pk-decisions.webp | /articles/images/ | The five decisions, one card each, with what is at stake and what I recommend. Blue: which design to build and what to tell the SG/Send team, both to decide now. Red: two costs of the first version, scoped clones that download the whole snapshot and orphan packs that every clone fetches, to settle before agents use a pack vault. Orange: one line for the security page when the mode ships. Teal: what I would not change. | decision
 
+> **Update, 21 October 2026, 14:30.** The CLI team took all five decisions within the hour, at `477d328`: the spec is built as written; the brief to the SG/Send team now opens with "parked" and asks them not to build asks 1 and 2; a scoped shallow clone is the trial's run 5, and agents' working vaults stay loose until version 2 reads by `Range`; compaction archives orphan packs older than a day; and pack names carry the writer's clock in whole seconds, with a line for the security page. **One of my notes was wrong.** I wrote that moving a pack to the archive costs a download unless the compacting clone kept it. It does not: a pack is a deterministic function of its commit, the objects that commit introduced, sorted, with fixed timestamps, so the compacting clone rebuilds it from its own store, checks its size against the name, and uploads that. The text below is as published, with the mistake left where it was.
+
 ## In short {#in-short}
 
 - **The spec is sound and needs no server change.** One pack per push, a snapshot to compact, nothing deleted, every route already live, older readers refused by name.

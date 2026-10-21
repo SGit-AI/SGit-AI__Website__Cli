@@ -2,7 +2,7 @@
 
 > Are the read key and the write key really a public and a private key? Half right: the write key should become a signing key, and the read key cannot become a public key. What that would take.
 
-*Source: <https://cli.sgit.ai/research/read-write-keys-as-pki.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/09/design-analysis__read-write-keys-as-pki.md>.*
+*Source: <https://cli.sgit.ai/research/read-write-keys-as-pki.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/09/design-analysis__read-write-keys-as-pki.md>.*
 
 ---
 # Read and write keys as PKI — design analysis

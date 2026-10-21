@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:stretch}
+.st{border:2px solid var(--teal);border-radius:12px;background:var(--panel);padding:12px 13px;position:relative}
+.st .n{font:700 12px var(--mono);color:var(--dim)} .st h3{margin:4px 0 6px;font-size:16px}
+.st code{font-size:12.5px;white-space:normal} .st .m{margin-top:8px;font:700 14px var(--mono);color:var(--teal)}
+.st.seal{border-color:var(--violet)} .st.seal .m{color:var(--violet)}
+.notes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:18px}</style></head><body>
+<h1>The round trip, run today with the commands sgit ships</h1>
+<p class="sub">From a hosted vault to a file sealed to one person's public key, and back to a working clone, with sgit-ai 0.23.0 in a cloud sandbox on 21 October 2026. Every step is a shipped command or a plain zip; what is missing is one command that does it all, and the times are from one run.</p>
+<div class="row">
+ <div class="st"><div class="n">1</div><h3>Clone</h3><code>sgit clone &lt;read key&gt;</code><div class="m">13.7 s</div><p style="font-size:13px;color:var(--dim);margin:6px 0 0">from the hosted API</p></div>
+ <div class="st"><div class="n">2</div><h3>Zip <code>bare/</code></h3><code>zip, stored, no local/</code><div class="m">12.7 MB</div><p style="font-size:13px;color:var(--dim);margin:6px 0 0">111 files in one</p></div>
+ <div class="st seal"><div class="n">3</div><h3>Seal</h3><code>sgit pki encrypt --recipient &lt;fp&gt;</code><div class="m">0.47 s</div><p style="font-size:13px;color:var(--dim);margin:6px 0 0">22.5 MB envelope</p></div>
+ <div class="st seal"><div class="n">4</div><h3>Open</h3><code>sgit pki decrypt --fingerprint &lt;fp&gt;</code><div class="m">0.82 s</div><p style="font-size:13px;color:var(--dim);margin:6px 0 0">byte-identical zip</p></div>
+ <div class="st"><div class="n">5</div><h3>Unzip</h3><code>any folder, any machine</code><div class="m">111 files</div><p style="font-size:13px;color:var(--dim);margin:6px 0 0">a static copy of the vault</p></div>
+ <div class="st"><div class="n">6</div><h3>Clone</h3><code>sgit clone --transport local</code><div class="m">0.48 s</div><p style="font-size:13px;color:var(--dim);margin:6px 0 0">same tree, same 3 commits</p></div>
+</div>
+<div class="notes">
+ <div class="box"><h3>Steps 3 and 4 are optional</h3><p>Without them the file is already ciphertext: names are hashes, contents are encrypted, the read key opens it. The seal adds a second lock and hides what a plain zip shows.</p></div>
+ <div class="box warm"><h3>The envelope is 1.78 times the zip</h3><p>Its payload is base64 inside JSON, and the whole is base64 again: 4/3 squared. A binary envelope would be about the zip's size. A finding for the CLI team.</p></div>
+ <div class="box"><h3>Read-only, by construction</h3><p>A clone from a folder cannot push back to it. To change the vault, work in a live one and make the file again, or write to it from one writer at a time.</p></div>
+</div>
+<div class="foot"><b>A vault already travels as one file; what is missing is the one command, and a clone that reads the zip directly.</b><span>cli.sgit.ai · 21 October 2026 · one run, sgit-ai 0.23.0, a throwaway key pair</span></div>
+</body></html>

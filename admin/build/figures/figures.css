@@ -41,3 +41,8 @@ table.t td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:mid
 .num{font-family:var(--mono);font-size:14px;color:var(--dim);margin-left:8px}
 .folder{font-family:var(--mono);font-size:14px;line-height:1.7}
 .folder .c{color:var(--dim2)}
+/* the three kinds of object, by the name's middle part (imm, muw, snw), as the CLI's code defines them */
+.k-imm{color:var(--teal)} .k-muw{color:var(--warm)} .k-snw{color:var(--violet)}
+.kbadge{display:inline-block;font:700 11px/1 var(--mono);border-radius:4px;padding:3px 6px;margin-right:6px}
+.kbadge.imm{background:var(--teal-bg);color:var(--teal)} .kbadge.muw{background:var(--warm-bg);color:var(--warm)} .kbadge.snw{background:var(--violet-bg);color:var(--violet)}
+.tree{font:14px/1.75 var(--mono);white-space:pre;color:var(--fg)} .tree .c{color:var(--dim2)}

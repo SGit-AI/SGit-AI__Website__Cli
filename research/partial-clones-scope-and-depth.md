@@ -2,7 +2,7 @@
 
 > Cloning just the folders an agent reads and writes, read and write, plus a shallow mode, without changing the full clone: the Merkle-spine idea and the measurements.
 
-*Source: <https://cli.sgit.ai/research/partial-clones-scope-and-depth.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md>.*
+*Source: <https://cli.sgit.ai/research/partial-clones-scope-and-depth.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/06/partial-clones__scope-and-depth.md>.*
 
 ---
 # Partial clones — a folder scope and a history depth (6 Oct 2026)

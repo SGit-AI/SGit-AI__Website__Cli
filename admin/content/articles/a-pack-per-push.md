@@ -221,6 +221,38 @@ and requests per push; pulls after 10, 100 and 1,000 pushes without compaction, 
 to set the trigger; two writers pushing at once, which the ref's compare-and-swap already keeps
 straight and the packs never collide on. The numbers go in the article that follows this one.
 
+## Side by side: the files and the steps in each mode {#side-by-side}
+
+*This section is not in the CLI team's draft. It was added on cli.sgit.ai on 21 October 2026 at my request, by the site's build agent, from the CLI's code and the spec.*
+
+!shot pk-side-by-side.webp | /articles/images/ | The comms vault in each mode. On the left, today: every object one file in data/, and the steps a push, a pull and a cold clone take. On the right, pack mode: the same objects in zips under packs/, and the same three operations. The keys, the refs, the branch index and the cache are the same files in both, in the same places. Colour marks the kind of each file: teal never changes, orange is shared and moves by compare-and-swap, violet has one writer. | comparison
+
+The same layout as text, for a reader without the picture:
+
+```text
+today (loose)                              pack mode (proposed)
+bare/                                      bare/
+  data/obj-cas-imm-...   x 35,423            packs/commits/<epoch>__<commit>__<bytes>.zip
+                                             packs/snapshots/<epoch>__<commit>__<bytes>.zip
+                                             packs/archive/<epoch>__<commit>__<bytes>.zip
+  keys/key-rnd-imm-...                       keys/key-rnd-imm-...        unchanged
+  refs/ref-pid-muw-...  ref-pid-snw-...      refs/                       unchanged
+  indexes/idx-pid-muw-...                    indexes/  + features: [packs]
+  cache/  value, pointer                     cache/                      unchanged
+```
+
+### Why the two can mix: three kinds of object {#three-kinds}
+
+The reason pack mode is a change of shipping and not a change of format is in the names. Every object a vault stores says in its name what kind it is, and the CLI's code treats the three kinds differently:
+
+| Kind | In the name | Written how | Examples | Pack mode |
+|---|---|---|---|---|
+| **Immutable** | `imm` | once, named by its hash (or at random, for a key); a copy anywhere is as good as the original | `obj-cas-imm-…` blobs, trees, commits; `key-rnd-imm-…` public keys | the objects move into zips; still immutable, still checked against their ids |
+| **Mutable, many writers** | `muw` | overwritten only by compare-and-swap: a write names the version it replaces, and loses if another got there first | the named branch's ref, the branch index | unchanged |
+| **Mutable, one writer** | `snw` | overwritten by its one owner, no race to lose | a clone branch's ref, the cache | unchanged |
+
+So a vault mixes mutable and immutable files today, and that is why the architecture holds together: almost everything is immutable and can be copied, cached, zipped or archived in any shape, because its name is its content; a handful of small files say where the history is, and only they need a host that can compare-and-swap. Pack mode changes the shape of the first group and leaves the second alone. The same split is what lets a whole vault [travel as one file](/articles/a-vault-you-can-carry.html).
+
 ## What this does not claim {#limits}
 
 - Nothing is built; the per-commit and head zips exist in `publish --bundles`, the routes exist,
@@ -237,4 +269,4 @@ If you keep a vault with tens of thousands of small objects and would like to be
 
 Draft for the newsroom, 21 Oct 2026, from three days of conversation of mine with the CLI team on zip storage. Facts from the CLI at `dev` 37218af, the SG/Send server code (0.34.0) and live tests on `dev.send.sgraph.ai` on 16 and 20 Oct. Nothing here is built.
 
-Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is [`team/humans/dinis_cruz/claude-code-web/10/21/article-draft__a-pack-per-push.md`](https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/21/article-draft__a-pack-per-push.md) in SGit-AI__CLI at `6702521`, on the branch `claude/charming-babbage-5hzcxq`, not yet merged. Published on cli.sgit.ai on 21 October 2026 in the newsroom's format: the front matter, the summary, the anchors, this section and the line above it were added, and so were the figures and the six flow diagrams, drawn by cli.sgit.ai's build agent from the draft and [the spec](/research/pack-mode-spec.html); the text is as drafted. The spec is the CLI team's for building it; [the brief to the SG/Send team](/research/zip-append-via-s3-brief.html) of the evening before describes the earlier design this one replaced. The build agent's reading of all three, with five decisions to make, is [Pack mode, read closely](/articles/pack-mode-read-closely.html). The research topic: [How a vault takes writes](/research/topics/write-path.html).
+Written up by the sgit CLI team's agent (a Claude Code session) as a draft for the newsroom; the editorial responsibility is mine. The draft is [`team/humans/dinis_cruz/claude-code-web/10/21/article-draft__a-pack-per-push.md`](https://github.com/SGit-AI/SGit-AI__CLI/blob/67025214653476bfe108713ecd83075c6b6155ae/team/humans/dinis_cruz/claude-code-web/10/21/article-draft__a-pack-per-push.md) in SGit-AI__CLI at `6702521`, on the branch `claude/charming-babbage-5hzcxq`, not yet merged. Published on cli.sgit.ai on 21 October 2026 in the newsroom's format: the front matter, the summary, the anchors, this section and the line above it were added, and so were the figures, the six flow diagrams and the section Side by side, drawn and written by cli.sgit.ai's build agent from the draft, [the spec](/research/pack-mode-spec.html) and the CLI's code at `477d328`; the draft's own text is as drafted. The spec is the CLI team's for building it; [the brief to the SG/Send team](/research/zip-append-via-s3-brief.html) of the evening before describes the earlier design this one replaced. The build agent's reading of all three, with five decisions to make, is [Pack mode, read closely](/articles/pack-mode-read-closely.html). The research topic: [How a vault takes writes](/research/topics/write-path.html).

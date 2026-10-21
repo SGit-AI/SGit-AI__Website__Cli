@@ -302,6 +302,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.2.4 | 2026-10-21 | sgit-ai v0.23.0 | Diagrams at a readable size: each is shown at 75% of its drawn size and no taller than 720px, where they had stretched to the column (a pull flowchart's labels reached 40px on a wide screen); flowchart decisions are hexagons instead of diamonds and the layout is tighter, so the pull flow went from 1,364 to 810 drawn pixels tall; the import flow is top-down. |
 | v0.2.3 | 2026-10-21 | sgit-ai v0.23.0 | Three fixes from reading the site on an iPad and an iPhone: every stylesheet and script is now asked for by a fingerprint of its contents, so a browser can no longer mix a cached v0.2.1 stylesheet with the new themes (which painted dark headings and grey text on Ember); the phone menu scrolls on its own instead of scrolling the page under it (the newsroom's fix); and the bar collapses behind Menu below 1,200px, where an iPad had wrapped it onto two rows. |
 | v0.2.2 | 2026-10-21 | sgit-ai v0.23.0 | Five reading themes, the newsroom's: Newsprint, Night, Paper, Blueprint and Ember, chosen from a picker in the nav and remembered in the browser, with the system's dark setting as the default. Every colour in the stylesheet is now a token defined in all five, and the gate holds it so; figures and diagrams stay on light paper in every theme, as prints. |
 | v0.2.1 | 2026-10-21 | sgit-ai v0.23.0 | The CLI team's pack-mode thread, made readable: [A pack per push](../articles/a-pack-per-push.md) as an article with two drawn figures and six flow diagrams; [a review of it with five decisions](../articles/pack-mode-read-closely.md) by the build agent; the spec and the brief to the SG/Send team under research; the zip article synced with its revised draft. Figures are now drawn the newsroom's way (an HTML page each, rendered to webp) and mermaid diagrams are rendered to SVG at authoring time. From here every release is a minor, at Dinis Cruz's instruction. |
@@ -923,9 +924,9 @@ not a walk of a hundred commits one request each.
 %% A pull in pack mode: one listing, the packs this clone has not absorbed, each verified member by member before anything is written.
 flowchart TD
     A[sgit pull] --> B[list bare/packs/commits/]
-    B --> C{absorbed already?}
+    B --> C{{absorbed already?}}
     C -- yes, in packs_absorbed.json --> D[skip it]
-    C -- no --> E{size in the name}
+    C -- no --> E{{size in the name}}
     E -- 4 MB or less --> F[batch read, up to 50 packs a request]
     E -- over 4 MB --> G[presigned read-url, parallel Range GETs]
     F --> H[check the size, then every member's id against its bytes]
@@ -943,13 +944,13 @@ snapshot and a few packs.
 ```mermaid
 %% A clone in pack mode: the newest snapshot, then every commit pack since it, then a local walk that confirms nothing is missing.
 flowchart TD
-    A[sgit clone] --> B{client knows packs?}
+    A[sgit clone] --> B{{client knows packs?}}
     B -- no, says the branch index --> X[refuse by name: run sgit update]
     B -- yes --> C[list snapshots/ and take the newest by epoch]
     C --> D[fetch it: one GET, or parallel 10 MB Range reads]
     D --> E[list commits/ and fetch every pack there]
     E --> F[verify and extract every member]
-    F --> G{local walk complete?}
+    F --> G{{local walk complete?}}
     G -- no --> H[fetch what is missing by the ordinary route, a safety net]
     G -- yes --> I[record the packs, check out as today]
     H --> I
@@ -967,10 +968,10 @@ later if storage ever matters, and ciphertext is cheap.
 ```mermaid
 %% Compaction: build and upload a snapshot, read its directory back before anything moves, then copy each absorbed pack to archive/ before deleting it from commits/. A crash between the last two steps leaves a pack in both places, which is harmless.
 flowchart TD
-    T{time to compact?} -- no --> Z[nothing to do]
+    T{{time to compact?}} -- no --> Z[nothing to do]
     T -- over 50 packs, or a tenth of the snapshot --> A[build a snapshot of every object reachable from the remote head]
     A --> B[upload it to snapshots/]
-    B --> C{directory read back: all ids there?}
+    B --> C{{directory read back: all ids there?}}
     C -- no --> Y[abort, everything left as it was]
     C -- yes --> D[upload each absorbed pack to archive/]
     D --> E[then delete it from commits/]
@@ -998,7 +999,7 @@ objects left as the archive) becomes the production path.
 ```mermaid
 %% The gate: a pack vault says so in its branch index, and every reader that does not know packs refuses it by name instead of seeing an empty vault.
 flowchart TD
-    I[branch index: features packs, min_client] --> N{reader}
+    I[branch index: features packs, min_client] --> N{{reader}}
     N -- sgit with pack mode --> OK[reads the packs]
     N -- an older sgit --> R1[refused: this vault needs a newer sgit-ai, run sgit update]
     N -- the web app or a static reader --> R2[refused by name]
@@ -1012,7 +1013,7 @@ trial is what you want.
 
 ```mermaid
 %% Importing a vault: a full clone, re-encrypted under a new key the way vault move does it, written as one snapshot pack. The source is not touched.
-flowchart LR
+flowchart TD
     S[(source vault)] -- full clone --> L[local clone]
     L -- re-encrypt: blobs, trees, commits --> N[new ids under the new key]
     N --> P[one snapshot pack]
@@ -5623,7 +5624,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.3. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.4. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

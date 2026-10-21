@@ -166,6 +166,16 @@ def asset(rel):
     return f"{rel}?h={hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()[:8]}"
 
 
+def diagram_size(svg):
+    """width and height for a diagram's <img>, from its viewBox. Mermaid writes width="100%", so without a size
+    the image stretches to the column: on a wide screen a flowchart's 15px labels became 40px (21 October 2026).
+    The diagram is shown at 75% of its drawn size, and never taller than 720px; CSS still shrinks it on a phone."""
+    m = re.search(r'viewBox="[-0-9.]+ [-0-9.]+ ([0-9.]+) ([0-9.]+)"', svg.read_text())
+    w, h = float(m.group(1)), float(m.group(2))
+    scale = min(0.75, 720 / h)
+    return f'width="{round(w * scale)}" height="{round(h * scale)}"'
+
+
 def as_list(v):
     return [x.strip() for x in (v if isinstance(v, list) else (v or "").split(",")) if x.strip()]
 
@@ -361,9 +371,10 @@ def expand(page, pages, twin, up):
             name = hashlib.sha256(src.encode()).hexdigest()[:12] + ".svg"
             if not (ROOT / "articles/images/mermaid" / name).exists():
                 raise SystemExit(f"build: a mermaid diagram in {page.source} is not rendered: run node admin/build/render_figures.mjs")
+            size = diagram_size(ROOT / "articles/images/mermaid" / name)
             first = src.splitlines()[0].strip() if src.strip() else ""
             caption = first[2:].strip() if first.startswith("%%") else ""
-            blocks.append(f'<figure class="diagram"><img src="{up}articles/images/mermaid/{name}" alt="{html.escape(caption or "diagram", quote=True)}" loading="lazy">'
+            blocks.append(f'<figure class="diagram"><img src="{up}articles/images/mermaid/{name}" {size} alt="{html.escape(caption or "diagram", quote=True)}" loading="lazy">'
                           + (f'<figcaption>{html.escape(caption)}</figcaption>' if caption else "") + "</figure>")
             lines.append(f"@@BLOCK{len(blocks) - 1}@@")
             continue

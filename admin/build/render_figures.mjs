@@ -46,7 +46,7 @@ export const THEME = {
     labelBoxBkgColor: '#f2f0e9', labelBoxBorderColor: '#d5d0c2', loopTextColor: '#1c1d21', activationBkgColor: '#fbefe3',
     edgeLabelBackground: '#faf9f5', clusterBkg: '#f2f0e9', clusterBorder: '#d5d0c2',
   },
-  flowchart: { htmlLabels: false, curve: 'basis', padding: 14 },
+  flowchart: { htmlLabels: false, curve: 'basis', padding: 10, nodeSpacing: 34, rankSpacing: 38 },
   sequence: { mirrorActors: false, showSequenceNumbers: true },
 };
 

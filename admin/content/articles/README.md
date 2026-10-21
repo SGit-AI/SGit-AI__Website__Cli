@@ -68,7 +68,10 @@ two to six an article, where the evidence is.
 - **A flow, a sequence or an architecture** can be a ```mermaid fence in the article. Its first line may be
   `%% <caption>`. The same command renders it to `articles/images/mermaid/<hash>.svg`; the page shows the SVG
   and loads no script, and the markdown twin keeps the mermaid source. Prefer top-down flowcharts: a wide one
-  shrinks to unreadable text in the column.
+  shrinks to unreadable text in the column. Write a decision as a hexagon, `X{{question?}}`, not a diamond,
+  `X{question?}`: a diamond grows to enclose its label and makes the flow twice as tall. The page shows a diagram
+  at 75% of its drawn size and never taller than 720px (`diagram_size` in `build.py`), so it does not stretch
+  on a wide screen.
 - The v0.2.0 lead figures were drawn by `admin/build/make_figures.py` as SVG; that still works.
 - Commit what the renderer writes. The build stops if a mermaid diagram has not been rendered.
 

@@ -107,9 +107,9 @@ not a walk of a hundred commits one request each.
 %% A pull in pack mode: one listing, the packs this clone has not absorbed, each verified member by member before anything is written.
 flowchart TD
     A[sgit pull] --> B[list bare/packs/commits/]
-    B --> C{absorbed already?}
+    B --> C{{absorbed already?}}
     C -- yes, in packs_absorbed.json --> D[skip it]
-    C -- no --> E{size in the name}
+    C -- no --> E{{size in the name}}
     E -- 4 MB or less --> F[batch read, up to 50 packs a request]
     E -- over 4 MB --> G[presigned read-url, parallel Range GETs]
     F --> H[check the size, then every member's id against its bytes]
@@ -127,13 +127,13 @@ snapshot and a few packs.
 ```mermaid
 %% A clone in pack mode: the newest snapshot, then every commit pack since it, then a local walk that confirms nothing is missing.
 flowchart TD
-    A[sgit clone] --> B{client knows packs?}
+    A[sgit clone] --> B{{client knows packs?}}
     B -- no, says the branch index --> X[refuse by name: run sgit update]
     B -- yes --> C[list snapshots/ and take the newest by epoch]
     C --> D[fetch it: one GET, or parallel 10 MB Range reads]
     D --> E[list commits/ and fetch every pack there]
     E --> F[verify and extract every member]
-    F --> G{local walk complete?}
+    F --> G{{local walk complete?}}
     G -- no --> H[fetch what is missing by the ordinary route, a safety net]
     G -- yes --> I[record the packs, check out as today]
     H --> I
@@ -151,10 +151,10 @@ later if storage ever matters, and ciphertext is cheap.
 ```mermaid
 %% Compaction: build and upload a snapshot, read its directory back before anything moves, then copy each absorbed pack to archive/ before deleting it from commits/. A crash between the last two steps leaves a pack in both places, which is harmless.
 flowchart TD
-    T{time to compact?} -- no --> Z[nothing to do]
+    T{{time to compact?}} -- no --> Z[nothing to do]
     T -- over 50 packs, or a tenth of the snapshot --> A[build a snapshot of every object reachable from the remote head]
     A --> B[upload it to snapshots/]
-    B --> C{directory read back: all ids there?}
+    B --> C{{directory read back: all ids there?}}
     C -- no --> Y[abort, everything left as it was]
     C -- yes --> D[upload each absorbed pack to archive/]
     D --> E[then delete it from commits/]
@@ -182,7 +182,7 @@ objects left as the archive) becomes the production path.
 ```mermaid
 %% The gate: a pack vault says so in its branch index, and every reader that does not know packs refuses it by name instead of seeing an empty vault.
 flowchart TD
-    I[branch index: features packs, min_client] --> N{reader}
+    I[branch index: features packs, min_client] --> N{{reader}}
     N -- sgit with pack mode --> OK[reads the packs]
     N -- an older sgit --> R1[refused: this vault needs a newer sgit-ai, run sgit update]
     N -- the web app or a static reader --> R2[refused by name]
@@ -196,7 +196,7 @@ trial is what you want.
 
 ```mermaid
 %% Importing a vault: a full clone, re-encrypted under a new key the way vault move does it, written as one snapshot pack. The source is not touched.
-flowchart LR
+flowchart TD
     S[(source vault)] -- full clone --> L[local clone]
     L -- re-encrypt: blobs, trees, commits --> N[new ids under the new key]
     N --> P[one snapshot pack]

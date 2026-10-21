@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:repeat(4,1fr)} .big{font:400 40px/1.1 var(--serif);color:var(--teal);margin:6px 0 2px} .big.w{color:var(--warm)}
+.box p{font-size:14.5px} .src{font-size:12.5px;color:var(--dim2);margin-top:8px}</style></head><body>
+<h1>Is there any overhead? Yes: a fixed cost per command. The rest is what you choose to fetch.</h1>
+<p class="sub">Four answers, each measured, from the smallest unit up. A command costs a fraction of a second before any network; after that the cost is the number of requests, and sgit's clone options decide how many of them a job makes. Local numbers are local; the hosted ones are from a cloud sandbox behind a proxy.</p>
+<div class="grid cols">
+ <div class="box"><h3>1. One command</h3><div class="big w">≈ 0.4 s</div><p>fixed, before the network: 0.22 s to start, 0.18 s for the 600,000-round key derivation, once per process. Encryption itself is cheap: 100 MB in 0.4 s.</p><div class="src">this sandbox, 21 Oct, sgit-ai 0.23.0</div></div>
+ <div class="box teal"><h3>2. A CI job</h3><div class="big">0.59 → 0.77 s</div><p>a one-folder clone as the vault grows from 100 to 2,000 files; a full clone goes 0.95 → 5.55 s. Ten one-folder clones at once: 1.9 s; ten full: 21.1 s.</p><div class="src">sgit in GitHub Actions, side by side; local server</div></div>
+ <div class="box teal"><h3>3. A big vault</h3><div class="big">13 s, 3 MB</div><p>one folder at one commit of a 35,000-object, 527 MB vault, hosted; a full clone is 3½ minutes. From local disk, 0.8 s. A pull with nothing new: 2.5 s.</p><div class="src">One vault, ten agents; hosted server, cloud sandbox</div></div>
+ <div class="box teal"><h3>4. Many writers</h3><div class="big">205 / s</div><p>a hundred writers, a thousand entries into an append lane in 4.9 s, none lost, in memory. A hive: 603 operations in 27 runs, median commit 0.83 s, push 1.0 s.</p><div class="src">Agent workflows on ephemeral vaults; the ruv.sgit ledger</div></div>
+</div>
+<div class="foot"><b>The overhead is per command and per request; sgit's answer is to make fewer of both: a scoped clone, a depth, a cache, a lane, and next, a pack per push.</b><span>cli.sgit.ai · 21 October 2026 · every number from the source named under it</span></div>
+</body></html>

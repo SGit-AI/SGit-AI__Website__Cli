@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.wrap{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}</style></head><body>
+<h1>As the vault grows, a one-folder clone stays flat</h1>
+<p class="sub">Clone time against the number of files in the vault, median of three runs: sgit 0.21.0 against a local vault server over HTTP, four cores, files of random bytes in 20 folders. The one-folder clone takes 5% of the files and barely moves; the full clone grows with the vault.</p>
+<div class="wrap">
+<svg viewBox="0 0 900 430" width="900" height="430" font-family="ui-sans-serif,system-ui,sans-serif">
+ <rect x="0" y="0" width="900" height="430" fill="#ffffff" stroke="#d5d0c2" rx="12"/>
+ <g stroke="#e5e1d5"><line x1="90" y1="360" x2="860" y2="360"/><line x1="90" y1="300" x2="860" y2="300"/><line x1="90" y1="240" x2="860" y2="240"/><line x1="90" y1="180" x2="860" y2="180"/><line x1="90" y1="120" x2="860" y2="120"/><line x1="90" y1="60" x2="860" y2="60"/></g>
+ <g fill="#5c5f66" font-size="14" text-anchor="end"><text x="80" y="365">0 s</text><text x="80" y="305">1 s</text><text x="80" y="245">2 s</text><text x="80" y="185">3 s</text><text x="80" y="125">4 s</text><text x="80" y="65">5 s</text></g>
+ <g fill="#5c5f66" font-size="14" text-anchor="middle"><text x="130" y="390">100 files</text><text x="420" y="390">500 files</text><text x="820" y="390">2,000 files</text></g>
+ <polyline points="130,303 420,241 820,27" fill="none" stroke="#b45309" stroke-width="4"/>
+ <polyline points="130,325 420,322 820,314" fill="none" stroke="#0f766e" stroke-width="4"/>
+ <g fill="#b45309"><circle cx="130" cy="303" r="6"/><circle cx="420" cy="241" r="6"/><circle cx="820" cy="27" r="6"/></g>
+ <g fill="#0f766e"><circle cx="130" cy="325" r="6"/><circle cx="420" cy="322" r="6"/><circle cx="820" cy="314" r="6"/></g>
+ <g font-size="15" font-weight="700"><text x="140" y="292" fill="#b45309">0.95</text><text x="430" y="230" fill="#b45309">1.98</text><text x="770" y="40" fill="#b45309">5.55 s</text>
+ <text x="140" y="346" fill="#0f766e">0.59</text><text x="430" y="343" fill="#0f766e">0.64</text><text x="770" y="338" fill="#0f766e">0.77 s</text></g>
+</svg>
+<div>
+ <div class="box" style="border-color:var(--warm);margin-bottom:14px"><h3 style="color:var(--warm)">Full clone</h3><p>every object, every folder, all of the history: 82.7 MB on disk at 2,000 files.</p></div>
+ <div class="box teal" style="margin-bottom:14px"><h3>One folder, <code>--path</code></h3><p>the spine of trees to one folder and the files in it: 4.1 MB on disk at 2,000 files.</p></div>
+ <div class="box muted"><h3>Ten at once</h3><p>Ten one-folder clones together: 1.9 s. Ten full clones: 21.1 s, on one server process.</p></div>
+</div>
+</div>
+<div class="foot"><b>A job pays for the folders it asks for, not for the vault it lives in.</b><span>cli.sgit.ai · 21 October 2026 · from "sgit in GitHub Actions, side by side", newsroom.sgit.ai, measured locally</span></div>
+</body></html>

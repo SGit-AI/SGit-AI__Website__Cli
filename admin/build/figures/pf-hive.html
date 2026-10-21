@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>td.op{font-family:var(--mono);font-size:14px;width:180px} td.n{width:80px;text-align:right;font-family:var(--mono);font-size:14px;color:var(--dim)} td.v{width:110px;font-family:var(--mono);font-size:14px}
+.cols{grid-template-columns:1.4fr 1fr;gap:26px}</style></head><body>
+<h1>A hive's 603 sgit operations, from the ruv.sgit ledger</h1>
+<p class="sub">Every sgit command run by ruv.sgit's Ruflo hives between 15 and 21 October 2026: 27 runs, up to six workers each, every worker on its own branch, the host merging them. A local vault server, one process, disk storage. Each time includes starting Python and deriving the key.</p>
+<div class="grid cols">
+<table class="t"><tr><th>Operation</th><th style="text-align:right">Count</th><th>Median</th><th>Slowest</th><th></th></tr>
+<tr><td class="op">push</td><td class="n">177</td><td class="v">1.01 s</td><td class="v">1.50 s</td><td><span class="bar" style="width:101px"></span></td></tr>
+<tr><td class="op">commit</td><td class="n">102</td><td class="v">0.83 s</td><td class="v">1.29 s</td><td><span class="bar" style="width:83px"></span></td></tr>
+<tr><td class="op">branch new</td><td class="n">75</td><td class="v">0.86 s</td><td class="v">1.38 s</td><td><span class="bar" style="width:86px"></span></td></tr>
+<tr><td class="op">branch switch</td><td class="n">75</td><td class="v">0.91 s</td><td class="v">1.33 s</td><td><span class="bar" style="width:91px"></span></td></tr>
+<tr><td class="op">merge</td><td class="n">75</td><td class="v">0.88 s</td><td class="v">1.24 s</td><td><span class="bar" style="width:88px"></span></td></tr>
+<tr><td class="op">clone</td><td class="n">27</td><td class="v">0.92 s</td><td class="v">1.33 s</td><td><span class="bar" style="width:92px"></span></td></tr>
+<tr><td class="op">init</td><td class="n">27</td><td class="v">0.86 s</td><td class="v">1.44 s</td><td><span class="bar" style="width:86px"></span></td></tr>
+</table>
+<div>
+ <div class="box teal" style="margin-bottom:14px"><h3>What the runs held</h3><p>478 files and 20 MB of delivered work, 129 commits, 64 worker slots; the largest run, 142 files and 6.9 MB, cloned back in 0.74 s.</p></div>
+ <div class="box teal" style="margin-bottom:14px"><h3>What they proved</h3><p>27 clone checks, every one identical to what was delivered; plaintext found in the server's storage: none.</p></div>
+ <div class="box muted"><h3>What went wrong</h3><p>7 of the 603 commands exited with an error; the ledger records each one.</p></div>
+</div>
+</div>
+<div class="foot"><b>About a second per operation, locally, whatever the run's size: the cost is per command, not per byte.</b><span>cli.sgit.ai · 21 October 2026 · computed from ruv.sgit.ai/data/vaults.json, updated 21 Oct 13:42 UTC</span></div>
+</body></html>

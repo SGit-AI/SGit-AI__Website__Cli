@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:1fr 1fr;gap:26px} .row{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px}
+.row .n{flex:none;font:700 15px var(--mono);color:var(--teal);width:120px} .row.g .n{color:var(--blue)} .row p{margin:0;font-size:15px}</style></head><body>
+<h1>Where sgit does less work than git, and where git is faster</h1>
+<p class="sub">Not a race: git reads plaintext, sgit decrypts everything it touches and its server can read nothing. The left column is where sgit's design means less work for the job; the right is where git is quicker today, said as plainly.</p>
+<div class="grid cols">
+ <div class="box teal"><h3>sgit does less</h3>
+  <div class="row"><div class="n">4.4 s vs 16.1</div><p><b>Large binary files.</b> 40 files of 3 MB: a full sgit clone against a full git clone of the same files from local disk, which spends its time compressing what cannot be compressed.</p></div>
+  <div class="row"><div class="n">3 MB of 527</div><p><b>One folder of a big vault,</b> with no server-side support needed: <code>--path --depth 1</code> fetches the spine to one folder, 13 s hosted.</p></div>
+  <div class="row"><div class="n">0 requests</div><p><b>Caching anywhere.</b> Every object is named by the hash of its ciphertext; a browser, a CDN or a CI cache keeps it for ever without being told. A reload inside two minutes fetches nothing.</p></div>
+  <div class="row"><div class="n">any GET host</div><p><b>No server to run for readers.</b> S3, GitHub Pages, a folder, one zip: a clone from a local folder took 0.48 s.</p></div>
+  <div class="row"><div class="n">1.9 s for 10</div><p><b>Many agents at once.</b> Scoped clones barely load the server; the work is on the clients.</p></div>
+ </div>
+ <div class="box blue"><h3>git is faster</h3>
+  <div class="row g"><div class="n">0.4 s</div><p><b>git's own partial clone with a sparse checkout,</b> from local disk, no encryption: the fastest result in the same measurement.</p></div>
+  <div class="row g"><div class="n">~0.4 s each</div><p><b>Many tiny commands.</b> Every sgit command starts Python and derives its key; git starts in milliseconds. A loop of hundreds of commits wants the append lane, or the pack mode coming next.</p></div>
+  <div class="row g"><div class="n">1 commit / write</div><p><b>A write per request at high rate.</b> One commit per change is right for documents; a stream belongs in a lane and is folded later.</p></div>
+  <div class="row g"><div class="n">blame, bisect</div><p><b>Tools sgit does not have yet.</b> Path history and signatures exist; blame is a fold nobody has written.</p></div>
+ </div>
+</div>
+<div class="foot"><b>sgit wins where the job can be selective, the files are large, or the storage is dumb; git wins on raw local speed for small, frequent commands.</b><span>cli.sgit.ai · 21 October 2026 · from the newsroom's measured articles and this site's</span></div>
+</body></html>

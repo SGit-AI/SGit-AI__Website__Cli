@@ -4,7 +4,7 @@ summary: One commit per change is right for documents and wrong for a stream, an
 section: topics
 order: 4
 question: Can a vault take a thousand small writes a second, keep who wrote each one, and still store whole, immutable, cacheable objects?
-articles: [a-vault-you-can-carry, a-pack-per-push, pack-mode-read-closely, a-vault-in-one-file, copy-on-write-and-the-vault, streaming-changes-into-a-vault]
+articles: [is-there-any-overhead, a-vault-you-can-carry, a-pack-per-push, pack-mode-read-closely, a-vault-in-one-file, copy-on-write-and-the-vault, streaming-changes-into-a-vault]
 ---
 
 # How a vault takes writes

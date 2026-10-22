@@ -9,7 +9,7 @@
 
 Pull named branch changes and merge into clone branch.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.23.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.24.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit pull [options] [directory]

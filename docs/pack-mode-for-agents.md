@@ -55,7 +55,7 @@ $ sgit commit -m "first"
 $ sgit push --token <token>          # the first push uploads one snapshot
 ```
 
-`sgit create --packs <name>` does the same in one step: it makes the folder, the vault and the first push.
+`sgit create --packs <name>` makes the folder and the vault in one step. It prints "Pushing to remote … Vault ready", but nothing reaches the server until a first commit is pushed, and until then a clone with the key fails. So add a file, `sgit commit`, then `sgit push`, as above. A normal `sgit create` behaves the same way.
 
 To join a pack vault that already exists, `sgit clone <vault key> <dir> --base-url <server> --token <token>`. The clone prints what it fetched:
 

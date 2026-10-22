@@ -91,7 +91,7 @@ NAV = [
     ("Reference", "reference/index.html", ("reference", "api"), [
         ("&#9679; Every command", "reference/index.html"), ("sgit vault", "reference/vault.html"),
         ("sgit history", "reference/history.html"), ("sgit pki", "reference/pki.html"),
-        ("sgit serve", "reference/serve.html"), ("&#9679; The HTTP API", "api/index.html"), ("@api", 6)]),
+        ("sgit pack", "reference/pack.html"), ("sgit serve", "reference/serve.html"), ("&#9679; The HTTP API", "api/index.html"), ("@api", 6)]),
     ("Research", "research/index.html", ("research", "topics"), [
         ("&#9679; All research, by topic", "research/index.html"), ("@topics", 8)]),
     ("Articles", "articles/index.html", ("articles",), [

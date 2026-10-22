@@ -4,7 +4,7 @@
 > points `sgit` and `sgit-ai`): every command, generated from the CLI's own parser; the HTTP API it is a
 > client of; the guides; and the CLI team's research, published as articles.
 
-Site version: v0.2.7 · command reference generated from sgit-ai v0.23.0 (158 commands) · 135 pages.
+Site version: v0.2.8 · command reference generated from sgit-ai v0.24.0 (165 commands) · 136 pages.
 
 Every page below is markdown, generated from the same source as the HTML page at the same path (swap
 `.md` for `.html`). Links inside the markdown point at markdown. Every page in one document: /llms-full.txt.
@@ -72,6 +72,7 @@ Notes for agents:
 - [sgit ls](/reference/ls.md): List vault files with fetch status
 - [sgit merge-abort](/reference/merge-abort.md): Abort an in-progress merge and restore working tree
 - [sgit migrate](/reference/migrate.md): Run vault data migrations
+- [sgit pack](/reference/pack.md): Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats)
 - [sgit pki](/reference/pki.md): PKI key management and encryption
 - [sgit publish](/reference/publish.md): Generate the plaintext surface for static publishing (.sg_vault/publish/ — the only path that changes)
 - [sgit pull](/reference/pull.md): Pull named branch changes and merge into clone branch

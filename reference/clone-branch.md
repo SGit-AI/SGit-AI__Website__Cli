@@ -9,7 +9,7 @@
 
 Thin clone: full commit history + HEAD trees/blobs only. Note: only HEAD is fully fetched — run 'sgit fetch <path>' or 'sgit pull' to access older history.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.23.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.24.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit clone-branch [options] <vault_key> [directory]

@@ -9,7 +9,7 @@
 
 Write a file directly to vault HEAD (agent workflow).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.23.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.24.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit write [options] <path> [directory]

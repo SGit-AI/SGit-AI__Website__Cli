@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <span class="stage-pill">sgit-ai v0.24.0</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -56,6 +56,7 @@
       <a class="sl" href="../reference/vault.html">sgit vault</a>
       <a class="sl" href="../reference/history.html">sgit history</a>
       <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
       <a class="sl" href="../reference/serve.html">sgit serve</a>
       <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
       <a class="sl" href="../api/index.html">The HTTP API</a>
@@ -115,7 +116,7 @@
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../reference/index.html">Command reference</a> / sgit fetch</div>
 <h1 id="sgit-fetch">sgit fetch</h1>
 <p>Fetch file content on demand (sparse clone).</p>
-<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.23.0. No subcommands. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
+<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.24.0. No subcommands. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
 <pre><code class="lang-text">sgit fetch [options] [path] [directory]</code></pre>
 <div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>path</code></td><td>optional</td><td>File or directory path to fetch (default: all)</td></tr><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
 <div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--all</code></td><td>Fetch all unfetched files (convert sparse clone to full)</td></tr><tr><td><code>--base-url</code></td><td>API base URL (overrides --remote, global --base-url, and saved config)</td></tr><tr><td><code>--no-verify-tls</code></td><td>Skip TLS certificate verification (staging / self-signed only)</td></tr><tr><td><code>--remote</code></td><td>Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command</td></tr><tr><td><code>--token</code></td><td>SG/Send access token (overrides global --token and saved config)</td></tr><tr><td><code>--transport</code></td><td>How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: <code>api</code>, <code>auto</code>, <code>local</code>, <code>static</code>.</td></tr><tr><td><code>--unshallow</code></td><td>Shallow clone: fetch the history behind the boundary commit(s)</td></tr><tr><td><code>--verify-tls</code></td><td>Verify TLS certificates (default)</td></tr></tbody></table></div>

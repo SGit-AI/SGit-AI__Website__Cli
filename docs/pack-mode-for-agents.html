@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <span class="stage-pill">sgit-ai v0.24.0</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -56,6 +56,7 @@
       <a class="sl" href="../reference/vault.html">sgit vault</a>
       <a class="sl" href="../reference/history.html">sgit history</a>
       <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
       <a class="sl" href="../reference/serve.html">sgit serve</a>
       <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
       <a class="sl" href="../api/index.html">The HTTP API</a>
@@ -135,7 +136,7 @@ Vault created!  Vault ID: &lt;id&gt;  (pack vault)
 $ # … add files …
 $ sgit commit -m &quot;first&quot;
 $ sgit push --token &lt;token&gt;          # the first push uploads one snapshot</code></pre>
-<p><code>sgit create --packs &lt;name&gt;</code> does the same in one step: it makes the folder, the vault and the first push.</p>
+<p><code>sgit create --packs &lt;name&gt;</code> makes the folder and the vault in one step. It prints "Pushing to remote … Vault ready", but nothing reaches the server until a first commit is pushed, and until then a clone with the key fails. So add a file, <code>sgit commit</code>, then <code>sgit push</code>, as above. A normal <code>sgit create</code> behaves the same way.</p>
 <p>To join a pack vault that already exists, <code>sgit clone &lt;vault key&gt; &lt;dir&gt; --base-url &lt;server&gt; --token &lt;token&gt;</code>. The clone prints what it fetched:</p>
 <pre><code class="lang-text">  ▸ Packs fetched (1 pack(s), 2087 objects, 4 request(s) in 6.2s)</code></pre>
 <p>The request count stays at 3 or 4 whatever the size of the history. <b>If a clone of a pack vault ever reports fetching objects one by one, stop and report it</b> (section 9).</p>

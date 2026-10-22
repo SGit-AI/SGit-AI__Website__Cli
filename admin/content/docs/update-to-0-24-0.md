@@ -72,6 +72,8 @@ Each pair is the same content as a normal vault and as a pack vault, on the same
 | **The comms vault's history:** 1,229 commits, 33,000 objects, measured by the CLI team | | |
 | Full clone | 3½ min | **25 s** (18 s of it one 251 MB download in 4 requests) |
 
+Re-measured with the 0.24.0 wheel from PyPI after the release, on 22 October: the published vault cloned in 9.0, 9.3 and 9.8 seconds (7.2 s of each was the download, in 4 requests), and imported in about 9 seconds locally. That is within the spread between runs on the same day; the network accounts for it, not the code.
+
 Two things the table does not show:
 - **Pulls gain least.** Their time is the local merge and status walks, which are the same in both modes and are the CLI team's next target.
 - **After a compaction, a clone that was behind downloads the whole snapshot** on its next pull: 130 MB and 9.5 s on the AIUC vault. Archived commit packs are never read by a pull.
@@ -126,4 +128,4 @@ $ sgit push                                      # one snapshot
 - Compaction is manual (`sgit pack compact`). Nothing triggers it automatically. Run it when `commits/` holds more than about 50 packs, or more than a tenth of the snapshot's bytes.
 - A clone that was behind when a compaction ran downloads the whole snapshot on its next pull.
 
-*Sources: the CLI's CHANGELOG and its [pack-mode feature reference](https://github.com/SGit-AI/SGit-AI__CLI/tree/dev/team/humans/dinis_cruz/claude-code-web/10/22) (22 October 2026); the measurements are cli.sgit.ai's live trials of 21 and 22 October 2026 on dev.send.sgraph.ai, except the comms vault's, which are the CLI team's. Every claim in sections 4 and 6 was checked against the code at the merge to main (`ab97e497`) and on dev at `182cfc16`.*
+*Sources: the CLI's CHANGELOG and its [pack-mode feature reference](https://github.com/SGit-AI/SGit-AI__CLI/tree/dev/team/humans/dinis_cruz/claude-code-web/10/22) (22 October 2026); the measurements are cli.sgit.ai's live trials of 21 and 22 October 2026 on dev.send.sgraph.ai, except the comms vault's, which are the CLI team's. Every claim in sections 4 and 6 was checked against the code at the merge to main (`ab97e497`) and on dev at `182cfc16`, and the release itself (`70b37483`, sgit-ai 0.24.0 from PyPI) was run through the playbook's recipes live on dev the evening it was published.*

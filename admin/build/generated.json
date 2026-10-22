@@ -200,6 +200,8 @@
  "reference/merge-abort.md",
  "reference/migrate.html",
  "reference/migrate.md",
+ "reference/pack.html",
+ "reference/pack.md",
  "reference/pki.html",
  "reference/pki.md",
  "reference/publish.html",

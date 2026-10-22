@@ -9,7 +9,7 @@
 
 Create a new empty vault and register it on the server.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.23.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.24.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit init [options] [directory]
@@ -24,6 +24,7 @@ sgit init [options] [directory]
 | `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
 | `--existing` | Allow initialising into a non-empty directory without prompting |
 | `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--packs` | Pack vault: objects travel and are stored as zips (bare/packs/), blobs are deflated before encryption. CLI-only (no web view); older clients are refused. |
 | `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
 | `--restore` | Restore vault from a .vault__*.zip backup in the target directory |
 | `--token` | SG/Send access token (overrides global --token and saved config) |

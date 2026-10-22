@@ -2,7 +2,7 @@
 
 > A brief to the SG/Send team: a presigned append route that grows a zip on S3 by UploadPartCopy, conditional completes with If-Match and If-None-Match, and size and ETag with the read URL. Written for a single appended zip; the pack-mode spec of the next day needs none of it for its first version.
 
-*Source: <https://cli.sgit.ai/research/zip-append-via-s3-brief.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md>.*
+*Source: <https://cli.sgit.ai/research/zip-append-via-s3-brief.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md>.*
 
 ---
 # Brief to the SG/Send team: append to a vault object on S3 without re-uploading it, and conditional completes

@@ -2,7 +2,7 @@
 
 > A review of the one-way map from git's security features to sgit, checked against the code: three corrections, one missing gap, and the four easy gaps closed for 0.21.0.
 
-*Source: <https://cli.sgit.ai/research/git-to-sgit-security-mapping.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/08/review__git-to-sgit-security-mapping.md>.*
+*Source: <https://cli.sgit.ai/research/git-to-sgit-security-mapping.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/08/review__git-to-sgit-security-mapping.md>.*
 
 ---
 # Review: "Git security features → sgit: a one-way mapping"

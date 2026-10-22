@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pack mode: the round trip, built and measured · cli.sgit.ai</title>
+<meta name="description" content="What was built for pack mode, how the round trip from a normal vault to a pack vault and back is tested, and every measurement: the synthetic request-count gates, the live trial with the comms vault&#x27;s 33,000 objects (a 25 s clone against 3½ minutes), and the reviewer&#x27;s numbers.">
+<link rel="canonical" href="https://cli.sgit.ai/research/pack-mode-round-trip-measured.html">
+<link rel="alternate" type="text/markdown" href="../research/pack-mode-round-trip-measured.md">
+<meta property="og:title" content="Pack mode: the round trip, built and measured">
+<meta property="og:description" content="What was built for pack mode, how the round trip from a normal vault to a pack vault and back is tested, and every measurement: the synthetic request-count gates, the live trial with the comms vault&#x27;s 33,000 objects (a 25 s clone against 3½ minutes), and the reviewer&#x27;s numbers.">
+<meta property="og:url" content="https://cli.sgit.ai/research/pack-mode-round-trip-measured.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Pack mode: the round trip, built and measured</div>
+<h1 id="pack-mode-the-round-trip-built-and-measured">Pack mode: the round trip, built and measured</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-21 · 15:47 UTC</span><span class="k">Kind</span><span class="v">measurement</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/write-path.html">write-path</a> <a class="chip" href="../research/topics/scale.html">scale</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/21/note__pack-mode-round-trip.md"><code>team/humans/dinis_cruz/claude-code-web/10/21/note__pack-mode-round-trip.md</code></a> in SGit-AI__CLI at <code>182cfc1</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Date:</b> 21 Oct 2026. <b>Branch:</b> <code>claude/charming-babbage-5hzcxq</code> (for 0.24.0). <b>Spec:</b> <a href="../research/pack-mode-spec.html"><code>spec__pack-mode.md</code></a> (same folder). <b>Article:</b> <a href="../articles/a-pack-per-push.html"><code>article-draft__a-pack-per-push.md</code></a>.</p>
+<p>This note records what was built for pack mode, how the round trip normal vault → pack vault → normal vault is tested on disk, and the numbers: the synthetic gates that run in CI, and the live trial on dev with the comms vault's history.</p>
+<h2 id="1-what-a-pack-vault-is-in-one-paragraph">1. What a pack vault is, in one paragraph</h2>
+<p>A pack vault (branch-index features <code>packs</code> + <code>blob-deflate</code>, <code>min_client</code> = the creating client) keeps no loose objects on the host. Each push uploads one deterministic zip of the commit's new objects to <code>bare/packs/commits/&lt;epoch&gt;__&lt;commit&gt;__&lt;bytes&gt;.zip</code>; the first push and <code>sgit pack compact</code> upload one snapshot of everything reachable from the head to <code>bare/packs/snapshots/</code>. A clone lists the two folders, takes the newest snapshot and every commit pack it has not absorbed, and extracts them into its ordinary loose store, member by member, each verified against its content address before it is written. A pull does the same for commit packs only; a clone whose commit packs were compacted away takes the snapshot. Refs, the branch index and keys travel exactly as before, so push's compare-and-swap, the rewind guard, signatures and the format gate are unchanged. Blobs are deflated before encryption (envelope v2, kept only when shorter). No server change.</p>
+<h2 id="2-what-was-built">2. What was built</h2>
+<div class="tablewrap"><table><thead><tr><th>Piece</th><th>Where</th></tr></thead><tbody><tr><td>Blob envelope v2 (<code>DEFLATE_MAGIC + iv + GCM(deflate(plaintext))</code>), read by inspection</td><td><code>crypto/Vault__Crypto.py</code> (<code>encrypt(..., deflate=True)</code> at the one blob call site; refs, index, keys, commits, trees never deflated)</td></tr><tr><td>Features <code>packs</code>, <code>blob-deflate</code>; <code>init --packs</code> sets them and <code>min_client</code></td><td><code>storage/Vault__Format.py</code>, <code>core/Vault__Sync.py</code></td></tr><tr><td>Packs: names, deterministic zips, verified extraction, listing, absorbed record, <code>sync_down</code>, <code>push_packs</code>, <code>push_snapshot</code></td><td><code>core/actions/pack/Vault__Packs.py</code></td></tr><tr><td>Hooks: push (packs instead of Phase A/B objects; first push = snapshot), pull and status (sync packs before the walk), clone (<code>Step__Clone__Bulk_Fetch.pack_vault_fetch</code>)</td><td><code>core/actions/push/Vault__Sync__Push.py</code>, <code>pull/Vault__Sync__Pull.py</code>, <code>status/Vault__Sync__Status.py</code>, <code>workflow/clone/Step__Clone__Bulk_Fetch.py</code></td></tr><tr><td>Import / export (the round trip)</td><td><code>core/actions/pack/Vault__Pack_Convert.py</code></td></tr><tr><td>Compact, ls, verify, stats</td><td><code>core/actions/pack/Vault__Pack_Maintain.py</code></td></tr><tr><td>CLI: <code>sgit pack import|export|compact|ls|verify|stats</code>, <code>sgit init --packs</code>, <code>sgit create --packs</code></td><td><code>cli/CLI__Pack.py</code>, <code>cli/CLI__Main.py</code></td></tr><tr><td>Parallel ranged presigned downloads (<code>read_large</code>): 8 × 8 MB in flight</td><td><code>network/api/Vault__API.py</code></td></tr></tbody></table></div>
+<p>Where the build differs from the spec: <code>sync_down</code> always reconciles the newest snapshot (a clone that already holds its head commit records it as absorbed without a download; one whose commit packs were archived takes it whole), so compaction can never strand a clone; the partial-clone flags (<code>--path</code>, <code>--depth</code>) take the packs whole in this version, as the spec allows for v1; compaction verifies a copy by the host's listing (name + size) and rebuilds the pack from the loose store when every object is local (byte-identical, by determinism) rather than reading 400 MB back.</p>
+<h2 id="3-the-round-trip-as-tested-on-disk">3. The round trip, as tested on disk</h2>
+<p><code>tests/unit/pack/test_Pack_Convert__Round_Trip.py</code> builds a normal vault with four commits (adds, an edit, a binary file, a delete), pushes it, then:</p>
+<ol><li><code>pack import</code> → a new pack vault (new key). Asserted: identical working copy; the same commits with the same messages and timestamps, every one re-signed by the new clone's key and verifying; every object id the content address of its bytes; the source store byte-identical before and after; <code>status</code> says N ahead, nothing pushed.</li><li><code>push</code> → one snapshot on the host, no <code>bare/data/</code> object. <code>clone</code> → identical working copy and history.</li><li><code>pack export</code> from the clone → a new normal vault (new key). Asserted: identical working copy and history, no v2 blob in its store, no <code>packs</code> feature; <code>push</code> → loose objects only; <code>clone</code> → identical.</li><li>The three vaults share no host file.</li></ol>
+<p><code>test_Pack_Vault__Sync.py</code> covers the pack vault in use: first push, clone in three requests without ever asking for a loose object, push from a clone as one commit pack, status says behind, three pushes pulled in one batch read, two clones converging, delete and edit in a pack, branch-only push, a blob over the batch budget, compaction (refuses a stale clone, dry run changes nothing, snapshot + archive, archived bytes identical to the originals, idempotent, a fresh clone takes only the snapshot, a clone left behind by compaction pulls through the snapshot, a clone holding the head records the snapshot without a download, orphans archived only when older than a day), verify on a tampered pack, nothing unverified written by a clone of a tampered pack, the gate refusing an old client. <code>test_Vault__Packs.py</code> covers names, determinism, extraction, listing, fetch grouping. <code>tests/security/test_Security__Fixed__Pack_Members.py</code> is the attack set (TM-F37); <code>Known_Gaps</code> has TM-R38 and TM-R40.</p>
+<h2 id="4-synthetic-gates-tests-unit-pack-test-pack-performance-gate">4. Synthetic gates (<code>tests/unit/pack/test_Pack__Performance_Gate.py</code>)</h2>
+<p>A vault of 20 commits, each adding a folder of 10 prose-like 2 KB files (200 files, 262 objects), built loose and packed on the counted in-memory host. Requests are deterministic, so these are hard gates; wall time is recorded, not asserted.</p>
+<div class="tablewrap"><table><thead><tr><th>Operation</th><th>Loose vault</th><th>Pack vault</th><th>Gate</th></tr></thead><tbody><tr><td>Host bytes</td><td>532 KB</td><td>189 KB (2.8×)</td><td>pack &lt; 70 % of loose; every prose blob deflated; blob ratio ≥ 2 (measured 16×)</td></tr><tr><td>Clone</td><td>9 requests (grows with the store: ≥ objects/50)</td><td>5 requests (index, meta, two listings, one batch)</td><td>pack ≤ 8 and &lt; loose</td></tr><tr><td>Pull, 5 pushes behind</td><td>11 requests</td><td>7 (two listings, one batch of 5 packs, the ref reads)</td><td>pack ≤ 8, one batch carrying all 5, &lt; loose</td></tr><tr><td>Push of one commit</td><td>45 requests</td><td>14</td><td>pack ≤ loose + 2; no <code>bare/data/</code> write</td></tr></tbody></table></div>
+<p>The clone and pull gates are the point: a pack clone is the same five requests at 20 commits and at 1,227, where the loose clone is 700 batch reads.</p>
+<h2 id="5-live-trial-on-dev-the-comms-vault-s-history-as-a-pack-vaul">5. Live trial on dev: the comms vault's history as a pack vault</h2>
+<p>Source: the full clone of the comms vault (1,227 commits, 16,391 trees, 16,268 blobs, 35,423 objects, 527 MB loose). Everything below ran from the cloud sandbox (the same place as the earlier measurements: 3½ min for a full loose clone over the API).</p>
+<p><b>Import</b> (<code>sgit pack import</code>, local, no network): 137 s. Blobs 355.4 MB → 176.2 MB of ciphertext (2.02×; 15,841 of 16,268 deflated, the rest incompressible); the store on disk 526 MB → 322 MB. 47 references the source itself could not resolve (older file versions never uploaded by the agents that made them, the known gap from the 10/06 check) are carried unchanged, so those historical files stay missing exactly as in the source. Snapshot of the head: 33,141 objects, 251 MB, built in 4 s once the reachable set is known (46 s for the 1,227-commit walk, trees memoised).</p>
+<p>All numbers are one run each, wall clock, from the sandbox (<code>user</code> CPU in brackets where it is most of the time). The loose figures are the earlier measurements on the same vault from the same place.</p>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>Pack vault (dev)</th><th>Loose vault, for comparison</th></tr></thead><tbody><tr><td><code>sgit push</code> (first push: one 251 MB snapshot, 24 multipart parts)</td><td>67 s (46 s of it the reachable-set walk, 4 s the zip, the rest upload)</td><td>the loose first push of this history was never measured from here; its object count alone is 35,423 writes</td></tr><tr><td><code>sgit clone</code> (full history, 33,094 objects, 251 MB)</td><td><b>58 s</b>: packs fetched in 18.0 s / 4 requests (~14 MB/s with 8 ranges in flight), 33 s the clone's tree walk, 3 s checkout. After the head-only walk for pack clones (same session): <b>25 s</b> (18.6 s download, 1.0 s trees, 3.2 s checkout)</td><td><b>3½ min</b> over the API (bulk-fetch, 16 batches in flight); 110 s static local; 69 s local API</td></tr><tr><td><code>sgit push</code> of one commit from the clone (one file: an 8.9 KB commit pack)</td><td>38 s, then 27 s after the pack path stopped running the loose path's flatten/collect walks (22 s CPU remain in the pull-first status and merge code, the same on a loose vault)</td><td>—</td></tr><tr><td><code>sgit pull</code> of that one commit pack (two listings, one batch)</td><td>27 s (22 s CPU: the merge's tree flatten, as on a loose vault; the transfer itself is ~2 s)</td><td>a pull one commit behind on the loose vault: 13 s for a scoped <code>--depth 1</code> clone's worth; whole-vault pulls were 180–206 s when far behind</td></tr><tr><td><code>sgit status</code></td><td>4 s</td><td>—</td></tr><tr><td><code>sgit pack compact --dry-run</code></td><td>6 s</td><td>—</td></tr><tr><td><code>sgit pack compact</code> (new snapshot 251 MB, 2 commit packs + the old snapshot to <code>archive/</code>)</td><td>76 s</td><td>—</td></tr><tr><td><code>sgit clone</code> after compaction (one snapshot, 33,102 objects)</td><td><b>25 s</b></td><td>3½ min</td></tr><tr><td><code>sgit pull</code> on a clone that already held the head, after compaction (snapshot recorded, not downloaded)</td><td>1.7 s</td><td>—</td></tr><tr><td><code>sgit pack ls</code> / <code>pack stats</code></td><td>1.6 s / 52 s (stats decrypts every blob to measure the ratio; 863 s before the walk was memoised)</td><td>—</td></tr><tr><td><code>sgit pack export</code> (local: 1,229 commits, 15,603 trees, 16,270 blobs re-encrypted v1)</td><td>82 s; working copy identical to the pack clone; <code>check fsck</code> reports exactly the 47 objects missing in the source</td><td>—</td></tr><tr><td><code>sgit pack import</code> (local)</td><td>90 s (137 s on the first run while the machine was also running the test suite)</td><td>—</td></tr></tbody></table></div>
+<p>Host after the trial: <code>snapshots/</code> 1 pack 251.1 MB, <code>commits/</code> 0, <code>archive/</code> 3 packs 251.1 MB, loose objects 0. Local store: 33,103 objects; 16,270 blobs on the branch, 15,843 deflated; 354.9 MB plaintext → 176.2 MB stored (2.01×). The host holds 251 MB for a history whose loose store was 527 MB.</p>
+<p>What the trial says: the transfer is solved (18 s for the whole history, four requests; a pull is one batch), and the remaining seconds in <code>push</code>, <code>pull</code> and the first <code>clone</code> are CPU in walks the loose path also does — the clone's full-history tree walk (33 s, now skipped for pack clones), the merge's flatten and the status check (22 s per push or pull on this vault). Those are the next targets and they are independent of pack mode.</p>
+<p>Throwaway vaults created for the trial were deleted on dev afterwards (<code>sgit vault delete-on-remote</code>); the comms vault itself was never written to.</p>
+<h2 id="6-the-verification-review-21-oct-and-what-changed">6. The verification review (21 Oct) and what changed</h2>
+<p>cli.sgit.ai's build agent re-ran the suites (4,511 passed), the how-to on dev (every step as written), measured loose against pack on a synthetic vault and on the published AIUC-1 vault (clone 3.3× faster, pushes 1.4–1.8×, blobs 1.66×), and reviewed the code: eight findings, each with a reproducing script. All eight were real; the response is <a href="../research/pack-mode-verification-response-1.html"><code>response__pack-mode-verification.md</code></a> (same folder), and <code>tests/unit/pack/test_Pack_Vault__Review_10_21.py</code> has one test per finding. The two that mattered most were data loss by compaction (packs of commits only another ref reached were archived; a raced compaction could archive a newer snapshot) and a zip bomb (a DEFLATED member inflated before the id check). Both are closed; the threat model rows TM-F37 and TM-R39 say how. Round 2 (<a href="../research/pack-mode-verification-response-2.html"><code>response__pack-mode-verification-round-2.md</code></a>) re-verified the fixes live, including the gate against the released 0.23.0 from PyPI, and found two more that mattered: an aborted compaction left its snapshot as the newest by name and a fresh clone took it (clones now choose the snapshot by the branch head, and an abort takes its snapshot back), and a duplicate member name slipped a deflated twin past the entry check (refused whole). The reviewer's numbers after the fixes: the safety checks cost nothing measurable (AIUC vault clone 8.3 s, 4 requests). Round 3 (<a href="../research/pack-mode-verification-response-3.html"><code>response__pack-mode-verification-round-3.md</code></a>) found the round-2 abort cleanup itself could delete a snapshot another compaction had adopted; the fix was to delete that code. One measured cost worth knowing: a clone that was behind when a compaction ran pulls the whole snapshot (9.5 s for 130 MB), not the packs it lacked.</p>
+<h2 id="7-for-the-email-team-s-trial">7. For the email team's trial</h2>
+<ul><li>Needs the 0.24.0 release (<code>sgit update</code>), then <code>sgit init --packs</code> (or <code>sgit create --packs</code>) for the new vault; <code>sgit pack ls</code> / <code>stats</code> / <code>verify</code> to look at the host; <code>sgit pack compact</code> when <code>commits/</code> grows past ~50 packs or a tenth of the snapshot (the thresholds in <code>Vault__Packs</code>).</li><li>No web view: a pack vault's objects are inside zips the browser does not read. Anything that must be browsable stays in a normal vault, or comes back through <code>sgit pack export</code>.</li><li>Older clients are refused by name (<code>min_client</code>), not confused by an empty store.</li></ul>
+<div class="pagenav"><a href="../research/pack-mode-testers-howto.html">← How to test pack mode (for an agent or a person, on a throwaway vault)</a><a href="../research/pack-mode-spec.html">Spec: pack mode for sgit (CLI-only, packs-only vaults, no server change) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/pack-mode-round-trip-measured.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/pack-mode-round-trip-measured.md"><code>admin/content/research/pack-mode-round-trip-measured.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/pack-mode-round-trip-measured.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+    <a href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+    <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+    <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+    <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

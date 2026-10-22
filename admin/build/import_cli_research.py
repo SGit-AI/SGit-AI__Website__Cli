@@ -31,6 +31,42 @@ GH = "https://github.com/SGit-AI/SGit-AI__CLI/blob"
 
 # source (under FOLDER), slug, kind, research topics (admin/content/research/topics/<id>.md), tags, summary
 DOCS = [
+    ('10/22/feature-reference__pack-mode.md', 'pack-mode-feature-reference', 'reference',
+     'write-path, scale', 'packs, release, 0.24.0, compression, compaction, gate',
+     'The CLI team\'s one-page reference for pack mode as released in sgit-ai 0.24.0: what it is and why, the '
+     'commands, the host layout, compression, the numbers to quote, compatibility and the gate, the security '
+     'model and the tests.'),
+    ('10/22/workflow__pack-mode-from-idea-to-release.md', 'pack-mode-idea-to-release', 'workflow',
+     'write-path', 'packs, process, review, release',
+     'How pack mode went from a measured problem to a release in eight days: research before code, a spec '
+     'reviewed before the build, tests on a counted host, a live trial, four verification rounds by a second '
+     'agent, and the documents each step left behind.'),
+    ('10/21/note__pack-mode-round-trip.md', 'pack-mode-round-trip-measured', 'measurement',
+     'write-path, scale', 'packs, round-trip, import, export, performance',
+     'What was built for pack mode, how the round trip from a normal vault to a pack vault and back is tested, '
+     'and every measurement: the synthetic request-count gates, the live trial with the comms vault\'s 33,000 '
+     'objects (a 25 s clone against 3½ minutes), and the reviewer\'s numbers.'),
+    ('10/21/howto__test-pack-mode.md', 'pack-mode-testers-howto', 'how-to',
+     'write-path', 'packs, testing, how-to',
+     'The CLI team\'s page for testing pack mode on throwaway vaults, step by step: create, push and pull '
+     'between clones, compaction, the round trip, what to report and the known limits.'),
+    ('10/21/response__pack-mode-verification.md', 'pack-mode-verification-response-1', 'response',
+     'write-path, security-review, correctness', 'packs, review, fixes',
+     'The CLI team\'s answer to the first verification round: all eight findings agreed and fixed with a test '
+     'each, three more found in its own pass, and the how-to corrected.'),
+    ('10/21/response__pack-mode-verification-round-2.md', 'pack-mode-verification-response-2', 'response',
+     'write-path, security-review, correctness', 'packs, review, fixes',
+     'The answer to round two: a clone chooses its snapshot by the branch head, a pack that names a member '
+     'twice is refused whole, an aborted compaction takes its snapshot back, and the gate exemption checks '
+     'every feature.'),
+    ('10/21/response__pack-mode-verification-round-3.md', 'pack-mode-verification-response-3', 'response',
+     'write-path, security-review, correctness', 'packs, review, fixes',
+     'The answer to round three: the round-two clean-up was the bug, so an aborted compaction now leaves its '
+     'snapshot; a 404 on an already archived pack is success; the gate exemption needs the hex form.'),
+    ('10/21/response__pack-mode-verification-round-4.md', 'pack-mode-verification-response-4', 'response',
+     'write-path, security-review', 'packs, review, fixes',
+     'The answer to round four: no blockers, and the three nits done; "already gone" is decided by the status '
+     'code, never by "404" inside a pack name.'),
     ('10/21/spec__pack-mode.md', 'pack-mode-spec', 'spec',
      'write-path, scale', 'packs, zip, push, pull, clone, compaction, s3',
      'The specification for pack mode: every push writes one zip pack, a snapshot pack compacts them, nothing is '

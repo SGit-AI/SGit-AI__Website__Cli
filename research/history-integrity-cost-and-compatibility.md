@@ -2,7 +2,7 @@
 
 > What signature verification, ref monotonicity and 128-bit ids would cost, measured on a real vault, and how to ship all three without a vault move.
 
-*Source: <https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md>.*
+*Source: <https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md>.*
 
 ---
 # History integrity: what the three fixes would cost, and how to ship them without a `vault move`

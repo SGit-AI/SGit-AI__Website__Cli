@@ -8,10 +8,10 @@ topics: [scale]
 tags: performance, clone
 summary: A clone stuck walking trees: the walk re-fetched shared sub-trees once per parent, 10,098 requests for 2,236 unique trees. The instrumented run and the fix.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/02/clone-performance__shared-subtree-refetch.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/02/clone-performance__shared-subtree-refetch.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/02/clone-performance__shared-subtree-refetch.md
-source_commit: 477d328
-source_branch: claude/charming-babbage-5hzcxq
+source_commit: 182cfc1
+source_branch: dev
 status: published
 ---
 

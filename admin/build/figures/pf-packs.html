@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.wrap{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+.op{display:grid;grid-template-columns:170px 1fr;gap:6px 14px;align-items:center;margin:0 0 16px}
+.op .l{font-weight:700;font-size:15px;grid-row:span 2}
+.op .r{display:flex;align-items:center}
+.big{font:400 38px/1.1 var(--serif);color:var(--teal);margin:4px 0 2px}
+.key{display:flex;gap:18px;font-size:13px;color:var(--dim);margin:0 0 18px}
+.key span{display:flex;align-items:center;gap:6px}</style></head><body>
+<h1>Pack mode, measured: the same vault as a normal vault and as a pack vault</h1>
+<p class="sub">sgit-ai 0.24.0. The published AIUC-1 conformance vault (17 commits, 699 files, 2,087 objects) put on the same server twice, once as each kind, and timed from a cloud sandbox: medians of three runs, one per row unless noted. Shorter is better.</p>
+<div class="wrap">
+ <div class="box">
+  <div class="key"><span><i class="bar g" style="width:26px"></i> normal vault</span><span><i class="bar" style="width:26px"></i> pack vault</span></div>
+  <div class="op"><div class="l">Clone</div>
+   <div class="r"><i class="bar g" style="width:560px"></i><span class="num">28.6 s</span></div>
+   <div class="r"><i class="bar" style="width:159px"></i><span class="num">8.1 s · 4 requests</span></div></div>
+  <div class="op"><div class="l">First push</div>
+   <div class="r"><i class="bar g" style="width:535px"></i><span class="num">27.3 s</span></div>
+   <div class="r"><i class="bar" style="width:231px"></i><span class="num">11.8 s · one snapshot</span></div></div>
+  <div class="op"><div class="l">Push one file</div>
+   <div class="r"><i class="bar g" style="width:206px"></i><span class="num">10.5 s</span></div>
+   <div class="r"><i class="bar" style="width:114px"></i><span class="num">5.8 s · one commit pack</span></div></div>
+  <div class="op"><div class="l">Pull, 3 behind</div>
+   <div class="r"><i class="bar g" style="width:94px"></i><span class="num">4.8 s</span></div>
+   <div class="r"><i class="bar" style="width:82px"></i><span class="num">4.2 s · one batch</span></div></div>
+  <div class="op"><div class="l">File contents stored</div>
+   <div class="r"><i class="bar g" style="width:417px"></i><span class="num">213 MB</span></div>
+   <div class="r"><i class="bar" style="width:253px"></i><span class="num">129 MB · compressed, then encrypted</span></div></div>
+ </div>
+ <div>
+  <div class="box teal"><h3>A long history</h3><div class="big">25 s</div><p>The comms vault's 1,229 commits and 33,000 objects as a pack vault: one 251 MB snapshot in 4 requests. As a normal vault, 3½ minutes. <span class="mono">CLI team, dev</span></p></div>
+  <div class="box teal" style="margin-top:16px"><h3>Requests per clone</h3><div class="big">3 or 4</div><p>Whatever the size of the history: two listings, the snapshot and the keys. A normal clone is one batch read per 50 objects.</p></div>
+  <div class="box warm" style="margin-top:16px"><h3>What does not get faster</h3><p>A pull spends its time in local merge and status walks, the same in both modes. A scoped clone (<code>--path</code>) of a pack vault downloads the whole snapshot.</p></div>
+ </div>
+</div>
+<div class="foot"><b>The transfer is solved: a clone is a handful of requests and 60% of the bytes. What remains is local work.</b><span>cli.sgit.ai · 22 October 2026 · live trials on dev.send.sgraph.ai, 21 and 22 October</span></div>
+</body></html>

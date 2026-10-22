@@ -21,6 +21,7 @@
   <url><loc>https://cli.sgit.ai/articles/is-there-any-overhead.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/keys-the-way-git-does-it.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/pack-mode-four-rounds.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/pack-mode-read-closely.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/policies-the-vault-enforces.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/research-is-not-an-article.html</loc></url>
@@ -41,6 +42,7 @@
   <url><loc>https://cli.sgit.ai/docs/installation.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/key-management.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/limitations.html</loc></url>
+  <url><loc>https://cli.sgit.ai/docs/pack-mode-for-agents.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/partial-clones.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/pki.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/quickstart.html</loc></url>
@@ -50,6 +52,7 @@
   <url><loc>https://cli.sgit.ai/docs/two-branch-model.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/update-to-0-18-0.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/update-to-0-21-0.html</loc></url>
+  <url><loc>https://cli.sgit.ai/docs/update-to-0-24-0.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/vault-messaging.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/what-is-sgit.html</loc></url>
   <url><loc>https://cli.sgit.ai/index.html</loc></url>
@@ -97,7 +100,19 @@
   <url><loc>https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/native-pki-vault-mode.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-feature-reference.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-idea-to-release.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-round-trip-measured.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-spec.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-testers-howto.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-response-1.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-response-2.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-response-3.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-response-4.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-round-1.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-round-2.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-round-3.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-mode-verification-round-4.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/partial-clones-scope-and-depth.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pull-discarded-uncommitted-edits.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/read-write-keys-as-pki.html</loc></url>

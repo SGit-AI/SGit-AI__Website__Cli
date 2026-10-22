@@ -8,10 +8,10 @@ topics: [write-path]
 tags: zip, s3, presigned, multipart, sg-send, server
 summary: A brief to the SG/Send team: a presigned append route that grows a zip on S3 by UploadPartCopy, conditional completes with If-Match and If-None-Match, and size and ETag with the read URL. Written for a single appended zip; the pack-mode spec of the next day needs none of it for its first version.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/20/brief__to-sg-send-team__zip-append-via-s3.md
-source_commit: 477d328
-source_branch: claude/charming-babbage-5hzcxq
+source_commit: 182cfc1
+source_branch: dev
 status: published
 ---
 

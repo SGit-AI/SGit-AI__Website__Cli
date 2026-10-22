@@ -14,6 +14,8 @@ By [Dinis Cruz](https://sgit.ai/about/) · 2026-10-21 · published
 *Is there any overhead? Four answers, each measured, from the smallest unit up. One command: about 0.4 seconds fixed before the network, 0.22 to start and 0.18 for the key derivation. A CI job: a one-folder clone goes from 0.59 to 0.77 seconds as the vault grows from 100 to 2,000 files, where a full clone goes from 0.95 to 5.55. A big vault: one folder at one commit of a 35,000-object, 527 MB vault is 13 seconds and 3 MB from the hosted service. Many writers: a thousand entries from a hundred writers into an append lane in 4.9 seconds, and a hive's 603 operations at a median of about a second each.*
 
 
+> **Update, 22 October 2026.** Pack mode shipped in sgit-ai 0.24.0, and its numbers are now measured rather than estimated. The same vault cloned in 8.1 seconds as a pack vault against 28.6 as a normal one, and a 33,000-object history in 25 seconds against three and a half minutes. They are in [a new section](#pack-mode). The rest of the article is as first published.
+
 ## In short {#in-short}
 
 - **Yes, there is overhead, and it is per command:** about 0.4 seconds before any network, to start and to derive the key once. Encrypting is cheap: 100 MB in 0.4 seconds.
@@ -22,7 +24,7 @@ By [Dinis Cruz](https://sgit.ai/about/) · 2026-10-21 · published
 - **A big vault stays usable.** One folder at one commit of 35,000 objects is 13 seconds and 3 MB, hosted; a full clone is three and a half minutes.
 - **Hives work at about a second an operation.** 603 sgit commands in Ruflo's hives on ruv.sgit.ai, every clone check identical, no plaintext on the server.
 - **Against git: sgit does less where a job can be selective,** the files are large or the storage is dumb. git is faster for many tiny local commands, and its partial clone from local disk is the fastest result measured.
-- **It keeps getting faster:** pack mode is being written now, compression and a commit-chain object are designed, and none of it needs a server change.
+- **It keeps getting faster:** pack mode, written when this was first published, shipped in 0.24.0. A clone of a 2,087-object vault went from 28.6 to 8.1 seconds, and nothing on the server changed.
 
 ## The question {#question}
 
@@ -127,12 +129,41 @@ The other half of the CI question is what happens when many writers share a vaul
 
 About a second per operation, whatever the run's size: the cost is per command, not per byte. The largest run, 142 files and 6.9 MB, cloned back in 0.74 seconds. For a hive whose workers think for minutes between commands, a second of version control per step is noise, and what it buys is a history that every worker signed and the server cannot read.
 
+## Pack mode, shipped and measured {#pack-mode}
+
+*Added on 22 October 2026, when pack mode shipped in sgit-ai 0.24.0. When this article was first published it was a specification, and the numbers below were arithmetic.*
+
+A pack vault keeps its objects on the host as zips:
+- **one zip per push,** holding the commit's new objects;
+- **one snapshot zip** of the whole history, written by the first push and by each compaction.
+
+A clone takes the snapshot for the branch head plus the commit zips since it, so it is three or four requests whatever the size of the history. File contents are compressed before they are encrypted. The server is unchanged. We put the same published vault on the same server twice, once as each kind, and timed both:
+
+![Pack mode, measured. The published AIUC-1 conformance vault, 17 commits, 699 files and 2,087 objects, as a normal vault and as a pack vault on the same server, timed from a cloud sandbox. Clone: 28.6 seconds against 8.1, in 4 requests. First push: 27.3 against 11.8, one snapshot. Push of one file: 10.5 against 5.8. Pull three pushes behind: 4.8 against 4.2. File contents stored: 213 MB against 129. On the side: the comms vault's history, 33,000 objects, clones in 25 seconds as a pack vault against three and a half minutes, and a pull still spends its time in local merge and status walks.](../articles/images/pf-packs.webp)
+
+*Pack mode, measured. The published AIUC-1 conformance vault, 17 commits, 699 files and 2,087 objects, as a normal vault and as a pack vault on the same server, timed from a cloud sandbox. Clone: 28.6 seconds against 8.1, in 4 requests. First push: 27.3 against 11.8, one snapshot. Push of one file: 10.5 against 5.8. Pull three pushes behind: 4.8 against 4.2. File contents stored: 213 MB against 129. On the side: the comms vault's history, 33,000 objects, clones in 25 seconds as a pack vault against three and a half minutes, and a pull still spends its time in local merge and status walks.*
+
+
+| | Normal vault | Pack vault |
+|---|---|---|
+| Clone, 2,087 objects | 28.6 s | **8.1 s**, 4 requests |
+| Clone, the comms vault's 33,000 objects (CLI team's trial) | 3½ min | **25 s** |
+| Push of one file | 10.5 s | **5.8 s** |
+| Pull, 3 pushes behind | 4.8 s | 4.2 s |
+| File contents stored | 213 MB | **129 MB** (1.66×; 3.67× on a prose-and-JSON vault) |
+
+The spec's estimate for the big vault was about 40 seconds; the measurement is 25. Two caveats belong next to the table:
+- **Pulls gain least,** because their time is local merge and status work, which is the same in both modes. That is the next target, and it is independent of packs.
+- **A scoped clone (`--path`) of a pack vault downloads the whole snapshot,** so agents that each take one folder of a big vault should stay on a normal vault for now.
+
+Before release, a second agent reviewed the feature in four rounds of tests, code review and live trials. The fixes cost nothing measurable: a clone was 8.6 seconds before them and 8.1 after. [The release notes](../docs/update-to-0-24-0.md) have the rest, and agents should start from [the playbook](../docs/pack-mode-for-agents.md).
+
 ## What is being added {#coming}
 
 The work on performance is not finished, and the next steps are concrete:
 
-- **Pack mode, a zip per push,** [specified](../research/pack-mode-spec.md) and being written by the CLI team now. A push becomes one upload and one compare-and-swap, whatever its size; a cold clone of the 35,000-object vault becomes one snapshot and a few packs, about 40 seconds from the sandbox where it is three and a half minutes today. Those are arithmetic from measured request costs; the spec's five performance runs will replace them with measurements, and this article will be updated with them.
-- **Blob compression before encryption,** measured on the comms vault's files: deflate at level 6 makes them 1.58 times smaller in 2.9 seconds of CPU for 120 MB, so a 527 MB store would be about 330 MB.
+- **Scoped reads of a pack vault,** so `--path` reads one folder's objects out of the snapshot by `Range` instead of downloading it whole. The reader was exercised on 20 October.
+- **Faster merge and status walks,** where a pull now spends its time: 22 seconds of CPU per push or pull on the comms vault's history, the same on a normal vault.
 - **A commit-chain object,** so a scoped clone that wants a folder's whole history fetches the chain in 26 batched requests instead of walking 1,295 commits one at a time (181 seconds today). Until then, `--depth` is the answer.
 - **A vault in one file,** already [measured](../articles/a-vault-you-can-carry.md): zipped, sealed to a public key, and cloned from a folder in 0.48 seconds. A command for it is proposed.
 
@@ -145,7 +176,7 @@ None of the changes above needs a new server. The vault convention is open: immu
 - **Most numbers are from one cloud sandbox**, behind a proxy, so hosted times are worse than a plain connection; the CI and hive numbers are against a local server. None were run at the scale of a large company's monorepo.
 - **The comparison with git is from one measurement each way**, on the files named; git with a filter-capable server and a warm cache will beat several of sgit's numbers.
 - **The append lane's 205 a second is in memory**; on disk it is about three a second until the defect is fixed.
-- **Pack mode's numbers are expected, not measured.** The code is not pushed yet.
+- **Pack mode's numbers are one vault each,** measured on dev from one cloud sandbox: the AIUC-1 vault by this site's build agent, the comms vault's history by the CLI team.
 - **Compression is an option in the spec**, not a decision, and it lets the host see how compressible a file is.
 - **The same CI measurement found three faults,** which the newsroom reported: a push of a file over 4 MB failed against a server on local disk, a headless clone could not fetch a single file in that version, and full clones queue on one server process.
 
@@ -153,7 +184,7 @@ If you run sgit in a pipeline, a hive or a vault of your own and have numbers, o
 
 ## Where this comes from {#sources}
 
-A reply to my LinkedIn post about the newsroom's CI article, on 18 October 2026; the question is quoted and its author is not named. Written up by cli.sgit.ai's build agent, cli.build, on 21 October; the editorial responsibility is mine. The per-command times were measured by the agent in a cloud sandbox with sgit-ai 0.23.0 on 21 October. The CI numbers are from the newsroom's [sgit in a CI pipeline](https://newsroom.sgit.ai/articles/sgit-in-a-ci-pipeline.html) and [sgit in GitHub Actions, side by side](https://newsroom.sgit.ai/articles/sgit-actions-side-by-side.html) (sgit 0.21.0, local server, median of three); the ephemeral-vault pattern from [agent workflows on ephemeral vaults](https://newsroom.sgit.ai/articles/agent-workflows-on-ephemeral-vaults.html); the big-vault numbers from [one vault, ten agents, measured](../articles/one-vault-ten-agents-measured.md) and its source note, [Response to "Scion and sgit"](../research/response-to-scion-and-sgit.md), which also designs the commit-chain object; the 600-commit numbers from [Partial clones](../docs/partial-clones.md); the git comparison from the newsroom's measured articles; the append lane from [Streaming changes into a vault](../articles/streaming-changes-into-a-vault.md); the hive numbers computed from [ruv.sgit.ai's ledger](https://ruv.sgit.ai/ruv-sgit/ledger/index.html), `data/vaults.json` as updated at 13:42 UTC on 21 October; pack mode and compression from [the pack-mode spec](../research/pack-mode-spec.md) at `477d328`. The research topics: [Big vaults and many agents](../research/topics/scale.md) and [How a vault takes writes](../research/topics/write-path.md).
+A reply to my LinkedIn post about the newsroom's CI article, on 18 October 2026; the question is quoted and its author is not named. Written up by cli.sgit.ai's build agent, cli.build, on 21 October; the editorial responsibility is mine. The per-command times were measured by the agent in a cloud sandbox with sgit-ai 0.23.0 on 21 October. The CI numbers are from the newsroom's [sgit in a CI pipeline](https://newsroom.sgit.ai/articles/sgit-in-a-ci-pipeline.html) and [sgit in GitHub Actions, side by side](https://newsroom.sgit.ai/articles/sgit-actions-side-by-side.html) (sgit 0.21.0, local server, median of three); the ephemeral-vault pattern from [agent workflows on ephemeral vaults](https://newsroom.sgit.ai/articles/agent-workflows-on-ephemeral-vaults.html); the big-vault numbers from [one vault, ten agents, measured](../articles/one-vault-ten-agents-measured.md) and its source note, [Response to "Scion and sgit"](../research/response-to-scion-and-sgit.md), which also designs the commit-chain object; the 600-commit numbers from [Partial clones](../docs/partial-clones.md); the git comparison from the newsroom's measured articles; the append lane from [Streaming changes into a vault](../articles/streaming-changes-into-a-vault.md); the hive numbers computed from [ruv.sgit.ai's ledger](https://ruv.sgit.ai/ruv-sgit/ledger/index.html), `data/vaults.json` as updated at 13:42 UTC on 21 October; pack mode and compression from [the pack-mode spec](../research/pack-mode-spec.md), and since 22 October from the live trials in [the verification reports](../research/pack-mode-verification-round-1.md) and the CLI team's [round-trip note](../research/pack-mode-round-trip-measured.md). The research topics: [Big vaults and many agents](../research/topics/scale.md) and [How a vault takes writes](../research/topics/write-path.md).
 
 ---
 

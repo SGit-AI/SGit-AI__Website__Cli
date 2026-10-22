@@ -8,10 +8,10 @@ topics: [security-review]
 tags: security, ci, ai-review
 summary: A dedicated security pipeline on every pull request, and a keyless AI security review that can break the build on anything new: why, how it is wired, and what it costs per reviewed change.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/13/security-ci__pipeline-and-ai-review.md
-source_commit: 477d328
-source_branch: claude/charming-babbage-5hzcxq
+source_commit: 182cfc1
+source_branch: dev
 status: published
 ---
 

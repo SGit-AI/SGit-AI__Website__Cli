@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pack mode: a playbook for agents · cli.sgit.ai</title>
+<meta name="description" content="Everything an agent needs to use sgit pack vaults (sgit-ai 0.24.0 and later) in a project, as recipes to follow in order. Decide whether a vault should be a pack vault; create one, or convert a copy of an existing vault and cut a team over to it; the daily loop and what its output should look like; who compacts, when, and how; the patterns for CI jobs, many agents, read-only readers and throwaway vaults; the health checks; every error message an agent will meet, with what to do; what never to do; and a block to paste into an agent&#x27;s own instructions.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/pack-mode-for-agents.html">
+<link rel="alternate" type="text/markdown" href="../docs/pack-mode-for-agents.md">
+<meta property="og:title" content="Pack mode: a playbook for agents">
+<meta property="og:description" content="Everything an agent needs to use sgit pack vaults (sgit-ai 0.24.0 and later) in a project, as recipes to follow in order. Decide whether a vault should be a pack vault; create one, or convert a copy of an existing vault and cut a team over to it; the daily loop and what its output should look like; who compacts, when, and how; the patterns for CI jobs, many agents, read-only readers and throwaway vaults; the health checks; every error message an agent will meet, with what to do; what never to do; and a block to paste into an agent&#x27;s own instructions.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/pack-mode-for-agents.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.23.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl here" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
+      <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Guides</a> / Pack mode: a playbook for agents</div>
+<h1 id="pack-mode-a-playbook-for-agents">Pack mode: a playbook for agents</h1>
+<p>This page is written for an agent that has been told to use sgit pack vaults in a project. It is also for the person setting that agent up. Follow the recipes in order. Every command and every message quoted here was run against sgit-ai 0.24.0 on <code>dev.send.sgraph.ai</code>. What a pack vault is, and the numbers, are in <a href="../docs/update-to-0-24-0.html">the 0.24.0 release notes</a>.</p>
+<h2 id="0-three-rules-before-anything-else">0. Three rules before anything else</h2>
+<ol><li><b>Experiment on a vault you created for the experiment.</b> Never on a vault other people or agents are using. Delete it when you are done: <code>sgit vault delete-on-remote --yes</code> inside its folder.</li><li><b>A vault key is the whole credential.</b> Print it once, save it where your project keeps secrets, and never write it into a file inside a vault, a log, a commit message or a chat.</li><li><b>Never copy, zip or commit <code>.sg_vault/local/</code>.</b> It holds this clone's key and token. The shareable part of a vault is <code>.sg_vault/bare/</code>.</li></ol>
+<h2 id="1-install-and-check">1. Install and check</h2>
+<pre><code class="lang-text">$ python -m pip install --upgrade sgit-ai
+$ sgit version
+sgit-ai v0.24.0                      # 0.24.0 or later; an older client is refused by every pack vault
+$ sgit pack --help                   # lists import, export, compact, ls, verify, stats</code></pre>
+<p><b>Credentials.</b> Network commands need the server and an access token:</p>
+<ul><li>Pass <code>--base-url &lt;server&gt;</code> and <code>--token &lt;token&gt;</code> on the first network command in a folder.</li><li>sgit records both in that clone's <code>.sg_vault/local/</code>, so later commands in the same folder need neither.</li><li><b>No environment variable is read for the token.</b> Exporting one does nothing.</li><li>To change the server for a clone, run <code>sgit remote add origin &lt;url&gt;</code> inside it.</li></ul>
+<h2 id="2-decide-pack-vault-or-normal-vault">2. Decide: pack vault or normal vault</h2>
+<div class="tablewrap"><table><thead><tr><th>The vault will be …</th><th>Choose</th><th>Why</th></tr></thead><tbody><tr><td>Cloned whole, by CI jobs or by agents starting fresh</td><td><b>pack</b></td><td>A clone is 3 or 4 requests whatever the history: 8.1 s against 28.6 s on a 2,087-object vault, 25 s against 3½ minutes on a 33,000-object history</td></tr><tr><td>Mostly text: Markdown, JSON, logs, email</td><td><b>pack</b></td><td>Files are compressed before encryption: 1.66× on a mixed vault, 3.7× on prose and JSON, 8.8× on JSONL logs</td></tr><tr><td>Pushed to often, by several writers</td><td><b>pack</b></td><td>A push is one zip whatever its size, and the ref moves exactly as before</td></tr><tr><td>Browsed in the web view (vault.sgraph.ai, a vault app, a published vault page)</td><td><b>normal</b></td><td>The browser does not read packs</td></tr><tr><td>Large, with agents that each take <b>one folder</b> (<code>--path &lt;folder&gt; --depth 1</code>)</td><td><b>normal</b>, for now</td><td>On a pack vault <code>--path</code> and <code>--depth</code> download the packs whole; on a normal vault one folder of a 527 MB vault is 3 MB</td></tr><tr><td>Read with <code>clone-branch</code> or <code>clone-range</code></td><td><b>normal</b></td><td>Those two refuse a pack vault</td></tr></tbody></table></div>
+<p>When in doubt, use a pack vault for anything an agent clones whole and a normal vault for anything a person browses. You can move between the two later (section 4).</p>
+<h2 id="3-recipe-a-new-pack-vault">3. Recipe: a new pack vault</h2>
+<pre><code class="lang-text">$ mkdir my-vault &amp;&amp; cd my-vault
+$ sgit init --packs --base-url https://dev.send.sgraph.ai
+Vault created!  Vault ID: &lt;id&gt;  (pack vault)
+  Vault key: &lt;the key: save it now&gt;
+$ # … add files …
+$ sgit commit -m &quot;first&quot;
+$ sgit push --token &lt;token&gt;          # the first push uploads one snapshot</code></pre>
+<p><code>sgit create --packs &lt;name&gt;</code> does the same in one step: it makes the folder, the vault and the first push.</p>
+<p>To join a pack vault that already exists, <code>sgit clone &lt;vault key&gt; &lt;dir&gt; --base-url &lt;server&gt; --token &lt;token&gt;</code>. The clone prints what it fetched:</p>
+<pre><code class="lang-text">  ▸ Packs fetched (1 pack(s), 2087 objects, 4 request(s) in 6.2s)</code></pre>
+<p>The request count stays at 3 or 4 whatever the size of the history. <b>If a clone of a pack vault ever reports fetching objects one by one, stop and report it</b> (section 9).</p>
+<h2 id="4-recipe-convert-an-existing-vault-and-cut-a-team-over-to-it">4. Recipe: convert an existing vault, and cut a team over to it</h2>
+<p>A vault is never converted in place. You make a <b>new</b> pack vault from a <b>full</b> clone of the old one, check it, hand out the new key, and keep the old vault until nobody needs it.</p>
+<pre><code class="lang-text"># 1. Stop writes to the old vault (tell the other agents), then take a FULL clone
+$ sgit clone &lt;old vault key&gt; old-full --base-url &lt;server&gt; --token &lt;token&gt;
+#    (no --path, no --depth: see the note below)
+
+# 2. Make the pack vault (local only, nothing is uploaded yet)
+$ sgit pack import old-full new-packs
+  Imported into a new pack vault: new-packs/
+  Vault key: &lt;the NEW key: save it now&gt;
+  History:   17 commits, 244 trees, 1826 blobs
+  Blobs:     213.0 MB -&gt; 128.6 MB (x1.66, 1811 deflated)
+
+# 3. Check, then push
+$ cd new-packs &amp;&amp; sgit status       # &quot;This vault has never been pushed … 17 commits waiting&quot;
+$ sgit push                         # &quot;Pushed 17 commit(s), 2087 object(s) uploaded.&quot;
+
+# 4. Prove it: a fresh clone must match the old one file for file
+$ cd .. &amp;&amp; sgit clone &lt;NEW key&gt; check --base-url &lt;server&gt; --token &lt;token&gt;
+$ diff -rq old-full check -x .sg_vault &amp;&amp; echo IDENTICAL</code></pre>
+<p>Things to know:</p>
+<ul><li><b>The source must be a full clone.</b> On a <code>--path</code> or <code>--depth</code> clone the import stops with <code>missing file — object … is not in the local store</code> and a hint about corruption. The vault is not corrupt: the clone simply does not hold the whole history. The import also leaves a half-made vault in the target folder. Delete that folder (never push it), take a full clone, and run the import again.</li><li><b>The new vault is created on the source's server.</b> For a different server, pass <code>--base-url</code> to <code>pack import</code>, or run <code>sgit remote add origin &lt;url&gt;</code> in <code>new-packs/</code> before step 3.</li><li><b>The history is rewritten under the new key:</b> same files, same messages and timestamps, new commit ids, every commit re-signed by the importing clone.</li><li><b>Cut-over.</b> Replace the old key with the new one wherever agents read it, have every agent clone the new vault fresh, and only then retire the old vault. Agents' old clones cannot pull from the new vault: it is a different vault.</li><li><b>To go back,</b> <code>sgit pack export &lt;pack clone&gt; &lt;new dir&gt;</code> makes a normal vault with its own key, the same way. Push it, check it the same way.</li><li><b>Uncompressed packs:</b> <code>sgit pack import --no-deflate</code> keeps file contents uncompressed. Use it if the server must not learn how compressible each file is (section 10).</li></ul>
+<h2 id="5-the-daily-loop">5. The daily loop</h2>
+<p>Nothing changes:</p>
+<pre><code class="lang-text">$ sgit pull
+$ # … work …
+$ sgit commit -m &quot;what changed&quot;
+$ sgit push</code></pre>
+<p>What the output should look like:</p>
+<ul><li><b>A push</b> uploads one commit pack: <code>Pushed 1 commit(s), 4 object(s) uploaded.</code> If another agent pushed first, push pulls and merges before it uploads, as on any vault.</li><li><b>A pull</b> fetches the commit packs this clone has not seen, in one batch.</li><li><b><code>sgit status</code></b> works as on a normal vault.</li><li><b>Every local command</b> (<code>history log</code>, <code>cat</code>, <code>diff</code>, <code>branch</code>, <code>stash</code>, <code>vault tag create</code>) works as on a normal vault, because the local store is unchanged.</li></ul>
+<p>Expect a few seconds per network command: about 5 to 6 s for a push and 3 to 4 s for a pull on a 2,000-object vault from a cloud sandbox. On a long history, push and pull also spend time in local merge and status walks. That is the same on a normal vault.</p>
+<h2 id="6-compaction-who-when-how">6. Compaction: who, when, how</h2>
+<p>Every push adds one small zip to <code>bare/packs/commits/</code>. Compaction folds them into one new snapshot of the head and moves the old zips to <code>bare/packs/archive/</code>. Nothing is ever deleted without its copy being listed in <code>archive/</code> first, and <code>archive/</code> itself is never deleted.</p>
+<p><b>Who.</b> Give the job to one agent, or to the vault's owner. Two compactions at the same moment are safe (tested live: both finish, the vault is intact), but they do the same work twice.</p>
+<p><b>When.</b> When <code>commits/</code> holds more than 50 packs, or more bytes than a tenth of the newest snapshot (sgit's own thresholds). Nothing triggers it automatically. Check with <code>pack ls --json</code>, which only lists the host:</p>
+<pre><code class="lang-text">$ sgit pack ls --json &gt; packs.json
+$ python3 -c &quot;import json; d=json.load(open(&#x27;packs.json&#x27;)); c, s = d[&#x27;commits&#x27;], d[&#x27;snapshots&#x27;]; \
+  print(&#x27;compact&#x27; if len(c) &gt; 50 or sum(e[&#x27;size&#x27;] for e in c) &gt; 0.10 * (s[-1][&#x27;size&#x27;] if s else 0) else &#x27;not yet&#x27;)&quot;</code></pre>
+<p>Avoid <code>pack stats</code> for this check on a big vault. It decrypts every file to compute the compression ratio, which took 52 s on a 33,000-object history.</p>
+<p><b>Run it when the team is quiet.</b> After a compaction, every clone that was behind downloads the whole new snapshot on its next pull (130 MB and 9.5 s on a 2,087-object vault), instead of the few packs it lacked.</p>
+<p><b>How:</b></p>
+<pre><code class="lang-text">$ sgit pull                                    # compaction refuses a clone that is behind
+$ sgit status                                  # and a dirty working tree
+$ sgit pack compact --dry-run                  # the plan: what goes to archive/
+$ sgit pack compact
+  Did snapshot head obj-cas-imm-…: &lt;epoch&gt;__obj-cas-imm-…__&lt;bytes&gt;.zip
+  3 pack(s) absorbed by the snapshot -&gt; archive/
+  1 pack(s) superseded snapshots -&gt; archive/
+  4 pack(s) archived. Nothing was deleted without its copy in archive/.
+$ sgit pack verify                             # every member of every pack checked: &quot;ok&quot;</code></pre>
+<p>What gets archived and what stays:</p>
+<ul><li><b>Packs of other branches stay.</b> Compaction judges what is reachable from every ref on the host, not only this clone's branch, so a <code>push --branch-only</code> or another named branch keeps its packs.</li><li><b>Orphan commit packs are archived</b> once they are more than a day old.</li><li><b>If the branch moves while compaction runs,</b> it stops before archiving anything and says so. Pull and run it again.</li></ul>
+<h2 id="7-patterns">7. Patterns</h2>
+<p><b>A CI job.</b></p>
+<ul><li>Clone, work, commit, push.</li><li>Pass the key and token from the CI system's secrets, never from the repository.</li><li>A pack vault suits a job that needs the whole vault. A job that needs one folder of a big vault is better served by a normal vault and <code>--path</code> (section 2).</li><li>The job's clone is thrown away with the runner, and nothing in <code>bare/</code> needs caching: the snapshot is one download.</li></ul>
+<pre><code class="lang-text">sgit clone &quot;$VAULT_KEY&quot; work --base-url &quot;$SGIT_SERVER&quot; --token &quot;$SGIT_TOKEN&quot;
+cd work &amp;&amp; ./run-the-job.sh &amp;&amp; sgit commit -m &quot;run $RUN_ID&quot; &amp;&amp; sgit push</code></pre>
+<p><b>Many agents on one vault.</b></p>
+<ul><li>Each agent has its own clone in its own folder. Never share a working folder between agents.</li><li>A push that finds another agent's commit first pulls, merges and pushes, as on any vault.</li><li>Agents that should not touch the named branch can push their clone branch only (<code>push --branch-only</code>). Compaction keeps those packs.</li></ul>
+<p><b>Read-only readers.</b> A clone made with a read key takes and pulls packs. It cannot push or compact, and it says so.</p>
+<p><b>A throwaway vault per task.</b> <code>sgit create --packs &lt;name&gt;</code>, work, then <code>sgit vault delete-on-remote --yes</code> when the task is done. Check the deletion: a clone with the old key must now fail.</p>
+<h2 id="8-health-checks">8. Health checks</h2>
+<div class="tablewrap"><table><thead><tr><th>Check</th><th>Good</th><th>Not good</th></tr></thead><tbody><tr><td><code>sgit pack ls</code></td><td><code>snapshots/</code> 1 or more, <code>commits/</code> some, <code>archive/</code> growing over time; <code>*</code> marks what this clone absorbed</td><td><code>snapshots/</code> empty on a vault that has been pushed</td></tr><tr><td><code>sgit pack stats</code></td><td><code>loose objects under bare/data/: 0</code> (tag objects are counted apart)</td><td>any loose objects: something wrote a normal object into a pack vault</td></tr><tr><td><code>sgit pack verify</code></td><td><code>N pack(s), M member(s) checked against their ids</code> then <code>ok</code></td><td>anything else</td></tr><tr><td>A fresh clone</td><td><code>Packs fetched (…, 3 or 4 request(s) …)</code> and <code>diff -rq</code> against a working clone is empty</td><td>objects fetched one by one, or a difference</td></tr></tbody></table></div>
+<h2 id="9-messages-you-will-meet-and-what-to-do">9. Messages you will meet, and what to do</h2>
+<div class="tablewrap"><table><thead><tr><th>Message</th><th>Meaning</th><th>What to do</th></tr></thead><tbody><tr><td><code>this vault needs sgit-ai &gt;= 0.24.0 and this is 0.23.0: run sgit update, then try again</code></td><td>The client is older than pack mode</td><td><code>python -m pip install --upgrade sgit-ai</code>, check <code>sgit version</code>, retry</td></tr><tr><td><code>this is a pack vault (objects travel as packs): sgit clone-branch and clone-range do not read packs yet. Use sgit clone (or clone-headless, whose fetch does).</code></td><td>Those two clone modes do not read packs</td><td>Use <code>sgit clone</code>, or <code>sgit clone-headless</code> then <code>sgit fetch &lt;path&gt;</code></td></tr><tr><td><code>no access token configured. Pass --token …</code></td><td>This folder has no saved token</td><td>Pass <code>--token &lt;token&gt;</code> once; it is saved for the folder</td></tr><tr><td><code>working directory has uncommitted changes; commit or stash them, then compact</code></td><td>Compaction needs a clean tree</td><td>Commit or stash, then compact</td></tr><tr><td><code>this clone's named head (…) is not the server's (…): run sgit pull first, then compact</code></td><td>Someone pushed since your last pull</td><td><code>sgit pull</code>, then compact</td></tr><tr><td><code>the named branch moved while compacting: nothing was archived (the snapshot … stays on the host). Pull and run sgit pack compact again.</code></td><td>A push landed during compaction</td><td><code>sgit pull</code>, then compact again. The extra snapshot is harmless and the next compaction archives it</td></tr><tr><td><code>… pack(s) archived (n already in archive)</code></td><td>Another compaction of the same head did part of the work</td><td>Nothing</td></tr><tr><td><code>This vault has never been pushed. It only exists on this machine.</code></td><td>A new or freshly imported vault</td><td><code>sgit push</code></td></tr><tr><td>A pull or clone that names a pack and refuses its members</td><td>A pack failed its checks; nothing from it was written</td><td>Stop, do not retry in a loop, and report it (below)</td></tr></tbody></table></div>
+<p><b>Reporting a problem.</b> Send the output of <code>sgit version</code>, the exact command, the command again with <code>--debug</code>, and the output of <code>sgit pack ls</code> and <code>sgit pack verify</code>. Never send the vault key, the token or anything from <code>.sg_vault/local/</code>.</p>
+<h2 id="10-never">10. Never</h2>
+<ul><li>Never copy, zip or commit <code>.sg_vault/local/</code>.</li><li>Never delete anything under <code>bare/packs/</code> by hand. Above all never <code>archive/</code>: it is where compaction keeps the only copy of history it has folded.</li><li>Never compact with a dirty tree or a stale clone. sgit refuses both; do not work around the refusal.</li><li>Never run <code>pack import</code> on a partial clone, and never push what such an import leaves behind (section 4).</li><li>Never point the web view at a pack vault and conclude it is empty. The browser cannot read packs.</li><li>Never assume compression is free of leaks. The server learns how compressible each file is. If that matters, import with <code>--no-deflate</code>.</li></ul>
+<h2 id="11-a-block-for-an-agent-s-own-instructions">11. A block for an agent's own instructions</h2>
+<p>Paste this into the instructions of an agent that will use a pack vault, with your own values in the first three lines:</p>
+<pre><code class="lang-text">## Vault (sgit pack vault)
+- Server: https://dev.send.sgraph.ai
+- Vault key: in &lt;where your project keeps secrets&gt;; never print it, never write it into a file in the vault.
+- Token: passed once with --token on the first network command in a folder; sgit saves it in .sg_vault/local/.
+- Requires sgit-ai &gt;= 0.24.0 (`sgit version`). Playbook: https://cli.sgit.ai/docs/pack-mode-for-agents.md
+- Start of a session: `sgit pull`. End: `sgit commit -m &quot;&lt;what changed&gt;&quot;` then `sgit push`.
+- Use `sgit clone`, never clone-branch or clone-range. --path/--depth download the whole vault on a pack vault.
+- Do not run `sgit pack compact` unless you are the designated compactor.
+- Never copy, zip or commit .sg_vault/local/; never delete anything under bare/packs/.
+- If a pack fails its checks, or a clone fetches objects one by one: stop and report
+  (sgit version, the command, --debug output, `sgit pack ls`, `sgit pack verify`), with no keys.</code></pre>
+<p><i>Written by cli.sgit.ai's build agent on 22 October 2026, from the CLI's code at the 0.24.0 merge and from live trials on dev.send.sgraph.ai. The CLI team's own pages are the <a href="https://github.com/SGit-AI/SGit-AI__CLI/tree/dev/team/humans/dinis_cruz/claude-code-web">feature reference and the tester's how-to</a>.</i></p>
+<div class="pagenav"><a href="../docs/partial-clones.html">← Partial clones: a folder scope and a history depth</a><a href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/pack-mode-for-agents.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/pack-mode-for-agents.md"><code>admin/content/docs/pack-mode-for-agents.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/pack-mode-for-agents.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+    <a href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+    <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+    <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+    <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

@@ -35,9 +35,9 @@
       <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
       <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
       <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
-      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -83,6 +83,7 @@
       <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
       <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
       <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
       <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
@@ -90,7 +91,6 @@
       <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
       <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
       <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
-      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -114,7 +114,7 @@
 <main class="doc">
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / History integrity: what the three fixes would cost, and how to ship them without a vault move</div>
 <h1 id="history-integrity-what-the-three-fixes-would-cost-and-how-to">History integrity: what the three fixes would cost, and how to ship them without a <code>vault move</code></h1>
-<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-07 · 12:32 UTC</span><span class="k">Kind</span><span class="v">measurement</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/integrity.html">integrity</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md"><code>team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md</code></a> in SGit-AI__CLI at <code>477d328</code> (branch <code>claude/charming-babbage-5hzcxq</code>, not yet merged to dev). Published here as written; the CLI repository is where the work happened.</span></div>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-07 · 12:32 UTC</span><span class="k">Kind</span><span class="v">measurement</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/integrity.html">integrity</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md"><code>team/humans/dinis_cruz/claude-code-web/10/07/history-integrity__cost-and-compatibility.md</code></a> in SGit-AI__CLI at <code>182cfc1</code>. Published here as written; the CLI repository is where the work happened.</span></div>
 <p><b>Date:</b> 7 Oct 2026 · <b>Vault measured:</b> the DC / CRM collaboration vault (<code>y8pwtjlw</code>), fresh full clone this session · <b>Ask:</b> "do a set of performance tests to see the implications [of signature verification, ref monotonicity, 128-bit ids], and can we add those fixes in a forward-compatible way, supporting existing vaults without a move?"</p>
 <h2 id="0-the-vault-today">0. The vault today</h2>
 <div class="tablewrap"><table><tbody><tr><td>commits reachable from the named head</td><td>674 (626 yesterday)</td></tr><tr><td>unique trees / tree entries</td><td>8,589 / 107,445 (59,944 blob refs, 47,501 tree refs)</td></tr><tr><td>objects in the store</td><td>19,780 · 146 MB</td></tr><tr><td>branches in the index / public keys on disk</td><td>30 / 29</td></tr><tr><td>full clone from this sandbox (0.18.0)</td><td>93 s</td></tr><tr><td><code>sgit status</code>, up to date</td><td>2.5 s (network-bound)</td></tr></tbody></table></div>
@@ -188,11 +188,11 @@ features   : list[Safe_Str__Feature]        # e.g. &#x27;ids-128&#x27;, &#x27;si
   <div>
     <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
     <a href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
     <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
     <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
     <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
-    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
   </div>
   <div>
     <h4>Site</h4>

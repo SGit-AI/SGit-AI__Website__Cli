@@ -35,9 +35,9 @@
       <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
       <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
       <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
       <a class="sl here" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
-      <a class="sl" href="../docs/agents-sharing-one-vault.html">Agents sharing one vault</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -83,6 +83,7 @@
       <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
       <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
       <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
       <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
@@ -90,7 +91,6 @@
       <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
       <a class="sl" href="../articles/research-is-not-an-article.html">Research is not an article: the CLI&#x27;s research gets an area of its own, and the articles stay readable</a>
       <a class="sl" href="../articles/the-cli-gets-its-own-site.html">The CLI gets its own site: cli.sgit.ai documents the command line, and sgit.ai becomes the umbrella</a>
-      <a class="sl" href="../articles/a-vault-in-one-file.html">A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -191,7 +191,7 @@ pull was refused before anything was merged. Ask the vault owner, or relax the p
 <h2 id="a-checklist-for-raising-a-vault">A checklist for raising a vault</h2>
 <ol><li>Every agent that writes to it is on 0.21.0 (<code>sgit version</code>). Point them at <a href="../docs/update-to-0-21-0.html">Update sgit-ai to 0.21.0</a>.</li><li><code>sgit check fsck</code> is clean and <code>sgit check verify</code> shows no <i>bad</i> commits.</li><li><code>sgit vault format --set 2 --min-client 0.21.0</code>.</li><li>Each agent's next <code>sgit pull</code> picks the gate up; nothing else to do.</li><li><code>--feature signatures-required</code> once no web-UI writes are expected on the vault.</li></ol>
 <p>From the sgit-ai team's 0.19.0, 0.20.0 and 0.21.0 notes. The old-client messages were found by this site's own check of the 0.19.0 draft, which had said "a validation error"; the CLI team confirmed them and added the warning a raise now prints. The 0.20.0 issues fixed in 0.21.0 were found by this site testing 0.20.0 on the live API. Release notes: <a href="https://sgit.ai/updates/index.html#sgit-ai-0-21-0">sgit-ai 0.21.0 (includes 0.19.0 and 0.20.0)</a>.</p>
-<div class="pagenav"><a href="../docs/partial-clones.html">← Partial clones: a folder scope and a history depth</a><a href="../docs/agents.html">Working with AI agents →</a></div>
+<div class="pagenav"><a href="../docs/pack-mode-for-agents.html">← Pack mode: a playbook for agents</a><a href="../docs/agents.html">Working with AI agents →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../docs/history-integrity.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/history-integrity.md"><code>admin/content/docs/history-integrity.md</code></a></p>
 </main>
 
@@ -236,11 +236,11 @@ pull was refused before anything was merged. Ask the vault owner, or relax the p
   <div>
     <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
     <a href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
     <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
     <a href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
     <a href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
-    <a href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
   </div>
   <div>
     <h4>Site</h4>

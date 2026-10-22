@@ -8,10 +8,10 @@ topics: [scale, correctness]
 tags: pull, fetch, large-files
 summary: The issues reported on 14 October, each traced to its cause in the code, with what was fixed in the same push and what was left open.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/14/response__sgit-issues-2026-10-14.md
-source_commit: 477d328
-source_branch: claude/charming-babbage-5hzcxq
+source_commit: 182cfc1
+source_branch: dev
 status: published
 ---
 

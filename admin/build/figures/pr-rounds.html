@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:repeat(4,1fr);gap:18px}
+.box p,.box li{font-size:14px} .box ul{margin:6px 0 0;padding-left:18px} .box li{margin:0 0 5px}
+.big{font:400 36px/1.1 var(--serif);margin:6px 0 2px} .big.r{color:var(--red)} .big.t{color:var(--teal)} .big.w{color:var(--warm)}
+.meta{font:13px var(--mono);color:var(--dim2);margin:0 0 6px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px}
+.strip div{font-size:13.5px;color:var(--dim)}</style></head><body>
+<h1>Pack mode, reviewed before release: four rounds to no blockers</h1>
+<p class="sub">21 and 22 October 2026. Each round: the whole test suite, the tester's how-to run live on dev, the code read with a reproducing script for every finding, and a written report. The CLI team answered each one, finding by finding, with a test per fix.</p>
+<div class="grid cols">
+ <div class="box red"><h3>Round 1</h3><div class="meta">a9869771 · 4,511 tests pass</div><div class="big r">8 findings</div>
+  <ul><li><b>2 data loss</b> in compaction: a branch-only push archived; racing compactions archive the newest snapshot</li><li>a zip bomb inflated before its check</li><li>a gate that let 0.23.0 in</li><li>a failed first push drops the root commit</li><li>tags fail; ranged reads unchecked; unverified member names</li></ul></div>
+ <div class="box warm"><h3>Round 2</h3><div class="meta">801b890c · 4,526 tests</div><div class="big w">6 fixed, 2 partly</div>
+  <ul><li><b>New data loss:</b> an aborted compaction leaves an older snapshot that clones take as the newest</li><li>duplicate zip entries slip past the bomb check (400 MB)</li><li>gate checked live against 0.23.0 from PyPI: <b>fixed</b></li><li>"fully in sync" shown before any push</li></ul></div>
+ <div class="box warm"><h3>Round 3</h3><div class="meta">3f2c9bea · 4,535 tests</div><div class="big w">all fixed, 1 new</div>
+  <ul><li><b>New data loss, caused by a round-2 fix:</b> the abort deleted a snapshot another compaction had adopted</li><li>the fix: delete two lines</li><li>two compactions of one head, live: the loser crashed on a 404</li><li>both UX items fixed live</li></ul></div>
+ <div class="box teal"><h3>Round 4</h3><div class="meta">c5b326f2 · 4,539 tests</div><div class="big t">no blockers</div>
+  <ul><li>every finding of every round re-checked</li><li>two compactions of one head, live: both finish, vault intact</li><li>3 nits, done before the merge</li><li>merged to main; 4,540 tests; a last same-second flake fixed for the release</li></ul></div>
+</div>
+<div class="strip"><div><b>Found by:</b> repro scripts against the real code on a counted in-memory host, and live runs on dev.</div><div><b>Speed through it all:</b> a clone of the same vault took 8.6 s, 8.3 s and 8.1 s in the three rounds that timed it. The checks cost nothing measurable.</div><div><b>The lesson of round 3:</b> a fix is new code, and gets the same review as the code it fixes.</div><div><b>Left as accepted:</b> one junk ref switches off orphan archiving (storage, not data), in the threat model.</div></div>
+<div class="foot"><b>Four ways compaction could strand a fresh clone: found, reproduced and closed before release.</b><span>cli.sgit.ai · 22 October 2026 · from the four reports and the CLI team's four responses</span></div>
+</body></html>

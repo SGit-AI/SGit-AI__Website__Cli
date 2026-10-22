@@ -4,7 +4,7 @@ summary: A tool-assisted security review of the code the zero-knowledge guarante
 section: topics
 order: 6
 question: What does a security review look like when agents run it, and which tools find things the existing work did not?
-articles: []
+articles: [pack-mode-four-rounds]
 ---
 
 # Reviewing sgit's security with tools and agents
@@ -21,5 +21,6 @@ articles: []
 | Round 1 run on 0.21.0: 270 function records, 68 STRIDE threats, with counts per tool | **done** | [The case study](/research/security-review-case-study.html) |
 | A security workflow on every pull request; an AI review that can fail it, keyless | **built**; the AI review is off until connected | [Security CI](/research/security-ci-and-ai-review.html) |
 | Paths with characters outside a narrow set silently rewritten (AC-L-001) | **documented** 13 October, fix proposed | [Refuse, don't rewrite](/research/non-ascii-paths-refuse-dont-rewrite.html) |
+| Pack mode reviewed before release by a second agent: a zip bomb, unverified member names, a gate that admitted older clients, and four ways compaction could strand a clone | **fixed** in 0.24.0, a test per finding, over four rounds on 21 and 22 October | [round 1](/research/pack-mode-verification-round-1.html), [2](/research/pack-mode-verification-round-2.html), [3](/research/pack-mode-verification-round-3.html), [4](/research/pack-mode-verification-round-4.html); [the story](/articles/pack-mode-four-rounds.html) |
 
 !topic security-review

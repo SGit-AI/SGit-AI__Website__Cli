@@ -8,10 +8,10 @@ topics: [integrity]
 tags: roadmap, git-parity, compatibility
 summary: The git-parity and security ideas that are not in 0.21.0, what each would take and what it could break, starting from the constraint that a new commit field breaks older clients' signature checks.
 author: the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz
-source: https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md
+source: https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md
 source_path: team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md
-source_commit: 477d328
-source_branch: claude/charming-babbage-5hzcxq
+source_commit: 182cfc1
+source_branch: dev
 status: published
 ---
 

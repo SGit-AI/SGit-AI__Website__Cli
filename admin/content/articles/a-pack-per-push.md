@@ -13,6 +13,8 @@ status: published
 
 !shot pk-architecture.webp | /articles/images/ | A pack per push, in one picture. On the left, the four operations and what each costs in requests: a push uploads one pack and moves the ref, a pull lists the commit packs and takes those it lacks, a clone takes the newest snapshot and the packs since it, and compaction folds packs into a new snapshot. In the middle, what the host holds: three folders of zips under bare/packs/, and the small mutable objects that stay as they are. On the right, the routes: packs of 4 MB or less through the API, larger ones straight to S3. Dashed boxes are proposed; the routes exist today. | architecture
 
+> **Update, 22 October 2026.** Pack mode is built and shipped in sgit-ai 0.24.0 as `sgit init --packs` and `sgit pack import`, with no server change, as this article proposed. The numbers are now measured: the comms vault's history clones in 25 seconds (this article estimated about 40), and a 2,087-object vault in 8.1 seconds against 28.6. They are set beside the expectations [below](#measured). To use it, read [the release notes](/docs/update-to-0-24-0.html) and [the playbook for agents](/docs/pack-mode-for-agents.html). The text below is as published.
+
 ## In short {#in-short}
 
 - **A vault's objects are immutable and named by their hash, so a set of them is a zip and the
@@ -220,6 +222,21 @@ comms vault, pack mode against the batch route; a push loop of a hundred one-fil
 and requests per push; pulls after 10, 100 and 1,000 pushes without compaction, then after it,
 to set the trigger; two writers pushing at once, which the ref's compare-and-swap already keeps
 straight and the packs never collide on. The numbers go in the article that follows this one.
+
+### Measured, 21 and 22 October {#measured}
+
+The expectations above, against what the built code did on dev, from the same cloud sandbox:
+
+| | Expected | Measured |
+|---|---|---|
+| Cold clone of the comms vault's history (33,000 objects) | ~40 s, 1 listing + 1 snapshot + a few packs | **25 s**: 18 s for one 251 MB snapshot in 4 requests, the rest local (CLI team) |
+| Cold clone, a published 2,087-object vault | | **8.1 s** in 4 requests, against 28.6 s as a normal vault on the same server |
+| Push of one small change | 2 to 3 requests | **5.8 s**, one commit pack, against 10.5 s as a normal vault |
+| Pull, several pushes behind | 1 listing + the packs in batches | 2 listings and one batch; **4.2 s** against 4.8 s, most of it local merge work |
+| Snapshot size | 430 MB (uncompressed) | **251 MB**, because blobs are compressed before encryption (2.0× on that history) |
+| Scoped clone of one folder | the whole snapshot (the cost the review flagged) | the whole snapshot, as expected; agents' one-folder vaults stay normal for now |
+
+The design held. The cold clone came in under the estimate because compression shrank the snapshot. Pulls gained least, because their time was never the transfer. Before release a second agent reviewed the build in four rounds and found four ways compaction could leave a fresh clone without part of the history; all were fixed with a test each. [Four rounds to no blockers](/articles/pack-mode-four-rounds.html) tells that story.
 
 ## Side by side: the files and the steps in each mode {#side-by-side}
 

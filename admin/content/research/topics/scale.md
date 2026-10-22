@@ -4,7 +4,7 @@ summary: What happens when a vault reaches 35,000 objects and ten agents use it 
 section: topics
 order: 3
 question: What does sgit cost when the vault is big and the clients are many, and where does the time go?
-articles: [is-there-any-overhead, one-vault-ten-agents-measured, sgit-is-a-standard-one-hash-away, a-vault-in-one-file, a-pack-per-push]
+articles: [pack-mode-four-rounds, is-there-any-overhead, one-vault-ten-agents-measured, sgit-is-a-standard-one-hash-away, a-vault-in-one-file, a-pack-per-push]
 ---
 
 # Big vaults and many agents
@@ -20,6 +20,6 @@ articles: [is-there-any-overhead, one-vault-ten-agents-measured, sgit-is-a-stand
 | Batched blob downloads, the far-behind sweep, large files without S3 | **fixed**, as the response of 14 October records | [Issues of 14 October](/research/sgit-issues-2026-10-14.html) |
 | The 35,000-object vault, cloned eight ways and served from local disk | **measured**, 16 October | [Response to "Scion and sgit"](/research/response-to-scion-and-sgit.html), [the article](/articles/one-vault-ten-agents-measured.html) |
 | Every immutable object named by the hash of its ciphertext, so any cache can hold it | **shipped** (the `-imm-` naming) | [the article](/articles/sgit-is-a-standard-one-hash-away.html) |
-| A vault read as one zip instead of thousands of requests | **proposed**; the bundles are already written by `sgit publish --bundles` | [the article](/articles/a-vault-in-one-file.html) |
+| A vault read as one zip instead of thousands of requests | **shipped** as pack mode in 0.24.0: a clone is the snapshot plus the commit packs, 3 or 4 requests (8.1 s against 28.6 s on a 2,087-object vault; 25 s against 3½ minutes on the comms vault's history). Scoped clones still take the packs whole | [release notes](/docs/update-to-0-24-0.html), [measurements](/research/pack-mode-round-trip-measured.html), [the article](/articles/a-pack-per-push.html) |
 
 !topic scale

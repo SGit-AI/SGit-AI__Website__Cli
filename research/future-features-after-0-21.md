@@ -2,7 +2,7 @@
 
 > The git-parity and security ideas that are not in 0.21.0, what each would take and what it could break, starting from the constraint that a new commit field breaks older clients' signature checks.
 
-*Source: <https://cli.sgit.ai/research/future-features-after-0-21.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/477d328536b04147e78281fb1f13550df1abf140/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md>.*
+*Source: <https://cli.sgit.ai/research/future-features-after-0-21.html> · generated from the same content as the page, so the two cannot drift. Published from <https://github.com/SGit-AI/SGit-AI__CLI/blob/182cfc16578fc599b151edb62e221722946c4a22/team/humans/dinis_cruz/claude-code-web/10/08/future-features__after-0.21.md>.*
 
 ---
 # Possible future features, after 0.21.0

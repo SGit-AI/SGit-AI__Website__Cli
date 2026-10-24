@@ -26,7 +26,7 @@ $ sgit clone <vault-key>       # anywhere else, a person or an agent
 | **[Guides](docs/index.md#guides)** | Partial clones, history integrity, agents sharing one vault, messages between vaults, self-hosting, the update notices |
 | **[Security](security/index.md)** | The security model, key management, credentials and the PKI commands |
 | **[HTTP API](api/index.md)** | The surface the CLI and the browser are both clients of: authentication, vault objects, transfers, append lanes, errors |
-| **[Research](research/index.md)** | 36 documents from the CLI team, published as written, in 7 topics: measurements, designs and the reviews that corrected them, security reviews, and the bugs found in daily use |
+| **[Research](research/index.md)** | 38 documents from the CLI team, published as written, in 7 topics: measurements, designs and the reviews that corrected them, security reviews, and the bugs found in daily use |
 | **[Articles](articles/index.md)** | 17 articles in the newsroom's format, each one argument: written up from Dinis Cruz's memos, or by an agent about what it delivered |
 
 ## Latest articles
@@ -42,7 +42,7 @@ The six newest of the [17 articles](articles/index.md).
 
 ## Research topics
 
-Each topic is one open question, with what is shipped, what is designed and what is absent. [All 36 research documents →](research/index.md)
+Each topic is one open question, with what is shipped, what is designed and what is absent. [All 38 research documents →](research/index.md)
 
 - [Keys, members and who may write](research/topics/keys.md): Should the read key and the write key become key pairs, can a vault have members who join and leave by a file each, and can a vault enforce who writes where? What is built, what is designed, and what is still a question.
 - [History integrity and signatures](research/topics/integrity.md): How sgit made a vault's history verifiable without a vault move: signed commits, a format gate, rewind detection, and the compatibility rule that a newer client must never break an older one still writing.
@@ -56,7 +56,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.9. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.10. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

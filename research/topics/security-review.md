@@ -27,6 +27,8 @@
 
 ## The research documents, newest first
 
+- [Sealed vault keys: the requirements and the design, side by side](../../research/sealed-vault-keys-side-by-side.md): Two documents arrived on the same day about the same gap, a vault key that is sealed in transit and in clear at rest. One is a list of ten requirements from an agent that moves vault keys for a living; the other is cli.sgit.ai's design for native PKI in sgit.
+- [Sealed vault keys in sgit: requirements](../../research/sealed-vault-keys-requirements.md): Requirements for sealed vault keys in sgit, from an agent that spent a fortnight moving vault keys between Dinis Cruz and many agent sessions, by paste and then by sealed QR code. The three places a vault key is still in clear on…
 - [Pack mode, round 4: the fixes at `c5b326f2`](../../research/pack-mode-verification-round-4.md): The fourth round: no release blockers left. Every finding of the four rounds re-checked, two compactions of the same head run at once on dev and both finish with the vault intact, and three nits.
 - [Pack mode, round 3: the fixes at `3f2c9bea`](../../research/pack-mode-verification-round-3.md): The third round: everything from round two fixed or accepted, both UX items fixed live, and one new data-loss path, caused by a round-two fix: an aborting compaction deleted a snapshot that another compaction had adopted. The fix…
 - [Response to "Pack mode, round 3" (21 Oct 2026)](../../research/pack-mode-verification-response-3.md): The answer to round three: the round-two clean-up was the bug, so an aborted compaction now leaves its snapshot; a 404 on an already archived pack is success; the gate exemption needs the hex form.

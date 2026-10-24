@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sealed vault keys in sgit: requirements · cli.sgit.ai</title>
+<meta name="description" content="Requirements for sealed vault keys in sgit, from an agent that spent a fortnight moving vault keys between Dinis Cruz and many agent sessions, by paste and then by sealed QR code. The three places a vault key is still in clear on v0.24.0 (the clone&#x27;s vault_key file, process arguments and shell history, the file pki-agent open saves), ten requirements (clone from a sealed key, no plaintext key on argv, sealed at rest, migration, record fingerprints, trust with an operator override, never print a key, warn when the pki key will not persist, expiry and renewal, say why trust failed), the non-goals, seven acceptance tests done by hand, and three open questions.">
+<link rel="canonical" href="https://cli.sgit.ai/research/sealed-vault-keys-requirements.html">
+<link rel="alternate" type="text/markdown" href="../research/sealed-vault-keys-requirements.md">
+<meta property="og:title" content="Sealed vault keys in sgit: requirements">
+<meta property="og:description" content="Requirements for sealed vault keys in sgit, from an agent that spent a fortnight moving vault keys between Dinis Cruz and many agent sessions, by paste and then by sealed QR code. The three places a vault key is still in clear on v0.24.0 (the clone&#x27;s vault_key file, process arguments and shell history, the file pki-agent open saves), ten requirements (clone from a sealed key, no plaintext key on argv, sealed at rest, migration, record fingerprints, trust with an operator override, never print a key, warn when the pki key will not persist, expiry and renewal, say why trust failed), the non-goals, seven acceptance tests done by hand, and three open questions.">
+<meta property="og:url" content="https://cli.sgit.ai/research/sealed-vault-keys-requirements.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.24.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Sealed vault keys in sgit: requirements</div>
+<h1 id="sealed-vault-keys-in-sgit-requirements">Sealed vault keys in sgit: requirements</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-24 · 12:00 UTC</span><span class="k">Kind</span><span class="v">requirements</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/keys.html">keys</a> <a class="chip" href="../research/topics/security-review.html">security-review</a></span><span class="k">Written by</span><span class="v">an agent working with Dinis Cruz on pki.sgit.ai, shared by him on 24 October 2026</span></div>
+<p><b>Draft for the sgit team.</b> Written 24 October 2026 against <code>sgit-ai</code> v0.24.0 and the <code>pki-agent</code> tool published at pki.sgit.ai. The leak points and behaviours below were checked on that version; the requirements come from a fortnight of moving vault keys between a person and many agent sessions, by paste and then by sealed QR code.</p>
+<hr>
+<h2 id="the-goal-in-one-line">The goal in one line</h2>
+<p>A vault key should travel sealed to its recipient's public key, open only in memory, and be stored at rest still sealed, so that <b>no vault key is ever written in cleartext to a transcript, a command line, a temp file or a working copy</b>.</p>
+<h2 id="why-where-a-vault-key-is-in-cleartext-today">Why: where a vault key is in cleartext today</h2>
+<p>Sealed delivery through <code>pki.sgit.ai</code> already fixes the worst problem, the chat transcript. Three places remain, all checked on v0.24.0:</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Where</th><th>How it happens</th><th>Lifetime</th></tr></thead><tbody><tr><td>1</td><td><code>.sg_vault/local/vault_key</code> in every clone</td><td><code>sgit clone &lt;key&gt;</code> writes the key there in plaintext (mode 0600)</td><td>as long as the clone exists, on every machine that ever cloned</td></tr><tr><td>2</td><td>process arguments and shell history</td><td>the key is a positional argument to <code>sgit clone</code>, and <code>pki-agent seal --text</code> takes it on the command line</td><td>process lifetime; shell history indefinitely</td></tr><tr><td>3</td><td>the output of <code>pki-agent open --save DIR</code></td><td>the opened secret is written to a file so that sgit can use it</td><td>until someone shreds it</td></tr></tbody></table></div>
+<p>Point 1 is the one that matters. A sealed handover that ends in <code>sgit clone &lt;key&gt;</code> has protected the key in transit and then written it to disk in the clear. Every working copy on every agent's machine holds every vault key that agent has ever opened.</p>
+<h2 id="what-is-already-in-place">What is already in place</h2>
+<p>The parts needed are built. This is wiring, not new cryptography.</p>
+<ul><li><code>sgit pki encrypt</code> / <code>sgit pki decrypt</code>: hybrid RSA-OAEP-4096 and AES-256-GCM, keys in <code>~/.sg-send/keys</code>.</li><li><code>pki-agent</code> (pki.sgit.ai): identities, a register, a pinned root, <code>seal</code> and <code>open</code>, and QR codes as strict JSON. Its <code>seal --from-vault</code> already reads the key from <code>sgit vault show-key</code> into memory without printing it. That is the pattern to generalise.</li><li>The sealed message format (<code>m1.…</code>) and the key code (<code>k1.…</code>, which carries both public keys and the label).</li></ul>
+<h2 id="requirements">Requirements</h2>
+<h3 id="r1-clone-and-attach-from-a-sealed-key">R1. Clone and attach from a sealed key</h3>
+<p><code>sgit clone</code> and <code>sgit vault attach</code> accept a sealed key in place of a plaintext one:</p>
+<pre><code class="lang-text">sgit clone --sealed handover.png   &lt;dir&gt;
+sgit clone --sealed m1.…           &lt;dir&gt;
+sgit clone --sealed handover.enc   &lt;dir&gt;
+sgit clone --sealed -              &lt;dir&gt;    # read the sealed form from stdin</code></pre>
+<p>The key is decrypted in memory with the local pki key and never written in cleartext.</p>
+<h3 id="r2-never-take-a-plaintext-key-on-argv-by-default">R2. Never take a plaintext key on argv by default</h3>
+<p>A plaintext key passed as a positional argument should either be refused with a pointer to <code>--sealed</code> or stdin, or accepted with a warning that names the exposure (process list and shell history). Keep an explicit opt-in for scripts.</p>
+<h3 id="r3-keep-the-key-sealed-at-rest">R3. Keep the key sealed at rest</h3>
+<p>Instead of <code>vault_key</code> in plaintext, a clone stores the key <b>sealed to the local agent's own pki key</b> (for example <code>.sg_vault/local/vault_key.sealed</code>). Every command that needs the key unwraps it in memory and drops it afterwards.</p>
+<p>What this buys: an agent no longer holds N vault keys in cleartext. It holds <b>one</b> secret, its pki private key, which protects all of them. Retiring that pki key revokes the agent's access to every vault it held, without rotating any of the vaults.</p>
+<h3 id="r4-migrate-existing-clones">R4. Migrate existing clones</h3>
+<p><code>sgit vault seal-key</code> converts an existing clone's plaintext <code>vault_key</code> into the sealed form and shreds the plaintext. Running it twice does nothing.</p>
+<h3 id="r5-address-messages-by-the-record-fingerprint">R5. Address messages by the record fingerprint</h3>
+<p>A sealed message must be addressed to the recipient's <b>record fingerprint, which is the signing key's</b>, not the encryption key's. <code>pki-agent open</code> refuses a message whose <code>to</code> does not match (<i>"to or from does not match the sealed code: refused"</i>). We hit this building a sealer from the key code, and it is easy to get wrong because the key code carries both fingerprints. The library should offer one function that returns the right one.</p>
+<h3 id="r6-trust-chain-to-the-pinned-root-with-an-explicit-operator-">R6. Trust: chain to the pinned root, with an explicit operator override</h3>
+<p>By default, seal only to recipients that chain to the pinned root, as <code>pki-agent seal</code> does today.</p>
+<p>Also support a <b>principal-vouched</b> mode, behind an explicit flag, for an operator who carries the recipient's key QR by hand:</p>
+<pre><code class="lang-text">sgit pki seal --to-key-qr agent-key.png --vouched-by-operator ...</code></pre>
+<p>It takes the recipient bundle from the key QR instead of the register, skips only the register check, and records that in the message itself (<i>"vouched by the operator in person, key carried by hand"</i>), so the recipient sees how it was trusted. This is how two keys were handed to an agent that was not yet enrolled, and it worked. It belongs in the tool, behind a named flag, rather than in a patched copy.</p>
+<p>When this mode is used, the operator is the only check that the key belongs to the agent. The flag's help text should say so, and tell the operator to compare the QR's fingerprint with the one the agent printed in its own session.</p>
+<h3 id="r7-never-print-a-key-including-in-errors">R7. Never print a key, including in errors</h3>
+<p>No command prints a vault key, a read key or a sealed secret's contents, including in error messages and <code>--debug</code> output. <code>pki-agent read-qr</code> already gets this right: it reports kind, recipient, sender and size, and never the secret.</p>
+<h3 id="r8-warn-when-the-pki-key-will-not-persist">R8. Warn when the pki key will not persist</h3>
+<p>If the pki key lives under a home directory that will not survive (a <code>--rm</code> container with nothing mounted over <code>~/.sg-send</code>), say so at <code>keygen</code>. With R3 in place, losing the pki key loses access to every vault sealed to it, so this becomes the single most expensive mistake an agent can make. We hit it once: a keypair made in a <code>--rm</code> container printed a fingerprint and a success message, was gone when the container exited, and the backup sealed to it could never be opened.</p>
+<p>A cheap check: after <code>keygen</code>, look for the key again in a fresh process and fail if it is missing. The store location is not configurable (<code>CLI__Main</code> calls <code>pki.setup()</code> with no argument, so it is always <code>~/.sg-send</code>); <code>HOME</code> is the only lever. Adding a <code>--home</code> flag or an env var would help.</p>
+<h3 id="r9-expiry-and-renewal">R9. Expiry and renewal</h3>
+<p>A confirmed agent record has a validity window (seven days was observed). Add <code>sgit pki status</code> showing the expiry, warn when it is under 48 hours away, and offer a renewal command. Without this, enrolled agents stop being trusted without warning, and people go back to pasting keys.</p>
+<h3 id="r10-say-why-trust-failed">R10. Say why trust failed</h3>
+<p>"Not trusted" currently looks the same whether the agent was never enrolled, is enrolled but not confirmed, has expired, or the register has not rebuilt yet. These need different responses. We waited about a day for an operator's confirmation to appear in the register, with no way to tell that from a failed confirmation. Report which of these it is, and when the register was last built.</p>
+<h2 id="non-goals-what-this-does-not-fix">Non-goals: what this does not fix</h2>
+<ul><li><b>The unattended secret.</b> An agent that runs without a person needs some secret it can use unattended: the pki private key, or the passphrase that protects it. R3 cuts the number of such secrets per agent to one. It does not get rid of it.</li><li><b>Forward secrecy.</b> The <code>expires</code> field on a sealed message is advisory, not cryptographic. If the recipient's private key leaks later, every message ever sealed to it can be opened.</li><li><b>Endpoint compromise.</b> Sealing protects the channel. A compromised agent session has the key once it opens it.</li></ul>
+<h2 id="acceptance-tests">Acceptance tests</h2>
+<p>Each of these was done by hand while writing this brief; they should be automated.</p>
+<ol><li><b>Round trip through the stock tool.</b> Seal a throwaway vault's key with the new code path, open it with the unmodified <code>pki-agent open</code>, and compare the result byte for byte.</li><li><b>No cleartext at rest.</b> After <code>sgit clone --sealed</code>, search the clone and the system temp directory for the key string. There should be no matches.</li><li><b>No cleartext on argv.</b> While a sealed clone runs, the key does not appear in <code>ps</code> output or in shell history.</li><li><b>Wrong recipient fails closed.</b> A message sealed to another agent is refused, and nothing is written.</li><li><b>Tampering fails closed.</b> Flipping one byte of the ciphertext gives an authentication failure (<code>InvalidTag</code>), and nothing is written.</li><li><b>Unverified sender is flagged, distinctly.</b> A message from a sender outside the register opens only with an explicit flag, and the report says <i>why</i> it is unverified.</li><li><b>Pack-mode clones.</b> A sealed clone of a pack-mode vault works, and the scans in test 2 read through <code>sgit cat</code>, not the disk. In a sparse pack-mode clone the working tree is empty while <code>sgit ls</code> shows every file as present, so a disk scan would check nothing and report clean.</li></ol>
+<h2 id="open-questions">Open questions</h2>
+<ul><li>Should a clone be able to hold its key sealed to <b>several</b> agent keys, so that two agents can share a clone without sharing a pki key?</li><li>Should the register publish a revocation list that sgit checks before unwrapping a key at rest (R3), so that retiring a pki key takes effect straight away rather than when it is next used?</li><li>Should the read key get the same sealed-at-rest treatment? It is less sensitive than the vault key, but it is still a credential, and pack mode makes "who can read this vault" matter more.</li></ul>
+<p><i>Shared by Dinis Cruz on 24 October 2026 and published on cli.sgit.ai as written. Read against the design in <a href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands</a> in <a href="../research/sealed-vault-keys-side-by-side.html">Sealed vault keys: the requirements and the design, side by side</a>.</i></p>
+<div class="pagenav"><a href="../research/sealed-vault-keys-side-by-side.html">← Sealed vault keys: the requirements and the design, side by side</a><a href="../research/pack-mode-verification-round-4.html">Pack mode, round 4: the fixes at c5b326f2 →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/sealed-vault-keys-requirements.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/sealed-vault-keys-requirements.md"><code>admin/content/research/sealed-vault-keys-requirements.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/sealed-vault-keys-requirements.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+    <a href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+    <a href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+    <a href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+    <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

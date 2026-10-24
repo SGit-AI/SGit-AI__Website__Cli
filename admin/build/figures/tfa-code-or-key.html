@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:repeat(4,1fr);gap:18px}
+.box p,.box li{font-size:14px} .box ul{margin:6px 0 0;padding-left:18px} .box li{margin:0 0 5px}
+.verdict{font:700 13px var(--mono);letter-spacing:.04em;margin:2px 0 8px}
+.v-no{color:var(--red)} .v-yes{color:var(--teal)} .v-part{color:var(--warm)}</style></head><body>
+<h1>Without a server, a second factor has to be part of the key, not a code someone checks</h1>
+<p class="sub">A code is only a factor if something that cannot be bypassed checks it. With no server there is nothing to check it, so the second factor must supply bytes the decryption needs. Four candidates for sgit, on the CLI and in the browser:</p>
+<div class="grid cols">
+ <div class="box red"><h3>An authenticator app's code</h3><div class="verdict v-no">A CODE · NOT A KEY</div>
+  <ul><li>Google Authenticator, Authy, LastPass, 1Password: TOTP, a 6-digit HMAC of a shared secret and the time.</li><li>To check it, the client must hold that secret. Whoever can read the vault can read the secret, and make the code.</li><li>About 20 bits, new every 30 s: too little, and changing too often, to be part of a key.</li><li>Useful only behind something that checks it: a server, or a person.</li></ul></div>
+ <div class="box teal"><h3>A passkey with PRF</h3><div class="verdict v-yes">A KEY · IN THE BROWSER</div>
+  <ul><li>The authenticator returns 32 fixed bytes for a given input, after the person's touch, face or PIN.</li><li>Mixed with the vault key by HKDF, they make a key neither half makes alone.</li><li>pki.sgit.ai already opens vaults this way.</li><li>Works with iCloud Keychain and Google Password Manager; reported for Windows Hello since early 2026; mixed in third-party password managers.</li></ul></div>
+ <div class="box teal"><h3>A security key, from the CLI</h3><div class="verdict v-yes">A KEY · ON A LAPTOP</div>
+  <ul><li>A YubiKey 5 or similar computes the same kind of secret (CTAP2 <code>hmac-secret</code>) over USB or NFC, after a touch and a PIN.</li><li>The method Linux uses to unlock disks: <code>systemd-cryptenroll --fido2-device</code>.</li><li>Python reaches it through <code>python-fido2</code>.</li><li>No use in a cloud container: there is no key to plug in.</li></ul></div>
+ <div class="box warm"><h3>A person, for an agent</h3><div class="verdict v-part">A CO-SIGNER</div>
+  <ul><li>An agent has no phone and no finger. Its second factor is the person who approves it.</li><li>The QR handover already works this way: nothing opens until the person carries a sealed key over.</li><li>Make it part of the key: half on the agent's disk, the other half from the person each session, held only in memory.</li></ul></div>
+</div>
+<div class="foot"><b>Passkeys and security keys can be a factor without a server; an authenticator app's code cannot.</b><span>cli.sgit.ai · 24 October 2026 · a proposal; support as reported in October 2026</span></div>
+</body></html>

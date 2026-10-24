@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:1fr 1fr;gap:26px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;margin:0 0 12px}
+.step .n{font:700 15px var(--mono);color:var(--dim2);text-align:right}
+.step p{margin:0;font-size:15px}
+.clear{color:var(--red);font-weight:700} .sealed{color:var(--teal);font-weight:700}
+.where{font:13px var(--mono);color:var(--dim)}
+.tally{display:flex;gap:18px;margin-top:10px;font-size:14px}
+.tally div{flex:1;border-top:1px solid var(--line);padding-top:8px}</style></head><body>
+<h1>Where a vault key exists in clear: today, and with native PKI in sgit</h1>
+<p class="sub">An agent in a Linux container receives a vault key from another agent, with a person carrying the QR code between them. Today the key is sealed only while it travels. With native PKI it stays sealed at rest, and is opened only in memory, for as long as a command needs it.</p>
+<div class="grid cols">
+ <div class="box red"><h3>Today: sealed in transit, clear at rest</h3>
+  <div class="step"><div class="n">1</div><p>The sender seals the key to the receiving agent's public key: a QR code. <span class="sealed">sealed</span></p></div>
+  <div class="step"><div class="n">2</div><p><code>pki-agent open qr.png --save DIR</code> writes <span class="clear">vault-key-&lt;id&gt;.txt</span>. <span class="where">a file on disk</span></p></div>
+  <div class="step"><div class="n">3</div><p><code>sgit clone &lt;vault key&gt;</code>: the key is <span class="clear">an argument</span>. <span class="where">shell history, the process list, the agent's transcript</span></p></div>
+  <div class="step"><div class="n">4</div><p>The clone keeps it in <span class="clear">.sg_vault/local/vault_key</span>, and its signing key beside it. <span class="where">read by every later command</span></p></div>
+  <div class="step"><div class="n">5</div><p>Anything that can read the folder can read every vault the agent holds: a backup, a zip, a leaked container image, another process.</p></div>
+ </div>
+ <div class="box teal"><h3>Proposed: sealed in transit and at rest, clear only in memory</h3>
+  <div class="step"><div class="n">0</div><p><code>sgit id init</code>: sgit makes the agent's key pair. A session key lives <span class="sealed">only in memory</span>; a lasting key is locked by a passphrase or held in hardware.</p></div>
+  <div class="step"><div class="n">1</div><p>The agent shows its public key as a QR code. The sender seals the vault key to it. <span class="sealed">sealed</span></p></div>
+  <div class="step"><div class="n">2</div><p><code>sgit clone --sealed qr.png</code>: opened in memory and never printed, never an argument, never a file.</p></div>
+  <div class="step"><div class="n">3</div><p>The clone keeps <span class="sealed">.sg_vault/local/vault_key.sealed</span>, sealed to the agent's own key.</p></div>
+  <div class="step"><div class="n">4</div><p>Each command asks <code>sgit agent</code>, which holds the unlocked private key, to open it: about 2 ms. The key and what it derives stay in memory.</p></div>
+ </div>
+</div>
+<div class="tally"><div><b>Clear on disk today:</b> the vault key twice (a saved file and the clone), the clone's signing key, and the key on a command line.</div><div><b>Clear on disk proposed:</b> nothing. A copied folder holds ciphertext addressed to a key that is not in it.</div><div><b>Still true either way:</b> a process that can read the agent's memory while it runs can read the key. PKI shrinks where a key lives; it cannot make a running process unreadable.</div></div>
+<div class="foot"><b>The QR handover already protects the key in transit. The missing half is at rest.</b><span>cli.sgit.ai · 24 October 2026 · a proposal; nothing on the right is built</span></div>
+</body></html>

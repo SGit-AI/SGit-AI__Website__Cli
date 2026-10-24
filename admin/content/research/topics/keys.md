@@ -4,7 +4,7 @@ summary: Should the read key and the write key become key pairs, can a vault hav
 section: topics
 order: 1
 question: Can a vault know who its members are, and refuse a write from the wrong one, without the server reading anything?
-articles: [keys-the-way-git-does-it, policies-the-vault-enforces]
+articles: [a-vault-key-that-never-lands, a-second-factor-without-a-server, keys-the-way-git-does-it, policies-the-vault-enforces]
 ---
 
 # Keys, members and who may write
@@ -22,6 +22,8 @@ articles: [keys-the-way-git-does-it, policies-the-vault-enforces]
 | Files sealed to named recipients on top of either mode | **designed** | [Sealed files](/research/sealed-files-layer.html) |
 | A door per member: one object holding the data key sealed to that member's key, outside history | **proposed**; the pieces exist separately | [the coverage map](/research/keys-pki-copy-on-write-coverage-map.html), [the article](/articles/keys-the-way-git-does-it.html) |
 | A policy row (*key K may write `path/`*) refused by every honest client | **proposed** | [the article](/articles/policies-the-vault-enforces.html) |
-| Revoking a reader without rotating the key, or opening a vault with no key on disk | **absent**; rotation is the rule today | [Key management](/docs/key-management.html) |
+| Revoking a reader without rotating the key | **absent**; rotation is the rule today | [Key management](/docs/key-management.html) |
+| A vault key that arrives sealed, stays sealed on disk and opens only in memory: `sgit id`, `sgit agent`, `clone --sealed` | **proposed** 24 October; today the clear key is in `.sg_vault/local/vault_key` | [the article](/articles/a-vault-key-that-never-lands.html) |
+| A second factor without a server: passkey PRF and security-key `hmac-secret` as part of the key, a person as an agent's co-signer | **proposed** 24 October; passkey PRF already opens vaults on pki.sgit.ai | [the article](/articles/a-second-factor-without-a-server.html) |
 
 !topic keys

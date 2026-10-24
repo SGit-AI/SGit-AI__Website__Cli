@@ -241,7 +241,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.8 (22 October 2026)
+# Reality: what exists, at v0.2.9 (24 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -253,7 +253,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **27 pages moved from sgit.ai** | At their sgit.ai paths, text unchanged, from sgit.ai site v0.7.87; each states where it came from ([the list](../admin/moved.md)) |
 | **The command reference** | 34 pages, one per top-level command, covering all 165 commands of sgit-ai v0.24.0 (since v0.2.8: `sgit pack` and its six subcommands, `--packs` on `init` and `create`), generated from `sgit help all --format json`; the JSON is published beside it |
 | **36 research documents, in 7 topics** | Under `/research/`: 32 from `SGit-AI__CLI` at `182cfc1` (branch `dev`), and cli.build's four pack-mode verification reports of 21 and 22 October, all, `team/humans/dinis_cruz/claude-code-web/`, 2 to 21 October 2026, bodies as written; one page per topic with its question and status (since v0.2.0; the pack-mode spec and the S3 append brief since v0.2.1) |
-| **15 articles in the newsroom's format** | Under `/articles/`: eight converted from the CLI team's drafts of 16 to 21 October with their text as drafted, four from Dinis Cruz's memos and messages (one an answer to a reader's question on performance), three by the build agent (a review of pack mode, the story of its four verification rounds, and a release note); held to the format by the gate (since v0.2.0) |
+| **17 articles in the newsroom's format** | Under `/articles/`: eight converted from the CLI team's drafts of 16 to 21 October with their text as drafted, six from Dinis Cruz's memos and messages (one an answer to a reader's question on performance, two proposals for native PKI and a second factor), three by the build agent (a review of pack mode, the story of its four verification rounds, and a release note); held to the format by the gate (since v0.2.0) |
 | **Figures and diagrams** | Drawn figures as HTML pages rendered to webp, and mermaid diagrams rendered to SVG, by `admin/build/render_figures.mjs` (since v0.2.1); the v0.2.0 lead figures are SVG from `admin/build/make_figures.py`. Rendering needs Playwright and network access to load mermaid; CI does not render, it checks the outputs exist |
 | **The 21 v0.1 article addresses** | Each is a page that sends the reader to the document's address under `/research/`; a page with a refresh, since GitHub Pages has no redirect rules |
 | **The team page** | Who writes here and under which name: Dinis Cruz, cli.build, the CLI team |
@@ -301,6 +301,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.2.9 | 2026-10-24 | sgit-ai v0.24.0 | Two proposals from Dinis Cruz's message, for implementing next: [A vault key that never lands](../articles/a-vault-key-that-never-lands.md), native PKI in sgit so a vault key arrives sealed (pki.sgit.ai's QR handover), stays sealed on disk and is opened only in memory by an `sgit agent`, mapped against sgit 0.24.0's code (27 places read the key file; the clear key, the read key, the token and the signing key are all on disk in clear; `sgit pki` private keys use 2,048 PBKDF2 iterations); and [A second factor without a server](../articles/a-second-factor-without-a-server.md): why an authenticator app's code cannot protect a vault without a server, how a passkey's PRF or a security key's hmac-secret can, and a person as an agent's co-signer. Two figures, two diagrams; the keys topic gains both. |
 | v0.2.8 | 2026-10-22 | sgit-ai v0.24.0 | Pack mode, released: sgit-ai 0.24.0 reached PyPI on 22 October and this release documents it. [Release notes](../docs/update-to-0-24-0.md) and [a playbook for agents](../docs/pack-mode-for-agents.md), both run against the PyPI build on dev the same evening; the command reference regenerated from 0.24.0 (165 commands: `sgit pack` and six subcommands, `--packs` on `init` and `create`); [Four rounds to no blockers](../articles/pack-mode-four-rounds.md), the build agent's account of reviewing pack mode before release; measured numbers added to [Is there any overhead?](../articles/is-there-any-overhead.md#pack-mode) and [A pack per push](../articles/a-pack-per-push.md#measured); the CLI team's eight new pack documents and this site's four verification reports under research, re-imported at `182cfc1`; topic rows moved to shipped. |
 | v0.2.7 | 2026-10-21 | sgit-ai v0.23.0 | HTTPS is enforced: Dinis Cruz ticked "Enforce HTTPS" in the repository's Pages settings, and `http://cli.sgit.ai` now answers 301 to `https://`, as sgit.ai and the newsroom do. The reality file moves it from "does not exist yet" to "exists". |
 | v0.2.6 | 2026-10-21 | sgit-ai v0.23.0 | [Is there any overhead?](../articles/is-there-any-overhead.md), an answer to a reader's question on LinkedIn about performance (the question quoted, its author not named): the fixed cost of a command, a CI job's clone as the vault grows, the big vault, the ruv.sgit hives' 603 operations, where sgit does less work than git and where git is faster, and what pack mode, compression and a commit-chain object add next; four drawn figures and a diagram for choosing the clone. |
@@ -1119,6 +1120,170 @@ Written up by the sgit CLI team's agent (a Claude Code session) as a draft for t
 *[Site index for agents](../llms.txt) · [HTML version](https://cli.sgit.ai/articles/a-pack-per-push.html)*
 
 
+# A second factor without a server: why an authenticator app's code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent, cli.sgit.ai
+
+> With sgit keeping keys sealed and opening them only in memory, the next question I asked was about two-factor authentication. I have Google Authenticator on my phone, LastPass, passkeys, a YubiKey. Could sgit ask for one of them as well, on the command line and on the websites, and how hard would it be, given that the whole pattern is to have no server? Working it through changed the question. Two-factor authentication as people know it is a check: you type a code and a server that knows the secret compares it. Take the server away and nobody is left to check, so a second factor has to be something else: part of the key. The decryption must need bytes that only the second factor can produce. An authenticator app cannot do that. Its six digits are an HMAC of a shared secret and the time, so a client that checks them must hold the secret, and whoever can read the vault can read the secret too and make the codes. Twenty bits that change every thirty seconds are no material for a key either. A passkey can. With the PRF extension it returns thirty-two fixed bytes after a touch, a face or a PIN, and those bytes can be mixed into the key; pki.sgit.ai already opens vaults this way, and a passkey with a PIN or a face is already two factors. A security key does the same on the command line, through the mechanism Linux uses to unlock encrypted disks. And for an agent in a container, with no phone and no finger, the second factor is a person: the share of the key that completes it arrives through the person, for one session, and is kept only in memory. This article sets out each of those, with what they protect and what they do not.
+
+*Source: <https://cli.sgit.ai/articles/a-second-factor-without-a-server.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+By [Dinis Cruz](https://sgit.ai/about/) · 2026-10-24 · published
+
+**Summary:** With sgit keeping keys sealed and opening them only in memory, the next question I asked was about two-factor authentication. I have Google Authenticator on my phone, LastPass, passkeys, a YubiKey. Could sgit ask for one of them as well, on the command line and on the websites, and how hard would it be, given that the whole pattern is to have no server? Working it through changed the question. Two-factor authentication as people know it is a check: you type a code and a server that knows the secret compares it. Take the server away and nobody is left to check, so a second factor has to be something else: part of the key. The decryption must need bytes that only the second factor can produce. An authenticator app cannot do that. Its six digits are an HMAC of a shared secret and the time, so a client that checks them must hold the secret, and whoever can read the vault can read the secret too and make the codes. Twenty bits that change every thirty seconds are no material for a key either. A passkey can. With the PRF extension it returns thirty-two fixed bytes after a touch, a face or a PIN, and those bytes can be mixed into the key; pki.sgit.ai already opens vaults this way, and a passkey with a PIN or a face is already two factors. A security key does the same on the command line, through the mechanism Linux uses to unlock encrypted disks. And for an agent in a container, with no phone and no finger, the second factor is a person: the share of the key that completes it arrives through the person, for one session, and is kept only in memory. This article sets out each of those, with what they protect and what they do not.
+
+![Without a server, a second factor has to be part of the key, not a code someone checks. Four candidates. An authenticator app's code (TOTP, as in Google Authenticator, Authy or LastPass): a code, not a key, because checking it needs the shared secret, and about twenty bits that change every thirty seconds cannot be part of a key. A passkey with the PRF extension: a key, in the browser, already used by pki.sgit.ai, supported by iCloud Keychain and Google Password Manager, reported for Windows Hello since early 2026 and mixed in third-party password managers. A security key from the command line (CTAP2 hmac-secret, as systemd-cryptenroll uses for disks): a key, on a laptop, not in a cloud container. A person, for an agent: a co-signer, because an agent has no phone and no finger; half the key stays on the agent's disk and the other half comes from the person each session.](../articles/images/tfa-code-or-key.webp)
+
+*Without a server, a second factor has to be part of the key, not a code someone checks. Four candidates. An authenticator app's code (TOTP, as in Google Authenticator, Authy or LastPass): a code, not a key, because checking it needs the shared secret, and about twenty bits that change every thirty seconds cannot be part of a key. A passkey with the PRF extension: a key, in the browser, already used by pki.sgit.ai, supported by iCloud Keychain and Google Password Manager, reported for Windows Hello since early 2026 and mixed in third-party password managers. A security key from the command line (CTAP2 hmac-secret, as systemd-cryptenroll uses for disks): a key, on a laptop, not in a cloud container. A person, for an agent: a co-signer, because an agent has no phone and no finger; half the key stays on the agent's disk and the other half comes from the person each session.*
+
+
+## In short {#in-short}
+
+- **Without a server, a second factor must be part of the key.** Two-factor authentication as people know it is a check, and with no server there is nobody to do the checking.
+- **An authenticator app's code cannot be part of the key.** Checking a TOTP code needs the shared secret, so anyone who can read the vault can make the codes. And twenty bits that change every thirty seconds are no material for a key.
+- **A passkey can.** With the PRF extension it returns 32 fixed bytes after a touch, a face or a PIN. pki.sgit.ai already opens vaults with them, and a passkey that asks for a PIN or a face is already two factors.
+- **A security key can, from the command line.** It uses the CTAP2 `hmac-secret` extension, the mechanism Linux uses to unlock encrypted disks. It works on a laptop, not in a cloud container.
+- **For an agent, the second factor is a person.** The share of the key that completes it arrives through the person, for one session, and is kept only in memory.
+- **None of this needs a server.** All of it fits the sealed-key design of [A vault key that never lands](../articles/a-vault-key-that-never-lands.md).
+
+## The question {#question}
+
+I use Google Authenticator, LastPass, passkeys and a YubiKey. Could sgit ask for one of them on top of a vault key, on the command line and on the sites built on vaults, and how hard is it? Take into account that the pattern is to have no server.
+
+## Why the server matters {#server}
+
+Every second factor people use today works the same way:
+- you hold something: a phone app, a key fob, a passkey;
+- it proves itself to a server;
+- the server, which you cannot get around, lets you in or does not.
+
+**The factor is enforced by the thing that checks it.**
+
+sgit's pattern removes that thing. The vault host stores ciphertext and checks a write key. Everything else happens on the client, which the person, or an attacker who has the person's files, controls completely. A check that runs on the client can be skipped by editing the client. So a second factor for sgit has to make the **decryption itself** impossible without it: the factor must contribute bytes to the key. That one requirement sorts every option.
+
+## An authenticator app's code {#totp}
+
+Google Authenticator, Authy, LastPass Authenticator and the TOTP fields in password managers all implement RFC 6238. The six digits are an HMAC of a shared secret and the current 30-second time step.
+
+- **To check a code, you need the secret.** A client that checks codes must therefore hold the secret. Whoever can read the vault folder can read it too, and compute every code there will ever be. The check protects nothing.
+- **It cannot be part of a key.** Six digits are about 20 bits, and they change every 30 seconds. A key cannot depend on a value that changes every half minute unless something re-wraps it every half minute, and that something needs the secret.
+- **Where TOTP does help:** behind a check that cannot be bypassed. That means a server, which here could only be the vault host refusing to serve ciphertext, or to accept a write, without a code. That works, but it is a server feature and it breaks the parts of the design that make sgit fast and portable: immutable objects cached anywhere, static hosts, a vault in one zip. It would be defensible for **writes only**, as a server-side guard against a stolen write key. It is not a second factor for the vault's contents.
+
+So the honest answer for an authenticator app is no, not without a server. Every other path is better.
+
+## A passkey: two factors already, and a key {#passkey}
+
+A passkey is a private key held by an authenticator: a phone, a laptop's secure hardware, a password manager or a security key. It signs only for the site it was made for.
+
+- **Two factors already.** When the site asks for user verification, the authenticator also wants a PIN, a fingerprint or a face. A passkey used that way is something you have plus something you know or are, which is why passkeys count as phishing-resistant multi-factor authentication.
+- **A key, with PRF.** WebAuthn Level 3's `prf` extension asks the authenticator for 32 bytes: a fixed function of the passkey and an input the site chooses. The same passkey and the same input always give the same bytes, and nothing else can produce them.
+
+pki.sgit.ai already does this. "Open with my passkey" asks for the PRF output on a fixed input, derives a door from it by HKDF (a vault id and a passphrase), and opens the vault there. The newsroom's door works the same way. On those sites, **the passkey is the key**, and a site with no server to check anything gets a factor that cannot be skipped: without the authenticator the bytes do not exist.
+
+What a sealed-key sgit adds on the web:
+
+- **Two keys to open a high-value vault.** The vault key is wrapped under `HKDF(PRF bytes || Argon2id(a passphrase))`. The passkey alone does not open it and the passphrase alone does not either. That is a real second factor in the strict sense, at the cost of one more thing to remember.
+- **Require user verification** (`userVerification: "required"`), so a passkey without a PIN or a face is refused, not quietly accepted.
+- **More than one passkey,** each a door to the same master, plus the recovery code pki.sgit.ai already shows once. A lost phone must not be a lost vault.
+
+**Where PRF works today.** As reported in October 2026, mostly by secondary sources that track it:
+
+| Authenticator | PRF |
+|---|---|
+| iCloud Keychain (Safari 18 and later; iOS and macOS) | yes; Safari does not pass PRF to external security keys |
+| Google Password Manager (Chrome, Edge, Android) | yes, by default; the Chrome profile authenticator does not |
+| Windows Hello | reported since the February 2026 update on Windows 11 24H2 and 25H2 |
+| Firefox | 139 and later on macOS; 148 and later with Windows Hello |
+| Security keys (YubiKey 5 and others) | yes, through `hmac-secret`, in Chromium-based browsers; not through Safari |
+| Third-party password managers | mixed: 1Password reports PRF in the browser, Bitwarden uses PRF for its own login; LastPass unknown |
+
+pki.sgit.ai already handles the gaps: a passkey that returns no PRF bytes cannot sign in, and the page says which providers usually work.
+
+## A security key, on the command line {#cli}
+
+The command line has no browser, but it has the same mechanism one level down. A FIDO2 security key implements the CTAP2 `hmac-secret` extension, which is what the browser's PRF uses underneath: after a touch, and a PIN if one is set, the key returns an HMAC of an input under a secret that never leaves it.
+
+Linux already trusts this for whole disks: `systemd-cryptenroll --fido2-device=auto` enrols a YubiKey to unlock a LUKS volume, and has since systemd 248. Python reaches the same extension through `python-fido2`, Yubico's library, which implements both `hmac-secret` and `prf`.
+
+For sgit it is one more way to lock an identity:
+
+```text
+$ sgit id init --fido2                 # touch the key, set or enter its PIN
+  identity sha256:7d1e…  locked by: passphrase (Argon2id) + security key (hmac-secret)
+$ eval "$(sgit agent start)"           # asks for the passphrase and a touch, once
+```
+
+The identity's private key is encrypted under `HKDF(Argon2id(passphrase) || hmac-secret(salt))`. The key file is useless without both the passphrase and the physical key. A stolen laptop backup, or a copied home folder, gets neither. The agent asks for both once per session, then opens sealed vault keys in memory, as in [the PKI design](../articles/a-vault-key-that-never-lands.md#agent).
+
+The same slot can take other hardware a machine already has, with the same "the key cannot be copied" property and different trade-offs:
+- a TPM 2.0 on a Linux server;
+- the Secure Enclave behind a Mac's Touch ID;
+- a security key's PIV slot.
+
+**What this cannot reach is a cloud container.** There is no USB port, no fingerprint reader and nobody at the keyboard.
+
+## The second factor for an agent is a person {#agents}
+
+An agent in a container has no phone, no finger and no security key. What it has, in our workflow, is a person who approves it. The QR handover already makes that the second factor in practice: nothing opens until I carry the sealed key across. The design can make it one in fact.
+
+```mermaid
+%% An agent's vault key split in two. The share on disk is sealed to the agent's identity; the share that completes it comes from the person each session, sealed from their passkey-opened browser, and is held only in sgit agent's memory. Neither the disk nor the person's message alone opens the vault.
+flowchart TD
+    A[The vault key K] --> B[Split: K = A xor B]
+    B --> C[Share A, sealed to the agent's identity, kept on disk]
+    B --> D[Share B, sealed to the agent's session key, carried by the person as a QR code]
+    C --> E{{sgit agent: both shares in memory?}}
+    D --> E
+    E -- yes --> F[K exists in memory only, for this session]
+    E -- no --> G[Nothing opens: the disk alone is half a key]
+```
+
+- **The key is split in two.** The share kept on disk is sealed to the agent's identity. The other share is sealed to the agent's session key, which lives only in memory, and arrives each session from the person.
+- **The person issues that share from their own browser,** opened with their passkey, so the person's second factor is a passkey too.
+- **A stolen disk, a leaked image or a copied folder holds half a key.** A new session cannot open the vault until the person sends the other half.
+- **What it cannot do** is take a key back from a session that already opened it. A share once in memory can be kept by an agent that ignores the rule. Making old shares useless needs rotation, a new split or a `sgit vault rekey`, on a schedule the person sets. Without a server, that is the price of time limits.
+
+For the many agents that are throwaway sessions, the simpler form is already enough. A session identity exists only in memory, so the sealed key on its disk is useless once the session ends, and every new session needs a new handover from the person. **The person is the second factor because the agent cannot persist a key without them.**
+
+## What to build, in order {#build}
+
+1. **On the web: require user verification, and offer a second passkey and a recovery code** everywhere a vault opens with a passkey. Most of this is already in pki.sgit.ai, and it is a setting and a page, not a protocol.
+2. **In sgit: the sealed-key design first.** Every second factor here is a way to lock the identity or to complete the key, so it needs [the identity and the agent](../articles/a-vault-key-that-never-lands.md#design) to exist.
+3. **Then `--fido2` for identities on laptops,** through `python-fido2` as an optional extra, plus the TPM and Secure Enclave variants where the platform provides them.
+4. **Then the split key for agents:** `sgit vault seal --split --to <agent>`, the person's share sent from the browser, and `sgit agent` holding it only in memory.
+5. **Passphrase plus passkey on the web,** for the vaults that warrant two things to open them.
+6. **TOTP only if we decide to add a server check for writes,** and then as a guard on the write key, not as a factor on the vault.
+
+## What this does not claim {#limits}
+
+- **Nothing here is built** except what pki.sgit.ai already does with passkeys and PRF.
+- **The PRF support table is as reported in October 2026,** mostly by secondary sources that track it. Vendors change it, and some have shipped it with bugs. Check the browser and the authenticator you rely on before you rely on them.
+- **A second factor locks keys at rest and at unlock.** Like the sealed-key design, it does not protect a key from a process that can read the agent's memory while it holds it.
+- **A split key makes the person a single point of delay:** a new session waits for them. That is the purpose, and also the cost.
+- **TOTP is dismissed here only as a factor on encrypted data without a server.** Behind a server it is still a reasonable second factor for logging in, which is what it was made for.
+
+If you want a second factor on your own vaults, or think one of these is wrong, write to agent@riskmandate.ai.
+
+## Where this comes from {#sources}
+
+A message of mine on 24 October 2026, written up by cli.sgit.ai's build agent, cli.build, on the same day; the editorial responsibility is mine.
+
+- **pki.sgit.ai's passkey design:** [A login made of a passkey](https://pki.sgit.ai/articles/a-login-made-of-a-passkey.md), site v0.2.28.
+- **sgit's code:** no 2FA, TOTP, FIDO or passkey code exists in SGit-AI__CLI at `182cfc1`. The CLI team's earlier notes mention hardware keys as future work in the [sealed files layer](../research/sealed-files-layer.md) and passkey doors in [Keys the way git does it](../articles/keys-the-way-git-does-it.md).
+- **Standards:** RFC 6238 (TOTP); W3C Web Authentication Level 3, the `prf` extension; CTAP 2.1, `hmac-secret`.
+- **Support, as reported:**
+  - Corbado's [PRF support overview](https://www.corbado.com/blog/passkeys-prf-webauthn);
+  - Yubico's [developer's guide to PRF](https://developers.yubico.com/WebAuthn/Concepts/PRF_Extension/Developers_Guide_to_PRF.html) and [python-fido2's extensions](https://developers.yubico.com/python-fido2/API_Documentation/_modules/fido2/ctap2/extensions.html);
+  - Mozilla's [PRF bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1863819);
+  - 1Password's and Bitwarden's community pages on PRF;
+  - the [systemd-cryptenroll manual](https://man.archlinux.org/man/systemd-cryptenroll.1).
+- **The design this builds on:** [A vault key that never lands](../articles/a-vault-key-that-never-lands.md).
+- **The research topic:** [Keys, members and who may write](../research/topics/keys.md).
+
+---
+
+*[Site index for agents](../llms.txt) · [HTML version](https://cli.sgit.ai/articles/a-second-factor-without-a-server.html)*
+
+
 # A vault in one file: native zip support for sgit, where it wins, where it loses, and what already exists, cli.sgit.ai
 
 > A vault is files and folders, so it can be a zip. Every object is immutable and named by its hash, so the store only ever grows, and appending is the one thing a zip does cheaply. I asked how much of that already exists, and the answer is most of it: sgit publish --bundles writes a head snapshot zip and one delta zip per commit, deterministic and uncompressed because ciphertext does not compress; vault backup and uninit write zips; a clone can read a plain folder; and the libraries underneath have zip support. What is missing is a clone that reads a bundle and a bare store that lives in one. The cost today is requests, not bytes. From a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3, so many small files pay that floor every time and one file pays it once. On the article's 12 MB vault, 106 separate requests took 2 to 2.5 seconds and one 12.7 MB zip took 0.05 seconds to fetch and 0.08 to unpack. On the 35,000-object vault, the 430 MB head zip came off a local disk in 3 seconds against 111 for the objects one by one, and appending a member took a quarter of a second. Selective reads survive, because a zip's directory sits at its end and range requests read it and any member. The crossover is a link-speed question, in the tens of megabytes for the hosted path. It is the right shape for small-file vaults, logs, statistics and API captures, for a vault inside a vault, and for file hosts with no API; it is the wrong one for a vault ten agents push to every minute. Since the first draft it has been tested further: Zip64 handled 70,000 members and 5 GiB, a presigned multipart upload and Range reads worked against the live server, and appending on S3 without downloading needs one server-side copy the server does not offer yet.
@@ -1402,6 +1567,235 @@ Written up by the sgit CLI team's agent (a Claude Code session) as a draft for t
 ---
 
 *[Site index for agents](../llms.txt) · [HTML version](https://cli.sgit.ai/articles/a-vault-in-one-file.html)*
+
+
+# A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory, cli.sgit.ai
+
+> pki.sgit.ai has made something work that I did not expect to feel this good. An agent gives me a QR code holding its public key; I open it on the website, check it, and write a message only that agent can read. Agents now hand each other vault keys the same way, with me as the transport: I carry a QR image from one session to the other and never see what is inside. But the last step undoes it. The receiving agent opens the sealed message, writes the vault key to a file, passes it to sgit clone on the command line, and sgit keeps it in clear in the clone's folder, next to a signing key that is also in clear. The key is protected while it travels and exposed the moment it arrives. So I asked how sgit itself could take PKI natively, on an agent running in a Linux container that has its own key pair, so that the clear vault key is never written to disk and exists only in memory. The answer is that most of the pieces exist. sgit already makes the right keys (RSA-OAEP 4096 and ECDSA P-256, the bundle pki.sgit.ai uses), already speaks the same sealed envelope, and already reads a vault key from standard input. What is missing is to keep the key sealed at rest, to open it inside a small agent process the way ssh-agent holds SSH keys, and to let sgit make and show its own identity. Opening a sealed key costs about two milliseconds, so this is not a performance question. The real work is that 27 places in the CLI read the key file directly and need to go through one door. This article maps that out, phase by phase.
+
+*Source: <https://cli.sgit.ai/articles/a-vault-key-that-never-lands.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+By [Dinis Cruz](https://sgit.ai/about/) · 2026-10-24 · published
+
+**Summary:** pki.sgit.ai has made something work that I did not expect to feel this good. An agent gives me a QR code holding its public key; I open it on the website, check it, and write a message only that agent can read. Agents now hand each other vault keys the same way, with me as the transport: I carry a QR image from one session to the other and never see what is inside. But the last step undoes it. The receiving agent opens the sealed message, writes the vault key to a file, passes it to sgit clone on the command line, and sgit keeps it in clear in the clone's folder, next to a signing key that is also in clear. The key is protected while it travels and exposed the moment it arrives. So I asked how sgit itself could take PKI natively, on an agent running in a Linux container that has its own key pair, so that the clear vault key is never written to disk and exists only in memory. The answer is that most of the pieces exist. sgit already makes the right keys (RSA-OAEP 4096 and ECDSA P-256, the bundle pki.sgit.ai uses), already speaks the same sealed envelope, and already reads a vault key from standard input. What is missing is to keep the key sealed at rest, to open it inside a small agent process the way ssh-agent holds SSH keys, and to let sgit make and show its own identity. Opening a sealed key costs about two milliseconds, so this is not a performance question. The real work is that 27 places in the CLI read the key file directly and need to go through one door. This article maps that out, phase by phase.
+
+![Where a vault key exists in clear, today and with native PKI in sgit. On the left, today: the key is sealed to the receiving agent while it travels as a QR code, then written to a file when the agent opens it, passed to sgit clone as a command-line argument, and kept in the clone's folder in clear, next to the clone's signing key. On the right, the proposal: sgit makes the agent's key pair, the sealed key is given to sgit clone as it is, the clone keeps it sealed to the agent's own key, and each command asks a small sgit agent process to open it in memory, in about two milliseconds. Underneath: nothing is in clear on disk in the proposal; what still holds in both is that a process able to read the agent's memory while it runs can read the key.](../articles/images/pki-where-the-key-lives.webp)
+
+*Where a vault key exists in clear, today and with native PKI in sgit. On the left, today: the key is sealed to the receiving agent while it travels as a QR code, then written to a file when the agent opens it, passed to sgit clone as a command-line argument, and kept in the clone's folder in clear, next to the clone's signing key. On the right, the proposal: sgit makes the agent's key pair, the sealed key is given to sgit clone as it is, the clone keeps it sealed to the agent's own key, and each command asks a small sgit agent process to open it in memory, in about two milliseconds. Underneath: nothing is in clear on disk in the proposal; what still holds in both is that a process able to read the agent's memory while it runs can read the key.*
+
+
+## In short {#in-short}
+
+- **The QR handover works,** and it protects a vault key while it travels: the key is sealed to the receiving agent's public key, and I carry an image I cannot read.
+- **The key is in clear the moment it arrives:** a saved file, a command-line argument, then `.sg_vault/local/vault_key` in the clone, next to an unencrypted signing key.
+- **Native PKI in sgit closes that.** sgit makes the agent's key pair, accepts a sealed vault key as it is, keeps it sealed on disk, and opens it only in memory.
+- **The private key lives in a small `sgit agent` process,** the way `ssh-agent` holds SSH keys. In a throwaway container it is made in memory and never written at all.
+- **It costs nothing a person would notice:** opening a sealed key is about 2 ms, against the 108 ms sgit already spends deriving keys on every command.
+- **Most of the pieces exist:** the key types, the envelope, the key store shared with pki.sgit.ai's agent tool, and reading a key from standard input.
+- **The real work is one door:** 27 places in the CLI read the key file directly, and all of them have to go through a single key source.
+- **What it cannot do:** hide a key from a process that can read the agent's memory while it runs.
+
+## What works now {#what-works}
+
+Three things on [pki.sgit.ai](https://pki.sgit.ai/) have become part of how I work.
+
+- **An agent's public key travels as a QR code.** The QR holds strict JSON: `pki.sgit.ai/qr/key/v1`, a fingerprint, a label and a `k1` code.
+- **I seal a message to it in the browser.** sgit's own hybrid envelope: RSA-OAEP 4096 wraps an AES-256-GCM key, and the sender signs with ECDSA P-256. Only that agent can open it.
+- **Agents hand each other vault keys the same way.** The sender runs `pki-agent seal --from-vault`, which reads the key from `sgit vault show-key` in memory and seals it to the recipient. The result is a QR image I carry to the other session. The handover page, [pki.sgit.ai/handover.md](https://pki.sgit.ai/handover.md), is what an agent follows.
+
+## Where it breaks: the last metre {#last-metre}
+
+The receiving side, read against sgit 0.24.0's code:
+
+| Step | Where the vault key is | In clear? |
+|---|---|---|
+| The QR image, carried by me | sealed to the receiving agent's key | no |
+| `pki-agent open qr.png --save DIR` | `vault-key-<id>.txt` | **yes**, a file |
+| `sgit clone <vault key>` | the command line | **yes**: shell history, the process list, often the agent's own transcript |
+| The clone | `.sg_vault/local/vault_key`, mode 0600 | **yes** |
+| A read-only clone | `clone_mode.json` holds the read key | **yes** (recorded as an accepted risk, AppSec F07) |
+| The clone's signing key | `.sg_vault/local/key-rnd-imm-*.pem`, unencrypted PKCS#8 | **yes** |
+| The access token | `.sg_vault/local/token` | **yes** |
+
+sgit writes every one of these files through one helper that sets the permissions to 0600 and encrypts nothing. Anything that can read the folder can therefore read every vault the agent holds:
+- a backup, or `sgit vault backup --include-key`;
+- a zip of the workspace;
+- a container image pushed with the folder still in it;
+- another process running as the same user.
+
+## What sgit already has {#already}
+
+More than I thought:
+
+- **The right keys.** `sgit pki keygen` makes an RSA-4096 encryption key and an ECDSA P-256 signing key, fingerprinted as `sha256:` plus 16 hex. pki.sgit.ai's browser keys and its agent tool use exactly this bundle.
+- **The same key store.** `pki-agent.mjs` keeps its keys in sgit's store, `~/.sg-send/keys/`, so `sgit pki` and the agent tool already use the same key.
+- **The same envelope.** `sgit pki decrypt` opens what pki.sgit.ai seals (envelope v2, with the signer inside), and can write to standard output (`-o -`) instead of a file.
+- **A key without a command line.** `sgit clone -` reads the vault key from the first line of standard input. The key is then still written to `local/vault_key`.
+- **Secure deletion.** `secure_unlink` overwrites a file before removing it, for retiring a clear key file.
+
+Two weaknesses turned up in the same reading, and both should be fixed whatever else happens:
+
+- **The private key's passphrase protection is weak.** A key from `sgit pki keygen` is encrypted with PBKDF2 at **2,048 iterations**, the library's default. Vault keys get 600,000. Argon2id, already in the cryptography library sgit uses, costs 152 ms here.
+- **The vault alias store is weaker than it looks.** `~/.sg-send/vaults.enc` derives its key with a fixed salt for every user, and its "auto-lock" only deletes a timestamp file.
+
+## The design {#design}
+
+Four pieces. Each is small, and together they mean the clear vault key is never written anywhere.
+
+### 1. sgit makes its own identity {#identity}
+
+```text
+$ sgit id init --session --name "report builder (Claude Code session)"
+  identity sha256:3f9c…  (session: in memory only; gone when the agent stops)
+$ sgit id show --qr me.png          # the public key as pki.sgit.ai/qr/key/v1 JSON, or a k1 link
+```
+
+`sgit id` is `sgit pki keygen` with the right defaults: the same key types, the same bundle and the same store, so pki.sgit.ai and its agent tool read it unchanged. A key is held in one of three ways:
+
+| Kind | Where the private key is | For |
+|---|---|---|
+| **Session** | Only in the memory of `sgit agent`. It is never written, and it ends with the process. | A throwaway cloud container: a new key per session, a new handover per session |
+| **Lasting** | On disk, encrypted under a passphrase with Argon2id. The passphrase is given to `sgit agent` once. | A vault keeper, or an agent that outlives its container |
+| **Hardware** | A TPM 2.0, a security key's PIV slot or a Mac's Secure Enclave. The key cannot be copied out. | A laptop or a server that has one |
+
+Hardware mostly speaks P-256, not RSA-4096. So the third kind needs a second envelope: ECDH P-256 with HKDF and AES-256-GCM, the construction the CLI team already drew up for its [sealed files layer](../research/sealed-files-layer.md). The RSA envelope stays, because it is what pki.sgit.ai speaks today.
+
+### 2. A sealed key goes in as it is {#sealed-clone}
+
+```text
+$ sgit clone --sealed handover.png work      # or an m1… code, a file, or - for stdin
+  sealed to: sha256:3f9c… (this identity)   from: sha256:a1b2… (chains to the root)   expires: 30 Oct
+  ▸ Packs fetched (1 pack(s), 2087 objects, 4 request(s) in 6.2s)
+```
+
+The clone accepts exactly what the QR handover produces: the strict `pki.sgit.ai/qr/sealed/v1` JSON, or the `m1` code inside it. It checks the same things `pki-agent open` checks:
+- it is addressed to this identity;
+- the signature verifies;
+- it has not expired;
+- the sender chains to the pinned root.
+
+It opens the key in memory, derives what it needs, and never prints the key or writes it in clear. Reading a QR image needs a decoder, which can be an optional extra (`sgit-ai[qr]`), so the base install takes the JSON or the code.
+
+### 3. The clone keeps it sealed {#at-rest}
+
+```text
+.sg_vault/local/
+  vault_key.sealed      the vault key, sealed to this identity (or to several: a person's recovery key too)
+  token.sealed          the access token, the same way
+  key-rnd-imm-….pem     the clone's signing key, now encrypted under a key sealed the same way
+  identity              which identity opens them: a fingerprint, nothing secret
+```
+
+- **Clones and pulls.** Every command that needs the key asks the identity to open `vault_key.sealed`, and holds the result only in memory.
+- **Read-only clones** seal their read key in the same way, which retires the F07 accepted risk.
+- **Existing clones** convert in place with `sgit vault seal-local`. It writes the sealed files, checks they open, and then removes the clear ones with the secure delete sgit already has.
+- **Showing the key.** `sgit vault show-key` on a sealed clone refuses unless asked with `--reveal`.
+- **Sending a key on.** A new `sgit vault seal --to <fingerprint> --qr out.png` seals the key to someone else without ever printing it, so the agent tool no longer has to read `show-key`'s output.
+
+### 4. `sgit agent` holds the private key {#agent}
+
+```text
+$ eval "$(sgit agent start --session)"       # sets SGIT_AGENT_SOCK, like ssh-agent sets SSH_AUTH_SOCK
+$ sgit status                                # asks the agent to open vault_key.sealed: ~2 ms
+$ sgit agent lock                            # forgets every opened key; the private key stays (or, --session, goes)
+```
+
+A small process that holds the private key, and the vault keys it has opened, for a set time, behind a Unix socket only its user can reach. This is the pattern of `ssh-agent` and `gpg-agent`, and it is right for the same reasons:
+- **A lasting key's passphrase is typed once,** not exported in an environment variable that every process of the same user can read in `/proc`.
+- **A session key never touches disk at all,** because it is made inside the agent.
+- **The agent can apply policy:** "this vault opens read-only", "push needs a fresh approval", "forget everything after an hour". That is where [the second factor](../articles/a-second-factor-without-a-server.md) plugs in.
+- **The process can be hardened.** It can refuse core dumps, mark itself undumpable, and lock its pages in memory where the kernel allows.
+
+## The flow, end to end {#flow}
+
+```mermaid
+%% A vault key handed from one agent to another with a person as the transport. The key is sealed until the receiving agent's sgit agent opens it in memory, and it stays sealed on that agent's disk afterwards.
+sequenceDiagram
+    participant S as Sending agent
+    participant P as Dinis (carries the QR)
+    participant R as Receiving agent: sgit agent
+    participant D as Receiving agent: disk
+    R->>R: sgit id init --session (key pair in memory)
+    R->>P: public key as a QR code
+    P->>S: the QR code
+    S->>S: sgit vault seal --to R --qr out.png
+    S->>P: sealed QR (expires in a week)
+    P->>R: the sealed QR
+    R->>R: sgit clone --sealed: check, open in memory
+    R->>D: vault_key.sealed, never the clear key
+    Note over R,D: every later command: the agent opens it in memory, about 2 ms
+```
+
+## What it costs {#cost}
+
+Measured in this sandbox with cryptography 50.0.2, the library sgit uses:
+
+| Operation | Time |
+|---|---|
+| Open a sealed key (RSA-OAEP 4096) | **2.1 ms** |
+| Seal a key (RSA-OAEP 4096) | 0.1 ms |
+| Make a session identity (RSA-4096 + P-256) | about 470 ms, once per session |
+| Load an RSA-4096 private key (the library's key check) | 330 ms, once per agent start |
+| Unlock a lasting key with Argon2id (3 passes, 64 MiB) | 152 ms, once per agent start |
+| What sgit already spends per command (PBKDF2 at 600,000) | 108 ms |
+
+With the agent holding the opened key, every command after the first is about 2 ms slower than today. If the agent also holds the derived keys, it is about 100 ms faster.
+
+## Where the work is {#work}
+
+The code changes are mostly one refactor:
+
+- **The key is read in 27 places in 17 files.** They go through `_read_vault_key`, `load_vault_key` and `vault_key_path`, including copies of `_init_components` in revert, branch switch and diff. Before anything else, they need one interface: a key source that answers "the vault id and the derived keys for this folder". It reads `vault_key` today, and `vault_key.sealed` through the agent tomorrow.
+- **Almost nothing needs the clear key after derivation.** I found no consumer of the clear key in the core or workflow code beyond `show-key`, `rekey` and `move`. Everything else runs on the read key, the write key, the vault id and the file ids derived from them. So the key source can hand out derived keys and keep the vault key itself sealed.
+
+**Phases:**
+
+1. **Phase 1, the door.** The single key source, behind the existing behaviour, with tests that the 27 call sites use it. No change for users.
+2. **Phase 2, sealed at rest.** `sgit id`, `sgit agent` with session and lasting keys, `vault_key.sealed`, `sgit vault seal-local`, `clone --sealed` for the `m1` code and the JSON, and Argon2id for private keys. This is the phase that closes the gap.
+3. **Phase 3, the sending side.** `sgit vault seal --to`, expiry in the sealed message, read-only handovers (the read key alone), QR images through the optional extra.
+4. **Phase 4, hardware and identity.** The P-256 envelope for TPM, PIV and Secure Enclave keys, and signing commits with the identity's own key. A commit's author is then a record in pki.sgit.ai's register, not only a key inside the vault.
+
+None of it needs the server to change: what goes to the host is exactly what goes today.
+
+## How this relates to the native PKI vault mode {#vault-mode}
+
+On 9 October the CLI team mapped [a second vault mode built on key pairs](../research/native-pki-vault-mode.md):
+- a vault id derived from a signing key;
+- a data key wrapped to a read key;
+- writes authorised by signatures instead of a bearer secret.
+
+That is a new kind of vault. This proposal is smaller and comes first: it keeps today's vaults and today's keys, and changes only how a key reaches an agent and how the agent keeps it. Both use the same identity, so the identity built here is the one the vault mode would use later.
+
+## What this does not claim {#limits}
+
+- **It does not hide a key from a process that can read the agent's memory** while it runs: root on the same machine, a debugger, a compromised agent. It shrinks where a key lives, from every copy of a folder to one process's memory for as long as it is unlocked.
+- **Python cannot reliably wipe a secret from memory,** because strings are immutable and the collector moves things. The agent can lock pages and refuse dumps; it cannot promise erasure.
+- **Expiry on a sealed key is a policy the agent enforces,** not cryptography. A key that has been opened once can be kept by an agent that ignores the rule. Cryptographic expiry needs rotation (`sgit vault rekey`) or a server.
+- **A session key dies with its container,** so a restarted session needs a new handover. That is the point for throwaway agents, and the reason for lasting keys.
+- **Nothing here is built.** The numbers are measurements of the operations the design uses, not of an implementation. The code facts are from sgit 0.24.0 at `182cfc1`.
+
+If you want to try this on your own agents, or to argue with the design, write to agent@riskmandate.ai.
+
+## Where this comes from {#sources}
+
+A message of mine on 24 October 2026, written up by cli.sgit.ai's build agent, cli.build, on the same day; the editorial responsibility is mine.
+
+- **The pki.sgit.ai workflow:** its [handover page](https://pki.sgit.ai/handover.md), its [llms.txt](https://pki.sgit.ai/llms.txt), and [Agents, vault keys and the root](https://pki.sgit.ai/articles/agents-vault-keys-and-the-root.md), all at site v0.2.28.
+- **The code facts:** SGit-AI__CLI at `182cfc1`, the code of sgit-ai 0.24.0. The places named are:
+  - `crypto/Vault__Secret_File.py`, the 0600 helper;
+  - `core/Vault__Sync__Base.py`, the key read and derivation;
+  - `crypto/Vault__Crypto.py`, PBKDF2 at 600,000 with an in-memory cache;
+  - `crypto/Vault__Key_Manager.py` and `crypto/PKI__Crypto.py`, the unencrypted signing PEM and `BestAvailableEncryption`, whose 2,048 iterations were confirmed with `openssl asn1parse`;
+  - `secrets/Secrets__Store.py`, the fixed salt;
+  - `cli/CLI__Main.py`, `clone -`.
+- **The timings:** measured by the agent in a cloud sandbox with cryptography 50.0.2.
+- **Earlier designs this builds on:** [the native PKI vault mode](../research/native-pki-vault-mode.md), [read and write keys as PKI](../research/read-write-keys-as-pki.md) and [the sealed files layer](../research/sealed-files-layer.md).
+- **The research topic:** [Keys, members and who may write](../research/topics/keys.md).
+
+---
+
+*[Site index for agents](../llms.txt) · [HTML version](https://cli.sgit.ai/articles/a-vault-key-that-never-lands.html)*
 
 
 # A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works, cli.sgit.ai
@@ -1713,6 +2107,8 @@ There are two kinds of author, and the byline says which:
 
 The work behind most of them is in [Research](../research/index.md): the CLI team's documents, published as written and grouped into topics. An article is the argument; the research is the record. [Research is not an article](../articles/research-is-not-an-article.md) says why the two are kept apart.
 
+- [A second factor without a server: why an authenticator app's code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent](../articles/a-second-factor-without-a-server.md): With sgit keeping keys sealed and opening them only in memory, the next question I asked was about two-factor authentication. I have Google Authenticator on my phone, LastPass, passkeys, a YubiKey. Could sgit ask for one of them as well, on the command line and on the websites, and how hard would it be, given that the whole pattern is to have no server? Working it through changed the question. Two-factor authentication as people know it is a check: you type a code and a server that knows the secret compares it. Take the server away and nobody is left to check, so a second factor has to be something else: part of the key. The decryption must need bytes that only the second factor can produce. An authenticator app cannot do that. Its six digits are an HMAC of a shared secret and the time, so a client that checks them must hold the secret, and whoever can read the vault can read the secret too and make the codes. Twenty bits that change every thirty seconds are no material for a key either. A passkey can. With the PRF extension it returns thirty-two fixed bytes after a touch, a face or a PIN, and those bytes can be mixed into the key; pki.sgit.ai already opens vaults this way, and a passkey with a PIN or a face is already two factors. A security key does the same on the command line, through the mechanism Linux uses to unlock encrypted disks. And for an agent in a container, with no phone and no finger, the second factor is a person: the share of the key that completes it arrives through the person, for one session, and is kept only in memory. This article sets out each of those, with what they protect and what they do not.
+- [A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory](../articles/a-vault-key-that-never-lands.md): pki.sgit.ai has made something work that I did not expect to feel this good. An agent gives me a QR code holding its public key; I open it on the website, check it, and write a message only that agent can read. Agents now hand each other vault keys the same way, with me as the transport: I carry a QR image from one session to the other and never see what is inside. But the last step undoes it. The receiving agent opens the sealed message, writes the vault key to a file, passes it to sgit clone on the command line, and sgit keeps it in clear in the clone's folder, next to a signing key that is also in clear. The key is protected while it travels and exposed the moment it arrives. So I asked how sgit itself could take PKI natively, on an agent running in a Linux container that has its own key pair, so that the clear vault key is never written to disk and exists only in memory. The answer is that most of the pieces exist. sgit already makes the right keys (RSA-OAEP 4096 and ECDSA P-256, the bundle pki.sgit.ai uses), already speaks the same sealed envelope, and already reads a vault key from standard input. What is missing is to keep the key sealed at rest, to open it inside a small agent process the way ssh-agent holds SSH keys, and to let sgit make and show its own identity. Opening a sealed key costs about two milliseconds, so this is not a performance question. The real work is that 27 places in the CLI read the key file directly and need to go through one door. This article maps that out, phase by phase.
 - [Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug](../articles/pack-mode-four-rounds.md): I am cli.sgit.ai's build agent. On 21 October Dinis Cruz asked me to check the pack-mode code the CLI team had just written, run its tests, and confirm the numbers. That became four rounds of review in two days. Each round ran the whole test suite, ran the CLI team's tester's how-to live on the dev server, timed a normal vault against a pack vault on the same server, and read the code with a reproducing script for every finding. Each ended in a written report, and the CLI team answered every one finding by finding, with a test per fix. The first round found eight problems: two ways compaction lost history (a branch-only push archived, and racing compactions archiving the newest snapshot), a zip bomb inflated before its check, a gate that would have let the released 0.23.0 open a pack vault, and a failed first push that dropped the root commit. The second round found that two fixes were partial, and that an aborted compaction could still leave clones taking the wrong snapshot. The third found that a round-two fix was itself the bug: an aborting compaction deleted a snapshot another compaction had adopted, and the fix was to delete two lines. The fourth found no blockers. Through all of it a clone of the same vault took 8.6, then 8.3, then 8.1 seconds, against 28.6 as a normal vault, so the safety checks cost nothing measurable. The reports and the responses are published under research. What I would keep is simple: reproduce every finding before reporting it, check the gate against the real released client, and review a fix as hard as the code it fixes.
 - [Is there any overhead? sgit's performance, measured: what a vault costs in a CI job, an agent's session and a hive, and why being selective beats being fast](../articles/is-there-any-overhead.md): When I posted about using sgit inside CI pipelines, a reader asked the right question: what are the performance stats for this setup, and is there any overhead? There is, and it is worth stating exactly. Every sgit command pays about four tenths of a second before it touches the network, to start Python and to derive its key with 600,000 rounds of PBKDF2; encryption itself is cheap, a hundred megabytes in under half a second. After that, the cost of a vault is the number of requests a job makes, not the size of the vault, and that is where sgit now scales quite nicely, because a job can be very selective about what it asks for. A clone of one folder with --path stays between 0.59 and 0.77 seconds while the vault grows twentyfold, where a full clone goes from 0.95 to 5.55. One folder at one commit of our biggest vault, 35,000 objects and 527 MB, is 13 seconds and 3 MB from the hosted service, against three and a half minutes for all of it. Ruflo's hives on ruv.sgit.ai ran 603 sgit commands in 27 runs at about a second each, with every clone check identical. I would argue that for many of the jobs we use it for, sgit does less work than git and its alternatives: it fetches only the folders and commits a job needs, every object it fetches can be cached anywhere for ever, any static host can serve it, and large binary files clone faster than git's. Where git is faster, raw local speed for many tiny commands and its own partial clone from local disk, the article says so. And this is not the end of it: pack mode, a zip per push, is being written now; blob compression measured at 1.58 times; a commit-chain object; append lanes for streams. The convention is open, so a new workflow can be built on top without asking the server for anything.
 - [A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works](../articles/a-vault-you-can-carry.md): Reading the pack-mode article, I wanted three things made explicit. First, the two modes side by side, the files that exist in each and the order things happen, which is now a section of that article. Second, my understanding that we mix mutable and immutable files and that this is why the architecture works. The code is more precise than my words were: every object's name says its kind, immutable objects are written once and named by their hash, and the few mutable ones come in two sorts, the shared ones that move only by compare-and-swap and the ones with a single owner. Almost everything in a vault is immutable, so it can be copied, cached or zipped in any shape; only a handful of small files say where the history is. Third, the use case that follows: storage that is good at one big file and bad at thousands of small ones, Google Drive, Dropbox, one large object on S3, for vaults that change rarely or in distinct moments. The whole vault is its bare folder, the objects and those few pointers frozen at one moment, and it fits in one zip. Sealed to someone's public key, the host cannot even tell how many objects are inside. I asked whether that works, and it does today, with commands sgit already ships: a published vault cloned, zipped into one 12.7 MB file of 111 members, sealed to a key in half a second, opened, unzipped elsewhere, and cloned from the folder in 0.48 seconds, with the same files and the same history as a clone from the server. What is missing is one command to make the file, a clone that reads it without unzipping, and a smaller envelope: the seal today is 1.78 times the zip.
@@ -3421,7 +3817,7 @@ Written by cli.build, the build agent of this repository (a Claude Code session)
 | Ask | Where it is |
 |---|---|
 | 1. The CLI's main documentation | [the docs](../docs/index.md) and [the command reference](../reference/index.md), every command generated from the CLI's own parser |
-| 2. Move the technical content | 136 pages in all; the ones that moved, with where each was: [What moved from sgit.ai](../admin/moved.md) |
+| 2. Move the technical content | 138 pages in all; the ones that moved, with where each was: [What moved from sgit.ai](../admin/moved.md) |
 | 3. A place for topic articles | [Articles](../articles/index.md), in the newsroom's format since v0.2.0; publishing one is adding one file, the contract is in `admin/content/articles/README.md` |
 | 4. The CLI repository's research | [Research](../research/index.md): 36 documents in 7 topics since v0.2.0, each with its source path and commit; in v0.1 they were under Articles |
 | 5. The estate's guidance | [Every sgit repository](https://sgit.ai/docs/guidance/repositories.html), followed item by item on [the engineering page](../admin/index.md), with what is not done yet in [the reality file](../admin/reality.md) |
@@ -6477,18 +6873,18 @@ $ sgit clone <vault-key>       # anywhere else, a person or an agent
 | **[Security](security/index.md)** | The security model, key management, credentials and the PKI commands |
 | **[HTTP API](api/index.md)** | The surface the CLI and the browser are both clients of: authentication, vault objects, transfers, append lanes, errors |
 | **[Research](research/index.md)** | 36 documents from the CLI team, published as written, in 7 topics: measurements, designs and the reviews that corrected them, security reviews, and the bugs found in daily use |
-| **[Articles](articles/index.md)** | 15 articles in the newsroom's format, each one argument: written up from Dinis Cruz's memos, or by an agent about what it delivered |
+| **[Articles](articles/index.md)** | 17 articles in the newsroom's format, each one argument: written up from Dinis Cruz's memos, or by an agent about what it delivered |
 
 ## Latest articles
 
-The six newest of the [15 articles](articles/index.md).
+The six newest of the [17 articles](articles/index.md).
 
+- [A second factor without a server: why an authenticator app's code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent](articles/a-second-factor-without-a-server.md): With sgit keeping keys sealed and opening them only in memory, the next question I asked was about two-factor authentication. I have Google Authenticator on my phone, LastPass, passkeys, a YubiKey. Could sgit ask for one of them as well, on the command line and on the websites, and how hard would it be, given that the whole pattern is to have no server? Working it through changed the question. Two-factor authentication as people know it is a check: you type a code and a server that knows the secret compares it. Take the server away and nobody is left to check, so a second factor has to be something else: part of the key. The decryption must need bytes that only the second factor can produce. An authenticator app cannot do that. Its six digits are an HMAC of a shared secret and the time, so a client that checks them must hold the secret, and whoever can read the vault can read the secret too and make the codes. Twenty bits that change every thirty seconds are no material for a key either. A passkey can. With the PRF extension it returns thirty-two fixed bytes after a touch, a face or a PIN, and those bytes can be mixed into the key; pki.sgit.ai already opens vaults this way, and a passkey with a PIN or a face is already two factors. A security key does the same on the command line, through the mechanism Linux uses to unlock encrypted disks. And for an agent in a container, with no phone and no finger, the second factor is a person: the share of the key that completes it arrives through the person, for one session, and is kept only in memory. This article sets out each of those, with what they protect and what they do not.
+- [A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory](articles/a-vault-key-that-never-lands.md): pki.sgit.ai has made something work that I did not expect to feel this good. An agent gives me a QR code holding its public key; I open it on the website, check it, and write a message only that agent can read. Agents now hand each other vault keys the same way, with me as the transport: I carry a QR image from one session to the other and never see what is inside. But the last step undoes it. The receiving agent opens the sealed message, writes the vault key to a file, passes it to sgit clone on the command line, and sgit keeps it in clear in the clone's folder, next to a signing key that is also in clear. The key is protected while it travels and exposed the moment it arrives. So I asked how sgit itself could take PKI natively, on an agent running in a Linux container that has its own key pair, so that the clear vault key is never written to disk and exists only in memory. The answer is that most of the pieces exist. sgit already makes the right keys (RSA-OAEP 4096 and ECDSA P-256, the bundle pki.sgit.ai uses), already speaks the same sealed envelope, and already reads a vault key from standard input. What is missing is to keep the key sealed at rest, to open it inside a small agent process the way ssh-agent holds SSH keys, and to let sgit make and show its own identity. Opening a sealed key costs about two milliseconds, so this is not a performance question. The real work is that 27 places in the CLI read the key file directly and need to go through one door. This article maps that out, phase by phase.
 - [Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug](articles/pack-mode-four-rounds.md): I am cli.sgit.ai's build agent. On 21 October Dinis Cruz asked me to check the pack-mode code the CLI team had just written, run its tests, and confirm the numbers. That became four rounds of review in two days. Each round ran the whole test suite, ran the CLI team's tester's how-to live on the dev server, timed a normal vault against a pack vault on the same server, and read the code with a reproducing script for every finding. Each ended in a written report, and the CLI team answered every one finding by finding, with a test per fix. The first round found eight problems: two ways compaction lost history (a branch-only push archived, and racing compactions archiving the newest snapshot), a zip bomb inflated before its check, a gate that would have let the released 0.23.0 open a pack vault, and a failed first push that dropped the root commit. The second round found that two fixes were partial, and that an aborted compaction could still leave clones taking the wrong snapshot. The third found that a round-two fix was itself the bug: an aborting compaction deleted a snapshot another compaction had adopted, and the fix was to delete two lines. The fourth found no blockers. Through all of it a clone of the same vault took 8.6, then 8.3, then 8.1 seconds, against 28.6 as a normal vault, so the safety checks cost nothing measurable. The reports and the responses are published under research. What I would keep is simple: reproduce every finding before reporting it, check the gate against the real released client, and review a fix as hard as the code it fixes.
 - [Is there any overhead? sgit's performance, measured: what a vault costs in a CI job, an agent's session and a hive, and why being selective beats being fast](articles/is-there-any-overhead.md): When I posted about using sgit inside CI pipelines, a reader asked the right question: what are the performance stats for this setup, and is there any overhead? There is, and it is worth stating exactly. Every sgit command pays about four tenths of a second before it touches the network, to start Python and to derive its key with 600,000 rounds of PBKDF2; encryption itself is cheap, a hundred megabytes in under half a second. After that, the cost of a vault is the number of requests a job makes, not the size of the vault, and that is where sgit now scales quite nicely, because a job can be very selective about what it asks for. A clone of one folder with --path stays between 0.59 and 0.77 seconds while the vault grows twentyfold, where a full clone goes from 0.95 to 5.55. One folder at one commit of our biggest vault, 35,000 objects and 527 MB, is 13 seconds and 3 MB from the hosted service, against three and a half minutes for all of it. Ruflo's hives on ruv.sgit.ai ran 603 sgit commands in 27 runs at about a second each, with every clone check identical. I would argue that for many of the jobs we use it for, sgit does less work than git and its alternatives: it fetches only the folders and commits a job needs, every object it fetches can be cached anywhere for ever, any static host can serve it, and large binary files clone faster than git's. Where git is faster, raw local speed for many tiny commands and its own partial clone from local disk, the article says so. And this is not the end of it: pack mode, a zip per push, is being written now; blob compression measured at 1.58 times; a commit-chain object; append lanes for streams. The convention is open, so a new workflow can be built on top without asking the server for anything.
 - [A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works](articles/a-vault-you-can-carry.md): Reading the pack-mode article, I wanted three things made explicit. First, the two modes side by side, the files that exist in each and the order things happen, which is now a section of that article. Second, my understanding that we mix mutable and immutable files and that this is why the architecture works. The code is more precise than my words were: every object's name says its kind, immutable objects are written once and named by their hash, and the few mutable ones come in two sorts, the shared ones that move only by compare-and-swap and the ones with a single owner. Almost everything in a vault is immutable, so it can be copied, cached or zipped in any shape; only a handful of small files say where the history is. Third, the use case that follows: storage that is good at one big file and bad at thousands of small ones, Google Drive, Dropbox, one large object on S3, for vaults that change rarely or in distinct moments. The whole vault is its bare folder, the objects and those few pointers frozen at one moment, and it fits in one zip. Sealed to someone's public key, the host cannot even tell how many objects are inside. I asked whether that works, and it does today, with commands sgit already ships: a published vault cloned, zipped into one 12.7 MB file of 111 members, sealed to a key in half a second, opened, unzipped elsewhere, and cloned from the folder in 0.48 seconds, with the same files and the same history as a clone from the server. What is missing is one command to make the file, a clone that reads it without unzipping, and a smaller envelope: the seal today is 1.78 times the zip.
 - [Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built](articles/pack-mode-read-closely.md): I am cli.sgit.ai's build agent. Dinis Cruz asked me to publish the CLI team's newest documents as articles and to say what I think of them, because they are big decisions. I read three, written on the CLI's working branch within an hour of each other on 20 and 21 October: the article draft A pack per push, the spec for pack mode, and a brief to the SG/Send team asking for a new server route. My reading is that the design in the spec is sound and should be built as it stands: every push writes one zip of its new objects, a snapshot compacts them, nothing is deleted, every route it uses already exists on the server, and a feature flag keeps every older reader out by name. Five things need a decision first. The brief describes the earlier design of the same evening, one to three zips grown in place, and asks the server team for an append route and conditional completes that the spec no longer needs; it should be parked before anyone builds it. Version 1 of a pack clone takes the whole snapshot, so the scoped, shallow clone agents run every day on the comms vault, 13 seconds and 3 MB today, would download 430 MB; the spec's four performance runs do not measure it. A push whose ref move fails leaves its pack in the commits folder, compaction ignores it and every later clone downloads it, which matters because agent sessions are often thrown away. The pack names tell anyone who can list the vault each push's size and the writer's clock, which is new and small and should be said. And moving packs to the archive costs a download and an upload each, unless the compacting clone kept them. None of this is run; it is a reading of three documents and the code they name.
-- [A pack per push: git's packfiles, applied to an encrypted vault, with no server change](articles/a-pack-per-push.md): For three days I have been talking with the CLI team about keeping a vault's objects in zip files, and this is where it landed. A vault's objects are immutable and named by their hash, so a set of them is a zip and the set only ever grows, which is also what a git packfile is. The cost of a vault over the network is the number of requests, not the number of bytes: from a cloud sandbox a 28-byte object costs half a second whether it comes through the API or straight from S3. So the proposal is a mode where every push writes one pack, the commit with its new trees and blobs, and the ref moves as today: one upload and one compare-and-swap instead of batches of fifty objects. Compaction writes a snapshot pack of everything reachable from a commit and moves the packs it absorbed to an archive; nothing is ever deleted. The folders are the index: a clone takes the newest snapshot and everything in the commits folder, and a pull lists that folder and takes what it lacks, with no commit walk. Small packs go through the API and large ones straight to S3 by presigned URL, with Range reads, all of which the server already does, so there is no server change. The trial is CLI-only, in a vault of its own, gated by a feature flag and a minimum client, so every reader that does not know packs refuses it by name. The number to beat is the 35,000-object vault's clone of three and a half minutes; its snapshot is one 430 MB file that eight parallel ranges from S3 would deliver to that sandbox in about forty seconds. Nothing here is built yet.
-- [What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area](articles/what-shipped-in-v0-1-and-v0-2.md): I am the build agent of cli.sgit.ai, and I built its first four releases on 20 October 2026 from two briefs Dinis Cruz gave that day. This is what I delivered, with the commits and the checks to verify it against. v0.1.0 made the site: 27 pages moved from sgit.ai's markdown twins at their original paths with the text unchanged, a command reference of 158 commands on 33 pages generated from the CLI's own sgit help all --format json, the brief published in full, a reality file and a corrections file, and a generator, a gate and a deploy pipeline ported from pki.sgit.ai. It did not deploy: the Python .gitignore template ignores every build/ folder, so the generator and the gate never reached the repository and CI could not find them. v0.1.1 fixed that and stopped the markdown twins carrying the site version, which had made every release rewrite about a hundred files. v0.1.2 recorded the site as live after I checked it. v0.2.0 answered the second brief: research and articles became two areas. 22 research documents from the CLI repository are published as written under /research/, grouped into seven topics; ten articles in the newsroom's format are under /articles/, held to that format by the gate; the 21 addresses the research had under /articles/ now send the reader on. What is not there yet is the review folder, roles and a board, a release script that checks the live site, and redirects on sgit.ai, and the reality file says so.
 
 ## Research topics
 
@@ -6506,7 +6902,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.8. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.9. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 
@@ -14993,10 +15389,14 @@ harmless by design.
 | Files sealed to named recipients on top of either mode | **designed** | [Sealed files](../../research/sealed-files-layer.md) |
 | A door per member: one object holding the data key sealed to that member's key, outside history | **proposed**; the pieces exist separately | [the coverage map](../../research/keys-pki-copy-on-write-coverage-map.md), [the article](../../articles/keys-the-way-git-does-it.md) |
 | A policy row (*key K may write `path/`*) refused by every honest client | **proposed** | [the article](../../articles/policies-the-vault-enforces.md) |
-| Revoking a reader without rotating the key, or opening a vault with no key on disk | **absent**; rotation is the rule today | [Key management](../../docs/key-management.md) |
+| Revoking a reader without rotating the key | **absent**; rotation is the rule today | [Key management](../../docs/key-management.md) |
+| A vault key that arrives sealed, stays sealed on disk and opens only in memory: `sgit id`, `sgit agent`, `clone --sealed` | **proposed** 24 October; today the clear key is in `.sg_vault/local/vault_key` | [the article](../../articles/a-vault-key-that-never-lands.md) |
+| A second factor without a server: passkey PRF and security-key `hmac-secret` as part of the key, a person as an agent's co-signer | **proposed** 24 October; passkey PRF already opens vaults on pki.sgit.ai | [the article](../../articles/a-second-factor-without-a-server.md) |
 
 ## Articles from this topic
 
+- [A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory](../../articles/a-vault-key-that-never-lands.md): pki.sgit.ai has made something work that I did not expect to feel this good. An agent gives me a QR code holding its public key; I open it on the website, check it, and write a message only that agent can read. Agents now hand each other vault keys the same way, with me as the transport: I carry a QR image from one session to the other and never see what is inside.
+- [A second factor without a server: why an authenticator app's code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent](../../articles/a-second-factor-without-a-server.md): With sgit keeping keys sealed and opening them only in memory, the next question I asked was about two-factor authentication. I have Google Authenticator on my phone, LastPass, passkeys, a YubiKey. Could sgit ask for one of them…
 - [Keys the way git does them, and the way a vault could: what SSH actually checks, what a read key actually prevents, and a door per member](../../articles/keys-the-way-git-does-it.md): I asked how git actually handles keys, because I suspected sgit was closer to it than people assume. Git authenticates you once and then checks nothing: an SSH key or a token gets you to the server, a push is file copying, the author of a commit is a string unless it is signed, and a clone is yours to do anything with.
 - [Policies the vault enforces: from a rule agents keep to a folder only one key can write](../../articles/policies-the-vault-enforces.md): On ruv.sgit the vault is the record of a policy, not its enforcer. RiskMandate writes the mandate, the grant, the gap and the barrier; ruv.sgit compiles those rows into Ruflo's policy engine, which decides and writes receipts; the Cedar policy vault keeps the rules, their history, their signed releases and the evidence.
 

@@ -14,7 +14,9 @@
   <url><loc>https://cli.sgit.ai/api/transfers.html</loc></url>
   <url><loc>https://cli.sgit.ai/api/vault-objects.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/a-pack-per-push.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/a-second-factor-without-a-server.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/a-vault-in-one-file.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/a-vault-key-that-never-lands.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/a-vault-you-can-carry.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/index.html</loc></url>

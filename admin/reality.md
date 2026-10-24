@@ -5,7 +5,7 @@
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.10 (24 October 2026)
+# Reality: what exists, at v0.2.11 (24 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -25,6 +25,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **Machine-readable twins** | A `.md` twin for every page, `llms.txt`, `llms-full.txt`, `sitemap.xml`, all generated |
 | **The gate** | `admin/build/validate.js`: build freshness, version agreement, links, canonical host, twins, orphans, leak tripwire; runs in CI before tag and deploy |
 | **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it. HTTPS is enforced since 21 October 2026: `http://` answers 301 to the same path on `https://` (checked after Dinis Cruz ticked "Enforce HTTPS" in the Pages settings) |
+| **Dev packs** | Under `/dev/`: designs to build from, each saying what is built and what is not. One so far: [sealed vault keys](../dev/sealed-vault-keys/index.md), six documents, nothing in it built (since v0.2.11) |
 | **Pack mode, documented** | sgit-ai 0.24.0 shipped pack mode on 22 October; this site has its [release notes](../docs/update-to-0-24-0.md) and [a playbook for agents](../docs/pack-mode-for-agents.md), both run against the PyPI release on dev.send.sgraph.ai the evening it was published (since v0.2.8) |
 | **Five themes** | Newsprint, Night, Paper, Blueprint, Ember, ported from newsroom.sgit.ai with the same tokens; a picker in the nav; the choice kept in the browser only (since v0.2.2). Figures and diagrams are light in every theme, by design |
 | **Versioning** | `admin/build/version.txt`, badge on every page via `assets/version.js`, release history, tags `vX.Y.Z` made by CI |

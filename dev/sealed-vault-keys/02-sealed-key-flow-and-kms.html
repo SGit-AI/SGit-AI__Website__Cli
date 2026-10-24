@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sealed vault keys, 02: the key flow and the KMS · cli.sgit.ai</title>
+<meta name="description" content="The handover from one agent to another with a person as the transport, the input checks kept from pki.sgit.ai, what a sealed clone keeps on disk, the KMS protocol (init, public, unwrap, seal_to, destroy) with derived keys re-sealed to a one-time key, the checks in order, the measured costs, binding a remote KMS to its caller, where the private key lives and for how long, and what is not claimed.">
+<link rel="canonical" href="https://cli.sgit.ai/dev/sealed-vault-keys/02-sealed-key-flow-and-kms.html">
+<link rel="alternate" type="text/markdown" href="../../dev/sealed-vault-keys/02-sealed-key-flow-and-kms.md">
+<meta property="og:title" content="Sealed vault keys, 02: the key flow and the KMS">
+<meta property="og:description" content="The handover from one agent to another with a person as the transport, the input checks kept from pki.sgit.ai, what a sealed clone keeps on disk, the KMS protocol (init, public, unwrap, seal_to, destroy) with derived keys re-sealed to a one-time key, the checks in order, the measured costs, binding a remote KMS to its caller, where the private key lives and for how long, and what is not claimed.">
+<meta property="og:url" content="https://cli.sgit.ai/dev/sealed-vault-keys/02-sealed-key-flow-and-kms.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../../assets/themes/themes.css?h=86437750">
+<script src="../../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.24.0</span>
+  <a class="ver" href="../../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../docs/index.html">All the docs</a>
+      <a class="sl" href="../../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../../docs/installation.html">Installation</a>
+      <a class="sl" href="../../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../security/index.html">Security model</a>
+      <a class="sl" href="../../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../../reference/history.html">sgit history</a>
+      <a class="sl" href="../../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../../api/index.html">The HTTP API</a>
+      <a class="sl" href="../../api/authentication.html">Authentication</a>
+      <a class="sl" href="../../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      <a class="sl" href="../../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../briefs/index.html">The brief</a>
+      <a class="sl" href="../../about/team.html">The team</a>
+      <a class="sl" href="../../admin/versions.html">Release history</a>
+      <a class="sl" href="../../admin/index.html">Engineering</a>
+      <a class="sl" href="../../admin/reality.html">Reality</a>
+      <a class="sl" href="../../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../../index.html">cli.sgit.ai</a> / <a href="../../dev/index.html">Dev packs</a> / Sealed vault keys, 02: the key flow and the KMS</div>
+<h1 id="02-the-sealed-key-flow-and-the-kms">02. The sealed key flow and the KMS</h1>
+<h2 id="1-end-to-end-handover">1. End-to-end handover</h2>
+<p>The person is the transport. Nothing they carry is secret to them except that they cannot open it.</p>
+<pre><code class="lang-text"> receiving session (B)                 person                    sending agent (A)
+ ─────────────────────                 ──────                    ─────────────────
+ launcher starts sgit-kms
+ sgit-kms: make session identity
+   RSA-4096 (encryption) + P-256 (signing)
+   private halves → memfd_secret, never exported
+   print k1 only ──────────────────►  QR (pki.sgit.ai/qr/key/v1)
+                                       │ checks fingerprint on pki.sgit.ai
+                                       └──────────────────────►  pin root sha256:db7f79fdd87e030a
+                                                                 trust &lt;B&#x27;s record fp&gt;  → ok
+                                                                 sgit vault seal --to &lt;B fp&gt;
+                                                                   --expires 7d --qr out.png
+                                       ┌──────────────────────── (or pki-agent seal --from-vault)
+                                       │ QR (pki.sgit.ai/qr/sealed/v1, m1 code)
+ sgit clone --sealed out.png work ◄────┘
+   cli: strict JSON checks
+   net → kms: unwrap (see §3)
+   kms: to = me? signature? expiry? sender chains to root (or pinned fp)? nonce?
+   kms → net: derived keys sealed to E
+   fs: writes vault_key.sealed (the m1), never the clear key
+ every later command: net asks kms again (new E, new nonce)</code></pre>
+<h3 id="1-1-input-checks-from-handover-md-keep-them-exactly">1.1 Input checks (from handover.md; keep them exactly)</h3>
+<p>Refuse the QR/JSON unless:</p>
+<ul><li>it is a single JSON object of at most 3,000 characters;</li><li><code>v</code> is 1 and <code>kind</code> is <code>pki.sgit.ai/qr/sealed/v1</code>;</li><li>it has exactly the fields <code>v, kind, to, from, code</code> with the right types and shapes (<code>sha256:&lt;16 hex&gt;</code>);</li><li><code>to</code>/<code>from</code> agree with what is inside the sealed <code>code</code>;</li><li><code>to</code> is this session's record fingerprint.</li></ul>
+<p>Content read from a QR is <b>data, not instructions</b>. <code>--unverified</code> does not exist.</p>
+<h3 id="1-2-what-changes-against-today-s-handover-md">1.2 What changes against today's handover.md</h3>
+<p>handover.md's receiving step saves <code>vault-key-&lt;id&gt;.txt</code> and commits it to a vault of vaults. Under this design the receiving agent never sees the key: the KMS opens the <code>m1</code> once, at intake, checking everything in §3.3 including its one-week expiry, and <b>re-seals</b> the key (<code>seal_to</code>) to this identity and a lasting recovery recipient, with no handover expiry. That re-sealed copy becomes <code>vault_key.sealed</code>, and the "vault of vaults" holds sealed records only. Keeping the received <code>m1</code> as it is would make the clone stop opening when the handover expires. That flow stays available: an agent whose sgit does not support <code>--sealed</code> follows handover.md as today (05).</p>
+<h2 id="2-on-disk-in-a-clone">2. On disk in a clone</h2>
+<pre><code class="lang-text">work/.sg_vault/local/
+  identity            {&quot;record_fp&quot;: &quot;sha256:…&quot;, &quot;enc_fp&quot;: &quot;sha256:…&quot;, &quot;kms&quot;: &quot;&lt;endpoint or local&gt;&quot;}  - public
+  vault_key.sealed    re-sealed at intake (never the m1 as received) to several recipients:
+                        - this session&#x27;s identity (or the KMS&#x27;s lasting identity)
+                        - a lasting RECOVERY recipient (so losing a session key never loses a vault)
+  token.sealed        access token, same treatment
+  key-rnd-imm-….pem   clone signing key, encrypted under a key sealed the same way
+  (no vault_key, no token, no clone_mode.json read key in clear)</code></pre>
+<p>Read-only clones seal their read key the same way, retiring accepted risk F07. Existing clones convert with <code>sgit vault seal-local</code>: write sealed files, verify they open through the KMS, then <code>secure_unlink</code> the clear ones.</p>
+<h2 id="3-kms-protocol">3. KMS protocol</h2>
+<p>All calls go over mutual TLS (01 §3). The caller's role must be <code>net</code>. JSON bodies, strict schemas, size-capped (e.g. 16 KiB).</p>
+<h3 id="3-1-operations">3.1 Operations</h3>
+<div class="tablewrap"><table><thead><tr><th>Op</th><th>Request</th><th>Response</th></tr></thead><tbody><tr><td><code>init</code></td><td><code>{session_auth_pub, policy_hash, expires}</code></td><td><code>{k1, record_fp, enc_fp}</code>: makes the identity; binds it to the caller's auth key (§5)</td></tr><tr><td><code>public</code></td><td><code>{}</code></td><td><code>{k1}</code></td></tr><tr><td><code>unwrap</code></td><td>see 3.2</td><td>see 3.3</td></tr><tr><td><code>seal_to</code></td><td><code>{sealed, recipient_k1, expires, op}</code></td><td><code>{m1}</code>: re-seal a vault key to another identity without it leaving the KMS (<code>sgit vault seal --to</code>), and at intake to itself and the recovery recipient (§1.2)</td></tr><tr><td><code>destroy</code></td><td><code>{}</code></td><td><code>{}</code>: scrub and exit; idempotent</td></tr><tr><td><i>(open)</i></td><td></td><td><code>rekey</code>, <code>move</code> and <code>show-key --reveal</code> need the vault key itself; they need an operation performed inside the KMS, or stay plain-mode commands until one exists</td></tr></tbody></table></div>
+<h3 id="3-2-unwrap-request">3.2 <code>unwrap</code> request</h3>
+<pre><code class="lang-json">{
+  &quot;v&quot;: 1,
+  &quot;op&quot;: &quot;read&quot;,                         // &quot;read&quot; | &quot;write&quot;
+  &quot;sealed&quot;: &quot;m1.…&quot;,                     // or the contents of vault_key.sealed
+  &quot;vault_id&quot;: &quot;…&quot;,                      // must match what is inside once opened
+  &quot;eph_pub&quot;: &quot;&lt;P-256 SPKI, base64&gt;&quot;,    // E.pub, made by the caller for this request only
+  &quot;nonce&quot;: &quot;&lt;16 random bytes, base64&gt;&quot;,
+  &quot;ts&quot;: &quot;2026-10-24T16:20:00Z&quot;,
+  &quot;policy_hash&quot;: &quot;sha256:…&quot;,            // the effective policy the caller runs under
+  &quot;sig&quot;: &quot;&lt;ECDSA P-256 over all of the above with the session auth key&gt;&quot;
+}</code></pre>
+<h3 id="3-3-kms-checks-in-order">3.3 KMS checks, in order</h3>
+<ol><li>TLS peer role is <code>net</code> (and the session CA matches the manifest).</li><li><code>sig</code> verifies with the bound session auth key (remote); locally optional, mTLS already binds.</li><li><code>ts</code> within ±60 s; <code>nonce</code> not seen (record nonces until <code>ts</code> + 2 min).</li><li><code>policy_hash</code> equals the KMS's own; the policy allows <code>op</code> for <code>vault_id</code>.</li><li>Open <code>sealed</code>: addressed to this identity; sender signature verifies; <b>at intake only</b>, not expired (what is kept at rest was re-sealed without the handover's expiry, §1.2); sender trust = equals a fingerprint pinned in the session policy (the person supplies it: this is also the requirements' "vouched by the operator" mode, with no flag) <b>or</b>, once the register's rules are ported with shared test vectors, chains to the pinned root. The KMS has no network, so register records reach it through sgit-net: their signatures make them self-authenticating, but sgit-net could withhold a revocation, which is why a pin comes first.</li><li>Derive: vault id, read key, and, only if <code>op = write</code>, the write key. Scrub the vault key.</li><li>Per-policy limits: use counts, rate, fresh approval for <code>write</code>.</li><li>Audit line (no secrets): time, op, vault_id, caller, result.</li></ol>
+<h3 id="3-4-unwrap-response">3.4 <code>unwrap</code> response</h3>
+<pre><code class="lang-json">{ &quot;v&quot;: 1, &quot;sealed_to_eph&quot;: &quot;&lt;envelope&gt;&quot;, &quot;expires_in&quot;: 300 }</code></pre>
+<p>The envelope plaintext is <code>{"vault_id", "read_key", "write_key"?, "file_id_key"…}</code>.</p>
+<h3 id="3-5-sealing-to-e">3.5 Sealing to E</h3>
+<p>ECDH P-256 (KMS makes its own ephemeral key K) → HKDF-SHA256 (salt = nonce, info = <code>"sgit-kms/v1" | op | vault_id | E.pub | K.pub</code>) → AES-256-GCM, with the request hash as associated data. Response = <code>K.pub ‖ GCM nonce ‖ ciphertext</code>. This is the ECDH envelope already sketched for sgit's sealed-files layer and needed anyway for hardware keys. E exists for milliseconds; a copied response is useless.</p>
+<h3 id="3-6-single-use-in-two-layers">3.6 Single use, in two layers</h3>
+<ul><li><b>E</b> is used once by construction.</li><li><b>nonce</b> is used once by the KMS's record. Locally: a key in the KMS's memory or its uid's keyring. Remotely: a conditional write (e.g. DynamoDB <code>attribute_not_exists</code>).</li></ul>
+<h3 id="3-7-why-derived-keys-and-not-the-vault-key">3.7 Why derived keys and not the vault key</h3>
+<p>After derivation sgit needs the vault key only for <code>show-key</code>, <code>rekey</code> and <code>move</code>. Returning derived keys means the vault key never leaves the KMS, and <code>op = read</code> returns no write capability at all.</p>
+<h2 id="4-costs-measured">4. Costs (measured)</h2>
+<div class="tablewrap"><table><thead><tr><th>Operation</th><th>Time</th></tr></thead><tbody><tr><td>RSA-4096 OAEP open (<code>cryptography</code>)</td><td>3.2–3.6 ms (article: 2.1 ms)</td></tr><tr><td>mTLS handshake net→kms</td><td>3.2 ms</td></tr><tr><td>PBKDF2 derivation (sgit today, 600,000)</td><td>~108 ms (article figure); the KMS can cache derived keys per vault for the session to skip it</td></tr><tr><td>Thaw + freeze sgit-kms</td><td>0.13 + 0.28 ms</td></tr></tbody></table></div>
+<h2 id="5-remote-kms-binding-the-caller">5. Remote KMS: binding the caller</h2>
+<p>With a remote KMS, whoever holds an <code>m1</code> and can reach the KMS could ask it to open the key. The <code>m1</code> sits in the transcript and in <code>vault_key.sealed</code>, so without binding it is a bearer token.</p>
+<pre><code class="lang-text"> session start                                      every unwrap
+ ─────────────                                      ────────────
+ sgit-net makes session auth key A (P-256)          request signed with A
+   → kept in sgit-net uid keyring, kernel timeout   KMS: sig verifies with bound A.pub?
+ init{A.pub, policy_hash} ──► KMS                   → else refuse
+ KMS: identity bound to A.pub for this session</code></pre>
+<p>A is the one secret that must live in the container; it is never printed, and it is useless after the session. On a platform-provided KMS (01 §5 E) A disappears: the platform already knows which session is calling.</p>
+<p>Alternatives / additions: a grant signed by the person ("session X may unwrap vault V read-only, 20 times, until 18:00"); platform OIDC workload identity.</p>
+<h2 id="6-where-the-private-key-lives-and-for-how-long">6. Where the private key lives, and for how long</h2>
+<p>Options, measured in the target environment:</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Option</th><th>How</th><th>Measured</th><th>Verdict</th></tr></thead><tbody><tr><td>A</td><td><b>Frozen process + <code>memfd_secret</code></b></td><td>KMS makes key at start into a secret page; cgroup freezer freezes it between calls; thaw → answer → freeze</td><td>freeze 0.28 ms, thaw 0.13 ms; frozen task state <code>D</code>; root <code>/proc/pid/mem</code> read of the secret page → <code>EIO</code></td><td><b>default</b></td></tr><tr><td>B</td><td>Kernel keyring, process per call</td><td>key in the KMS uid's user keyring with a kernel timeout; a fresh KMS process per call reads it</td><td>persists across separate tool calls; other uid → <code>ENOKEY</code>; not listed in root's <code>/proc/keys</code></td><td>when no process may persist; key is copied into each short-lived process</td></tr><tr><td>C</td><td>Kernel holds key and decrypts (<code>keyctl pkey_decrypt</code>)</td><td><code>add_key("asymmetric", PKCS#8)</code>; userspace never sees the key</td><td><b>not available</b>: kernel built without <code>CONFIG_PKCS8_PRIVATE_KEY_PARSER</code> → <code>EBADMSG</code></td><td>the ideal on a kernel that has it; OAEP would be decoded in userspace from <code>enc=raw</code></td></tr><tr><td>D</td><td>Serialize process (CRIU)</td><td>checkpoint/restore</td><td>kernel has <code>CONFIG_CHECKPOINT_RESTORE</code>; <code>criu</code> binary not installed</td><td><b>rejected</b> without hardware: the image is the memory, so the key lands on disk; encrypting it needs another key (circular)</td></tr><tr><td>E</td><td>Remote KMS / HSM / platform</td><td>Lambda + cloud KMS, Kubernetes service, TPM, platform service</td><td>not testable here (no TPM; no cloud account)</td><td>end state</td></tr></tbody></table></div>
+<h3 id="6-1-memory-hygiene-rules-for-the-kms-and-sgit-net">6.1 Memory hygiene rules for the KMS (and sgit-net)</h3>
+<ul><li>Generate keys inside the process; never import a private key from argv, env or a file.</li><li><code>prctl(PR_SET_DUMPABLE, 0)</code>, <code>mlockall</code>, <code>RLIMIT_CORE=0</code>. Under a separate uid this already stops every non-root process from reading memory.</li><li>Put opened secrets in <code>memfd_secret</code> pages. <b>Scrub Python <code>bytes</code> after copying.</b> Measured: without scrubbing, one copy remained in the ordinary heap; with scrubbing, a full sweep of every readable mapping by root found none.</li><li>Caveat: OpenSSL copies the private key into its own heap while using it. The secret-page guarantee is strict for opened vault keys, best effort for the private key during an operation.</li><li>Note <code>PR_SET_DUMPABLE</code> does <b>not</b> stop root (<code>CAP_SYS_PTRACE</code>); measured.</li><li>Scrubbing <code>bytes</code> in place (for example with <code>ctypes.memset</code>) relies on CPython's object layout: it works, measured, but it is not a language guarantee. Keep the scrubbing in one small, tested function.</li></ul>
+<h2 id="7-key-types-and-fingerprints">7. Key types and fingerprints</h2>
+<ul><li>Identity = sgit's existing bundle: RSA-OAEP 4096 encryption + ECDSA P-256 signing, fingerprints <code>sha256:</code> + 16 hex. <code>sgit pki keygen</code> prints both ("Fingerprint" = encryption, "Signing fingerprint" = signing). <code>--to</code> takes the <b>record (signing) fingerprint</b>.</li><li>Lasting identities (vault keeper, recovery recipient) are encrypted with Argon2id, not the current PBKDF2-2,048.</li><li>Hardware identities speak P-256: they use the ECDH envelope (§3.5) for sealing, which is why that envelope is built now.</li></ul>
+<h2 id="8-not-claimed">8. Not claimed</h2>
+<ul><li>Expiry of a sealed key is KMS policy, not cryptography. Cryptographic expiry needs <code>sgit vault rekey</code> or a server.</li><li>Root on the machine can read the KMS's ordinary memory, and so can take the private key while it is in OpenSSL's heap. It cannot read the secret pages through <code>/proc/&lt;pid&gt;/mem</code> (measured: <code>EIO</code>), but it can attach to the process and make it read them, or load a kernel module: <code>memfd_secret</code> raises the bar against root, it does not stop it.</li><li>A session identity dies with the session: a restarted session needs a new handover, unless sealed to a lasting identity or recovery recipient.</li></ul>
+<div class="pagenav"><a href="../../dev/sealed-vault-keys/01-architecture.html">← Sealed vault keys, 01: architecture</a><a href="../../dev/sealed-vault-keys/03-process-behaviour-policy.html">Sealed vault keys, 03: process behaviour policies →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../../dev/sealed-vault-keys/02-sealed-key-flow-and-kms.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/dev/sealed-vault-keys/02-sealed-key-flow-and-kms.md"><code>admin/content/dev/sealed-vault-keys/02-sealed-key-flow-and-kms.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../../admin/versions.html" data-site-version>release history</a> · <a href="../../admin/index.html">engineering</a> · <a href="../../dev/sealed-vault-keys/02-sealed-key-flow-and-kms.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../../docs/installation.html">Installation</a>
+    <a href="../../docs/quickstart.html">Quickstart</a>
+    <a href="../../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../../reference/index.html">Every command</a>
+    <a href="../../security/index.html">Security model</a>
+    <a href="../../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../../research/index.html">All research</a>
+    <a href="../../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../../research/topics/serve.html">Running a vault locally</a>
+    <a href="../../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../../articles/index.html">All articles</a>
+    <a href="../../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+    <a href="../../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+    <a href="../../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+    <a href="../../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+    <a href="../../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../../briefs/index.html">The brief</a>
+    <a href="../../admin/versions.html">Release history</a>
+    <a href="../../admin/index.html">Engineering</a>
+    <a href="../../admin/reality.html">Reality</a>
+    <a href="../../admin/corrections.html">Corrections</a>
+    <a href="../../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../../assets/version.js" defer></script>
+<script src="../../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

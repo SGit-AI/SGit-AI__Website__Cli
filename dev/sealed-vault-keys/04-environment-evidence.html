@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sealed vault keys, 04: environment evidence · cli.sgit.ai</title>
+<meta name="description" content="Every probe and measurement behind the pack, taken on 24 October 2026 in a Claude agent workspace (a cloud session in a microVM): the environment, the article&#x27;s claims checked against sgit 0.24.0, memory (memfd_secret, keyrings, freezing), process isolation (users, capabilities, Landlock, namespaces), sgit&#x27;s footprint under strace, and the cost of mutual TLS between components. Root inside the VM is the platform&#x27;s design, not a finding; re-run the probes before relying on them elsewhere.">
+<link rel="canonical" href="https://cli.sgit.ai/dev/sealed-vault-keys/04-environment-evidence.html">
+<link rel="alternate" type="text/markdown" href="../../dev/sealed-vault-keys/04-environment-evidence.md">
+<meta property="og:title" content="Sealed vault keys, 04: environment evidence">
+<meta property="og:description" content="Every probe and measurement behind the pack, taken on 24 October 2026 in a Claude agent workspace (a cloud session in a microVM): the environment, the article&#x27;s claims checked against sgit 0.24.0, memory (memfd_secret, keyrings, freezing), process isolation (users, capabilities, Landlock, namespaces), sgit&#x27;s footprint under strace, and the cost of mutual TLS between components. Root inside the VM is the platform&#x27;s design, not a finding; re-run the probes before relying on them elsewhere.">
+<meta property="og:url" content="https://cli.sgit.ai/dev/sealed-vault-keys/04-environment-evidence.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../../assets/themes/themes.css?h=86437750">
+<script src="../../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.24.0</span>
+  <a class="ver" href="../../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../docs/index.html">All the docs</a>
+      <a class="sl" href="../../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../../docs/installation.html">Installation</a>
+      <a class="sl" href="../../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../security/index.html">Security model</a>
+      <a class="sl" href="../../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../../reference/history.html">sgit history</a>
+      <a class="sl" href="../../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../../api/index.html">The HTTP API</a>
+      <a class="sl" href="../../api/authentication.html">Authentication</a>
+      <a class="sl" href="../../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      <a class="sl" href="../../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../briefs/index.html">The brief</a>
+      <a class="sl" href="../../about/team.html">The team</a>
+      <a class="sl" href="../../admin/versions.html">Release history</a>
+      <a class="sl" href="../../admin/index.html">Engineering</a>
+      <a class="sl" href="../../admin/reality.html">Reality</a>
+      <a class="sl" href="../../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../../index.html">cli.sgit.ai</a> / <a href="../../dev/index.html">Dev packs</a> / Sealed vault keys, 04: environment evidence</div>
+<h1 id="04-environment-evidence">04. Environment evidence</h1>
+<p>Everything below was observed on <b>24 October 2026</b> in a Claude agent workspace (claude.ai, cloud session). Re-run the probes before relying on them elsewhere: other platforms, and later versions of this one, may differ.</p>
+<p><b>How to read this page.</b> The agent runs as root inside its own microVM. That is the platform's design: the VM is the isolation boundary, and inside it the agent is meant to have the whole machine. Nothing on this page is a finding against the platform. The probes measure what sgit's components could lock down <b>inside</b> that boundary, and they show why the strongest form of this design needs the platform's help (00 §6).</p>
+<h2 id="1-the-environment">1. The environment</h2>
+<div class="tablewrap"><table><thead><tr><th>Fact</th><th>Observed</th></tr></thead><tbody><tr><td>Isolation</td><td>Firecracker microVM; PID 1 is <code>/process_api --firecracker-init …</code> (not systemd)</td></tr><tr><td>OS / kernel</td><td>Ubuntu 24.04.5, Linux 6.18.44, x86_64</td></tr><tr><td>Agent's identity</td><td><b>uid 0 (root)</b>, full capability set (<code>CapEff 000001fffeffffff</code>)</td></tr><tr><td>Hardening present</td><td>no seccomp, <code>NoNewPrivs 0</code>, no Yama (<code>/proc/sys/kernel/yama</code> absent)</td></tr><tr><td>Core dumps</td><td><code>ulimit -c 0</code>; <code>core_pattern = core</code></td></tr><tr><td>Python / crypto</td><td>Python 3.13.17; <code>cryptography</code> 50.0.1</td></tr><tr><td>sgit</td><td><code>pip install sgit-ai</code> → <b>0.24.0</b> (the version the article analysed)</td></tr><tr><td>Hardware keys</td><td>no <code>/dev/tpm*</code></td></tr><tr><td>Egress</td><td>every outbound HTTPS goes through a platform proxy on a loopback port; <code>send.sgraph.ai</code>, <code>pki.sgit.ai</code>, <code>cli.sgit.ai</code> reachable (HTTP 200)</td></tr><tr><td>Scratch space</td><td>the agent's scratchpad is root-only (other uids get <code>EACCES</code>)</td></tr><tr><td>Process lifetime</td><td>per the platform: a process detached with <code>nohup</code>/<code>&amp;</code> is stopped within minutes of the agent's reply; a tool-managed background process can run up to 2 h. <b>Not measured.</b></td></tr><tr><td>Firewall tools</td><td><code>iptables</code>, <code>nft</code> present; OUTPUT policy ACCEPT, empty</td></tr><tr><td>cgroups</td><td>v1 hierarchy: blkio, cpu, cpuacct, cpuset, devices, freezer, memory, pids, systemd, unified</td></tr><tr><td>FUSE</td><td><code>/dev/fuse</code> (root-only), <code>fusermount3</code> present</td></tr></tbody></table></div>
+<h3 id="kernel-configuration-proc-config-gz">Kernel configuration (<code>/proc/config.gz</code>)</h3>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>Value</th><th>Relevance</th></tr></thead><tbody><tr><td><code>CONFIG_SECURITY_LANDLOCK</code></td><td>y (ABI 7)</td><td>file + TCP port sandboxing</td></tr><tr><td><code>CONFIG_SECCOMP</code></td><td>y</td><td>syscall allowlists</td></tr><tr><td><code>CONFIG_SECRETMEM</code></td><td>y</td><td><code>memfd_secret</code></td></tr><tr><td><code>CONFIG_CGROUP_FREEZER</code></td><td>y</td><td>freeze the KMS between calls</td></tr><tr><td><code>CONFIG_CHECKPOINT_RESTORE</code></td><td>y</td><td>CRIU possible (binary not installed)</td></tr><tr><td><code>CONFIG_FUSE_FS</code></td><td>y</td><td>sgit-fs as a mount</td></tr><tr><td><code>CONFIG_ASYMMETRIC_KEY_TYPE</code></td><td>y</td><td>kernel asymmetric keys …</td></tr><tr><td><code>CONFIG_PKCS8_PRIVATE_KEY_PARSER</code></td><td><b>not set</b></td><td>… but no private keys → kernel-held decryption unavailable</td></tr><tr><td><code>CONFIG_TRUSTED_KEYS</code></td><td>not set</td><td>(needs TPM anyway)</td></tr><tr><td><code>CONFIG_ENCRYPTED_KEYS</code></td><td>y</td><td>symmetric blobs only</td></tr></tbody></table></div>
+<h2 id="2-article-claims-checked-against-sgit-0-24-0">2. Article claims checked against sgit 0.24.0</h2>
+<div class="tablewrap"><table><thead><tr><th>Claim</th><th>Result</th><th>Method</th></tr></thead><tbody><tr><td><code>pki keygen</code> makes RSA-OAEP 4096 + ECDSA P-256, <code>sha256:</code>+16 hex</td><td>✔</td><td>ran it with a throwaway HOME</td></tr><tr><td>Private keys encrypted with PBKDF2 at 2,048 iterations</td><td>✔ <code>INTEGER :0800</code> on both <code>private_key.pem</code> and <code>signing_private.pem</code></td><td><code>openssl asn1parse</code></td></tr><tr><td><code>Secrets__Store</code> fixed salt</td><td>✔ <code>salt = f'{SECRETS_SALT_PREFIX}:master'</code></td><td>source</td></tr><tr><td><code>BestAvailableEncryption</code> used for keys</td><td>✔ <code>crypto/PKI__Crypto.py:37</code></td><td>source</td></tr><tr><td>Key read in many places</td><td>65 references in 23 files for <code>_read_vault_key|load_vault_key|vault_key_path</code> (broad grep incl. imports; article counts 27 read sites in 17 files)</td><td>grep</td></tr><tr><td>Public key files mode</td><td><code>public_key.pem</code> 0644; private PEMs 0600</td><td><code>ls -l</code></td></tr></tbody></table></div>
+<h2 id="3-memory">3. Memory</h2>
+<div class="tablewrap"><table><thead><tr><th>Probe</th><th>Result</th></tr></thead><tbody><tr><td><code>prctl(PR_SET_DUMPABLE, 0)</code> then root reads <code>/proc/&lt;pid&gt;/mem</code></td><td><b>secret found</b>: root's <code>CAP_SYS_PTRACE</code> overrides</td></tr><tr><td><code>mlock</code> / <code>mlockall</code></td><td>succeed</td></tr><tr><td><code>memfd_secret</code> (syscall 447)</td><td>available</td></tr><tr><td>root reads a <code>memfd_secret</code> page through <code>/proc/&lt;pid&gt;/mem</code></td><td><b><code>EIO</code></b></td></tr><tr><td>RSA-4096 OAEP open → copy into secret page → <b>no</b> scrub; root sweeps all readable mappings</td><td>one copy found in anonymous heap</td></tr><tr><td>same, <b>with</b> scrubbing the returned <code>bytes</code> (and the test's own original)</td><td><b>no copy found</b></td></tr><tr><td>RSA-4096 OAEP open time</td><td>3.2–3.6 ms</td></tr><tr><td>kernel keyring <code>add_key</code> (process keyring)</td><td>works</td></tr><tr><td>user keyring entry persists across separate agent tool calls</td><td>✔</td></tr><tr><td>key in uid <code>sgit-dec</code> user keyring, searched by uid <code>sgit-run</code></td><td><code>ENOKEY</code></td></tr><tr><td>that key in root's <code>/proc/keys</code></td><td>not listed</td></tr><tr><td><code>add_key("asymmetric", &lt;PKCS#8 RSA-4096 DER&gt;)</code></td><td><b><code>EBADMSG</code></b> (parser not built)</td></tr><tr><td>cgroup freezer: freeze / thaw a process (avg of 20)</td><td><b>0.28 ms / 0.13 ms</b>; frozen state <code>D</code></td></tr></tbody></table></div>
+<h2 id="4-process-isolation">4. Process isolation</h2>
+<div class="tablewrap"><table><thead><tr><th>Probe</th><th>Result</th></tr></thead><tbody><tr><td>create system users (<code>useradd -r -M -s nologin</code>)</td><td>✔</td></tr><tr><td><code>setpriv --reuid --regid --clear-groups --no-new-privs --inh-caps=-all --bounding-set=-all</code></td><td>CapEff 0, CapBnd 0, NoNewPrivs 1</td></tr><tr><td>other uid reads a root file</td><td>denied</td></tr><tr><td><code>unshare --net</code> then connect out</td><td><code>ENETUNREACH</code> (101)</td></tr><tr><td><code>unshare --user --map-root-user --pid --fork --mount-proc</code></td><td>✔</td></tr><tr><td>Landlock ABI</td><td>7</td></tr><tr><td><code>RLIMIT_NPROC=0</code> then <code>fork</code></td><td><code>EAGAIN</code> (blocked)</td></tr><tr><td>Landlock fs (ro <code>/usr /etc /lib /lib64 /proc</code>): read <code>/etc/hostname</code></td><td>allowed</td></tr><tr><td>Landlock fs: read a file elsewhere</td><td><code>EACCES</code></td></tr><tr><td>Landlock fs: write <code>/tmp/x</code></td><td><code>EACCES</code></td></tr><tr><td>Landlock net (connect only to the proxy's port): proxy port</td><td>allowed</td></tr><tr><td>Landlock net: <code>127.0.0.1:22</code>, <code>1.1.1.1:443</code></td><td><code>EACCES</code></td></tr><tr><td><code>iptables -A OUTPUT -m owner --uid-owner &lt;user&gt; -j REJECT</code></td><td>accepted</td></tr><tr><td><code>SO_PEERCRED</code> on Unix socket</td><td>returns pid, uid, gid</td></tr><tr><td>abstract-namespace Unix socket</td><td>✔</td></tr><tr><td>ephemeral user + firewall rule + locked launch + teardown (avg of 10)</td><td><b>49 ms</b></td></tr><tr><td>new net + pid + mount namespaces (avg of 10)</td><td><b>3.7 ms</b></td></tr><tr><td>seccomp filter</td><td>available, <b>not tested</b></td></tr></tbody></table></div>
+<h2 id="5-footprint-strace-f-file-network-process-ipc">5. Footprint (strace -f, file/network/process/ipc)</h2>
+<div class="tablewrap"><table><thead><tr><th>Command</th><th>Paths opened OK</th><th>Folders</th><th>Distinct syscalls</th><th>execve</th><th>socket/connect</th></tr></thead><tbody><tr><td><code>python3 -I -c print(1)</code></td><td>39</td><td>21</td><td>31</td><td>1</td><td>0</td></tr><tr><td><code>sgit --version</code></td><td>1,104</td><td>212</td><td>38</td><td>1</td><td>0</td></tr><tr><td><code>sgit pki list</code></td><td>1,109</td><td>215</td><td>39</td><td>1</td><td>0</td></tr><tr><td><code>import sgit_ai.cli.CLI__Main</code></td><td>529 modules, 146 ms</td><td></td><td></td><td></td><td></td></tr><tr><td>bare <code>python3 -I -c pass</code> start</td><td>15 ms</td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<h2 id="6-transport-python-ssl-tls-1-3-p-256-server-is-a-thread-in-t">6. Transport (Python <code>ssl</code>, TLS 1.3, P-256; server is a thread in the benchmark process)</h2>
+<div class="tablewrap"><table><thead><tr><th></th><th>Connect + handshake</th><th>600 B round trip</th><th>Bulk (64 MiB echo)</th></tr></thead><tbody><tr><td>TCP plain</td><td>0.10 ms</td><td>15 µs</td><td>~300 MB/s</td></tr><tr><td>TCP mutual TLS</td><td><b>3.2 ms</b></td><td>67 µs</td><td>~320 MB/s</td></tr><tr><td>Unix plain</td><td>0.09 ms</td><td>56 µs</td><td>~320 MB/s</td></tr><tr><td>Unix mutual TLS</td><td>3.4 ms</td><td>74 µs</td><td>~420 MB/s</td></tr><tr><td>pipe to a separate process</td><td>n/a</td><td>34 µs</td><td>n/a</td></tr><tr><td>TCP mutual TLS <b>without</b> server <code>TCP_NODELAY</code></td><td>46 ms</td><td></td><td></td></tr></tbody></table></div>
+<p>Session CA + four role certificates (P-256, 2 h): <b>24 ms</b>.</p>
+<p>Edge enforcement with roles in <code>subjectAltName</code> URIs, policy <code>fs←{cli}, net←{cli}, kms←{net}</code>:</p>
+<pre><code class="lang-text">cli → fs   OK        fs  → kms  DENY
+cli → net  OK        cli → kms  DENY
+net → kms  OK        fs  → net  DENY</code></pre>
+<p>Figures are from the final of three runs. Across runs, round trips and bulk varied by up to ~25% (TCP mutual TLS bulk: 250, 275, 318 MB/s; Unix mutual TLS bulk: 349, 378, 418 MB/s); handshake times were stable. Microsecond figures are noisy because the server thread shares Python's interpreter lock with the client: treat them as upper bounds.</p>
+<h2 id="7-left-in-the-environment">7. Left in the environment</h2>
+<p>Users <code>sgit-dec</code>, <code>sgit-run</code>; <code>/opt/sgit-probe/</code> (probe scripts); a user-keyring entry <code>sgit:persist-probe</code> (root). All die with the VM.</p>
+<div class="pagenav"><a href="../../dev/sealed-vault-keys/03-process-behaviour-policy.html">← Sealed vault keys, 03: process behaviour policies</a><a href="../../dev/sealed-vault-keys/05-compatibility-and-rollout.html">Sealed vault keys, 05: compatibility and rollout →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../../dev/sealed-vault-keys/04-environment-evidence.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/dev/sealed-vault-keys/04-environment-evidence.md"><code>admin/content/dev/sealed-vault-keys/04-environment-evidence.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../../admin/versions.html" data-site-version>release history</a> · <a href="../../admin/index.html">engineering</a> · <a href="../../dev/sealed-vault-keys/04-environment-evidence.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../../docs/installation.html">Installation</a>
+    <a href="../../docs/quickstart.html">Quickstart</a>
+    <a href="../../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../../reference/index.html">Every command</a>
+    <a href="../../security/index.html">Security model</a>
+    <a href="../../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../../research/index.html">All research</a>
+    <a href="../../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../../research/topics/serve.html">Running a vault locally</a>
+    <a href="../../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../../articles/index.html">All articles</a>
+    <a href="../../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+    <a href="../../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+    <a href="../../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+    <a href="../../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+    <a href="../../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../../briefs/index.html">The brief</a>
+    <a href="../../admin/versions.html">Release history</a>
+    <a href="../../admin/index.html">Engineering</a>
+    <a href="../../admin/reality.html">Reality</a>
+    <a href="../../admin/corrections.html">Corrections</a>
+    <a href="../../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../../assets/version.js" defer></script>
+<script src="../../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

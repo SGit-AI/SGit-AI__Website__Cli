@@ -77,6 +77,7 @@ SECTIONS = {
     "research":  ("Research",          "research/index.html"),
     "topics":    ("Research",          "research/index.html"),
     "briefs":    ("Briefs",            "briefs/index.html"),
+    "devpacks":  ("Dev packs",         "dev/index.html"),
     "site":      ("Site",              "admin/index.html"),
 }
 
@@ -92,8 +93,9 @@ NAV = [
         ("&#9679; Every command", "reference/index.html"), ("sgit vault", "reference/vault.html"),
         ("sgit history", "reference/history.html"), ("sgit pki", "reference/pki.html"),
         ("sgit pack", "reference/pack.html"), ("sgit serve", "reference/serve.html"), ("&#9679; The HTTP API", "api/index.html"), ("@api", 6)]),
-    ("Research", "research/index.html", ("research", "topics"), [
-        ("&#9679; All research, by topic", "research/index.html"), ("@topics", 8)]),
+    ("Research", "research/index.html", ("research", "topics", "devpacks"), [
+        ("&#9679; All research, by topic", "research/index.html"), ("@topics", 8),
+        ("&#9679; Dev packs: designs to build from", "dev/index.html")]),
     ("Articles", "articles/index.html", ("articles",), [
         ("&#9679; All articles", "articles/index.html"), ("@articles", 8)]),
     ("Site", "admin/index.html", ("site", "briefs"), [
@@ -641,7 +643,7 @@ def llms_txt(pages, ctx):
            "  exactly what changed. Your installed version answers the same question: `sgit help all --format json`.",
            "- Never write a vault key into a tracked file. Read keys may be published; vault keys never.",
            "- The project, the vault platform and the network of sites: https://sgit.ai/llms.txt", ""]
-    order = ["home", "start", "guides", "security", "reference", "api", "topics", "research", "articles", "briefs", "site"]
+    order = ["home", "start", "guides", "security", "reference", "api", "topics", "research", "devpacks", "articles", "briefs", "site"]
     for sec in order:
         ps = [p for p in pages if p.section == sec]
         if not ps:

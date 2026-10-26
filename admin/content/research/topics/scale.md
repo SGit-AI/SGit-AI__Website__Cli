@@ -4,7 +4,7 @@ summary: What happens when a vault reaches 35,000 objects and ten agents use it 
 section: topics
 order: 3
 question: What does sgit cost when the vault is big and the clients are many, and where does the time go?
-articles: [a-vault-is-already-a-graph, indexes-in-the-pack, pack-mode-four-rounds, is-there-any-overhead, one-vault-ten-agents-measured, sgit-is-a-standard-one-hash-away, a-vault-in-one-file, a-pack-per-push]
+articles: [indexes-the-writer-pays-for, a-vault-is-already-a-graph, indexes-in-the-pack, pack-mode-four-rounds, is-there-any-overhead, one-vault-ten-agents-measured, sgit-is-a-standard-one-hash-away, a-vault-in-one-file, a-pack-per-push]
 ---
 
 # Big vaults and many agents
@@ -24,5 +24,6 @@ articles: [a-vault-is-already-a-graph, indexes-in-the-pack, pack-mode-four-round
 | Large vaults: the cost of a command follows the change, not the vault (linear and incremental tree builds, flat and scan caches) | **shipped** in 0.25.0 | [Release notes](/docs/update-to-0-25-0.html), [indexes and caches after 0.25.0](/research/indexes-and-caches-review.html) |
 | Indexes carried with the packs and assembled locally into SQLite; packs read in place; one folder of a pack vault in one ranged read | **proposed**, 26 October; nothing built | [The architecture](/research/pack-carried-indexes-architecture.html), [the review, measured](/articles/indexes-in-the-pack.html) |
 | A vault's graph as triples, and which graph engines Python can run locally | **measured**, 26 October: generation numbers answer a merge base in 0.1 ms; a graph engine as an optional view | [the article](/articles/a-vault-is-already-a-graph.html) |
+| Indexes the writer builds once: plain JSON cross-references, one file per folder, shards read on demand | **measured**, 26 October: one member per question in under 0.3 ms; a million-page link graph read in 152 MB | [the article](/articles/indexes-the-writer-pays-for.html), [every number and the scripts](/research/graph-and-index-measurements-2026-10-26.html) |
 
 !topic scale

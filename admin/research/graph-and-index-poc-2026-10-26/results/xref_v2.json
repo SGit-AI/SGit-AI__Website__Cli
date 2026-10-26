@@ -1,0 +1,16 @@
+{
+ "writer_layout_s": 1.36,
+ "zip_mb": 23.39,
+ "offsets_member_kb": 709.2,
+ "reader_open_without_central_directory_ms": 49.5,
+ "merge base": {
+  "ms": 24.55,
+  "members_loaded": 3,
+  "answer": "cd6a57bbae76f"
+ },
+ "base..head": {
+  "ms": 9.45,
+  "members_loaded": 3,
+  "answer": 110
+ }
+}

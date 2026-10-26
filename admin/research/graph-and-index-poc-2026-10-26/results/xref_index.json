@@ -1,0 +1,93 @@
+{
+ "writer_full_build_s": 3.51,
+ "writer_zip_s": 1.04,
+ "zip_mb": 22.65,
+ "members": 58831,
+ "groups": {
+  "folders": {
+   "members": 58062,
+   "mb": 11.77,
+   "median_bytes": 226
+  },
+  "xref/blob-paths": {
+   "members": 256,
+   "mb": 1.12,
+   "median_bytes": 4390
+  },
+  "xref/file-commits": {
+   "members": 256,
+   "mb": 1.17,
+   "median_bytes": 4577
+  },
+  "xref/commits": {
+   "members": 256,
+   "mb": 1.17,
+   "median_bytes": 4559
+  },
+  "heads.json": {
+   "members": 1,
+   "mb": 0.0,
+   "median_bytes": 65
+  }
+ },
+ "writer_one_commit": {
+  "files": 5,
+  "members_rewritten": 38,
+  "bytes": 57013,
+  "ms": 10.4,
+  "folder_members": 27
+ },
+ "reader": {
+  "list a folder": {
+   "ms": 0.186,
+   "members_loaded": 1,
+   "answer": 20
+  },
+  "files and bytes under raw/c09 (rolled-up totals)": {
+   "ms": 0.034,
+   "members_loaded": 1,
+   "answer": [
+    7600,
+    1296478
+   ]
+  },
+  "does a file exist, and its blob (one folder)": {
+   "ms": 0.067,
+   "members_loaded": 1,
+   "answer": "obj-cas-imm-fe29bbab797e"
+  },
+  "every file under raw/c09/s4, walked": {
+   "ms": 36.479,
+   "members_loaded": 1161,
+   "answer": 1520
+  },
+  "paths that hold a blob": {
+   "ms": 0.266,
+   "members_loaded": 1,
+   "answer": [
+    "raw/c09/s4/pub18/page07/2026-10-20T0000Z/text.md"
+   ]
+  },
+  "commits that changed a file": {
+   "ms": 0.179,
+   "members_loaded": 1,
+   "answer": 4
+  },
+  "merge base (generation walk, shards on demand)": {
+   "ms": 56.919,
+   "members_loaded": 97,
+   "answer": "cd6a57bbae76f"
+  },
+  "base..head (generation walk, shards on demand)": {
+   "ms": 19.848,
+   "members_loaded": 89,
+   "answer": 110
+  },
+  "merge base again, shards cached": {
+   "ms": 2.258,
+   "members_loaded": 8,
+   "answer": "cd6a57bbae76f"
+  }
+ },
+ "reader_open_ms": 910.3
+}

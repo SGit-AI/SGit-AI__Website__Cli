@@ -1,0 +1,1 @@
+{"python dicts": [32, 0.003], "SQLite (SQL self-join)": [32, 0.02], "Oxigraph (SPARQL)": [32, 0.119], "LadybugDB (Cypher)": [32, 22.307], "DuckDB (SQL self-join)": [32, 16.046]}

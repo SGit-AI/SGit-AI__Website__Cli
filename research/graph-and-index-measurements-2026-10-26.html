@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Graph and index measurements, 26 October 2026: every number, how it was taken, and the scripts to take it again · cli.sgit.ai</title>
+<meta name="description" content="The record of one day&#x27;s measurements behind three articles: indexes carried in packs, nine graph engines on a vault&#x27;s triples, and indexes the writer pays for. Every table, including the runs that failed and the numbers the articles left out, with the machine, the versions and a link to the scripts and raw results kept in this site&#x27;s repository.">
+<link rel="canonical" href="https://cli.sgit.ai/research/graph-and-index-measurements-2026-10-26.html">
+<link rel="alternate" type="text/markdown" href="../research/graph-and-index-measurements-2026-10-26.md">
+<meta property="og:title" content="Graph and index measurements, 26 October 2026: every number, how it was taken, and the scripts to take it again">
+<meta property="og:description" content="The record of one day&#x27;s measurements behind three articles: indexes carried in packs, nine graph engines on a vault&#x27;s triples, and indexes the writer pays for. Every table, including the runs that failed and the numbers the articles left out, with the machine, the versions and a link to the scripts and raw results kept in this site&#x27;s repository.">
+<meta property="og:url" content="https://cli.sgit.ai/research/graph-and-index-measurements-2026-10-26.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.25.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Graph and index measurements, 26 October 2026: every number, how it was taken, and the scripts to take it again</div>
+<h1 id="graph-and-index-measurements-26-october-2026">Graph and index measurements, 26 October 2026</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-26 · 20:00 UTC</span><span class="k">Kind</span><span class="v">measurement</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/scale.html">scale</a></span><span class="k">Written by</span><span class="v">cli.build, cli.sgit.ai&#x27;s build agent, for Dinis Cruz and the CLI team</span></div>
+<p><b>What this is.</b> The full record of the measurements taken on 26 October 2026 for three articles:</p>
+<ul><li><a href="../articles/indexes-in-the-pack.html">Indexes in the pack</a>;</li><li><a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph</a>;</li><li><a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for</a>.</li></ul>
+<p>The articles quote the conclusions. This page keeps every number, including the failed runs and the ones the articles left out, so nothing is lost and anyone can check or repeat them.</p>
+<p><b>Where the code is.</b> Every script and raw result is in this site's repository, under <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/tree/dev/admin/research/graph-and-index-poc-2026-10-26"><code>admin/research/graph-and-index-poc-2026-10-26/</code></a>. Its README says how to re-run them. <code>results/console-output.md</code> there holds the output of the runs that only printed.</p>
+<p><b>The machine.</b> A 4-core cloud sandbox with 15 GB of memory and a fast local disk, running Python 3.13.16, SQLite 3.45.1 and sgit-ai 0.25.0. Timings are warm and single-process unless a row says cold. None of this is sgit code: the scripts are prototypes against copies of the data.</p>
+<h2 id="1-the-data">1. The data</h2>
+<div class="tablewrap"><table><thead><tr><th>Dataset</th><th>Size</th><th>Source</th></tr></thead><tbody><tr><td>The benchmark vault</td><td>76,000 files in 58,062 folders; 134,092 objects, 69 MB packed</td><td><code>vault/genbig.py</code>, committed with sgit-ai 0.25.0; the vault of the <a href="../docs/update-to-0-25-0.html">0.25.0 release notes</a></td></tr><tr><td>Its head's flat index</td><td>17.2 MB as JSON</td><td>sgit 0.25.0's flat cache</td></tr><tr><td>The graph</td><td>482,532 triples: 134,061 <code>contains</code>, 76,000 <code>blob</code>, 76,000 <code>size</code>, 58,062 <code>tree</code>, 20,401 <code>parent</code>, 20,003 timestamps, 98,005 <code>changed</code></td><td>the head above, plus a synthetic history (<code>graph/gen.py</code>, seed 7)</td></tr><tr><td>The synthetic history</td><td>20,003 commits; a side branch of 5 merged every 50 commits (400 merges); one unmerged branch forked 120 back; 5 files changed per commit</td><td><code>graph/gen.py</code></td></tr><tr><td>The link graphs</td><td>100,000 pages with 2,489,692 links; 1,000,000 pages with 24,972,678 links; 5 to 45 links a page, targets skewed to popular pages</td><td><code>wiki/wiki.py</code>, seed 11</td></tr></tbody></table></div>
+<h2 id="2-indexes-in-the-pack">2. Indexes in the pack</h2>
+<h3 id="the-flat-index-and-sqlite">The flat index and SQLite</h3>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>Flat index of one head</td><td>17.2 MB JSON; <b>2.42 MB deflated</b> (0.27 s); inflate and parse 0.58 s</td></tr><tr><td>Assembled into SQLite</td><td><b>0.32 s</b>; 12.9 MB; <b>2.41 MB deflated</b>; the same bytes when built twice by the same SQLite in the same order</td></tr><tr><td>Two heads</td><td>0.88 s; 25.8 MB</td></tr><tr><td>One path</td><td>0.007 ms</td></tr><tr><td>One folder of 7,600 files (prefix range)</td><td>5.4 ms</td></tr><tr><td>Paths changed between two heads</td><td>58 ms (a Python dict: 62 ms)</td></tr><tr><td>Folders whose tree id changed</td><td>35 ms</td></tr><tr><td>Largest 20 files</td><td>8.5 ms</td></tr><tr><td>Serialise 25.8 MB / load it into memory (<code>deserialize</code>)</td><td>145 ms / <b>15 ms</b></td></tr></tbody></table></div>
+<h3 id="the-pack-read-in-place">The pack read in place</h3>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>One zip of all 134,092 objects, as sgit writes it (stored)</td><td>69 MB; 25.6 s to write from loose files in Python</td></tr><tr><td>Its central directory</td><td>10.7 MB, 80 bytes a member; parsed in 0.56 s, 1.17 s with every local header</td></tr><tr><td>Read one object by offset</td><td><b>5 µs</b></td></tr><tr><td>Write every object loose, as a clone does today</td><td><b>11.6 s</b></td></tr></tbody></table></div>
+<h3 id="one-folder-as-ranged-reads-ranges-merged-when-less-than-64-k">One folder as ranged reads (ranges merged when less than 64 KB apart)</h3>
+<div class="tablewrap"><table><thead><tr><th>Folder</th><th>Blobs</th><th>Id order (today)</th><th>Path order</th></tr></thead><tbody><tr><td><code>raw/c09/</code></td><td>7,600</td><td>2 ranges spanning 58.4 MB</td><td>1 range, 1.12 MB</td></tr><tr><td><code>raw/c09/s4/</code></td><td>1,520</td><td>265 ranges, 30.4 MB</td><td>1 range, 0.22 MB</td></tr><tr><td><code>raw/c09/s4/pub19/</code></td><td>76</td><td>70 ranges, 0.1 MB</td><td>1 range, 0.01 MB</td></tr></tbody></table></div>
+<h3 id="a-full-text-index">A full-text index</h3>
+<p>FTS5 over the 76,000 files (13.0 MB of text): built in <b>11.3 s</b>; 25.2 MB, 2.4 MB deflated; a query 0.2 ms.</p>
+<h3 id="an-unknown-member-in-a-pack-read-by-sgit-0-25-0">An unknown member in a pack, read by sgit 0.25.0</h3>
+<p><code>extract_pack</code> wrote the object and refused only the <code>bare/index/</code> member. <code>sync_down</code> then warns and does not record the pack, so a 0.25.0 client would fetch it again on every pull.</p>
+<h2 id="3-nine-engines-on-the-vault-s-graph">3. Nine engines on the vault's graph</h2>
+<p>Milliseconds per query, warm. Every answer was checked against the plain-Python reference (<code>graph/b_python.py</code>).</p>
+<div class="tablewrap"><table><thead><tr><th>Question</th><th>Python</th><th>SQLite, int</th><th>SQLite, text</th><th>networkx</th><th>Oxigraph</th><th>DuckDB</th><th>LadybugDB</th><th>Kùzu</th><th>rdflib</th></tr></thead><tbody><tr><td>Folder's children</td><td>0.000</td><td>0.008</td><td>0.009</td><td>0.001</td><td>0.056</td><td>4.9</td><td>1.7</td><td>1.3</td><td>4.6</td></tr><tr><td>Files under a folder (7,600)</td><td>2.2</td><td>47.9</td><td>13.9</td><td>23.7</td><td>131.5</td><td>26.7</td><td>16.2</td><td>14.1</td><td>342.9</td></tr><tr><td>A file's folders to the root (7)</td><td>0.002</td><td>0.013</td><td>0.015</td><td>0.006</td><td>0.086</td><td>26.7</td><td>2.1</td><td>1.8</td><td>3.5</td></tr><tr><td>Every ancestor of the head (19,999)</td><td>7.8</td><td>22.3</td><td>47.6</td><td>18.3</td><td>107.3</td><td>228.1</td><td>1,971</td><td>2,147</td><td>RecursionError</td></tr><tr><td>Merge base</td><td>52.0</td><td>89.5</td><td>211.3</td><td>55.2</td><td>449.8</td><td>552.9</td><td>5,307</td><td>5,265</td><td>RecursionError</td></tr><tr><td>base..head (110)</td><td>16.9</td><td>79.3</td><td>161.2</td><td>34.9</td><td>230.8</td><td>611.6</td><td>4,843</td><td>5,032</td><td>RecursionError</td></tr><tr><td>Commits that changed a file</td><td>0.000</td><td>0.007</td><td>0.007</td><td>0.005</td><td>0.054</td><td>6.8</td><td>1.5</td><td>1.4</td><td>3.8</td></tr><tr><td>Paths that hold a blob</td><td>0.000</td><td>0.007</td><td>0.007</td><td>0.001</td><td>0.048</td><td>5.0</td><td>1.4</td><td>1.3</td><td>4.5</td></tr><tr><td>Load (s)</td><td>0.76</td><td>3.07</td><td>2.28</td><td>1.83</td><td>4.90</td><td>0.41</td><td>2.10</td><td>2.00</td><td>11.16</td></tr><tr><td>On disk (MB)</td><td>memory</td><td>52.2</td><td>118.5</td><td>memory</td><td>56.2</td><td>9.4</td><td>46.7</td><td>51.5</td><td>memory</td></tr><tr><td>Deflated (MB)</td><td></td><td>15.0</td><td>18.5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<p>Versions: pyoxigraph 0.5.13, duckdb 2.0.0, real_ladybug 0.15.3, kuzu 0.11.3 (archived on 10 October 2025), networkx 3.7, rdflib 7.6.0. Oxigraph's N-Triples export was 48 MB, 3.8 MB deflated.</p>
+<h3 id="with-generation-numbers-instead-of-a-walk">With generation numbers instead of a walk</h3>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>Generation numbers for 20,003 commits</td><td>14 ms</td></tr><tr><td>Merge base (git's paint-down walk, newest generation first)</td><td><b>0.101 ms</b>, exact</td></tr><tr><td>base..head</td><td><b>0.093 ms</b>, exact</td></tr></tbody></table></div>
+<h3 id="a-two-hop-question-files-changed-in-the-same-commits-as-the-">A two-hop question: files changed in the same commits as the most-changed file (32)</h3>
+<div class="tablewrap"><table><thead><tr><th>Engine</th><th>ms</th></tr></thead><tbody><tr><td>Python dicts</td><td>0.003</td></tr><tr><td>SQLite, one self-join</td><td>0.020</td></tr><tr><td>Oxigraph, SPARQL</td><td>0.119</td></tr><tr><td>DuckDB, self-join</td><td>16.0</td></tr><tr><td>LadybugDB, Cypher</td><td>22.3</td></tr></tbody></table></div>
+<h3 id="what-needed-a-second-attempt">What needed a second attempt</h3>
+<div class="tablewrap"><table><thead><tr><th>Engine</th><th>First form</th><th>Result</th><th>Second form</th><th>Result</th></tr></thead><tbody><tr><td>SQLite</td><td>recursive step with the planner's join order</td><td><b>182,507 ms</b> for the folder walk (whole benchmark stopped after 10 minutes)</td><td><code>FROM sub CROSS JOIN t</code>, plus <code>ANALYZE</code></td><td>13.9 ms</td></tr><tr><td>Oxigraph</td><td>merge base as two <code>parent*</code> paths on one variable</td><td>over 10 minutes</td><td>two <code>SELECT DISTINCT</code> subqueries</td><td>450 ms</td></tr><tr><td>Oxigraph</td><td>base..head with <code>FILTER NOT EXISTS</code></td><td>over the limit</td><td><code>MINUS</code> over a subquery</td><td>231 ms</td></tr><tr><td>LadybugDB, Kùzu</td><td><code>-[:PARENT* SHORTEST 1..30000]-&gt;</code></td><td>binder error: 30 hops at most</td><td><code>CALL var_length_extend_max_depth=30000</code></td><td>as in the table</td></tr><tr><td>rdflib</td><td><code>parent+</code></td><td><code>RecursionError</code> at about 1,000 commits</td><td>none</td><td>recorded as a failure</td></tr></tbody></table></div>
+<h3 id="encrypted-triples">Encrypted triples</h3>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>All triples as JSON</td><td>39.0 MB; 3.69 MB deflated</td></tr><tr><td>Dictionary-encoded (308,151 terms, three int32 columns)</td><td>16.4 MB; <b>3.02 MB deflated</b></td></tr><tr><td>Encrypt the whole set (AES-GCM) / decrypt, inflate and parse</td><td>3 ms / 351 ms</td></tr><tr><td>One member per commit</td><td>20,003 members, median <b>203 bytes</b>, 4.0 MB; 477 ms to encrypt all</td></tr><tr><td>HMAC of every term</td><td>786 ms</td></tr><tr><td>What the shape alone shows with hashed names</td><td>58,062 folders, the largest holding 20; one file changed 8 times; commits per day</td></tr></tbody></table></div>
+<h3 id="mgraph-db-through-its-api">MGraph-DB through its API</h3>
+<p>1,000 nodes and edges in 0.47 s and 5,000 in 2.19 s: about <b>0.44 ms per node and edge</b>. A walk of 5,000 hops took 9.7 ms.</p>
+<h2 id="4-mgraph-db-memory-fs-and-indexes-the-writer-pays-for">4. MGraph-DB, Memory-FS and indexes the writer pays for</h2>
+<h3 id="mgraph-db-1-18-0-loaded-from-its-own-json">MGraph-DB 1.18.0 loaded from its own JSON</h3>
+<div class="tablewrap"><table><thead><tr><th>Nodes and edges</th><th>Graph JSON</th><th><code>json.loads</code></th><th>Typed load</th><th>Fast-create load</th><th>Index build</th><th>Index JSON</th><th>Index save</th><th>Typed index reload</th><th>Peak memory</th></tr></thead><tbody><tr><td>10,000</td><td>3.8 MB</td><td>0.05 s</td><td>3.65 s</td><td>1.24 s</td><td>0.89 s</td><td>3.2 MB</td><td>0.34 s</td><td>1.60 s (fast: 1.45 s)</td><td>142 MB</td></tr><tr><td>50,000</td><td>19.1 MB</td><td>0.23 s</td><td>18.65 s</td><td>7.83 s</td><td>4.47 s</td><td>15.8 MB</td><td>2.18 s</td><td>10.85 s (fast: 10.63 s)</td><td>669 MB</td></tr><tr><td>100,000</td><td>38.2 MB</td><td>0.44 s</td><td>37.41 s</td><td>15.45 s</td><td>10.52 s</td><td>31.6 MB</td><td>6.38 s</td><td>22.97 s (fast: 21.38 s)</td><td>1,291 MB (fast: 1,380 MB)</td></tr></tbody></table></div>
+<p>Fast-create is <code>Type_Safe__Config(fast_create=True, skip_validation=True)</code> from osbot-utils 3.75.0, documented as being for trusted data.</p>
+<h3 id="memory-fs-0-41-0-reading-one-member-of-a-zip">Memory-FS 0.41.0: reading one member of a zip</h3>
+<div class="tablewrap"><table><thead><tr><th>Zip</th><th><code>Storage_FS__Zip.file__bytes</code></th><th><code>ZipFile</code> open</th><th><code>ZipFile</code> read</th><th>Offset index built</th><th>Read by offset</th></tr></thead><tbody><tr><td>1,000 members, 0.5 MB</td><td>6.6 ms</td><td>3.5 ms</td><td>21 µs</td><td>0.4 ms</td><td>1.8 µs</td></tr><tr><td>10,000 members, 5.2 MB</td><td>103.6 ms</td><td>51 ms</td><td>45 µs</td><td>6.8 ms</td><td>3.2 µs</td></tr><tr><td>134,092 members, 69 MB (the vault packed)</td><td><b>1,304 ms</b></td><td>586 ms</td><td>51 µs</td><td>135 ms</td><td><b>5.2 µs</b></td></tr></tbody></table></div>
+<p><code>Storage_FS__Zip</code> holds the zip in memory and parses its directory twice per read, once in <code>file__exists</code> and once to read.</p>
+<h3 id="the-writer-pays-index-of-the-vault">The writer-pays index of the vault</h3>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>Full build: one JSON per folder (entries and subtree totals), blob → paths, file → commits, commits</td><td><b>3.51 s</b>, plus 1.04 s to write the zip</td></tr><tr><td>The zip</td><td>22.65 MB, 58,831 members: 58,062 folders (11.77 MB, median 226 bytes) and 3 × 256 cross-reference shards (about 1.1 MB each, median 4.4 to 4.6 KB)</td></tr><tr><td>One commit of 5 files, incrementally</td><td><b>38 members rewritten, 57 KB, 10.4 ms</b>; 27 of them folders on the files' paths</td></tr><tr><td>Reader: open by parsing the central directory</td><td>910 ms</td></tr><tr><td>List a folder</td><td>0.19 ms, 1 member</td></tr><tr><td>Files and bytes under <code>raw/c09</code> (7,600 files, 1,296,478 bytes, from rolled-up totals)</td><td>0.03 ms, 1 member</td></tr><tr><td>Does a file exist, and its blob</td><td>0.07 ms, 1 member</td></tr><tr><td>Every file under <code>raw/c09/s4</code>, walked folder by folder</td><td>36.5 ms, 1,161 members</td></tr><tr><td>Paths that hold a blob</td><td>0.27 ms, 1 member</td></tr><tr><td>Commits that changed a file</td><td>0.18 ms, 1 member</td></tr><tr><td>Merge base, commits sharded by hash</td><td>56.9 ms, <b>97 members</b></td></tr><tr><td>base..head, commits sharded by hash</td><td>19.8 ms, 89 members</td></tr></tbody></table></div>
+<p><b>Second layout:</b> commits sharded by generation, in ranges of 1,000, with a commit → generation map, and an offset table written as the zip's first member, padded to a fixed size.</p>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>Layout and write</td><td>1.36 s; 23.39 MB; 58,598 members; the offset table 709 KB</td></tr><tr><td>Reader open from the offset table, no central directory</td><td><b>49.5 ms</b></td></tr><tr><td>Merge base</td><td>24.6 ms, <b>3 members</b></td></tr><tr><td>base..head</td><td>9.5 ms, 3 members</td></tr></tbody></table></div>
+<h3 id="a-wikipedia-sized-link-graph">A Wikipedia-sized link graph</h3>
+<div class="tablewrap"><table><thead><tr><th>Measure</th><th>100,000 pages</th><th>1,000,000 pages</th></tr></thead><tbody><tr><td>Links</td><td>2,489,692</td><td>24,972,678</td></tr><tr><td>Shards per kind</td><td>256</td><td>4,096</td></tr><tr><td>Writer: backlinks / shards / zip</td><td>0.6 s / 3.7 s / 0.0 s</td><td>15.1 s / 40.4 s / 1.5 s</td></tr><tr><td>Zip</td><td>15.6 MB, 1,025 members</td><td>188.8 MB, 16,385 members</td></tr><tr><td>Outlinks / backlinks / titles / title index</td><td>6.9 / 7.5 / 0.5 / 0.5 MB</td><td>84.1 / 90.5 / 6.3 / 6.0 MB</td></tr><tr><td>Median shard (outlinks)</td><td>26.9 KB</td><td>20.5 KB</td></tr><tr><td>Outlinks of a page</td><td>1.9 ms, 1 shard</td><td>0.9 ms, 1 shard</td></tr><tr><td>Backlinks of a popular page</td><td>1.6 ms, 1 shard (4,614 links)</td><td>2.8 ms, 1 shard (18,494 links)</td></tr><tr><td>Title → id → outlinks</td><td>1.2 ms, 2 shards</td><td>0.8 ms, 2 shards</td></tr><tr><td>Pages two links away</td><td>8.3 ms, 7 shards</td><td>9.5 ms, 12 shards</td></tr><tr><td><b>A fresh reader process: open</b></td><td>0.7 ms, 11 MB</td><td><b>18 ms, 16 MB</b></td></tr><tr><td>Ten shortest paths, cold: median / worst</td><td>29.4 / 43.5 ms; 26 / 41 shards</td><td><b>74.9 / 279.6 ms; 66 / 283 shards</b></td></tr><tr><td>Hops in those paths</td><td>3 to 5</td><td>4 to 6</td></tr><tr><td>The reader's peak memory</td><td>40 MB</td><td><b>152 MB</b></td></tr><tr><td>All links as compact arrays (int32, CSR)</td><td>21.5 MB; loaded in 19 ms; paths in 0.1 to 0.2 ms</td><td>215.8 MB; loaded in 700 ms; paths in 0.3 to 1.0 ms</td></tr></tbody></table></div>
+<p>English Wikipedia reports about 7.25 million articles, so the million-page graph is about a seventh of it by pages. Its real link count was not checked here.</p>
+<h2 id="5-what-did-not-work-or-was-not-measured">5. What did not work, or was not measured</h2>
+<ul><li>rdflib cannot walk a deep history (RecursionError).</li><li>Kùzu is archived; its numbers are kept for reference only.</li><li>DuckPGQ, DuckDB's SQL/PGQ extension, was not tested: extensions download at run time.</li><li>MGraph-DB 1.18.0 does not use Memory-FS, and Memory-FS 0.41.0 has no S3 provider among its storage providers (memory, local disk, SQLite, zip).</li><li>Cold starts, concurrent readers, slow disks and memory limits were not measured anywhere on this page.</li></ul>
+<div class="pagenav"><span></span><a href="../research/pack-carried-indexes-architecture.html">Architecture: the pack as the store, and the indexes it carries →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/graph-and-index-measurements-2026-10-26.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/graph-and-index-measurements-2026-10-26.md"><code>admin/content/research/graph-and-index-measurements-2026-10-26.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/graph-and-index-measurements-2026-10-26.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+    <a href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

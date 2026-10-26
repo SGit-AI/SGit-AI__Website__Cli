@@ -1,0 +1,1 @@
+{"fast": false, "nodes": 100000, "edges": 99999, "graph_json_mb": 38.2, "json_loads_s": 0.44, "typed_load_s": 37.41, "index_build_s": 10.52, "index_json_mb": 31.6, "index_save_s": 6.38, "index_typed_reload_s": 22.97, "walk_hops": 26, "walk_ms": 0.3, "max_rss_mb": 1291}

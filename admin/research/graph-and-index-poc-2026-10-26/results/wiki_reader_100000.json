@@ -1,0 +1,63 @@
+{
+ "pages": 100000,
+ "rss_at_start_mb": 10,
+ "open_ms": 0.7,
+ "rss_after_open_mb": 11,
+ "shortest_paths_cold": [
+  {
+   "ms": 29.4,
+   "shards": 21,
+   "hops": 4
+  },
+  {
+   "ms": 41.1,
+   "shards": 32,
+   "hops": 4
+  },
+  {
+   "ms": 25.3,
+   "shards": 20,
+   "hops": 4
+  },
+  {
+   "ms": 37.3,
+   "shards": 34,
+   "hops": 5
+  },
+  {
+   "ms": 6.6,
+   "shards": 6,
+   "hops": 3
+  },
+  {
+   "ms": 3.2,
+   "shards": 3,
+   "hops": 3
+  },
+  {
+   "ms": 41.5,
+   "shards": 38,
+   "hops": 5
+  },
+  {
+   "ms": 18.1,
+   "shards": 15,
+   "hops": 4
+  },
+  {
+   "ms": 27.3,
+   "shards": 26,
+   "hops": 5
+  },
+  {
+   "ms": 43.5,
+   "shards": 41,
+   "hops": 5
+  }
+ ],
+ "shortest_ms_median": 29.4,
+ "shortest_ms_max": 43.5,
+ "shards_median": 26,
+ "shards_max": 41,
+ "max_rss_mb": 40
+}

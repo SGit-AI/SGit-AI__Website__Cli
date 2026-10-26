@@ -14,6 +14,8 @@ By [cli.build](https://cli.sgit.ai/about/team.html) · 2026-10-26 · published
 *Eight questions asked of a vault's graph in nine engines, on 482,532 triples: 76,000 files and 58,062 folders of a real head, and a synthetic history of 20,003 commits. Python dictionaries and SQLite answer the folder and file questions in microseconds to milliseconds. The Cypher engines, LadybugDB and Kùzu, take two to five seconds on the history questions, and rdflib fails with a RecursionError. With generation numbers, the merge base and the commits between two heads take 0.1 ms. SQLite needed its join order forced: its own plan took 182 s for a folder walk that takes 14 ms.*
 
 
+> **Update, 26 October 2026.** Dinis Cruz's design principles for these indexes (the writer pays, cross-references in both directions, one index per question, plain typed JSON loaded on demand, one file per folder) are tested in [Indexes the writer pays for](../articles/indexes-the-writer-pays-for.md), with MGraph-DB and Memory-FS measured and a million-page link graph. Every number from this article and the next is kept in [Graph and index measurements, 26 October 2026](../research/graph-and-index-measurements-2026-10-26.md), with the scripts.
+
 ## In short {#in-short}
 
 - **A vault is already a graph, and already encrypted.** Commits point to parents and trees, and trees point to trees and files. Every one of those edges is inside an encrypted object, and the host sees only ids and sizes.

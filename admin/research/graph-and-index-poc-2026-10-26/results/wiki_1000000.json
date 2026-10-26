@@ -1,0 +1,73 @@
+{
+ "pages": 1000000,
+ "shards": 4096,
+ "links": 24972678,
+ "generate_s": 17.2,
+ "writer_backlinks_s": 15.1,
+ "writer_shards_s": 40.4,
+ "writer_zip_s": 1.5,
+ "zip_mb": 188.8,
+ "members": 16385,
+ "out_mb": 84.1,
+ "out_shard_median_kb": 20.5,
+ "back_mb": 90.5,
+ "back_shard_median_kb": 21.4,
+ "title_mb": 6.3,
+ "title_shard_median_kb": 1.5,
+ "by-title_mb": 6.0,
+ "by-title_shard_median_kb": 1.5,
+ "csr_build_s": 10.3,
+ "csr_mb": 215.8,
+ "csr_deflated_mb": 157.3,
+ "reader_open_ms": 9.9,
+ "outlinks of a page": {
+  "ms": 0.9,
+  "shards": 1,
+  "answer": 11
+ },
+ "backlinks of a popular page": {
+  "ms": 2.8,
+  "shards": 1,
+  "answer": 18494
+ },
+ "title to id to outlinks": {
+  "ms": 0.8,
+  "shards": 2,
+  "answer": 19
+ },
+ "pages two links away": {
+  "ms": 9.5,
+  "shards": 12,
+  "answer": 261
+ },
+ "shortest path 1, on demand": {
+  "ms": 55.9,
+  "shards": 63,
+  "answer": 5
+ },
+ "shortest path 2, on demand": {
+  "ms": 45.4,
+  "shards": 57,
+  "answer": 5
+ },
+ "shortest path 3, on demand": {
+  "ms": 119.5,
+  "shards": 140,
+  "answer": 5
+ },
+ "reader_max_rss_mb_on_demand": 2375,
+ "csr_load_ms": 700.4,
+ "shortest path 1, arrays in memory": {
+  "ms": 0.7,
+  "answer": 5
+ },
+ "shortest path 2, arrays in memory": {
+  "ms": 0.3,
+  "answer": 5
+ },
+ "shortest path 3, arrays in memory": {
+  "ms": 1.0,
+  "answer": 5
+ },
+ "max_rss_mb": 2490
+}

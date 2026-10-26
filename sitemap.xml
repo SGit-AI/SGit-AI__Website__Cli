@@ -22,6 +22,7 @@
   <url><loc>https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/indexes-in-the-pack.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/indexes-the-writer-pays-for.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/is-there-any-overhead.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/keys-the-way-git-does-it.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html</loc></url>
@@ -108,6 +109,7 @@
   <url><loc>https://cli.sgit.ai/research/compatibility-matrix-cli-web-ui-api.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/future-features-after-0-21.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/git-to-sgit-security-mapping.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/graph-and-index-measurements-2026-10-26.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/indexes-and-caches-review.html</loc></url>

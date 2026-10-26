@@ -1,0 +1,10 @@
+{
+ "writer_1000_commits_s": 0.92,
+ "delta_members_median": 27,
+ "delta_kb_median": 3.1,
+ "changes_record_bytes_median": 253,
+ "deltas_total_mb": 3.05,
+ "snapshot_mb": 7.34,
+ "xref_from_snapshot_ms": 155.1,
+ "apply_1000_change_records_ms": 48.6
+}

@@ -151,9 +151,29 @@ The cost is linear, at about 0.37 ms per node and edge. Fast-create, Type_Safe's
 
 Keep the parsed directory, or read the offset table the writer stored, and it becomes the reader this article measured.
 
+## A delta in every commit pack {#deltas}
+
+The index above is a snapshot. Dinis asked the next question: should every commit pack carry the index changes of its commit, so that a reader assembles them over the last snapshot? I ran 1,000 commits of five files each on the same vault, two ways:
+
+| | Whole shards in each delta | Folder files plus a change list |
+|---|---|---|
+| Per commit | 41 members, 47.7 KB | **27 members, 3.1 KB** |
+| 1,000 commits | 47 MB, five times the snapshot | **3.0 MB**, under half of it |
+| Writer, 1,000 commits | 8.0 s | 0.9 s |
+
+**Ship the change, not the shard.** A cross-reference shard covers hundreds of unrelated files. Re-sending it for each commit is what made the first form big. The lean delta carries:
+- the folder files on the changed paths, which are small and are what a reader opens first;
+- one change list: path, old blob, new blob, 253 bytes for five files.
+
+The reader keeps its own cross-references and applies the lists. It built blob → paths from the snapshot in 155 ms, and applied 1,000 change lists to it, with file → commits, in 49 ms. With whole-shard deltas, a map of each member's newest version took 7 ms to build, and a read through it 8 µs.
+
+**The deltas are also the history.** Which commits touched `raw/c03/`? Reading the change lists answered it in 1.5 ms: 393 of 1,000. That is a log, a blame or a "what changed this week", without opening a tree.
+
+**Compaction stays the bound.** Pack mode already writes a new snapshot after 50 commit packs or 10% of the snapshot's size. The snapshot carries the whole index again, and a reader's deltas start over.
+
 ## What I would build, in order {#build}
 
-1. **In sgit, the writer's additions to what it already writes:** generation numbers in each commit's index entry; totals per folder; blob → paths and file → commits, in both directions. These go in the index pack the [indexes article](/articles/indexes-in-the-pack.html#correction) proposed, encrypted and signed.
+1. **In sgit, the writer's additions to what it already writes:** generation numbers in each commit's index entry; totals per folder; blob → paths and file → commits, in both directions. These go in the index pack the [indexes article](/articles/indexes-in-the-pack.html#correction) proposed, encrypted and signed: whole in a snapshot's index pack, and as folder files plus a change list in each commit's.
 2. **The index pack's layout:** shards cut the way their questions walk, and an offset table first.
 3. **In Memory-FS, a zip provider that keeps the directory open,** and an S3 provider, so the same code reads a pack on disk or on the host.
 4. **In MGraph-DB, typed writes and plain reads:** the writer builds through Type_Safe, the reader loads JSON as dicts and wraps what it touches, and indexes are sharded through Memory-FS.

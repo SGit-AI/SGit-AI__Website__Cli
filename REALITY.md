@@ -5,7 +5,7 @@ section: site
 order: 4
 ---
 
-# Reality: what exists, at v0.2.15 (26 October 2026)
+# Reality: what exists, at v0.2.16 (26 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 

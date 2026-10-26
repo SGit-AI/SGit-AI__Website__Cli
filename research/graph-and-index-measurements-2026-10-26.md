@@ -202,7 +202,25 @@ Fast-create is `Type_Safe__Config(fast_create=True, skip_validation=True)` from 
 
 English Wikipedia reports about 7.25 million articles, so the million-page graph is about a seventh of it by pages. Its real link count was not checked here.
 
-## 5. What did not work, or was not measured
+## 5. An index delta in every commit pack
+
+1,000 commits of five random files each on the 76,000-file vault (`deltas/`, seed 5). A snapshot carries the whole index; each commit pack carries only what its commit changed.
+
+| Measure | Whole shards in each delta | Folder files plus a change list |
+|---|---|---|
+| Writer, 1,000 commits | 8.04 s | **0.92 s** |
+| Members per delta, median | 41 | **27** (the folders on the five paths, and the list) |
+| Size per delta, median | 47.7 KB | **3.1 KB**; the change list alone 253 bytes |
+| 1,000 deltas | 47.08 MB | **3.05 MB** |
+| The snapshot it sits on | 8.7 MB, 58,318 members | 7.34 MB |
+
+**The reader, with whole-shard deltas:** a map of each member's newest version across the 1,000 deltas (10,620 entries) took 6.6 ms to build. A read through it took 8.0 µs, and gave exactly the writer's final state. Merging all 1,000 deltas into a local copy took 15.5 ms.
+
+**The reader, with change lists:** blob → paths built from the snapshot in 155 ms, and all 1,000 change lists applied to it, with file → commits, in 48.6 ms.
+
+**Change over time, from the deltas alone:** the commits that touched `raw/c03/` (393 of 1,000) were found in 1.45 ms.
+
+## 6. What did not work, or was not measured
 
 - rdflib cannot walk a deep history (RecursionError).
 - Kùzu is archived; its numbers are kept for reference only.

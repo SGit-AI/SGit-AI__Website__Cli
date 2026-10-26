@@ -4,7 +4,7 @@
 > points `sgit` and `sgit-ai`): every command, generated from the CLI's own parser; the HTTP API it is a
 > client of; the guides; and the CLI team's research, published as articles.
 
-Site version: v0.2.15 · command reference generated from sgit-ai v0.25.0 (165 commands) · 154 pages.
+Site version: v0.2.16 · command reference generated from sgit-ai v0.25.0 (165 commands) · 154 pages.
 
 Every page below is markdown, generated from the same source as the HTML page at the same path (swap
 `.md` for `.html`). Links inside the markdown point at markdown. Every page in one document: /llms-full.txt.

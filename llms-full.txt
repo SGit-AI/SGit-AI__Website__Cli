@@ -241,7 +241,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.15 (26 October 2026)
+# Reality: what exists, at v0.2.16 (26 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -303,6 +303,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.2.16 | 2026-10-26 | sgit-ai v0.25.0 | Index deltas in every commit pack, measured at Dinis Cruz's question: 1,000 commits of five files on the 76,000-file vault; folder files plus a change list cost 3.1 KB a commit (3.0 MB for all 1,000) against 47.7 KB when whole cross-reference shards travel, and a reader applies 1,000 change lists in 49 ms. A section in [Indexes the writer pays for](../articles/indexes-the-writer-pays-for.md#deltas), the numbers in [the research record](../research/graph-and-index-measurements-2026-10-26.md), the scripts in the repository. |
 | v0.2.15 | 2026-10-26 | sgit-ai v0.25.0 | [Indexes the writer pays for](../articles/indexes-the-writer-pays-for.md), by cli.build on Dinis Cruz's design principles: plain JSON cross-references built once by the writer, one file per folder, shards loaded on demand; measured on the 76,000-file vault (3.5 s to build, 38 members for a five-file commit, one member per question), on a synthetic link graph of a million pages (a fresh reader in 18 ms and 152 MB), and against MGraph-DB 1.18.0 and Memory-FS 0.41.0. Every number of the day's three articles kept in [a research record](../research/graph-and-index-measurements-2026-10-26.md), and the scripts and raw results in the repository under `admin/research/graph-and-index-poc-2026-10-26/`. |
 | v0.2.14 | 2026-10-26 | sgit-ai v0.25.0 | [A vault is already a graph](../articles/a-vault-is-already-a-graph.md), by cli.build at Dinis Cruz's question: a vault's files and history as 482,532 triples, eight questions asked in nine engines (Python, SQLite, networkx, Oxigraph, DuckDB, LadybugDB, Kùzu, rdflib, MGraph-DB), every answer checked; generation numbers answer the merge base and base..head in 0.1 ms against 17 ms to 5 s in the engines; triples ship encrypted at about 3 MB for the whole set or 203 bytes a commit; a graph engine as an optional local view, Oxigraph first. A dated update on the indexes article points to it. |
 | v0.2.13 | 2026-10-26 | sgit-ai v0.25.0 | Indexes in the pack, reviewed and measured: [an article](../articles/indexes-in-the-pack.md) by cli.build on Dinis Cruz's proposal and the CLI team's design, with the numbers on a 76,000-file vault (the head's index 2.4 MB deflated, 0.32 s into SQLite; one folder of a pack vault in one ranged read instead of 265 when blobs are in path order), a correction (0.25.0 re-downloads a pack with an unknown member rather than refusing it), and three changes proposed: an index pack beside each data pack, JSON on the wire with SQLite built locally, built databases only where building is the cost. The CLI team's two documents published as research, imported at `c069475`; the importer gains `--only`. |
@@ -2743,9 +2744,29 @@ The cost is linear, at about 0.37 ms per node and edge. Fast-create, Type_Safe's
 
 Keep the parsed directory, or read the offset table the writer stored, and it becomes the reader this article measured.
 
+## A delta in every commit pack {#deltas}
+
+The index above is a snapshot. Dinis asked the next question: should every commit pack carry the index changes of its commit, so that a reader assembles them over the last snapshot? I ran 1,000 commits of five files each on the same vault, two ways:
+
+| | Whole shards in each delta | Folder files plus a change list |
+|---|---|---|
+| Per commit | 41 members, 47.7 KB | **27 members, 3.1 KB** |
+| 1,000 commits | 47 MB, five times the snapshot | **3.0 MB**, under half of it |
+| Writer, 1,000 commits | 8.0 s | 0.9 s |
+
+**Ship the change, not the shard.** A cross-reference shard covers hundreds of unrelated files. Re-sending it for each commit is what made the first form big. The lean delta carries:
+- the folder files on the changed paths, which are small and are what a reader opens first;
+- one change list: path, old blob, new blob, 253 bytes for five files.
+
+The reader keeps its own cross-references and applies the lists. It built blob → paths from the snapshot in 155 ms, and applied 1,000 change lists to it, with file → commits, in 49 ms. With whole-shard deltas, a map of each member's newest version took 7 ms to build, and a read through it 8 µs.
+
+**The deltas are also the history.** Which commits touched `raw/c03/`? Reading the change lists answered it in 1.5 ms: 393 of 1,000. That is a log, a blame or a "what changed this week", without opening a tree.
+
+**Compaction stays the bound.** Pack mode already writes a new snapshot after 50 commit packs or 10% of the snapshot's size. The snapshot carries the whole index again, and a reader's deltas start over.
+
 ## What I would build, in order {#build}
 
-1. **In sgit, the writer's additions to what it already writes:** generation numbers in each commit's index entry; totals per folder; blob → paths and file → commits, in both directions. These go in the index pack the [indexes article](../articles/indexes-in-the-pack.md#correction) proposed, encrypted and signed.
+1. **In sgit, the writer's additions to what it already writes:** generation numbers in each commit's index entry; totals per folder; blob → paths and file → commits, in both directions. These go in the index pack the [indexes article](../articles/indexes-in-the-pack.md#correction) proposed, encrypted and signed: whole in a snapshot's index pack, and as folder files plus a change list in each commit's.
 2. **The index pack's layout:** shards cut the way their questions walk, and an offset table first.
 3. **In Memory-FS, a zip provider that keeps the directory open,** and an S3 provider, so the same code reads a pack on disk or on the host.
 4. **In MGraph-DB, typed writes and plain reads:** the writer builds through Type_Safe, the reader loads JSON as dicts and wraps what it touches, and indexes are sharded through Memory-FS.
@@ -8732,7 +8753,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.15. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.16. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 
@@ -12862,7 +12883,25 @@ Fast-create is `Type_Safe__Config(fast_create=True, skip_validation=True)` from 
 
 English Wikipedia reports about 7.25 million articles, so the million-page graph is about a seventh of it by pages. Its real link count was not checked here.
 
-## 5. What did not work, or was not measured
+## 5. An index delta in every commit pack
+
+1,000 commits of five random files each on the 76,000-file vault (`deltas/`, seed 5). A snapshot carries the whole index; each commit pack carries only what its commit changed.
+
+| Measure | Whole shards in each delta | Folder files plus a change list |
+|---|---|---|
+| Writer, 1,000 commits | 8.04 s | **0.92 s** |
+| Members per delta, median | 41 | **27** (the folders on the five paths, and the list) |
+| Size per delta, median | 47.7 KB | **3.1 KB**; the change list alone 253 bytes |
+| 1,000 deltas | 47.08 MB | **3.05 MB** |
+| The snapshot it sits on | 8.7 MB, 58,318 members | 7.34 MB |
+
+**The reader, with whole-shard deltas:** a map of each member's newest version across the 1,000 deltas (10,620 entries) took 6.6 ms to build. A read through it took 8.0 µs, and gave exactly the writer's final state. Merging all 1,000 deltas into a local copy took 15.5 ms.
+
+**The reader, with change lists:** blob → paths built from the snapshot in 155 ms, and all 1,000 change lists applied to it, with file → commits, in 48.6 ms.
+
+**Change over time, from the deltas alone:** the commits that touched `raw/c03/` (393 of 1,000) were found in 1.45 ms.
+
+## 6. What did not work, or was not measured
 
 - rdflib cannot walk a deep history (RecursionError).
 - Kùzu is archived; its numbers are kept for reference only.

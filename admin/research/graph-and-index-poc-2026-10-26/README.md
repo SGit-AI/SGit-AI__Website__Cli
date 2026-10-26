@@ -20,6 +20,7 @@ Python 3.13.16, SQLite 3.45.1, sgit-ai 0.25.0. Nothing here is sgit code; these 
 | `graph/` | the 482,532-triple dataset and the eight questions in nine engines, each checked against `b_python.py` |
 | `mgraph/` | MGraph-DB loaded from its own JSON; Memory-FS's zip reads; the writer-pays xref index of the vault, two layouts |
 | `wiki/` | a synthetic Wikipedia-sized link graph: sharded outlinks, backlinks and titles, read on demand, against compact arrays |
+| `deltas/` | 1,000 commits of five files, each pack carrying only its index changes: whole shards (`deltas.py`) against folder files plus a change list (`deltas_lean.py`) |
 | `results/` | every result file the scripts wrote, and `console-output.md` for the runs that only printed |
 
 ## Re-running

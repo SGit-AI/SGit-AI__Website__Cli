@@ -1,0 +1,17 @@
+{
+ "snapshot_members": 58318,
+ "snapshot_mb": 8.7,
+ "snapshot_build_s": 1.61,
+ "writer_1000_commits_s": 8.04,
+ "delta_members_median": 41,
+ "delta_kb_median": 47.7,
+ "deltas_total_mb": 47.08,
+ "overlay_map_build_ms": 6.6,
+ "overlay_map_entries": 10620,
+ "overlay_read_us": 8.0,
+ "local_merge_ms": 15.5,
+ "folder_versions_ms": 1.3,
+ "folder_versions": 1,
+ "commits_touching_raw_c03_ms": 1.45,
+ "commits_touching_raw_c03": 393
+}

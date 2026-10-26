@@ -13,6 +13,8 @@ status: published
 
 !shot ix-lets.webp | /articles/images/ | Indexes in the pack, in LETS terms, measured on a vault of 76,000 files and 58,062 folders. Load: the whole head's index is 2.4 MB deflated, and one folder of 1,520 files is one ranged read when blobs are stored in path order, against 265 in today's id order. Extract: reading one object in place takes 5 microseconds, against 11.6 seconds to write all 134,092 objects loose. Transform: assembling one head into SQLite takes 0.32 seconds; a path lookup 0.007 ms, a folder of 7,600 files 5.4 ms, a diff of two heads 58 ms. Save: the 26 MB database loads into memory from bytes in 15 ms. A SQLite file of the same index is the same size deflated, so ship JSON and assemble locally; ship a built database only when building it is the cost, as with a full-text index. | comparison
 
+> **Update, 26 October 2026.** Dinis Cruz asked next whether a graph database should hold these indexes instead of SQLite. [A vault is already a graph](/articles/a-vault-is-already-a-graph.html) measures nine engines on 482,532 triples: ship the indexes as encrypted triples, keep sgit's own commands on the standard library with generation numbers, and build a graph engine locally as an optional view.
+
 ## In short {#in-short}
 
 - **The idea is right, and cheap.** The whole index of a 76,000-file head is 2.4 MB deflated. It loads into SQLite in 0.32 s, and every question after that is milliseconds.

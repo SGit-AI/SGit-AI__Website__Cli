@@ -241,7 +241,7 @@ This site cannot change sgit.ai. Until sgit.ai's team acts, both copies exist, a
 *Source: <https://cli.sgit.ai/admin/reality.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-# Reality: what exists, at v0.2.16 (26 October 2026)
+# Reality: what exists, at v0.2.17 (26 October 2026)
 
 The rule, from the SG/Send repository's Librarian: a feature that is not in this file does not exist, and nobody may say a thing works because a brief describes it. Kept current by whoever ships.
 
@@ -261,7 +261,7 @@ The rule, from the SG/Send repository's Librarian: a feature that is not in this
 | **Machine-readable twins** | A `.md` twin for every page, `llms.txt`, `llms-full.txt`, `sitemap.xml`, all generated |
 | **The gate** | `admin/build/validate.js`: build freshness, version agreement, links, canonical host, twins, orphans, leak tripwire; runs in CI before tag and deploy |
 | **The live site** | https://cli.sgit.ai served v0.1.1 on 20 October 2026, checked against `assets/version.js` after the deploy; the github.io address redirects to it. HTTPS is enforced since 21 October 2026: `http://` answers 301 to the same path on `https://` (checked after Dinis Cruz ticked "Enforce HTTPS" in the Pages settings) |
-| **Dev packs** | Under `/dev/`: designs to build from, each saying what is built and what is not. One so far: [sealed vault keys](../dev/sealed-vault-keys/index.md), six documents, nothing in it built (since v0.2.11) |
+| **Dev packs** | Under `/dev/`: designs to build from, each saying what is built and what is not. Two: [sealed vault keys](../dev/sealed-vault-keys/index.md), six documents (since v0.2.11), and [pack indexes](../dev/pack-indexes/index.md), five documents, an implementation spec for the CLI team (since v0.2.17); nothing in either is built |
 | **Pack mode, documented** | sgit-ai 0.24.0 shipped pack mode on 22 October; this site has its [release notes](../docs/update-to-0-24-0.md) and [a playbook for agents](../docs/pack-mode-for-agents.md), both run against the PyPI release on dev.send.sgraph.ai the evening it was published (since v0.2.8) |
 | **Large vaults, documented** | sgit-ai 0.25.0 reached PyPI on 26 October; this site has its [release notes](../docs/update-to-0-25-0.md), with timings measured on a 76,000-file vault against 0.24.0 and the scan-cache reproductions re-run against the PyPI package, which matches the CLI's `main` at `7a3b90aa` (since v0.2.12) |
 | **Five themes** | Newsprint, Night, Paper, Blueprint, Ember, ported from newsroom.sgit.ai with the same tokens; a picker in the nav; the choice kept in the browser only (since v0.2.2). Figures and diagrams are light in every theme, by design |
@@ -303,6 +303,7 @@ The site's version is in `admin/build/version.txt` and goes up on every push to 
 
 | Version | Date | Command reference | What changed, and why |
 |---|---|---|---|
+| v0.2.17 | 2026-10-26 | sgit-ai v0.25.0 | A second dev pack, [Pack indexes for sgit](../dev/pack-indexes/index.md), the implementation spec for the CLI team: index packs beside data packs under `bare/packs/indexes/` (no gate: 0.24.0 to 0.25.0 never list it), an encrypted signed header with opaque member names, the JSON schemas of every member, path-ordered data packs with offsets for ranged scoped reads, the writer's and the reader's work command by command, the threat model, four phases with acceptance tests and benchmark targets. Checked against SGit-AI__CLI at `c0694753`. |
 | v0.2.16 | 2026-10-26 | sgit-ai v0.25.0 | Index deltas in every commit pack, measured at Dinis Cruz's question: 1,000 commits of five files on the 76,000-file vault; folder files plus a change list cost 3.1 KB a commit (3.0 MB for all 1,000) against 47.7 KB when whole cross-reference shards travel, and a reader applies 1,000 change lists in 49 ms. A section in [Indexes the writer pays for](../articles/indexes-the-writer-pays-for.md#deltas), the numbers in [the research record](../research/graph-and-index-measurements-2026-10-26.md), the scripts in the repository. |
 | v0.2.15 | 2026-10-26 | sgit-ai v0.25.0 | [Indexes the writer pays for](../articles/indexes-the-writer-pays-for.md), by cli.build on Dinis Cruz's design principles: plain JSON cross-references built once by the writer, one file per folder, shards loaded on demand; measured on the 76,000-file vault (3.5 s to build, 38 members for a five-file commit, one member per question), on a synthetic link graph of a million pages (a fresh reader in 18 ms and 152 MB), and against MGraph-DB 1.18.0 and Memory-FS 0.41.0. Every number of the day's three articles kept in [a research record](../research/graph-and-index-measurements-2026-10-26.md), and the scripts and raw results in the repository under `admin/research/graph-and-index-poc-2026-10-26/`. |
 | v0.2.14 | 2026-10-26 | sgit-ai v0.25.0 | [A vault is already a graph](../articles/a-vault-is-already-a-graph.md), by cli.build at Dinis Cruz's question: a vault's files and history as 482,532 triples, eight questions asked in nine engines (Python, SQLite, networkx, Oxigraph, DuckDB, LadybugDB, Kùzu, rdflib, MGraph-DB), every answer checked; generation numbers answer the merge base and base..head in 0.1 ms against 17 ms to 5 s in the engines; triples ship encrypted at about 3 MB for the whole set or 203 bytes a commit; a graph engine as an optional local view, Oxigraph first. A dated update on the indexes article points to it. |
@@ -2606,6 +2607,8 @@ By [cli.build](https://cli.sgit.ai/about/team.html) · 2026-10-26 · published
 *Indexes the writer pays for, read one member at a time, measured on the 76,000-file vault. The writer builds every index in 3.5 seconds, and one commit of five files rewrites 38 members (57 KB) in 10 ms, 27 of them the folders on the files' paths. The zip holds an offset table first, one JSON per folder with its entries and subtree totals, and cross-reference shards: blob to paths, file to commits, and commits by generation. A reader opens it in 50 ms from the offset table (910 ms by parsing the zip's directory) and answers a question by loading one member, in 0.03 to 0.27 ms; a merge base loads 3 members. On a synthetic link graph of a million pages and 25 million links, the writer took 57 seconds, a fresh reader opened the 189 MB zip in 18 ms, and a shortest path took a median of 75 ms, loading 66 of 4,096 shards.*
 
 
+> **Update, 26 October 2026.** The implementation spec for the sgit CLI team, built on this article and the three before it, is the dev pack [Pack indexes for sgit](../dev/pack-indexes/index.md).
+
 ## In short {#in-short}
 
 - **The writer pays, once.** On the 76,000-file vault, every index took 3.5 s to build. A commit of five files rewrote 38 small members (57 KB) in 10 ms.
@@ -4481,7 +4484,7 @@ Written by cli.build, the build agent of this repository (a Claude Code session)
 | Ask | Where it is |
 |---|---|
 | 1. The CLI's main documentation | [the docs](../docs/index.md) and [the command reference](../reference/index.md), every command generated from the CLI's own parser |
-| 2. Move the technical content | 154 pages in all; the ones that moved, with where each was: [What moved from sgit.ai](../admin/moved.md) |
+| 2. Move the technical content | 159 pages in all; the ones that moved, with where each was: [What moved from sgit.ai](../admin/moved.md) |
 | 3. A place for topic articles | [Articles](../articles/index.md), in the newsroom's format since v0.2.0; publishing one is adding one file, the contract is in `admin/content/articles/README.md` |
 | 4. The CLI repository's research | [Research](../research/index.md): 41 documents in 7 topics since v0.2.0, each with its source path and commit; in v0.1 they were under Articles |
 | 5. The estate's guidance | [Every sgit repository](https://sgit.ai/docs/guidance/repositories.html), followed item by item on [the engineering page](../admin/index.md), with what is not done yet in [the reality file](../admin/reality.md) |
@@ -4565,6 +4568,10 @@ A dev pack is a design written for the people and agents who will build it:
 
 It sits between [research](../research/index.md), which asks a question, and [the docs](../docs/index.md), which describe what has shipped. Every pack says what is built and what is not.
 
+## Pack indexes for sgit {#pack-indexes}
+
+The client that pushes a pack also pushes an index pack beside it: the head's map, one file per folder, the commit graph with generation numbers, cross-references, and for each commit only what it changed. Readers stop walking trees, unpacking objects they never read, and downloading folders they do not want. **No gate:** clients up to 0.25.0 never see index packs. Written on 26 October 2026 for the sgit CLI team, from four measured articles: [indexes in the pack](../articles/indexes-in-the-pack.md), [a vault is already a graph](../articles/a-vault-is-already-a-graph.md), [indexes the writer pays for](../articles/indexes-the-writer-pays-for.md), and [every number](../research/graph-and-index-measurements-2026-10-26.md).
+
 ## Sealed vault keys for sgit {#sealed-vault-keys}
 
 A vault key that arrives sealed, stays sealed on disk and is opened only inside a small KMS, with sgit split into four components under policies the agent cannot widen. **Opt-in:** with nothing switched on, sgit runs as 0.24.0 does. Written on 24 October 2026, from the requirements and the design published under [Keys, members and who may write](../research/topics/keys.md).
@@ -4575,10 +4582,647 @@ A vault key that arrives sealed, stays sealed on disk and is opened only inside 
 - [Sealed vault keys, 03: process behaviour policies](../dev/sealed-vault-keys/03-process-behaviour-policy.md): Process Behaviour Policies, the Agent Behaviour Policy model applied to a process: mandate, grant, delta and barrier; why who enforces a policy decides whether it binds; fractal layers that can only narrow; the schema, hashed as canonical JSON; how each line is enforced, mostly by the kernel; hashing, signing and distribution from a hash the person supplies; learning a policy from traces; and a prompt-injection walkthrough. Policies apply to sealed sessions only; with none supplied, sgit runs as 0.24.0 does.
 - [Sealed vault keys, 04: environment evidence](../dev/sealed-vault-keys/04-environment-evidence.md): Every probe and measurement behind the pack, taken on 24 October 2026 in a Claude agent workspace (a cloud session in a microVM): the environment, the article's claims checked against sgit 0.24.0, memory (memfd_secret, keyrings, freezing), process isolation (users, capabilities, Landlock, namespaces), sgit's footprint under strace, and the cost of mutual TLS between components. Root inside the VM is the platform's design, not a finding; re-run the probes before relying on them elsewhere.
 - [Sealed vault keys, 05: compatibility and rollout](../dev/sealed-vault-keys/05-compatibility-and-rollout.md): The rule that governs the whole pack: with nothing switched on, sgit behaves exactly as 0.24.0 does, one process with the vault key on disk, and every vault and agent keeps working unchanged. What must not change, how the sealed path is switched on per clone and never globally, why sealed and plain clones of one vault work side by side, what an older sgit sees, five rollout stages that test the new path in production beside the old one, rollback at every stage, and the tests that prove nothing broke.
+- [Pack indexes for sgit: a design pack](../dev/pack-indexes/index.md): An implementation spec for the sgit CLI team. The client that pushes a pack also pushes an index pack beside it, encrypted and signed. A snapshot's index holds the head's flat map, one file per folder, the commit graph with generation numbers, and cross-references. A commit's index is a delta: the folder files on the changed paths and a change list. Readers assemble them locally and stop walking trees, unpacking objects they do not read, and downloading folders they do not want. Clients up to 0.25.0 never see index packs. Expected impact per command, the formats, the writer, the reader, compatibility, the threat model, the phases and the acceptance tests.
+- [Pack indexes, 01: the format](../dev/pack-indexes/01-format.md): Where index packs live on the host, the zip layout with an encrypted, signed header first, every member's JSON schema (flat, folder, changes, commits, commit-gen, blob-paths, file-commits), how members are encrypted, the order of members in new data packs, sizes, and versioning.
+- [Pack indexes, 02: the writer](../dev/pack-indexes/02-writer.md): What push, compaction and pack import write, computed from what the writer already holds (the flat cache, the incremental build's changed paths, the parents); the order of uploads and what a failure leaves; the offset table; a new sgit pack index command for backfill, verification and stats; the cost budget; and the functions to change.
+- [Pack indexes, 03: the reader](../dev/pack-indexes/03-reader.md): How a reader finds index packs, verifies them and keeps them encrypted on disk; the local assembly (a snapshot index, the deltas over it, the newest version of each member, cross-references kept current from change lists); and what each command reads instead of walking: clone, clone --path, pull, history log, merge base, and reads without a clone. Gaps and every fallback.
+- [Pack indexes, 04: compatibility, security and tests](../dev/pack-indexes/04-compatibility-security-and-tests.md): How old, new and mixed clients behave on vaults with and without index packs; the threat model (a lying index, what the host learns, path order, what stays in clear locally); the rollout per phase; the acceptance tests and benchmarks each phase must pass; and the questions left open.
 
 ---
 
 *[Site index for agents](../llms.txt) · [HTML version](https://cli.sgit.ai/dev/index.html)*
+
+
+# Pack indexes, 01: the format, cli.sgit.ai
+
+> Where index packs live on the host, the zip layout with an encrypted, signed header first, every member's JSON schema (flat, folder, changes, commits, commit-gen, blob-paths, file-commits), how members are encrypted, the order of members in new data packs, sizes, and versioning.
+
+*Source: <https://cli.sgit.ai/dev/pack-indexes/01-format.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+# 01. The format
+
+## 1. On the host
+
+```
+bare/packs/
+  commits/    <epoch>__<commit>__<bytes>.zip      data packs, as in 0.24.0
+  snapshots/  <epoch>__<commit>__<bytes>.zip
+  archive/    <epoch>__<commit>__<bytes>.zip
+  indexes/
+    commits/    <epoch>__<commit>__<bytes>.zip    the index of commits/<epoch>__<commit>__*.zip
+    snapshots/  <epoch>__<commit>__<bytes>.zip    the index of snapshots/<epoch>__<commit>__*.zip
+    archive/    <epoch>__<commit>__<bytes>.zip    moved with the data pack they index
+```
+
+- **Names follow `PACK_NAME_RE`** (`Vault__Packs`): the epoch and commit of the data pack indexed, and the index pack's own byte count. A reader pairs an index pack with its data pack by (folder, epoch, commit).
+- **Two index packs for one data pack** can exist after a backfill race. Any one whose header verifies is usable; prefer one signed by the data pack's own commit author.
+- **0.24.0 to 0.25.0 never list `bare/packs/indexes/`.** `list_folder` is only called with `PACK_COMMITS`, `PACK_SNAPSHOTS` and `PACK_ARCHIVE`, and every listing of `bare/` as a whole (push's first-push check, dump, mirror) only reads refs or copies files.
+
+## 2. The zip
+
+- **ZIP_STORED, `allowZip64=True`, `ZIP_EPOCH` timestamps,** like data packs.
+- **Member 0 is `index/header`;** members 1..n are `index/000001`, `index/000002`, ... in the order the header lists them.
+- The names say nothing; the header says what each member is.
+
+### 2.1 The header member
+
+```
+offset 0   8 bytes   magic b'SGIX\x00\x01\x00\x00'          (format 1)
+offset 8   4 bytes   L, big-endian: length of the envelope
+offset 12  L bytes   Vault__Crypto.encrypt(read_key, zlib.compress(header_json, 6))
+           ...       zero bytes up to the member's reserved size R
+```
+
+- **R is a multiple of 16 KiB,** chosen by the writer as large enough for the header after the offsets are known (02, section 4). Padding lets the writer fix every later offset before it knows the envelope's exact length.
+- **A reader takes it from the first local file header:** read 30 bytes at offset 0; check the name is `index/header` and the method is stored; read R bytes; read L; decrypt L bytes. It never reads the zip's central directory.
+
+`header_json`, canonical (sorted keys, compact separators, UTF-8, the same form as `Vault__Commit.signing_bytes`):
+
+```json
+{
+  "schema": "pack_index_v1",
+  "kind": "commit",
+  "commit_id": "obj-cas-imm-…",
+  "parents": ["obj-cas-imm-…"],
+  "generation": 20003,
+  "tree_id": "obj-cas-imm-…",
+  "timestamp_ms": 1761480000000,
+  "data_packs": ["commits/1761480000__obj-cas-imm-…__171234.zip"],
+  "members": {
+    "changes":            [1, 16384, 412,  "sha256 of the member's plaintext JSON"],
+    "folder:raw/c09/s4":  [2, 16828, 233,  "…"],
+    "folder:":            [9, 18190, 120,  "…"]
+  },
+  "author_key_id": "key-rnd-imm-…",
+  "signature": "…"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `kind` | `commit` (a delta) or `snapshot` (the whole head) |
+| `commit_id`, `parents`, `generation`, `tree_id`, `timestamp_ms` | the commit the pack is named by; `tree_id` must equal the commit object's |
+| `data_packs` | the data packs that `at` fields point into, by index into this list; a commit index lists its own pack and the older packs its folders' unchanged files live in |
+| `members` | logical name → `[sequence number, offset of the member's bytes in the zip, length, sha256 hex of the plaintext JSON]` |
+| `author_key_id`, `signature` | ECDSA P-256 over the canonical JSON without `signature`, with the pusher's clone key (`PKI__Crypto.sign`), as a commit is signed |
+
+### 2.2 Every other member
+
+`Vault__Crypto.encrypt(read_key, zlib.compress(member_json, 6))`. This is a random IV, so index packs are not byte-deterministic, and they need not be: their names carry their size, and readers accept any verified one. Deterministic encryption would show the host which folders are unchanged between two snapshots.
+
+## 3. Members
+
+The values in the examples are illustrative. Paths are the vault's paths, `/`-separated, no leading slash; the root folder is `""`. Ids are the vault's object ids. Field names follow the flat cache (`Vault__Sub_Tree`, `FLAT_CACHE_VERSION = 2`) so a reader can seed it directly.
+
+### 3.1 `flat`: snapshot only
+
+The head's flat map, byte for byte the flat cache's format:
+
+```json
+{"version": 2, "tree_id": "obj-cas-imm-…",
+ "flat": {"raw/c09/s4/pub19/page18/2026-10-21T0100Z/meta.json":
+            {"blob_id": "obj-cas-imm-…", "size": 74, "content_hash": "5c40ff698f27",
+             "content_type": "application/json", "large": false}},
+ "dirs": {"": "obj-cas-imm-…", "raw": "obj-cas-imm-…"}}
+```
+
+Measured: 76,000 files and 58,062 folders, 17.2 MB as JSON, **2.42 MB deflated**, 0.58 s to inflate and parse.
+
+### 3.2 `folder:<path>`: snapshot (every folder) and commit (the folders on changed paths)
+
+```json
+{"schema": "folder_v1", "path": "raw/c09/s4", "tree_id": "obj-cas-imm-…",
+ "files": {"meta.json": {"blob_id": "obj-cas-imm-…", "size": 74, "content_hash": "…",
+                         "content_type": "application/json", "large": false,
+                         "at": [0, 1048576, 160]}},
+ "dirs":  {"pub19": "obj-cas-imm-…"},
+ "tree_at": [0, 52, 412],
+ "totals": {"files": 1520, "bytes": 259292, "folders": 1161}}
+```
+
+- **`at`:** `[index into the header's data_packs, offset of the member's bytes in that data pack, length]`, so a reader takes the blob with one ranged read. It is present from Phase 2, when data packs are path-ordered and the writer knows the offsets.
+- **`tree_at`:** the same, for the folder's tree object, so a scoped clone can take the trees it needs.
+- **`totals`:** the whole subtree below the folder, so "how many files, how many bytes" is one member.
+
+Measured on the benchmark vault: median **226 bytes** deflated, 11.8 MB for all 58,062.
+
+### 3.3 `changes`: commit only
+
+```json
+{"schema": "changes_v1", "commit_id": "obj-cas-imm-…", "parents": ["obj-cas-imm-…"],
+ "generation": 20003, "timestamp_ms": 1761480000000, "tree_id": "obj-cas-imm-…",
+ "changes": [
+   {"path": "raw/c09/s4/pub19/page18/x/text.md", "op": "M",
+    "old_blob": "obj-cas-imm-…", "new_blob": "obj-cas-imm-…", "size": 276,
+    "content_hash": "…", "content_type": "text/markdown", "large": false, "at": [0, 2088, 310]},
+   {"path": "raw/c01/old.md", "op": "D", "old_blob": "obj-cas-imm-…"}
+ ]}
+```
+
+- **`op`:** `A`, `M` or `D`.
+- **A merge commit's changes** are against its first parent.
+- **Measured:** 253 bytes deflated for five changes.
+
+### 3.4 `commits:<n>` and `commit-gen`: snapshot only
+
+- `commits:<n>` holds every commit reachable from the head whose generation falls in `[n·1024, (n+1)·1024)`:
+
+  ```json
+  {"obj-cas-imm-…": {"parents": ["…"], "generation": 4097, "timestamp_ms": 1761480000000, "tree_id": "…"}}
+  ```
+
+- `commit-gen` maps every reachable commit id to its generation, so a reader knows which `commits:<n>` to open.
+- **Measured:** a merge base on 20,003 commits loaded 3 members, against 97 when sharded by hash.
+
+### 3.5 `blob-paths:<xx>` and `file-commits:<xx>`: snapshot only
+
+| Member | Holds | Shard key |
+|---|---|---|
+| `blob-paths:<xx>` | `{blob id: [paths that hold it in the head]}` | `xx` = the first two hex digits of the blob id's hash part |
+| `file-commits:<xx>` | `{path: [commit ids that changed it, newest first]}`, from the start of history or the vault's shallow boundary | `xx` = the first two hex digits of sha256(path); inside the encryption, so the hash leaks nothing |
+
+There are 256 of each. Commit indexes do not carry them; a reader applies `changes` to its own copy (03).
+
+## 4. Data packs in path order: Phase 2
+
+`Vault__Packs.write_pack` today writes members in sorted id order. From Phase 2 it writes them in this order:
+
+1. the commit objects, by id;
+2. tree objects in the depth-first order of their paths (root first, children by name);
+3. blob objects by the path of their first use in that order, each once.
+
+The ids and the member rule (`MEMBER_RE`: only `bare/data/<object id>`, stored) do not change. `extract_pack` sorts by name before writing, and `pack verify` checks each member's hash whatever the order, so 0.24.0 to 0.25.0 read path-ordered packs as before.
+
+**What the order shows the host:** which members sit next to each other, so which blobs share a folder and roughly how large each folder is. It does not show names. 04, section 2 sets the rule.
+
+## 5. Sizes
+
+| Index | Benchmark vault (76,000 files) | Newsroom vault (79,465 files), estimated |
+|---|---|---|
+| snapshot index | about 15 MB: `flat` 2.4 MB, folders 11.8 MB, commits and cross-references about 1 MB each per 20,000 commits | 15 to 25 MB, against a 1.22 GB snapshot data pack |
+| commit index, five files changed | **3.1 KB**, 27 members | a pass of 6,807 files: about 0.5 MB of changes plus the folders on the paths |
+
+## 6. Versioning
+
+- **`schema` values** are `pack_index_v1`, `folder_v1` and `changes_v1`. A reader that meets a higher version ignores the index pack and walks, as for a missing one.
+- **New members** may be added under new logical names without a version change; readers ignore names they do not know.
+- **The magic's format byte** changes only if the header's binary layout does.
+
+---
+
+*[Site index for agents](../../llms.txt) · [HTML version](https://cli.sgit.ai/dev/pack-indexes/01-format.html)*
+
+
+# Pack indexes, 02: the writer, cli.sgit.ai
+
+> What push, compaction and pack import write, computed from what the writer already holds (the flat cache, the incremental build's changed paths, the parents); the order of uploads and what a failure leaves; the offset table; a new sgit pack index command for backfill, verification and stats; the cost budget; and the functions to change.
+
+*Source: <https://cli.sgit.ai/dev/pack-indexes/02-writer.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+# 02. The writer
+
+The rule: **the client that pushes pays, once, from what it already holds.** Nothing here may make a push read a tree it did not already read to build the commit.
+
+## 1. At push: a commit index per commit pack
+
+`Vault__Packs.push_packs` builds one data pack per commit (`build_commit_pack`) and uploads it to `commits/`. After each data pack is built, the writer also builds that commit's index pack:
+
+1. **The changes.** The incremental tree build that made the commit (0.25.0) knows which paths it changed. Compare the parent's flat map (the flat cache) with the new head's, but only for those paths, and write `A`, `M` and `D` entries with the new blobs' `size`, `content_hash`, `content_type` and `large`. A merge commit is diffed against its first parent, which the merge also computed.
+2. **The generation.** 1 + the highest generation of the parents, read from the local index (03). If a parent's generation is unknown, because the history predates indexes, compute it once by walking the local commit graph. The commits are local in a pack clone. Then record it.
+3. **The folders.** Write a `folder:<path>` member for every folder whose tree id changed. These are exactly the trees the commit wrote, on the changed paths: 27 members for five files in the benchmark vault. `totals` come from the parent's member plus the change. `files` and `dirs` are the new tree's entries.
+4. **The offsets (Phase 2).** `write_pack` returns each member's data offset (`header_offset + 30 + len(name)`, since the writer sets no extra field). Unchanged files keep the `at` of the parent's member, and the header's `data_packs` lists every pack those refer to.
+5. **The header.** Lay out the members (section 4), sign the canonical header with the clone key used for commits, encrypt, pad, write.
+
+**Order of uploads:** the data pack, then the index pack, then `record_absorbed` as today.
+- **An index pack without its data pack** is ignored by readers (03). A push that dies between the two leaves a data pack without an index: a gap, which readers survive.
+- **The ref moves only after both,** so a reader that sees the new head finds its index whenever the writer is new.
+- **A failed index upload must not fail the push.** Warn, record the gap in `.sg_vault/local/index/gaps.json`, and retry it on the next push or `sgit pack index build`.
+
+**Measured budget** for a five-file commit on the benchmark vault: about 10 ms to compute 38 members, and 0.92 s for 1,000 such commits. Target: under 1% of a push.
+
+## 2. At compaction: the snapshot index
+
+`Vault__Pack_Maintain.compact` writes a snapshot data pack for the head. Beside it, the writer writes the snapshot index:
+
+| Member | Built from |
+|---|---|
+| `flat` | the head's flat map, from the flat cache, which the compacting client already has |
+| `folder:*` | the flat map's `dirs`, grouped, with `totals` rolled up deepest-first, in 1.6 s for 58,062 folders |
+| `commits:<n>`, `commit-gen` | `reachable_commits` (already called by compaction) with generations |
+| `blob-paths:<xx>` | the flat map inverted |
+| `file-commits:<xx>` | the previous snapshot index's `file-commits` plus the `changes` of every commit index this compaction absorbs; without a previous snapshot index, by diffing the absorbed history once |
+
+**When compaction moves commit packs to `archive/`, it moves their index packs to `indexes/archive/`** under the same rules: copy, verify, then delete the original, as `_move_to_archive` does. An index pack whose data pack is gone from both `commits/` and `archive/` may be deleted.
+
+The measured full build on the benchmark vault was 3.5 s, plus 1 s to write the zip. Compaction already writes a 69 MB data pack for that vault, so the index is a small share of it.
+
+## 3. At `pack import`, `pack convert` and a first push
+
+- **`sgit pack import`** (loose to packs) and `Vault__Pack_Convert` write a snapshot data pack. They write its snapshot index too.
+- **The first push of a new pack vault** (`push_snapshot`) writes the snapshot index beside it.
+- **The branch index gains the advisory feature `pack-indexes`** the first time a writer uploads an index pack. It never raises `min_client`.
+
+## 4. The offset table
+
+The header lists every member's offset. Its own size moves those offsets, so in the prototype a fixed-point iteration oscillated by 113 bytes and never settled. Instead:
+
+1. Serialise and deflate every other member, and keep their lengths.
+2. Compute offsets assuming the header member is `R` bytes, with `R = ceil((12 + estimate + 4096) / 16384) · 16384`. The estimate is the envelope length of the header with offsets at their maximum width.
+3. Build, deflate and encrypt the header. Assert `12 + L ≤ R`. If not, double `R` and redo step 2.
+4. Write member 0 padded to `R`, then the others in order.
+
+This is measured on the benchmark vault's 58,598-member index: the table is 709 KB, and a reader opens the pack in 50 ms against 910 ms through the zip's central directory.
+
+## 5. `sgit pack index`: new subcommands
+
+| Command | What it does |
+|---|---|
+| `sgit pack index build [--all]` | writes the index pack of every data pack that has none: the gaps left by older clients or failed uploads. It needs the write key; any member with write access may run it. `--all` rebuilds the snapshot index too |
+| `sgit pack index verify` | for every index pack: header signature, member hashes, `tree_id` against the commit, `flat` against a full tree walk, every `changes` against a tree diff, `folder:*` against its tree. Read-only; reports and exits non-zero on a mismatch |
+| `sgit pack index stats` | index packs per folder, sizes, gaps, the newest snapshot index, generations covered |
+
+`pack stats` and `pack ls` gain an index column.
+
+## 6. Functions to change
+
+| Where | Change |
+|---|---|
+| `Vault__Packs.write_pack` | accept an ordered id list (Phase 2), keep order while removing duplicates, return `{id: (offset, length)}` |
+| `Vault__Packs.build_commit_pack`, `build_snapshot_pack` | pass the path order; return the offsets |
+| `Vault__Packs.push_packs`, `push_snapshot` | build and upload the index pack after each data pack; record gaps |
+| `Vault__Pack_Maintain.compact`, `_move_to_archive` | write the snapshot index; archive index packs with their data packs |
+| `Vault__Pack_Convert.convert` | write the snapshot index |
+| `Vault__Format` | add `FEATURE_PACK_INDEXES = 'pack-indexes'` to `KNOWN_FEATURES`, **not** to `FEATURE_MIN_CLIENT` |
+| new `Vault__Pack_Index` (`sgit_ai/core/actions/pack/`) | build members, lay out, sign, encrypt, write; read header and members; verify |
+| new `Schema__Pack_Index__Header`, `__Folder`, `__Changes` (Type_Safe) | the writer builds through these, so a wrong type fails at write time; readers load the JSON as dicts |
+| `CLI__Pack` | the `index` subcommands |
+
+## 7. What the writer must never do
+
+- **Write an index that disagrees with the trees it pushes.** Build the index from the same in-memory maps the tree build used, never from the working copy.
+- **Put a path, a name or a message in clear anywhere.** Member names are sequence numbers, and everything else is encrypted.
+- **Make an index upload's failure fail the push.** A gap is a slower read, never a lost write.
+
+---
+
+*[Site index for agents](../../llms.txt) · [HTML version](https://cli.sgit.ai/dev/pack-indexes/02-writer.html)*
+
+
+# Pack indexes, 03: the reader, cli.sgit.ai
+
+> How a reader finds index packs, verifies them and keeps them encrypted on disk; the local assembly (a snapshot index, the deltas over it, the newest version of each member, cross-references kept current from change lists); and what each command reads instead of walking: clone, clone --path, pull, history log, merge base, and reads without a clone. Gaps and every fallback.
+
+*Source: <https://cli.sgit.ai/dev/pack-indexes/03-reader.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+# 03. The reader
+
+## 1. Finding index packs
+
+A pull or clone already lists `bare/packs/commits/` and `bare/packs/snapshots/` (`Vault__Packs.sync_down`). When the branch index has the feature `pack-indexes`, it also lists `bare/packs/indexes/commits/` and `bare/packs/indexes/snapshots/`. That is two more list requests, made only on vaults that have index packs.
+
+Pair each index pack with its data pack by (folder, epoch, commit id). An index pack whose data pack is in neither its folder nor `archive/` is ignored.
+
+**Download:**
+- the snapshot index of the snapshot the clone takes;
+- the commit index of every commit pack not yet absorbed;
+- nothing from `indexes/archive/`, except when a clone takes an archived history.
+
+Index packs are small (01, section 5), so they go through the batch read with the data packs.
+
+## 2. Verifying an index pack
+
+In order, before anything uses it:
+
+1. **The header.** Magic and format byte; envelope decrypts under the read key; `schema` known.
+2. **The signature.** Verify with the key named by `author_key_id` (`bare/keys/<id>`), by the vault's commit policy:
+   - under `signatures-required`, a missing or bad signature means **ignore the index pack**;
+   - otherwise an unsigned index is accepted, subject to step 3.
+3. **The anchor.** `commit_id`, `parents`, `tree_id` and `timestamp_ms` must equal the commit object's, which the data pack carries and is verified by its id. For a snapshot, the root of `flat` must equal `tree_id`, and the root folder member's entries must equal the root tree's.
+4. **Each member, when it is first read.** Decrypt, inflate, and check its SHA-256 against the header's.
+
+A failure at any step drops that index pack: **the reader walks instead, for that pack only,** and reports it once (`sgit pack index verify` gives the detail). Nothing an index says is ever written to the working copy or the object store without the object it names verifying by its content address. That is today's rule for pack members, unchanged.
+
+## 3. The local index
+
+```
+.sg_vault/local/index/
+  packs/<folder>/<name>.zip     the index packs, as downloaded: encrypted
+  state.json                    {schema, snapshot: name, deltas: [names, oldest first], gaps: [commit ids]}
+```
+
+- **Index packs stay encrypted on disk.** A member is decrypted when it is read, at about a microsecond per KB. This adds nothing in clear beyond what 0.25.0's flat and scan caches already hold, and it stays compatible with [sealed vault keys](../../dev/sealed-vault-keys/index.md).
+- **The assembly is in memory, per process.** It is cheap enough to redo per process (section 4), so nothing assembled has to be written. A later optimisation may cache it under the same rules as the flat cache.
+- **`state.json` is reset by a new snapshot.** When compaction makes a new snapshot index, the deltas start over.
+
+## 4. Assembling
+
+The local index answers four kinds of question. Each has its own structure, built on first use:
+
+| Structure | Built from | Cost measured |
+|---|---|---|
+| **newest member:** logical name → the newest index pack holding it | the deltas' headers, newest wins, then the snapshot's | 6.6 ms for 1,000 deltas (10,620 names); a read through it 8 µs |
+| **flat map of the head** | the snapshot's `flat`, then each delta's `changes` applied in order | 0.58 s to load 76,000 entries; applying a delta is a dict update per change |
+| **commit graph:** id → parents, generation, time | the snapshot's `commits:*` loaded on demand through `commit-gen`, plus each delta's header | a merge base loaded 3 members |
+| **cross-references:** blob → paths, path → commits | the snapshot's shards, then every delta's `changes` | 155 ms from the snapshot; 49 ms to apply 1,000 change lists |
+
+**A gap** is a commit pack without a usable index. Compute its delta locally, which is what today's code does anyway: diff its tree against its first parent's, and take parents and generation from its commit object. Then carry on. A clone with gaps is as correct as one without, and only as slow as today for those commits.
+
+## 5. Command by command
+
+### `pull`
+
+| Step | Today | With the index |
+|---|---|---|
+| new commits, base..head | walk of history (day-window bound on the branch) | the deltas' headers and the commit graph: generation walk, **0.1 ms** measured on 20,003 commits |
+| merge base | walk | generation walk (git's paint-down: newest generation first, stop when every queued commit is reachable from both) |
+| which objects are missing | `exists` over every id of the head: 6 s at 235,000 | the new blobs named by the new deltas' `changes`, checked against the local store |
+| the new head's flat map | copy unchanged folders, read changed trees | the cached map plus the `changes`: no tree read |
+| merge, three-way | changed paths, from tree diffs | changed paths from both sides' `changes` |
+
+The dirty-tree check (the stat pass) and writing the changed files do not change.
+
+### `clone` (full)
+
+- Take the snapshot index with the snapshot data pack. Seed the flat cache from `flat` plus the deltas; that is no tree walk, where today the clone flattens after extraction.
+- Seed the commit graph from `commits:*`.
+- Extract the working copy as today. Phase 3 changes the object writes (section 6).
+
+### `clone --path <folder>` and a scoped `pull` (Phase 2)
+
+1. List; download the snapshot index and the commit indexes.
+2. Find `folder:<folder>`: the newest version of it and of every folder below it, walking `dirs`. Measured: 1,161 members for a subtree of 1,520 files, in 36.5 ms. `totals` gives the size before anything is downloaded.
+3. Collect the `at` of every file and `tree_at` of every folder in the scope, plus the trees on the spine from the root, which `Vault__Scope` needs to commit later. Group by data pack and merge ranges less than 64 KB apart.
+4. Take each range with `fetch_presigned_range` when the host has presigned reads. Otherwise, and for a pack under `PACK_BATCH_MAX`, take the whole pack as today.
+5. Verify every object by its id, write the scope, and record the scope as today.
+
+Measured on the benchmark vault, with blobs in path order: one folder of 1,520 files was **1 range of 0.22 MB**. In today's id order the same blobs were 265 ranges over 30.4 MB, and today's clone takes the whole pack.
+
+### `history log`, `log --stat`, `diff <a> <b>`
+
+- **`history log`** reads the `changes` of each commit in the range; its counts come from the lists. No tree is opened. `log --stat` is the same.
+- **`diff <a> <b>`** for commits on one line of history is the union of their `changes`. Otherwise it is two flat maps, as today.
+- **A path's history** (`history log -- <path>`) is `file-commits` plus the newer deltas.
+
+### `status`, `commit`, `push`
+
+Unchanged for the reader. `push` does the writer's work (02).
+
+### A read without a clone (Phase 4)
+
+`sgit cat <vault> <path>`:
+- list;
+- download the snapshot index and the commit indexes, a few MB;
+- the newest `folder:<parent of path>` gives the blob's `at`;
+- one ranged read, verify, decrypt.
+
+That is three or four requests, whatever the size of the vault.
+
+## 6. The pack as the store (Phase 3)
+
+This is the CLI team's architecture, phase 1, unchanged in substance and listed here for completeness. A pack clone keeps the data packs it downloads under `.sg_vault/bare/packs/`, and the object store reads a member by offset. Offsets come from each pack's central directory, read once per pack: 0.56 s for 134,092 members. With Phase 2, the folder members' `at` give them too.
+
+- **Verification moves to the first read** of each object, and the verdict is remembered.
+- **Loose objects win over packed ones;** a clone's own new objects stay loose until pushed.
+- **Measured:** 5 µs per read in place, against 11.6 s to write every object of the benchmark vault loose, and many minutes on a slow disk.
+
+## 7. Fallbacks, all of them
+
+| Situation | The reader does |
+|---|---|
+| no `pack-indexes` feature | today's code, no index listing |
+| an index pack fails verification | ignore it; walk for that pack |
+| a commit pack has no index (gap) | compute that delta locally; continue |
+| an unknown `schema` or format byte | ignore the index pack |
+| the snapshot index is missing | build the snapshot structures by walking, as today; deltas still apply on top |
+| a ranged read is refused (no presigned route) | take the whole pack |
+| an object named by an index fails its id | refuse it as today, and drop that index pack for the rest of the command |
+
+---
+
+*[Site index for agents](../../llms.txt) · [HTML version](https://cli.sgit.ai/dev/pack-indexes/03-reader.html)*
+
+
+# Pack indexes, 04: compatibility, security and tests, cli.sgit.ai
+
+> How old, new and mixed clients behave on vaults with and without index packs; the threat model (a lying index, what the host learns, path order, what stays in clear locally); the rollout per phase; the acceptance tests and benchmarks each phase must pass; and the questions left open.
+
+*Source: <https://cli.sgit.ai/dev/pack-indexes/04-compatibility-security-and-tests.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+# 04. Compatibility, security and tests
+
+## 1. Compatibility
+
+| Client | Vault without index packs | Vault with index packs |
+|---|---|---|
+| 0.23.x and older | refused by the pack gate, as today | refused, as today; nothing changes |
+| **0.24.0 to 0.25.0** | as today | **as today.** It never lists `bare/packs/indexes/`, ignores the advisory feature, extracts path-ordered packs (sorted by name before writing) and verifies them by hash. It pushes commit packs without indexes: gaps, which new readers fill locally |
+| new, Phase 1+ | as today: no index listing without the feature | uses the indexes; walks across gaps |
+
+**Acceptance test C1 must hold on every phase:** sgit-ai 0.25.0 from PyPI clones, pulls, pushes, compacts and runs `pack verify` on an indexed vault with output identical to an unindexed one. That includes not one extra request to `indexes/`.
+
+**Loose vaults are untouched.** Indexes are a pack-vault feature; the cache layer (08/12) remains the loose vault's index.
+
+## 2. Threat model
+
+New rows for the threat model, beside TM-R41 (the 0.25.0 caches).
+
+| Threat | What stops it | Residual |
+|---|---|---|
+| **The host** forges or alters an index member | AES-GCM under the read key; the header's member hashes; the signature | none beyond today: the host can delete, which is a gap |
+| **The host** learns paths, names, messages or which objects are trees from index packs | everything is encrypted; member names are sequence numbers | sizes of index packs and members, and their count per commit, which already shows as the data pack's size |
+| **The host** learns structure from path-ordered data packs (Phase 2) | it sees which members are adjacent, which shows blobs grouped by folder and roughly each folder's size, not names | **a new, mild leak.** Mitigations: order by top-level folder groups and by id inside each group; a per-vault option `pack-order: id` that keeps today's order and gives up ranged scoped reads. Record it as TM-R42 |
+| **The host** learns what a reader reads, from its ranged reads | none, as today: per-object reads on loose vaults show the same | unchanged |
+| **A write-key holder** pushes an index that disagrees with the trees | signature binds it to a key; under `signatures-required` the same policy as commits; the anchor check (root equals the commit's tree); every object still verified by id before use | a signing teammate can mislead a reader's plan (fetch the wrong set, show a wrong `log`), never what is written. `pack index verify` detects it in full |
+| **A write-key holder** pushes an index whose `at` points at other bytes | the bytes must hash to the blob id the entry names | none: a mismatch is refused, the index dropped |
+| **A local reader** of the disk learns more than today | index packs stay encrypted on disk; assembly is in memory | none beyond TM-R41 |
+| **A crafted header** exhausts memory or time | header reserved size R at most 64 MiB; member length at most 256 MiB; JSON depth bounded; members checked against their hash before parsing | a large but honest index costs what it costs |
+
+## 3. Rollout
+
+| Stage | What | Who |
+|---|---|---|
+| 1 | Phase 1 behind `SGIT_PACK_INDEXES=1` for writers; readers use indexes when present | the CLI team, on test vaults and the benchmark vaults |
+| 2 | writers on by default; `sgit pack index build` run once on the newsroom's vaults to backfill | the newsroom's agents, which upgrade on a brief |
+| 3 | Phase 2: path-ordered packs from new pushes and compactions; `clone --path` uses ranges | after C1 and T7 pass on dev |
+| 4 | Phase 3: pack store, behind `SGIT_PACK_STORE=1`, then default after the cloud-disk benchmark | the CLI team |
+| 5 | Phase 4: reads without a clone | with the SG/Vault team |
+
+**Rollback at any stage:** stop writing index packs. Readers fall back per pack; nothing on the host needs removing, and old clients never noticed.
+
+## 4. Acceptance tests
+
+Each phase ships with its tests green on the in-memory host and once live on dev.
+
+| # | Test | Phase |
+|---|---|---|
+| **C1** | 0.25.0 from PyPI on an indexed vault: clone, pull, push, compact, `pack verify` give identical results and make no request under `indexes/` | every phase |
+| T1 | **Index equals walk.** The fuzzer (16 seeds, about 450 commits, merges, deletes, renames): after every push, the flat map assembled from indexes equals a full tree flatten; every `changes` equals `diff_trees` of the commit against its first parent; every folder member equals its tree | 1 |
+| T2 | **History.** base..head and merge base from generations equal a full walk, on the fuzzer's histories and on a history with a clock 1 day behind | 1 |
+| T3 | **Gaps.** A 0.25.0 client pushes three commits into an indexed vault; a new reader's flat map, log and commit list equal a full walk, and `pack index build` fills the gaps | 1 |
+| T4 | **A lying index.** For each: a changed blob id in `flat`, a wrong `tree_id`, a bad signature on a `signatures-required` vault, a member whose hash differs from the header, a truncated header. The index is dropped, the command succeeds by walking, and nothing wrong is written | 1 |
+| T5 | **Orphans.** An index pack without its data pack is ignored; a data pack without an index is a gap | 1 |
+| T6 | **Compaction.** After compaction, index packs of archived commit packs are in `indexes/archive/`; a fresh clone uses the snapshot index alone | 1 |
+| T7 | **Scoped clone by ranges.** On the counted host, `clone --path raw/c09/s4` of the benchmark vault downloads at most the index packs plus 1.1 × the scope's bytes, and its working copy equals a full clone's folder | 2 |
+| T8 | **Determinism.** The same commit gives the same data pack bytes, path-ordered; 0.25.0 extracts it identically | 2 |
+| T9 | **Pack store.** A clone with the pack store and one without produce identical working copies and identical answers to `status`, `log` and `fsck`; one flipped byte in a kept pack is caught on first read | 3 |
+| T10 | **Nothing new in clear.** After clone, pull and log, no file under `.sg_vault/` holds a path or name that 0.25.0 would not have held | 1 |
+
+## 5. Benchmarks
+
+Run before and after each phase, on the 76,000-file benchmark vault and the CLI team's 228,000-file synthetic vault, on the in-memory host and once against dev. Record them in the CHANGELOG.
+
+| Benchmark | Today | Phase target |
+|---|---|---|
+| pull of a 300-file pass | 31.7 s (branch; 228,000 files) | Phase 1: the 6 s presence check and any tree reads gone; what remains is the stat pass and the file writes |
+| `history log`, 10 commits with counts | 7.4 s (228,000 files) | Phase 1: under 100 ms |
+| base..head on a 5,000-commit history | 1.9 s at 0.25.0 | Phase 1: under 1 ms after the index is loaded |
+| first flatten of an unseen head | about 45 s (228,000 files) | Phase 1: under 2 s |
+| `clone --path` of 1,520 files | the whole snapshot | Phase 2: index packs plus about 0.22 MB |
+| full clone | 216 s (228,000 files) | Phase 3: the object writes gone; measure on a cloud session's disk |
+| push of one five-file commit | as 0.25.0 | every phase: no more than 1% slower |
+
+## 6. Open questions
+
+1. **Path-order grouping.** Group by top-level folder (milder leak, coarser ranges) or full path order (one range per folder)? The recommendation is top-level groups by default, with full path order as a per-vault choice.
+2. **`flat` and `folder:*` both in the snapshot.** `flat` serves full clones in one member; folders serve scoped readers. Both cost about 14 MB for the benchmark vault. Keep both until a measurement says otherwise.
+3. **`file-commits` across a shallow boundary.** Stop at the boundary, as `Vault__Scope` does, and say so in the member.
+4. **Index packs for loose vaults.** Not needed now: loose vaults are the small ones. Revisit if a large loose vault appears.
+5. **Under sealed vault keys,** the local index is already encrypted at rest. The in-memory assembly lives in the process that holds the read key, so this needs nothing new.
+
+---
+
+*[Site index for agents](../../llms.txt) · [HTML version](https://cli.sgit.ai/dev/pack-indexes/04-compatibility-security-and-tests.html)*
+
+
+# Pack indexes for sgit: a design pack, cli.sgit.ai
+
+> An implementation spec for the sgit CLI team. The client that pushes a pack also pushes an index pack beside it, encrypted and signed. A snapshot's index holds the head's flat map, one file per folder, the commit graph with generation numbers, and cross-references. A commit's index is a delta: the folder files on the changed paths and a change list. Readers assemble them locally and stop walking trees, unpacking objects they do not read, and downloading folders they do not want. Clients up to 0.25.0 never see index packs. Expected impact per command, the formats, the writer, the reader, compatibility, the threat model, the phases and the acceptance tests.
+
+*Source: <https://cli.sgit.ai/dev/pack-indexes/index.html> · generated from the same content as the page, so the two cannot drift.*
+
+---
+# Pack indexes for sgit: a design pack
+
+**Status:** design, 26 October 2026, for the sgit CLI team. Nothing here is built. It is written against SGit-AI__CLI at `c0694753` (branch `claude/charming-babbage-5hzcxq`, after 0.25.0) and the code names below are from that commit.
+
+**Compatibility is a requirement.**
+- A vault with index packs works unchanged for every client from 0.24.0 to 0.25.0. They never list the folder the index packs live in.
+- No `min_client` rises.
+- A vault without index packs works unchanged for new clients, which fall back to today's walks.
+
+**Audience:** the agents and engineers who will build this. Read in order.
+
+| # | Document | What it settles |
+|---|---|---|
+| 00 | this file | the problem, what it buys per command, the principles, the decisions, the phases |
+| 01 | [01-format.md](../../dev/pack-indexes/01-format.md) | where index packs live, the zip layout, the encrypted header, every member's JSON schema, data packs in path order |
+| 02 | [02-writer.md](../../dev/pack-indexes/02-writer.md) | what push, compaction, `pack import` and a new `sgit pack index` command write, from what the writer already holds |
+| 03 | [03-reader.md](../../dev/pack-indexes/03-reader.md) | discovery, verification, the local assembly, and what each command reads instead of walking |
+| 04 | [04-compatibility-security-and-tests.md](../../dev/pack-indexes/04-compatibility-security-and-tests.md) | old and mixed clients, the threat model, the phases with acceptance tests and benchmarks, open questions |
+
+**Where the evidence is:** four articles and a research record on this site, all of 26 October 2026, measured on the 76,000-file benchmark vault and on synthetic data. Every script is in this site's repository.
+- [Indexes in the pack](../../articles/indexes-in-the-pack.md): the flat index, packs read in place, path-ordered ranges, and the correction that a 0.25.0 client re-downloads a pack with an unknown member.
+- [A vault is already a graph](../../articles/a-vault-is-already-a-graph.md): nine engines, and generation numbers.
+- [Indexes the writer pays for](../../articles/indexes-the-writer-pays-for.md): the principles, the per-folder layout, the offset table, the million-page test, the deltas.
+- [Graph and index measurements](../../research/graph-and-index-measurements-2026-10-26.md): every number.
+- The CLI team's own [architecture](../../research/pack-carried-indexes-architecture.md) and [review of indexes and caches](../../research/indexes-and-caches-review.md). This pack builds on both and changes three of their decisions (section 5).
+
+---
+
+## 1. The problem
+
+0.25.0 made local commands follow the size of the change. What still follows the size of the vault, on a pack vault, is everything a reader has to **recompute or download** that the writer already knew:
+
+| Cost today | Measured | Why |
+|---|---|---|
+| A clone writes every object loose before anyone can work | 305,230 object writes on the CLI team's 228,000-file vault (clone 216 s); 11.6 s for 134,092 objects on a fast disk here; on a cloud session's disk the curator's first command waited 17 minutes | `extract_pack` unpacks every member into `bare/data/` |
+| A partial clone of a pack vault is not partial on the wire | the newsroom's 1.22 GB snapshot to read one folder | `Step__Clone__Bulk_Fetch.pack_vault_fetch`: "a partial clone (--path/--depth) still takes the packs whole" |
+| A pull's commit list and merge base walk history | about 0.4 ms per commit of history (1.9 s on 5,000); the branch bounds it by a day of clock skew | no generation numbers anywhere |
+| `history log` diffs trees | 7.4 s for 10 commits on the 228,000-file vault | each commit's change is recomputed by walking where tree ids differ |
+| A pull of a pass checks every blob for presence | 6 s of the 31.7 s pull on the branch (`exists` over 235,000 ids) | no list of what the new commits added |
+| The first flatten of a head this clone has never seen | about 45 s full; the branch copies unchanged folders and reads changed trees | the writer had the map and did not send it |
+
+**What is not in scope:** the stat pass of `status` (4 s at 76,000 files, 15 s at 228,000), writing the working files a working clone needs, and the bandwidth of a full clone. Indexes do not remove those.
+
+## 2. What it buys, command by command
+
+Expected, not measured in sgit: each "after" is a prototype measurement on this site or a direct consequence of removing a step that was measured.
+
+| Command, pack vault | Today | After | Phase |
+|---|---|---|---|
+| `pull`: list of new commits, merge base | walk of history, up to seconds | **0.1 ms** each with generation numbers (prototype, 20,003 commits) | 1 |
+| `history log`, 10 commits with counts | 7.4 s (228,000 files) | **milliseconds**: read 10 change lists | 1 |
+| `pull`: which blobs are missing | 6 s | a set built from the change lists: **milliseconds** | 1 |
+| `pull`: new head's flat map | walk of changed folders | apply the change list to the cached map: **milliseconds** | 1 |
+| First command after a clone | flat map from a walk, or seeded by the clone | seeded from the snapshot's `flat` member: **0.58 s** to read 76,000 entries | 1 |
+| `clone --path <folder>` | the whole snapshot and every commit pack | the index packs, then **one ranged read per folder** (1,520 files: 0.22 MB in one range, against 30.4 MB in 265 ranges in id order) | 2 |
+| `clone` (full) | download, 305,230 object writes, 228,000 file writes | download, 228,000 file writes; objects read from the packs in place (5 µs each) | 3 |
+| One file, no clone | a clone | the index packs, then **one ranged read** | 4 |
+| `status`, `commit` | unchanged | unchanged | none |
+
+**The largest gains** are for readers that want part of a vault (gigabytes become megabytes), for history questions (seconds become milliseconds), and for clones on slow disks (Phase 3). For a working clone that touches every file, the working copy itself remains the cost.
+
+## 3. The principles
+
+Dinis Cruz's, tested in [Indexes the writer pays for](../../articles/indexes-the-writer-pays-for.md#principles):
+
+1. **The writer pays.** The client that pushes computes the indexes once. It already holds the answers: its flat cache, the changed paths, the parents.
+2. **Cross-reference in both directions,** so a reader goes from any id to everything that points to it.
+3. **One index per question,** sharded the way that question walks: commits by generation, folders by path, blobs by id.
+4. **Plain JSON, typed at the writer.** The writer builds through Type_Safe schemas; the reader loads JSON as dicts. No database file travels.
+5. **Load on demand** from the zip, one member at a time, located by an offset table the writer stores.
+6. **One file per folder,** rewritten on the paths a commit changes, as trees already are.
+
+And one rule from the CLI team's architecture, kept unchanged: **an index is a plan, never a proof.** Every object is verified by its content address before it is used. Lose every index and nothing is lost.
+
+## 4. Glossary
+
+| Term | Meaning |
+|---|---|
+| data pack | a pack as in 0.24.0: `bare/packs/{commits,snapshots,archive}/<epoch>__<commit>__<bytes>.zip`, members `bare/data/<object id>` |
+| index pack | a zip beside a data pack, under `bare/packs/indexes/`, with the same name, holding encrypted index members (01) |
+| snapshot index | the index pack of a snapshot data pack: the whole head and its history |
+| commit index | the index pack of a commit data pack: a delta, the folder files on the changed paths and a change list |
+| member | one encrypted JSON document inside an index pack, found through the header |
+| header | the first member of an index pack: the encrypted, signed table of every other member |
+| generation | 1 + the highest generation of a commit's parents; 1 for a root |
+| local index | the index packs a clone keeps under `.sg_vault/local/index/`, and what it assembles from them (03) |
+
+## 5. Decisions
+
+| # | Decision | Why | Changes from the CLI architecture |
+|---|---|---|---|
+| D1 | Index packs live in **`bare/packs/indexes/{commits,snapshots,archive}/`**, never inside a data pack | 0.24.0 to 0.25.0 refuse an unknown member in a data pack and **re-download that pack on every pull** (tested on 0.25.0 from PyPI). They list only `bare/packs/commits/` and `bare/packs/snapshots/`, so they never see index packs | yes: the architecture put `bare/index/*` members in the data pack and gated it |
+| D2 | **No `min_client` change.** An advisory feature `pack-indexes` in the branch index says "writers here produce index packs" | unknown features are ignored by 0.24.0 to 0.25.0 (`Vault__Format.gate_this_build_carries`, `check_client`) while `min_client` stays | yes: no gate |
+| D3 | Members are **JSON, deflated, then encrypted** with the read key (`Vault__Crypto.encrypt`), one AES-GCM envelope each | JSON-native; same primitive as trees; no database file to trust | no |
+| D4 | Member names in the zip are **opaque sequence numbers**; their meaning is only in the encrypted header | the host learns nothing from names: not paths, not which object is a tree, not which folder changed | refines: no keyed names needed |
+| D5 | The header is **signed by the pusher's clone key** over its canonical JSON, which lists every member's plaintext SHA-256 | the index gets exactly the standing of the commit it describes | same intent |
+| D6 | A snapshot index carries **`flat`, `folder:*`, `commits:*`, `commit-gen`, `blob-paths:*`, `file-commits:*`**; a commit index carries **`changes`** and the **`folder:*`** members on the changed paths | the snapshot answers every question; a delta costs 3.1 KB for a five-file commit, against 47.7 KB when shards travel | refines `flat/`, `diff/`, `graph/` |
+| D7 | **Generation numbers live in index members, not in commits** | `commit_v1` has no field for it, and a commit-schema change would be a gate | yes: the architecture proposed them in `graph/` members, same idea |
+| D8 | New data packs store members in **path order**: commits, then trees by path, then blobs by the path of their first use | one folder becomes one contiguous range; the order is a function of the tree, so packs stay deterministic; `pack verify` and old readers ignore order | new |
+| D9 | `folder:*` members carry each blob's **`at`: data pack, offset, length** | a scoped reader never parses a data pack's central directory (10.7 MB for 134,092 members) | new |
+| D10 | **Missing or bad indexes fall back to today's walks**, per pack | mixed writers (0.25.0 pushing to an indexed vault) leave gaps; a reader must never depend on an index existing | same |
+| D11 | Readers keep index packs **encrypted on disk** and decrypt members on read | nothing new in clear on disk, compatible with sealed vault keys; decryption is about a microsecond per KB | yes: the architecture assembled into SQLite on disk |
+| D12 | **No SQLite, no graph engine, no new dependency.** Dicts and the standard library | measured: dictionaries answered every question fastest; databases added load time | yes: SQLite was the architecture's local form |
+
+## 6. Phases
+
+| Phase | What | Removes | Size |
+|---|---|---|---|
+| **1** | Index packs: writer at push, compaction, `pack import`; `sgit pack index build/verify/stats`; reader for pull (commit list, merge base, missing blobs, new flat map), `history log`, first flatten after clone | the history walks and the per-blob presence check; the first full flatten | 4 to 5 days with tests |
+| **2** | Path-ordered data packs with `at` offsets; `clone --path` and scoped `pull` on pack vaults by ranged reads | the whole-pack download for partial clones | 3 days |
+| **3** | The pack as the store: keep packs, read in place, verify on first read (the CLI architecture's phase 1) | the 305,230 object writes of a clone | 3 days |
+| **4** | Readers without a clone: `sgit cat`/`fetch` of a path from the index packs and one ranged read | the clone itself, for readers | with the SG/Vault team |
+
+Phase 1 is independent of 2 and 3, and has the widest effect. Phase 3 is local only and can run in parallel. Each phase ends with its acceptance tests (04) green and its benchmark run on the 76,000-file vault and the 228,000-file synthetic vault.
+
+---
+
+*[Site index for agents](../../llms.txt) · [HTML version](https://cli.sgit.ai/dev/pack-indexes/index.html)*
 
 
 # Sealed vault keys, 01: architecture, cli.sgit.ai
@@ -8753,7 +9397,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.16. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.17. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

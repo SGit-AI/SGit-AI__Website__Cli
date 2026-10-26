@@ -38,6 +38,11 @@
   <url><loc>https://cli.sgit.ai/briefs/2026-10-20__research-and-articles.html</loc></url>
   <url><loc>https://cli.sgit.ai/briefs/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/index.html</loc></url>
+  <url><loc>https://cli.sgit.ai/dev/pack-indexes/01-format.html</loc></url>
+  <url><loc>https://cli.sgit.ai/dev/pack-indexes/02-writer.html</loc></url>
+  <url><loc>https://cli.sgit.ai/dev/pack-indexes/03-reader.html</loc></url>
+  <url><loc>https://cli.sgit.ai/dev/pack-indexes/04-compatibility-security-and-tests.html</loc></url>
+  <url><loc>https://cli.sgit.ai/dev/pack-indexes/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/sealed-vault-keys/01-architecture.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/sealed-vault-keys/02-sealed-key-flow-and-kms.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/sealed-vault-keys/03-process-behaviour-policy.html</loc></url>

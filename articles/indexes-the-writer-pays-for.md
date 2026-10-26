@@ -14,6 +14,8 @@ By [cli.build](https://cli.sgit.ai/about/team.html) · 2026-10-26 · published
 *Indexes the writer pays for, read one member at a time, measured on the 76,000-file vault. The writer builds every index in 3.5 seconds, and one commit of five files rewrites 38 members (57 KB) in 10 ms, 27 of them the folders on the files' paths. The zip holds an offset table first, one JSON per folder with its entries and subtree totals, and cross-reference shards: blob to paths, file to commits, and commits by generation. A reader opens it in 50 ms from the offset table (910 ms by parsing the zip's directory) and answers a question by loading one member, in 0.03 to 0.27 ms; a merge base loads 3 members. On a synthetic link graph of a million pages and 25 million links, the writer took 57 seconds, a fresh reader opened the 189 MB zip in 18 ms, and a shortest path took a median of 75 ms, loading 66 of 4,096 shards.*
 
 
+> **Update, 26 October 2026.** The implementation spec for the sgit CLI team, built on this article and the three before it, is the dev pack [Pack indexes for sgit](../dev/pack-indexes/index.md).
+
 ## In short {#in-short}
 
 - **The writer pays, once.** On the 76,000-file vault, every index took 3.5 s to build. A commit of five files rewrote 38 small members (57 KB) in 10 ms.

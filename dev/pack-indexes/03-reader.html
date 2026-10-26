@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pack indexes, 03: the reader · cli.sgit.ai</title>
+<meta name="description" content="How a reader finds index packs, verifies them and keeps them encrypted on disk; the local assembly (a snapshot index, the deltas over it, the newest version of each member, cross-references kept current from change lists); and what each command reads instead of walking: clone, clone --path, pull, history log, merge base, and reads without a clone. Gaps and every fallback.">
+<link rel="canonical" href="https://cli.sgit.ai/dev/pack-indexes/03-reader.html">
+<link rel="alternate" type="text/markdown" href="../../dev/pack-indexes/03-reader.md">
+<meta property="og:title" content="Pack indexes, 03: the reader">
+<meta property="og:description" content="How a reader finds index packs, verifies them and keeps them encrypted on disk; the local assembly (a snapshot index, the deltas over it, the newest version of each member, cross-references kept current from change lists); and what each command reads instead of walking: clone, clone --path, pull, history log, merge base, and reads without a clone. Gaps and every fallback.">
+<meta property="og:url" content="https://cli.sgit.ai/dev/pack-indexes/03-reader.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../../assets/themes/themes.css?h=86437750">
+<script src="../../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.25.0</span>
+  <a class="ver" href="../../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../docs/index.html">All the docs</a>
+      <a class="sl" href="../../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../../docs/installation.html">Installation</a>
+      <a class="sl" href="../../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../security/index.html">Security model</a>
+      <a class="sl" href="../../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../../reference/history.html">sgit history</a>
+      <a class="sl" href="../../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../../api/index.html">The HTTP API</a>
+      <a class="sl" href="../../api/authentication.html">Authentication</a>
+      <a class="sl" href="../../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../../briefs/index.html">The brief</a>
+      <a class="sl" href="../../about/team.html">The team</a>
+      <a class="sl" href="../../admin/versions.html">Release history</a>
+      <a class="sl" href="../../admin/index.html">Engineering</a>
+      <a class="sl" href="../../admin/reality.html">Reality</a>
+      <a class="sl" href="../../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../../index.html">cli.sgit.ai</a> / <a href="../../dev/index.html">Dev packs</a> / Pack indexes, 03: the reader</div>
+<h1 id="03-the-reader">03. The reader</h1>
+<h2 id="1-finding-index-packs">1. Finding index packs</h2>
+<p>A pull or clone already lists <code>bare/packs/commits/</code> and <code>bare/packs/snapshots/</code> (<code>Vault__Packs.sync_down</code>). When the branch index has the feature <code>pack-indexes</code>, it also lists <code>bare/packs/indexes/commits/</code> and <code>bare/packs/indexes/snapshots/</code>. That is two more list requests, made only on vaults that have index packs.</p>
+<p>Pair each index pack with its data pack by (folder, epoch, commit id). An index pack whose data pack is in neither its folder nor <code>archive/</code> is ignored.</p>
+<p><b>Download:</b></p>
+<ul><li>the snapshot index of the snapshot the clone takes;</li><li>the commit index of every commit pack not yet absorbed;</li><li>nothing from <code>indexes/archive/</code>, except when a clone takes an archived history.</li></ul>
+<p>Index packs are small (01, section 5), so they go through the batch read with the data packs.</p>
+<h2 id="2-verifying-an-index-pack">2. Verifying an index pack</h2>
+<p>In order, before anything uses it:</p>
+<ol><li><b>The header.</b> Magic and format byte; envelope decrypts under the read key; <code>schema</code> known.</li><li><b>The signature.</b> Verify with the key named by <code>author_key_id</code> (<code>bare/keys/&lt;id&gt;</code>), by the vault's commit policy:</li></ol>
+<ul><li>under <code>signatures-required</code>, a missing or bad signature means <b>ignore the index pack</b>;</li><li>otherwise an unsigned index is accepted, subject to step 3.</li></ul>
+<ol><li><b>The anchor.</b> <code>commit_id</code>, <code>parents</code>, <code>tree_id</code> and <code>timestamp_ms</code> must equal the commit object's, which the data pack carries and is verified by its id. For a snapshot, the root of <code>flat</code> must equal <code>tree_id</code>, and the root folder member's entries must equal the root tree's.</li><li><b>Each member, when it is first read.</b> Decrypt, inflate, and check its SHA-256 against the header's.</li></ol>
+<p>A failure at any step drops that index pack: <b>the reader walks instead, for that pack only,</b> and reports it once (<code>sgit pack index verify</code> gives the detail). Nothing an index says is ever written to the working copy or the object store without the object it names verifying by its content address. That is today's rule for pack members, unchanged.</p>
+<h2 id="3-the-local-index">3. The local index</h2>
+<pre><code class="lang-text">.sg_vault/local/index/
+  packs/&lt;folder&gt;/&lt;name&gt;.zip     the index packs, as downloaded: encrypted
+  state.json                    {schema, snapshot: name, deltas: [names, oldest first], gaps: [commit ids]}</code></pre>
+<ul><li><b>Index packs stay encrypted on disk.</b> A member is decrypted when it is read, at about a microsecond per KB. This adds nothing in clear beyond what 0.25.0's flat and scan caches already hold, and it stays compatible with <a href="../../dev/sealed-vault-keys/index.html">sealed vault keys</a>.</li><li><b>The assembly is in memory, per process.</b> It is cheap enough to redo per process (section 4), so nothing assembled has to be written. A later optimisation may cache it under the same rules as the flat cache.</li><li><b><code>state.json</code> is reset by a new snapshot.</b> When compaction makes a new snapshot index, the deltas start over.</li></ul>
+<h2 id="4-assembling">4. Assembling</h2>
+<p>The local index answers four kinds of question. Each has its own structure, built on first use:</p>
+<div class="tablewrap"><table><thead><tr><th>Structure</th><th>Built from</th><th>Cost measured</th></tr></thead><tbody><tr><td><b>newest member:</b> logical name → the newest index pack holding it</td><td>the deltas' headers, newest wins, then the snapshot's</td><td>6.6 ms for 1,000 deltas (10,620 names); a read through it 8 µs</td></tr><tr><td><b>flat map of the head</b></td><td>the snapshot's <code>flat</code>, then each delta's <code>changes</code> applied in order</td><td>0.58 s to load 76,000 entries; applying a delta is a dict update per change</td></tr><tr><td><b>commit graph:</b> id → parents, generation, time</td><td>the snapshot's <code>commits:*</code> loaded on demand through <code>commit-gen</code>, plus each delta's header</td><td>a merge base loaded 3 members</td></tr><tr><td><b>cross-references:</b> blob → paths, path → commits</td><td>the snapshot's shards, then every delta's <code>changes</code></td><td>155 ms from the snapshot; 49 ms to apply 1,000 change lists</td></tr></tbody></table></div>
+<p><b>A gap</b> is a commit pack without a usable index. Compute its delta locally, which is what today's code does anyway: diff its tree against its first parent's, and take parents and generation from its commit object. Then carry on. A clone with gaps is as correct as one without, and only as slow as today for those commits.</p>
+<h2 id="5-command-by-command">5. Command by command</h2>
+<h3 id="pull"><code>pull</code></h3>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>Today</th><th>With the index</th></tr></thead><tbody><tr><td>new commits, base..head</td><td>walk of history (day-window bound on the branch)</td><td>the deltas' headers and the commit graph: generation walk, <b>0.1 ms</b> measured on 20,003 commits</td></tr><tr><td>merge base</td><td>walk</td><td>generation walk (git's paint-down: newest generation first, stop when every queued commit is reachable from both)</td></tr><tr><td>which objects are missing</td><td><code>exists</code> over every id of the head: 6 s at 235,000</td><td>the new blobs named by the new deltas' <code>changes</code>, checked against the local store</td></tr><tr><td>the new head's flat map</td><td>copy unchanged folders, read changed trees</td><td>the cached map plus the <code>changes</code>: no tree read</td></tr><tr><td>merge, three-way</td><td>changed paths, from tree diffs</td><td>changed paths from both sides' <code>changes</code></td></tr></tbody></table></div>
+<p>The dirty-tree check (the stat pass) and writing the changed files do not change.</p>
+<h3 id="clone-full"><code>clone</code> (full)</h3>
+<ul><li>Take the snapshot index with the snapshot data pack. Seed the flat cache from <code>flat</code> plus the deltas; that is no tree walk, where today the clone flattens after extraction.</li><li>Seed the commit graph from <code>commits:*</code>.</li><li>Extract the working copy as today. Phase 3 changes the object writes (section 6).</li></ul>
+<h3 id="clone-path-and-a-scoped-pull-phase-2"><code>clone --path &lt;folder&gt;</code> and a scoped <code>pull</code> (Phase 2)</h3>
+<ol><li>List; download the snapshot index and the commit indexes.</li><li>Find <code>folder:&lt;folder&gt;</code>: the newest version of it and of every folder below it, walking <code>dirs</code>. Measured: 1,161 members for a subtree of 1,520 files, in 36.5 ms. <code>totals</code> gives the size before anything is downloaded.</li><li>Collect the <code>at</code> of every file and <code>tree_at</code> of every folder in the scope, plus the trees on the spine from the root, which <code>Vault__Scope</code> needs to commit later. Group by data pack and merge ranges less than 64 KB apart.</li><li>Take each range with <code>fetch_presigned_range</code> when the host has presigned reads. Otherwise, and for a pack under <code>PACK_BATCH_MAX</code>, take the whole pack as today.</li><li>Verify every object by its id, write the scope, and record the scope as today.</li></ol>
+<p>Measured on the benchmark vault, with blobs in path order: one folder of 1,520 files was <b>1 range of 0.22 MB</b>. In today's id order the same blobs were 265 ranges over 30.4 MB, and today's clone takes the whole pack.</p>
+<h3 id="history-log-log-stat-diff"><code>history log</code>, <code>log --stat</code>, <code>diff &lt;a&gt; &lt;b&gt;</code></h3>
+<ul><li><b><code>history log</code></b> reads the <code>changes</code> of each commit in the range; its counts come from the lists. No tree is opened. <code>log --stat</code> is the same.</li><li><b><code>diff &lt;a&gt; &lt;b&gt;</code></b> for commits on one line of history is the union of their <code>changes</code>. Otherwise it is two flat maps, as today.</li><li><b>A path's history</b> (<code>history log -- &lt;path&gt;</code>) is <code>file-commits</code> plus the newer deltas.</li></ul>
+<h3 id="status-commit-push"><code>status</code>, <code>commit</code>, <code>push</code></h3>
+<p>Unchanged for the reader. <code>push</code> does the writer's work (02).</p>
+<h3 id="a-read-without-a-clone-phase-4">A read without a clone (Phase 4)</h3>
+<p><code>sgit cat &lt;vault&gt; &lt;path&gt;</code>:</p>
+<ul><li>list;</li><li>download the snapshot index and the commit indexes, a few MB;</li><li>the newest <code>folder:&lt;parent of path&gt;</code> gives the blob's <code>at</code>;</li><li>one ranged read, verify, decrypt.</li></ul>
+<p>That is three or four requests, whatever the size of the vault.</p>
+<h2 id="6-the-pack-as-the-store-phase-3">6. The pack as the store (Phase 3)</h2>
+<p>This is the CLI team's architecture, phase 1, unchanged in substance and listed here for completeness. A pack clone keeps the data packs it downloads under <code>.sg_vault/bare/packs/</code>, and the object store reads a member by offset. Offsets come from each pack's central directory, read once per pack: 0.56 s for 134,092 members. With Phase 2, the folder members' <code>at</code> give them too.</p>
+<ul><li><b>Verification moves to the first read</b> of each object, and the verdict is remembered.</li><li><b>Loose objects win over packed ones;</b> a clone's own new objects stay loose until pushed.</li><li><b>Measured:</b> 5 µs per read in place, against 11.6 s to write every object of the benchmark vault loose, and many minutes on a slow disk.</li></ul>
+<h2 id="7-fallbacks-all-of-them">7. Fallbacks, all of them</h2>
+<div class="tablewrap"><table><thead><tr><th>Situation</th><th>The reader does</th></tr></thead><tbody><tr><td>no <code>pack-indexes</code> feature</td><td>today's code, no index listing</td></tr><tr><td>an index pack fails verification</td><td>ignore it; walk for that pack</td></tr><tr><td>a commit pack has no index (gap)</td><td>compute that delta locally; continue</td></tr><tr><td>an unknown <code>schema</code> or format byte</td><td>ignore the index pack</td></tr><tr><td>the snapshot index is missing</td><td>build the snapshot structures by walking, as today; deltas still apply on top</td></tr><tr><td>a ranged read is refused (no presigned route)</td><td>take the whole pack</td></tr><tr><td>an object named by an index fails its id</td><td>refuse it as today, and drop that index pack for the rest of the command</td></tr></tbody></table></div>
+<div class="pagenav"><a href="../../dev/pack-indexes/02-writer.html">← Pack indexes, 02: the writer</a><a href="../../dev/pack-indexes/04-compatibility-security-and-tests.html">Pack indexes, 04: compatibility, security and tests →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../../dev/pack-indexes/03-reader.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/dev/pack-indexes/03-reader.md"><code>admin/content/dev/pack-indexes/03-reader.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../../admin/versions.html" data-site-version>release history</a> · <a href="../../admin/index.html">engineering</a> · <a href="../../dev/pack-indexes/03-reader.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../../docs/installation.html">Installation</a>
+    <a href="../../docs/quickstart.html">Quickstart</a>
+    <a href="../../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../../reference/index.html">Every command</a>
+    <a href="../../security/index.html">Security model</a>
+    <a href="../../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../../research/index.html">All research</a>
+    <a href="../../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../../research/topics/serve.html">Running a vault locally</a>
+    <a href="../../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../../articles/index.html">All articles</a>
+    <a href="../../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+    <a href="../../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../../briefs/index.html">The brief</a>
+    <a href="../../admin/versions.html">Release history</a>
+    <a href="../../admin/index.html">Engineering</a>
+    <a href="../../admin/reality.html">Reality</a>
+    <a href="../../admin/corrections.html">Corrections</a>
+    <a href="../../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../../assets/version.js" defer></script>
+<script src="../../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

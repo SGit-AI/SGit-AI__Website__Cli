@@ -9,7 +9,7 @@
 
 Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.24.0. 6 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.25.0. 6 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit pack [options]

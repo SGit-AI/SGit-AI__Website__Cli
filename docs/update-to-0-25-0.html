@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.24.0</span>
+  <span class="stage-pill">sgit-ai v0.25.0</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -145,7 +145,7 @@ sgit-ai v0.25.0</code></pre>
 <ul><li>a clone used with 0.25.0 still works with 0.24.0, which ignores the new files;</li><li>0.24.0 and 0.25.0 read each other's commits as clean;</li><li>vaults, the server and pack mode are unchanged.</li></ul>
 <h2 id="6-still-slow-or-not-covered">6. Still slow, or not covered</h2>
 <ul><li><b>A <code>pull</code> that brings commits pushed by another clone</b> still walks the new head's trees the old way: a minute or two on the newsroom's vault, against hours before.</li><li><b>A three-way merge,</b> when two clones changed the same branch, still builds the whole tree.</li><li><b><code>push</code> still walks the working tree once</b> looking for <code>.conflict</code> files: about 4 s on a large vault.</li><li><b><code>pull</code>'s list of new commits reads the clone's whole history,</b> about 0.4 ms a commit. That is half a second on 1,229 commits and about 2 s on 5,000, even when nothing is new.</li><li><b>On Windows,</b> Python's change time is the creation time. An edit that keeps a file's size and restores its modification time may still go unseen there. Linux and macOS are covered.</li></ul>
-<p><i>Sources: the CLI's CHANGELOG and its response notes of 26 October 2026 under <code>team/humans/dinis_cruz/claude-code-web/10/26/</code>; the newsroom's slowness report of the same day; cli.sgit.ai's two reviews of the branch, run against SGit-AI__CLI at <code>c6c48187</code> and <code>3ffcb5c7</code>, with the full test suite (4,588 passed), the review's reproductions, a fuzzer of about 430 commits, and the timings above on a vault of 76,000 files.</i></p>
+<p><i>Sources: the CLI's CHANGELOG and its response notes of 26 October 2026 under <code>team/humans/dinis_cruz/claude-code-web/10/26/</code>; the newsroom's slowness report of the same day; cli.sgit.ai's two reviews of the branch, run against SGit-AI__CLI at <code>c6c48187</code> and <code>3ffcb5c7</code>, with the full test suite (4,588 passed), the review's reproductions (re-run against the PyPI package, whose code is that of <code>main</code> at <code>7a3b90aa</code>: <code>3ffcb5c7</code> with the version raised), a fuzzer of about 430 commits, and the timings above on a vault of 76,000 files.</i></p>
 <div class="pagenav"><a href="../docs/send-a-vault-key.html">← Send a vault key to the registry</a><a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../docs/update-to-0-25-0.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/update-to-0-25-0.md"><code>admin/content/docs/update-to-0-25-0.md</code></a></p>
 </main>

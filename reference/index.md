@@ -7,7 +7,7 @@
 ---
 # Command reference
 
-All **165 commands** of **sgit-ai v0.24.0**, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (`CLI__Reference`, behind `sgit help all --format json`, schema `sgit-cli-reference-v1`); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.
+All **165 commands** of **sgit-ai v0.25.0**, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (`CLI__Reference`, behind `sgit help all --format json`, schema `sgit-cli-reference-v1`); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.
 
 - The same data, as published: [sgit-cli-reference.json](../reference/sgit-cli-reference.json). Diff two releases' files to see exactly what changed.
 - Your installed version, offline: `sgit help all`, or `sgit help <command>`.

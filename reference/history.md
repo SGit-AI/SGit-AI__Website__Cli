@@ -9,7 +9,7 @@
 
 Commit history and diffs.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.24.0. 7 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.25.0. 7 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit history

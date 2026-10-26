@@ -22,7 +22,7 @@ $ sgit clone <vault-key>       # anywhere else, a person or an agent
 | | |
 |---|---|
 | **[Get started](docs/index.md)** | What sgit is, install, the five-minute quickstart, the git-to-sgit mapping, the two-branch model, and the honest page about its limits |
-| **[Command reference](reference/index.md)** | All 165 commands of sgit-ai v0.24.0, generated from `sgit help all --format json`, so it describes the code and not somebody's memory of it |
+| **[Command reference](reference/index.md)** | All 165 commands of sgit-ai v0.25.0, generated from `sgit help all --format json`, so it describes the code and not somebody's memory of it |
 | **[Guides](docs/index.md#guides)** | Partial clones, history integrity, agents sharing one vault, messages between vaults, self-hosting, the update notices |
 | **[Security](security/index.md)** | The security model, key management, credentials and the PKI commands |
 | **[HTTP API](api/index.md)** | The surface the CLI and the browser are both clients of: authentication, vault objects, transfers, append lanes, errors |
@@ -56,7 +56,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.11. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.12. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

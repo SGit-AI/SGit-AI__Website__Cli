@@ -44,7 +44,7 @@ Read the first section in order; the rest when you need it. Commands are in [the
 
 ## Elsewhere
 
-- **[Command reference](../reference/index.md)**: all 165 commands of sgit-ai v0.24.0.
+- **[Command reference](../reference/index.md)**: all 165 commands of sgit-ai v0.25.0.
 - **[HTTP API](../api/index.md)**: the surface the CLI is a client of.
 - **[Research](../articles/index.md)**: why the CLI is shaped the way it is, measured.
 - **Vaults as a platform** (vault apps, `_page.json`, the browser bridge, publishing a vault) stay on sgit.ai: [Working on a vault: start here](https://sgit.ai/docs/guidance/index.html).

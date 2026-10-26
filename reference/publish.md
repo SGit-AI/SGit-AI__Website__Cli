@@ -9,7 +9,7 @@
 
 Generate the plaintext surface for static publishing (.sg_vault/publish/ — the only path that changes).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.24.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.25.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit publish [options] [directory]

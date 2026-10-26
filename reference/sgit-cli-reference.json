@@ -1,6 +1,6 @@
 {
   "schema": "sgit-cli-reference-v1",
-  "cli_version": "v0.24.0",
+  "cli_version": "v0.25.0",
   "command_count": 165,
   "commands": [
     {

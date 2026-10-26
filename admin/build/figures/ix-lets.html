@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>.cols{grid-template-columns:repeat(4,1fr);gap:18px}
+.box p,.box li{font-size:14px} .box ul{margin:6px 0 0;padding-left:18px} .box li{margin:0 0 5px}
+.box.prop{border-style:dashed}
+.big{font:400 32px/1.1 var(--serif);margin:6px 0 2px} .big.r{color:var(--red)} .big.t{color:var(--teal)} .big.w{color:var(--warm)} .big.b{color:var(--blue)}
+.meta{font:13px var(--mono);color:var(--dim2);margin:0 0 6px}
+.lab{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);margin:10px 0 2px}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px}
+.strip div{font-size:13.5px;color:var(--dim)}</style></head><body>
+<h1>Indexes in the pack, in LETS terms: load, extract, transform, save</h1>
+<p class="sub">Measured on a vault of 76,000 files and 58,062 folders (134,092 objects). Today a clone unpacks every object and every reader rebuilds what the pusher already knew. Proposed: the pusher ships its indexes beside the pack, the reader downloads them and assembles a local database. Dashed boxes are proposals; nothing in them is built.</p>
+<div class="grid cols">
+ <div class="box blue prop"><h3>Load</h3><div class="meta">the network</div><div class="big b">2.4 MB</div>
+  <p>the whole head's index (every path, blob, size, hash, folder id), deflated; 17.2 MB as JSON</p>
+  <div class="lab">one folder of the vault</div>
+  <ul><li>index pack, then <b>1 ranged read</b> if blobs are stored in path order</li><li><b>265 ranges</b> for the same 1,520 files in today's id order</li></ul></div>
+ <div class="box teal prop"><h3>Extract</h3><div class="meta">read in place, verify on first read</div><div class="big t">5 &micro;s</div>
+  <p>to read one object out of the pack by offset (warm cache)</p>
+  <div class="lab">against today</div>
+  <ul><li><b>11.6 s</b> to write all 134,092 objects loose on a fast disk; the newsroom's cloud disk took minutes</li><li>the pack's own directory: 10.7 MB, parsed in 0.56 s</li></ul></div>
+ <div class="box warm prop"><h3>Transform</h3><div class="meta">JSON members into SQLite, locally</div><div class="big w">0.32 s</div>
+  <p>to assemble one head into SQLite (0.88 s for two heads)</p>
+  <div class="lab">queries on it</div>
+  <ul><li>one path: <b>0.007 ms</b></li><li>a folder of 7,600 files: <b>5.4 ms</b></li><li>what changed between two heads: <b>58 ms</b></li></ul></div>
+ <div class="box violet prop"><h3>Save</h3><div class="meta">a cache, losable, rebuilt from the packs</div><div class="big" style="color:var(--violet)">15 ms</div>
+  <p>to load the 26 MB database into memory from bytes (Python 3.11's <code>deserialize</code>)</p>
+  <div class="lab">so under sealed keys</div>
+  <ul><li>keep it encrypted on disk and open it in memory per command</li><li>no new dependency: <code>sqlite3</code> is in the standard library</li></ul></div>
+</div>
+<div class="strip"><div><b>Ship JSON, assemble SQLite:</b> a SQLite file of the same index is the same size deflated (2.41 against 2.42 MB) and costs 0.32 s to build, so shipping the binary saves nothing here.</div><div><b>Ship the database when building it is the cost:</b> a full-text index of the vault's 13 MB of text took 11.3 s to build from files a reader would first have to download; built, it is 2.4 MB deflated and answers in 0.2 ms.</div><div><b>What stays:</b> a working clone still writes its working files and stats them on every scan. A reader that only needs to read pays the download and the queries.</div></div>
+<div class="foot"><b>The pusher computes it once; every reader downloads it instead of rebuilding it.</b><span>cli.sgit.ai &middot; 26 October 2026 &middot; measured by cli.build on a 4-core cloud sandbox</span></div>
+</body></html>

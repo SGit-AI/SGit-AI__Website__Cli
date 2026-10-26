@@ -31,6 +31,16 @@ GH = "https://github.com/SGit-AI/SGit-AI__CLI/blob"
 
 # source (under FOLDER), slug, kind, research topics (admin/content/research/topics/<id>.md), tags, summary
 DOCS = [
+    ('10/26/architecture__pack-resident-store-and-pack-carried-indexes.md', 'pack-carried-indexes-architecture',
+     'architecture', 'scale, write-path', 'packs, indexes, sqlite, lets, sparse, store, 0.25.0',
+     'The CLI team\'s exploration after the 0.25.0 field report: keep the packs a clone downloads and read objects in '
+     'place; carry flat, diff and graph indexes inside the pack, encrypted under the read key and signed by the '
+     'pusher; assemble them locally into SQLite; four phases. Nothing in it is built.'),
+    ('10/26/review__indexes-and-caches-across-the-board.md', 'indexes-and-caches-review', 'review',
+     'scale', 'indexes, caches, packs, flat cache, scan cache, 0.25.0',
+     'What sgit already holds as indexes and caches after 0.25.0, by name; why the commands still slow on the '
+     'newsroom\'s vault were where no cache existed yet; and the one index worth adding first: the flat map of a '
+     'head, carried in the pack.'),
     ('10/22/feature-reference__pack-mode.md', 'pack-mode-feature-reference', 'reference',
      'write-path, scale', 'packs, release, 0.24.0, compression, compaction, gate',
      'The CLI team\'s one-page reference for pack mode as released in sgit-ai 0.24.0: what it is and why, the '
@@ -199,12 +209,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cli", required=True, help="a clone of SGit-AI/SGit-AI__CLI, at the commit to publish from")
     ap.add_argument("--branch", default="dev", help="the branch that commit is on, stated on each document")
+    ap.add_argument("--only", nargs="*", help="import only these slugs; the others keep the commit they came from")
     args = ap.parse_args()
     cli = Path(args.cli)
     commit = git(cli, "rev-parse", "HEAD")
     by_name = {Path(src).name: slug for src, slug, *_ in DOCS}
     OUT.mkdir(parents=True, exist_ok=True)
     for src, slug, kind, topics, tags, summary in DOCS:
+        if args.only and slug not in args.only:
+            continue
         path = f"{FOLDER}/{src}"
         text = (cli / path).read_text()
         title = re.search(r"^# (.+)$", text, re.M).group(1).strip()
@@ -230,7 +243,8 @@ def main():
             "status: published\n"
             "---\n\n" + body + "\n")
         print(f"  · {slug}  ({date}, {len(body.split())} words)")
-    print(f"import_cli_research: {len(DOCS)} research documents from SGit-AI__CLI@{commit[:7]} ({args.branch})")
+    count = len(args.only) if args.only else len(DOCS)
+    print(f"import_cli_research: {count} research documents from SGit-AI__CLI@{commit[:7]} ({args.branch})")
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@
   <url><loc>https://cli.sgit.ai/articles/a-vault-you-can-carry.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/copy-on-write-and-the-vault.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/index.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/indexes-in-the-pack.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/is-there-any-overhead.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/keys-the-way-git-does-it.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html</loc></url>
@@ -108,9 +109,11 @@
   <url><loc>https://cli.sgit.ai/research/git-to-sgit-security-mapping.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/index.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/indexes-and-caches-review.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/native-pki-vault-mode.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-carried-indexes-architecture.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-feature-reference.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-idea-to-release.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-round-trip-measured.html</loc></url>

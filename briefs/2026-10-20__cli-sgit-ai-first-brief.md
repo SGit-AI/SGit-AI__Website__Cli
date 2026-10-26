@@ -38,7 +38,7 @@
 | Ask | Where it is |
 |---|---|
 | 1. The CLI's main documentation | [the docs](../docs/index.md) and [the command reference](../reference/index.md), every command generated from the CLI's own parser |
-| 2. Move the technical content | 147 pages in all; the ones that moved, with where each was: [What moved from sgit.ai](../admin/moved.md) |
+| 2. Move the technical content | 148 pages in all; the ones that moved, with where each was: [What moved from sgit.ai](../admin/moved.md) |
 | 3. A place for topic articles | [Articles](../articles/index.md), in the newsroom's format since v0.2.0; publishing one is adding one file, the contract is in `admin/content/articles/README.md` |
 | 4. The CLI repository's research | [Research](../research/index.md): 38 documents in 7 topics since v0.2.0, each with its source path and commit; in v0.1 they were under Articles |
 | 5. The estate's guidance | [Every sgit repository](https://sgit.ai/docs/guidance/repositories.html), followed item by item on [the engineering page](../admin/index.md), with what is not done yet in [the reality file](../admin/reality.md) |

@@ -163,7 +163,7 @@ Before release, a second agent reviewed the feature in four rounds of tests, cod
 The work on performance is not finished, and the next steps are concrete:
 
 - **Scoped reads of a pack vault,** so `--path` reads one folder's objects out of the snapshot by `Range` instead of downloading it whole. The reader was exercised on 20 October.
-- **Faster merge and status walks,** where a pull now spends its time: 22 seconds of CPU per push or pull on the comms vault's history, the same on a normal vault.
+- **Faster merge and status walks,** where a pull now spends its time: 22 seconds of CPU per push or pull on the comms vault's history, the same on a normal vault. *Since 0.25.0, mostly done: on a vault of 76,000 files, `status` went from 71 s to about 4 s and a one-file commit from 29 minutes to under 5 seconds ([release notes](../docs/update-to-0-25-0.md)).*
 - **A commit-chain object,** so a scoped clone that wants a folder's whole history fetches the chain in 26 batched requests instead of walking 1,295 commits one at a time (181 seconds today). Until then, `--depth` is the answer.
 - **A vault in one file,** already [measured](../articles/a-vault-you-can-carry.md): zipped, sealed to a public key, and cloned from a folder in 0.48 seconds. A command for it is proposed.
 

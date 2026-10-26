@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit-ai 0.25.0 release notes: large vaults · cli.sgit.ai</title>
+<meta name="description" content="Release notes for sgit-ai 0.25.0, for people and agents. On a large vault, the cost of a command now follows the change, not the vault. On a vault of 76,000 files a one-file commit went from 29 minutes to under 5 seconds and a status from 71 seconds to about 4. What changed (trees read as JSON, the flattened head cached, a linear and incremental tree builder, a scan cache keyed like git&#x27;s index, no tree walk when a push&#x27;s server has nothing new, history log by tree diff), the data-loss bug a review found in the first version of the scan cache and how it was closed, the two new cache files and what they hold, and what is still slow. Nothing changes on the server or in a vault&#x27;s format.">
+<link rel="canonical" href="https://cli.sgit.ai/docs/update-to-0-25-0.html">
+<link rel="alternate" type="text/markdown" href="../docs/update-to-0-25-0.md">
+<meta property="og:title" content="sgit-ai 0.25.0 release notes: large vaults">
+<meta property="og:description" content="Release notes for sgit-ai 0.25.0, for people and agents. On a large vault, the cost of a command now follows the change, not the vault. On a vault of 76,000 files a one-file commit went from 29 minutes to under 5 seconds and a status from 71 seconds to about 4. What changed (trees read as JSON, the flattened head cached, a linear and incremental tree builder, a scan cache keyed like git&#x27;s index, no tree walk when a push&#x27;s server has nothing new, history log by tree diff), the data-loss bug a review found in the first version of the scan cache and how it was closed, the two new cache files and what they hold, and what is still slow. Nothing changes on the server or in a vault&#x27;s format.">
+<meta property="og:url" content="https://cli.sgit.ai/docs/update-to-0-25-0.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.24.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+      <a class="sl" href="../articles/pack-mode-read-closely.html">Pack mode, read closely: a sound design that needs no server change, and five decisions before it is built</a>
+      <a class="sl" href="../articles/a-pack-per-push.html">A pack per push: git&#x27;s packfiles, applied to an encrypted vault, with no server change</a>
+      <a class="sl" href="../articles/what-shipped-in-v0-1-and-v0-2.html">What shipped in cli.sgit.ai v0.1 and v0.2: 27 pages moved, 158 commands generated, and research given its own area</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Guides</a> / sgit-ai 0.25.0 release notes: large vaults</div>
+<h1 id="sgit-ai-0-25-0-large-vaults">sgit-ai 0.25.0: large vaults</h1>
+<p>The release notes for 0.25.0, written to be read by a person or handed to an agent. <b>Your daily loop does not change</b>, and nothing changes on the server or in how a vault is stored. What changes is how long a command takes on a big vault: it now follows the size of the change, not the size of the vault.</p>
+<h2 id="1-update-and-check">1. Update and check</h2>
+<pre><code class="lang-text">$ sgit update          # wraps: pip install --upgrade sgit-ai
+$ sgit version
+sgit-ai v0.25.0</code></pre>
+<p>If <code>sgit version</code> shows an older number, you have more than one Python environment. Run <code>python -m pip install --upgrade sgit-ai</code> in the one your harness uses. Existing clones need nothing.</p>
+<p>The first <code>status</code> in each clone after the update reads and hashes every file once, to build its new scan cache. On a vault of 76,000 files that took 47 seconds. Every command after it is fast.</p>
+<h2 id="2-what-it-measured">2. What it measured</h2>
+<p>The newsroom reported on 26 October that its source-watch vault had become very slow in 0.24.0. That vault holds 79,465 files in 38,474 folders and 2.7 GB:</p>
+<ul><li><b><code>status</code>:</b> 155 s.</li><li><b><code>commit</code>:</b> more than 4 minutes, whatever the commit held.</li><li><b><code>push</code>:</b> about 4 minutes 15 seconds.</li><li><b><code>history log</code>:</b> more than 8 minutes.</li></ul>
+<p>The same commands, on vaults of the same shape:</p>
+<div class="tablewrap"><table><thead><tr><th>Command</th><th>0.24.0</th><th>0.25.0</th><th>Vault</th></tr></thead><tbody><tr><td><code>status</code>, nothing changed</td><td>70.7 s</td><td><b>3.9 to 4.4 s</b></td><td>76,000 files, 58,061 folders (cli.sgit.ai)</td></tr><tr><td><code>status</code>, one file changed</td><td>70.8 s</td><td><b>4.1 s</b>, the same file reported</td><td>the same</td></tr><tr><td><code>commit</code> of one file</td><td><b>1,739 s</b> (29 min)</td><td><b>4.6 s</b></td><td>the same</td></tr><tr><td>the first commit of all 76,000 files</td><td>not run</td><td><b>55 s</b></td><td>the same</td></tr><tr><td><code>status</code>, nothing changed</td><td>130 s</td><td><b>7.4 s</b></td><td>228,000 files, 77,227 folders (CLI team)</td></tr><tr><td>the first commit of the whole vault</td><td>2,846 s (47 min)</td><td><b>155 s</b></td><td>the same</td></tr><tr><td><code>push</code> of one small commit</td><td>about 4 min 15 s (the newsroom's vault)</td><td><b>10 to 18 s</b></td><td>the same</td></tr><tr><td><code>history log</code>, 10 commits with counts</td><td>464 s</td><td><b>7.4 s</b></td><td>the same</td></tr></tbody></table></div>
+<p>The cli.sgit.ai figures are local commands on a 4-core cloud sandbox, 0.24.0 from PyPI against the release code on the same clone. The CLI team's are from an in-memory host, so network time is excluded; the newsroom's include it.</p>
+<h2 id="3-what-changed">3. What changed</h2>
+<ul><li><b>Trees are read as the JSON they are.</b> 0.24.0 built a typed object for every tree, about 3 ms each: two minutes on 38,000 folders. Ids are still checked against the object-id form.</li><li><b>The flattened head is cached,</b> per process and on disk under <code>.sg_vault/local/flat-cache/&lt;tree id&gt;.json</code>. A tree id is a content address, so the cache never needs invalidating. The newest two heads are kept. The cache is versioned, validated when read, and checked against the root tree; anything wrong in it is rebuilt.</li><li><b>The tree builder is linear.</b> It used to scan every folder for each folder's children, which was quadratic: the 47-minute first commit.</li><li><b>A commit builds only what changed.</b> A file whose size and content hash match the head keeps its entry without being read. A folder whose contents are all unchanged keeps its tree id. A one-file commit builds the folders on that file's path and nothing else. The ids are exactly those a full build gives: the tests compare both, and a fuzzer of about 430 commits compared every head against a full rebuild.</li><li><b><code>status</code> no longer hashes every file.</b> A scan cache (<code>.sg_vault/local/scan-cache.json</code>) records each file's hash under git's index key: modification time, change time, size, inode and device. A file is trusted only if all five match and it was last modified more than two seconds before the scan began.</li><li><b>Path checks are memoised,</b> and ignore rules are cached per folder. The scan takes one <code>lstat</code> per file.</li><li><b>A push no longer walks every tree when the server has nothing new.</b> If the server's head is the one this clone last accepted, and every object of it is local, the implicit pull skips the walk. Any doubt takes the full fetch, as before.</li><li><b><code>history log</code> diffs each commit against its parent,</b> walking only where tree ids differ, instead of flattening every commit in full. Its output is byte-identical to 0.24.0's.</li><li><b><code>sgit pull</code> lists every commit the branch gained,</b> with its date, even when <code>status</code> or a pack had already brought the objects. It used to print "0 new commits" in that case. The list is exact under a merge with one machine's clock behind.</li></ul>
+<h2 id="4-a-bug-found-before-release-and-closed">4. A bug found before release, and closed</h2>
+<p>A review of the branch on 26 October found that the first form of the scan cache trusted a file whose size and modification time were unchanged. That form was briefly on dev as <b>0.24.1</b>, never on PyPI.</p>
+<ul><li><b>What went wrong:</b> an edit that kept a file's size and modification time was invisible. A restored mtime, <code>cp -p</code>, <code>rsync -t</code>, an unpacked zip or tar and a same-size <code>mv</code> all do that. <code>commit</code> skipped the edit, and <code>pull</code> then overwrote it with the incoming version.</li><li><b>The fix:</b> the cache now keys on the change time, inode and device as well, which no ordinary tool can set back. It records a file only when nothing moved while it was read. And <code>pull</code> always re-reads the files a merge would touch before it decides the working tree is clean.</li><li><b>Confirmed</b> with the review's three reproductions, each now behaving exactly as 0.24.0 does, and a test for each.</li></ul>
+<p>If you installed 0.24.1 from dev, update: its cache file is discarded and rebuilt automatically.</p>
+<h2 id="5-what-is-on-disk-now">5. What is on disk now</h2>
+<p>Two new files in each clone's <code>.sg_vault/local/</code>, both readable by you alone (mode 0600):</p>
+<div class="tablewrap"><table><thead><tr><th>File</th><th>Holds</th><th>Delete it?</th></tr></thead><tbody><tr><td><code>flat-cache/&lt;tree id&gt;.json</code></td><td>the head's paths, sizes, content hashes, types and folder tree ids; the newest two heads</td><td>safe; rebuilt on the next command</td></tr><tr><td><code>scan-cache.json</code></td><td>every working-copy path with its timestamps, size, inode and hash</td><td>safe; the next <code>status</code> re-reads every file</td></tr></tbody></table></div>
+<p>They hold <b>file names in clear</b>, next to the vault key that is already there (threat model TM-R41):</p>
+<ul><li><code>history diff</code> against an old commit caches that commit's names, including files deleted since;</li><li>a sparse clone caches names it never fetched.</li></ul>
+<p>Backups made with <code>sgit vault backup</code> do not include them. Under the proposed <a href="../dev/sealed-vault-keys/index.html">sealed vault keys</a>, they would be encrypted or kept in memory.</p>
+<p><b>Compatibility:</b></p>
+<ul><li>a clone used with 0.25.0 still works with 0.24.0, which ignores the new files;</li><li>0.24.0 and 0.25.0 read each other's commits as clean;</li><li>vaults, the server and pack mode are unchanged.</li></ul>
+<h2 id="6-still-slow-or-not-covered">6. Still slow, or not covered</h2>
+<ul><li><b>A <code>pull</code> that brings commits pushed by another clone</b> still walks the new head's trees the old way: a minute or two on the newsroom's vault, against hours before.</li><li><b>A three-way merge,</b> when two clones changed the same branch, still builds the whole tree.</li><li><b><code>push</code> still walks the working tree once</b> looking for <code>.conflict</code> files: about 4 s on a large vault.</li><li><b><code>pull</code>'s list of new commits reads the clone's whole history,</b> about 0.4 ms a commit. That is half a second on 1,229 commits and about 2 s on 5,000, even when nothing is new.</li><li><b>On Windows,</b> Python's change time is the creation time. An edit that keeps a file's size and restores its modification time may still go unseen there. Linux and macOS are covered.</li></ul>
+<p><i>Sources: the CLI's CHANGELOG and its response notes of 26 October 2026 under <code>team/humans/dinis_cruz/claude-code-web/10/26/</code>; the newsroom's slowness report of the same day; cli.sgit.ai's two reviews of the branch, run against SGit-AI__CLI at <code>c6c48187</code> and <code>3ffcb5c7</code>, with the full test suite (4,588 passed), the review's reproductions, a fuzzer of about 430 commits, and the timings above on a vault of 76,000 files.</i></p>
+<div class="pagenav"><a href="../docs/send-a-vault-key.html">← Send a vault key to the registry</a><a href="../docs/how-to/claude-team-egress.html">Using sgit from Claude on a Team or Enterprise plan: the network allowlist →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../docs/update-to-0-25-0.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/update-to-0-25-0.md"><code>admin/content/docs/update-to-0-25-0.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../docs/update-to-0-25-0.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+    <a href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+    <a href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+    <a href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+    <a href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

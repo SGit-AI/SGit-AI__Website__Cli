@@ -26,6 +26,7 @@
   <url><loc>https://cli.sgit.ai/articles/is-there-any-overhead.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/keys-the-way-git-does-it.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/one-vault-ten-agents-measured.html</loc></url>
+  <url><loc>https://cli.sgit.ai/articles/pack-indexes-shipped.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/pack-mode-four-rounds.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/pack-mode-read-closely.html</loc></url>
   <url><loc>https://cli.sgit.ai/articles/policies-the-vault-enforces.html</loc></url>
@@ -71,6 +72,7 @@
   <url><loc>https://cli.sgit.ai/docs/update-to-0-21-0.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/update-to-0-24-0.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/update-to-0-25-0.html</loc></url>
+  <url><loc>https://cli.sgit.ai/docs/update-to-0-26-0.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/vault-messaging.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/what-is-sgit.html</loc></url>
   <url><loc>https://cli.sgit.ai/index.html</loc></url>
@@ -78,6 +80,7 @@
   <url><loc>https://cli.sgit.ai/reference/cache.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/cat.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/check.html</loc></url>
+  <url><loc>https://cli.sgit.ai/reference/checkout.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/clone-branch.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/clone-headless.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/clone-range.html</loc></url>
@@ -120,8 +123,17 @@
   <url><loc>https://cli.sgit.ai/research/indexes-and-caches-review.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/keys-pki-copy-on-write-coverage-map.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/native-pki-vault-mode.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/newsroom-first-morning-response.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/non-ascii-paths-refuse-dont-rewrite.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-carried-indexes-architecture.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-cli-self-review.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-dev-pack-review.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-release-readiness.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-review-fixes.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-review-round-1.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-review-round-2.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-review-round-3.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/pack-indexes-steps-shipped.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-feature-reference.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-idea-to-release.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/pack-mode-round-trip-measured.html</loc></url>

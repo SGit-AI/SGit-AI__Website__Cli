@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>
+.cols{grid-template-columns:1.05fr 1fr;gap:34px;align-items:start}
+.tl{position:relative;margin:4px 0 0 10px;padding-left:30px;border-left:3px solid var(--line)}
+.ev{position:relative;margin:0 0 11px}
+.ev:before{content:"";position:absolute;left:-40px;top:5px;width:14px;height:14px;border-radius:99px;background:var(--panel);border:3px solid var(--teal)}
+.ev.site:before{border-color:var(--blue)}
+.ev.turn:before{border-color:var(--warm);background:var(--warm-bg)}
+.ev .when{font:700 12px/1 var(--mono);color:var(--dim);letter-spacing:.03em}
+.ev .what{font-size:15px;margin-top:3px;line-height:1.35} .ev .what b{color:var(--fg)}
+.who{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;margin-left:6px}
+.who.cli{color:var(--teal)} .who.site{color:var(--blue)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.t{border:2px solid var(--line);border-radius:10px;background:var(--panel);padding:10px 14px}
+.t .k{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim2)}
+.t .v{font:400 30px/1.1 var(--serif);color:var(--teal);margin:4px 0 2px}
+.t .v s{font-size:20px;color:var(--dim2);text-decoration:none;margin-right:6px}
+.t .n{font-size:13px;color:var(--dim)}
+.t.cost .v{color:var(--warm)}
+.lab{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);margin:0 0 8px}
+</style></head><body>
+<h1>From "the first morning on 0.25.0" to sgit-ai 0.26.0, in eighteen hours</h1>
+<p class="sub">Every document and commit on the way, 26 and 27 October 2026, UTC. Teal: the CLI team. Blue: cli.sgit.ai's build agent. Orange: the points where the design or the release moved. Right: the CLI team's release measurement on a 76,000-file vault in 58,553 folders, 0.25.0 against 0.26.0, network time excluded.</p>
+<div class="grid cols">
+ <div>
+  <div class="lab">The day</div>
+  <div class="tl">
+   <div class="ev site"><div class="when">26 Oct · 07:41<span class="who site">site</span></div><div class="what"><b>0.25.0 is out</b>, with its release notes</div></div>
+   <div class="ev"><div class="when">10:41 · 11:19<span class="who cli">cli</span></div><div class="what"><b>The newsroom's first morning</b>: a pull of 566 s; a review of every index and cache</div></div>
+   <div class="ev turn"><div class="when">14:10<span class="who cli">cli</span></div><div class="what"><b>The idea</b>: a pack-resident store, and indexes carried in the packs</div></div>
+   <div class="ev site"><div class="when">14:38 → 16:27<span class="who site">site</span></div><div class="what"><b>Four articles, measured</b>: indexes in the pack; nine graph engines; the writer pays; a delta per commit</div></div>
+   <div class="ev turn"><div class="when">17:01<span class="who site">site</span></div><div class="what"><b>The dev pack</b>: the format, the writer, the reader, the tests, in five pages</div></div>
+   <div class="ev"><div class="when">17:13 → 20:09<span class="who cli">cli</span></div><div class="what"><b>Reviewed, then built</b>: the writer, the reader, the selective working copy, the pack store, path order and ranges</div></div>
+   <div class="ev"><div class="when">21:05 · 21:22<span class="who cli">cli</span> <span class="who site">site</span></div><div class="what"><b>Two reviews</b>: 18 findings of their own; 13 of mine, 2 of them blocking</div></div>
+   <div class="ev"><div class="when">22:06 · 23:50<span class="who cli">cli</span> <span class="who site">site</span></div><div class="what"><b>Every blocker fixed</b>, and re-checked: "merge to dev: yes"</div></div>
+   <div class="ev"><div class="when">27 Oct · 00:46 → 01:23<span class="who cli">cli</span> <span class="who site">site</span></div><div class="what"><b>A third review (9 fixed), release readiness, the dev merge, round 3</b>: ready, with one finding to document</div></div>
+   <div class="ev turn"><div class="when">01:21<span class="who cli">cli</span></div><div class="what"><b>Merged to main as 0.26.0</b></div></div>
+  </div>
+ </div>
+ <div>
+  <div class="lab">What changed, 76,000 files</div>
+  <div class="tiles">
+   <div class="t"><div class="k">full clone</div><div class="v"><s>117 s</s>61 s</div><div class="n">the file map from the index, no tree walk</div></div>
+   <div class="t"><div class="k">clone --no-checkout</div><div class="v">28 s</div><div class="n">objects and index; the agent checks out what it needs</div></div>
+   <div class="t"><div class="k">clone --path, 1,520 files</div><div class="v"><s>36 s</s>2.8 s</div><div class="n">12.5 MB in 24 ranged reads, not the 88 MB pack</div></div>
+   <div class="t"><div class="k">clone --pack-store</div><div class="v">26 s</div><div class="n">packs kept whole, objects read by offset</div></div>
+   <div class="t"><div class="k">pull of a pass</div><div class="v"><s>81 s</s>6.6 s</div><div class="n">the first-morning pull fix, then the change lists</div></div>
+   <div class="t"><div class="k">history log</div><div class="v"><s>3.2 s</s>0.45 s</div><div class="n">1.1 s on a fresh clone after compaction (6.1 s)</div></div>
+   <div class="t"><div class="k">push of 5 files</div><div class="v"><s>6.2 s</s>4.5 s</div><div class="n">5.2 s at worst; the index pack rides along</div></div>
+   <div class="t cost"><div class="k">first push · compaction</div><div class="v"><s>47 s</s>83 s</div><div class="n">the price: the snapshot index, once per vault and per compaction</div></div>
+  </div>
+ </div>
+</div>
+<div class="foot"><b>The writer pays once, at push time; every reader after it skips the walk.</b><span>cli.sgit.ai · 27 October 2026 · commit times from SGit-AI__CLI and SGit-AI__Website__Cli</span></div>
+</body></html>

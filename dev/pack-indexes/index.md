@@ -7,7 +7,9 @@
 ---
 # Pack indexes for sgit: a design pack
 
-**Status:** design, 26 October 2026, for the sgit CLI team. Nothing here is built. It is written against SGit-AI__CLI at `c0694753` (branch `claude/charming-babbage-5hzcxq`, after 0.25.0) and the code names below are from that commit.
+> **Shipped, 27 October 2026.** Phases 1 to 3 of this pack, with a selective working copy the CLI team added, shipped in **sgit-ai 0.26.0**: [the release notes](../../docs/update-to-0-26-0.md), and [the story, the reviews and the measurements](../../articles/pack-indexes-shipped.md). Phase 4, reading a file with no clone, is not built. The text below is the design as written.
+
+**Status:** design, 26 October 2026, for the sgit CLI team. Nothing here was built when it was written. It is written against SGit-AI__CLI at `c0694753` (branch `claude/charming-babbage-5hzcxq`, after 0.25.0) and the code names below are from that commit.
 
 **Compatibility is a requirement.**
 - A vault with index packs works unchanged for every client from 0.24.0 to 0.25.0. They never list the folder the index packs live in.

@@ -1,0 +1,18 @@
+{
+ "A commit, 76,000 files": 55.56,
+ "A first push": 60.08,
+ "host packs MB": 69.1,
+ "host index packs MB": 0.0,
+ "B clone, full": 84.01,
+ "B .sg_vault MB": 76.7,
+ "E clone --path raw/c09/s4": 33.76,
+ "E requests": 5,
+ "E range MB": 0.0,
+ "E whole-file MB": 69.15,
+ "E files in scope": 1520,
+ "A commit, a 300-file pass": 4.99,
+ "A push of the pass": 5.18,
+ "A push of a 5-file commit": 4.63,
+ "B pull of both": 5.47,
+ "history log, 3 commits with counts": 3.29
+}

@@ -31,6 +31,32 @@ GH = "https://github.com/SGit-AI/SGit-AI__CLI/blob"
 
 # source (under FOLDER), slug, kind, research topics (admin/content/research/topics/<id>.md), tags, summary
 DOCS = [
+    ('10/26/response__newsroom-first-morning-on-0-25-0.md', 'newsroom-first-morning-response', 'response',
+     'scale', 'packs, 0.25.0, newsroom, scan cache, flat cache, pull, performance',
+     'The CLI team\'s answer to the newsroom\'s first morning on 0.25.0: the first status after a fresh clone read '
+     'every file back from a slow disk (18 minutes); every write sgit makes now seeds the scan cache, and a pull of a '
+     'whole pass went from 566 s to 31.7 s.'),
+    ('10/26/review__pack-indexes-dev-pack.md', 'pack-indexes-dev-pack-review', 'review',
+     'scale, write-path', 'packs, indexes, design review, selective working copy',
+     'The CLI team\'s review of cli.sgit.ai\'s pack-indexes dev pack before building it: what to keep, what to change, '
+     'the selective working copy added, and the plan in six steps.'),
+    ('10/26/response__pack-indexes-steps-1-to-5-shipped.md', 'pack-indexes-steps-shipped', 'response',
+     'scale, write-path', 'packs, indexes, pack store, scoped clones, selective working copy',
+     'The CLI team\'s note on shipping steps 1 to 5 of the pack-indexes plan: the index writer and reader, the '
+     'selective working copy, the pack store and path-ordered packs with ranged scoped clones, and eight decisions '
+     'taken alone.'),
+    ('10/26/review__pack-indexes-branch-quality-security-and-0-25-side-effects.md', 'pack-indexes-cli-self-review', 'review',
+     'scale, security-review', 'packs, indexes, security, quality, review',
+     'The CLI team\'s own quality, security and side-effect review of its pack-indexes branch, F1 to F12 and S1 to S6, '
+     'including a lying folder member that could make every puller delete a file.'),
+    ('10/26/response__review-fixes-pack-indexes-branch.md', 'pack-indexes-review-fixes', 'response',
+     'scale, security-review', 'packs, indexes, fixes, review',
+     'The CLI team\'s answer to both reviews of the pack-indexes branch: every finding fixed, documented or deferred '
+     'with its reason.'),
+    ('10/26/release-readiness__pack-indexes-branch.md', 'pack-indexes-release-readiness', 'measurement',
+     'scale', 'packs, indexes, release, 0.26.0, measurements',
+     'The release readiness of the pack-indexes branch: a third, independent review (R1 to R9, fixed), the build '
+     'agent\'s notes closed, and every flow measured against 0.25.0 on a 76,000-file vault.'),
     ('10/26/architecture__pack-resident-store-and-pack-carried-indexes.md', 'pack-carried-indexes-architecture',
      'architecture', 'scale, write-path', 'packs, indexes, sqlite, lets, sparse, store, 0.25.0',
      'The CLI team\'s exploration after the 0.25.0 field report: keep the packs a clone downloads and read objects in '

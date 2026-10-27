@@ -9,7 +9,7 @@
 
 Clone a vault from the remote server.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.25.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit clone [options] <vault_key> [directory]
@@ -26,7 +26,9 @@ sgit clone [options] <vault_key> [directory]
 | `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
 | `--depth` | Shallow clone: fetch only the newest N commits of history (1 = HEAD only). Commit, push and pull work normally; history commands stop at the boundary (sgit fetch --unshallow). |
 | `--force` | Delete existing directory and re-clone from scratch |
+| `--no-checkout` | Selective working copy: the vault's objects and index, no file written; sgit checkout <path> / --since-pull writes what you need (on a pack vault every object is already local, so a checkout is a local write) |
 | `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--pack-store` | Pack vault: keep the packs in place and read objects from them by offset instead of extracting every object into bare/data/ (sgit pack store status \| extract \| rebuild) |
 | `--path` | Scoped clone: hold only this vault folder (repeatable). Other folders are carried by id and never downloaded; commits and pulls touch only the held folders. Widen later with sgit fetch <folder>. |
 | `--read-key` | Read-only clone using a 64-hex AES-256 read key. When set, the positional vault_key is the vault_id only (no passphrase prefix). Equivalent shorthand: pass "<HEX>:<vault_id>" as the positional. |
 | `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |

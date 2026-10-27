@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.25.0</span>
+  <span class="stage-pill">sgit-ai v0.26.0</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -85,6 +85,7 @@
       <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
       <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
       <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
       <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
@@ -92,7 +93,6 @@
       <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
       <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
       <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
-      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -116,7 +116,7 @@
 <main class="doc wide">
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / Command reference</div>
 <h1 id="command-reference">Command reference</h1>
-<p>All <b>165 commands</b> of <b>sgit-ai v0.25.0</b>, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (<code>CLI__Reference</code>, behind <code>sgit help all --format json</code>, schema <code>sgit-cli-reference-v1</code>); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.</p>
+<p>All <b>174 commands</b> of <b>sgit-ai v0.26.0</b>, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (<code>CLI__Reference</code>, behind <code>sgit help all --format json</code>, schema <code>sgit-cli-reference-v1</code>); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.</p>
 <ul><li>The same data, as published: <a href="../reference/sgit-cli-reference.json">sgit-cli-reference.json</a>. Diff two releases' files to see exactly what changed.</li><li>Your installed version, offline: <code>sgit help all</code>, or <code>sgit help &lt;command&gt;</code>.</li><li>Global options go before the command: <code>sgit [--base-url URL] [--token TOKEN] [--vault PATH] [--debug] &lt;command&gt; ...</code>.</li></ul>
 <p>Where to put a new command is a rule of the CLI (its <code>CLAUDE.md</code>): a daily-use verb at the top level, anything about the vault as a whole under <code>vault</code>, anything about commits under <code>history</code>, checks under <code>check</code>.</p>
 <h3 id="daily-work">Daily work</h3>
@@ -140,7 +140,7 @@
 <h3 id="for-developers-of-sgit">For developers of sgit</h3>
 <div class="tablewrap"><table><thead><tr><th>Command</th><th>Subcommands</th><th>What it does</th></tr></thead><tbody><tr><td><a href="../reference/dev.html"><code>sgit dev</code></a></td><td>26</td><td>Dev/perf instrumentation tools (sgit dev &lt;tool&gt;)</td></tr></tbody></table></div>
 <h3 id="not-yet-grouped">Not yet grouped</h3>
-<div class="tablewrap"><table><thead><tr><th>Command</th><th>Subcommands</th><th>What it does</th></tr></thead><tbody><tr><td><a href="../reference/pack.html"><code>sgit pack</code></a></td><td>6</td><td>Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats)</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Command</th><th>Subcommands</th><th>What it does</th></tr></thead><tbody><tr><td><a href="../reference/checkout.html"><code>sgit checkout</code></a></td><td></td><td>Write tracked files into a selective working copy (a clone made with --no-checkout or --sparse); sgit branch checkout &lt;target&gt; switches branches</td></tr><tr><td><a href="../reference/pack.html"><code>sgit pack</code></a></td><td>14</td><td>Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats)</td></tr></tbody></table></div>
 <h2 id="how-this-page-is-made">How this page is made</h2>
 <p><code>admin/content/reference/sgit-cli-reference.json</code> is the output of <code>sgit help all --format json</code> from the release named above, installed from PyPI. The build turns it into one page per top-level command. To update: install the new release, run the command into that file, rebuild, and say in the release history which version the reference moved to.</p>
 
@@ -188,11 +188,11 @@
   <div>
     <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
     <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
     <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
     <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
     <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
-    <a href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
   </div>
   <div>
     <h4>Site</h4>

@@ -1,0 +1,23 @@
+{
+ "A commit, 76,000 files": 51.21,
+ "A first push": 93.52,
+ "host packs MB": 101.7,
+ "host index packs MB": 32.6,
+ "B clone, full": 77.43,
+ "B .sg_vault MB": 109.3,
+ "C clone --no-checkout": 57.94,
+ "D clone --pack-store": 61.25,
+ "D .sg_vault MB": 161.7,
+ "E clone --path raw/c09/s4": 2.98,
+ "E requests": 17,
+ "E range MB": 13.72,
+ "E whole-file MB": 0.0,
+ "E files in scope": 1520,
+ "A commit, a 300-file pass": 4.84,
+ "A push of the pass": 7.43,
+ "A push of a 5-file commit": 6.95,
+ "B pull of both": 5.8,
+ "C pull --no-checkout": 1.07,
+ "D pull (pack store)": 6.23,
+ "history log, 3 commits with counts": 3.41
+}

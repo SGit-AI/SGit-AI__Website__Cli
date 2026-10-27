@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Response: &quot;sgit-ai 0.25.0 in the newsroom, first morning&quot; (conductor@php.newsroom, 26 Oct 2026) · cli.sgit.ai</title>
+<meta name="description" content="The CLI team&#x27;s answer to the newsroom&#x27;s first morning on 0.25.0: the first status after a fresh clone read every file back from a slow disk (18 minutes); every write sgit makes now seeds the scan cache, and a pull of a whole pass went from 566 s to 31.7 s.">
+<link rel="canonical" href="https://cli.sgit.ai/research/newsroom-first-morning-response.html">
+<link rel="alternate" type="text/markdown" href="../research/newsroom-first-morning-response.md">
+<meta property="og:title" content="Response: &quot;sgit-ai 0.25.0 in the newsroom, first morning&quot; (conductor@php.newsroom, 26 Oct 2026)">
+<meta property="og:description" content="The CLI team&#x27;s answer to the newsroom&#x27;s first morning on 0.25.0: the first status after a fresh clone read every file back from a slow disk (18 minutes); every write sgit makes now seeds the scan cache, and a pull of a whole pass went from 566 s to 31.7 s.">
+<meta property="og:url" content="https://cli.sgit.ai/research/newsroom-first-morning-response.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Response: &quot;sgit-ai 0.25.0 in the newsroom, first morning&quot; (conductor@php.newsroom, 26 Oct 2026)</div>
+<h1 id="response-sgit-ai-0-25-0-in-the-newsroom-first-morning-conduc">Response: "sgit-ai 0.25.0 in the newsroom, first morning" (conductor@php.newsroom, 26 Oct 2026)</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-26 · 10:41 UTC</span><span class="k">Kind</span><span class="v">response</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/scale.html">scale</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/09172b0f3e50fc15712e7418ce8c46b56416d832/team/humans/dinis_cruz/claude-code-web/10/26/response__newsroom-first-morning-on-0-25-0.md"><code>team/humans/dinis_cruz/claude-code-web/10/26/response__newsroom-first-morning-on-0-25-0.md</code></a> in SGit-AI__CLI at <code>09172b0</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Brief:</b> <code>2026-10-26__brief__for-the-sgit-cli-team-0-25-0-in-the-newsroom.md</code>. <b>In one line:</b> items 1, 3 and 5 are fixed on the branch (the first command after a fresh clone no longer reads the files it just wrote; <code>sgit version</code> names a shadowing install); item 2, the pull of a whole pass, is measured below with where the time goes and what is fixed now versus next; item 4 needs nothing.</p>
+<h2 id="1-the-first-status-after-a-clone-items-1-and-3">1. The first <code>status</code> after a clone (items 1 and 3)</h2>
+<p><b>What it was doing.</b> Exactly what the brief suspected: reading every file's content where a stat would do. The scan cache (0.25.0) records a file only when a scan has hashed it, and a fresh clone has no scan behind it, so the first status read all 4.2 GB back from the session's scratch disk. The researcher's 11 s and the curator's 18 min on the same vault are the same read on two disks: 19.6 s user + 41.5 s sys is the hashing and the syscalls; the 17 minutes between is the disk. The correspondent's 226 s on the read-only clone is the same read (a read-only pull's dirty-tree check scans the working copy).</p>
+<p><b>What changed.</b> sgit wrote those files itself, so it knows their hashes. Every working-copy write — clone extraction, pull, read-only pull, branch switch, history edits, scope widening — now records each file in the scan cache under the hash of the bytes written (the real hash of the plaintext, never the tree entry's claim, which is only what the committer said). The next status, commit or pull stats the file and moves on. Two details:</p>
+<ul><li>the racy rule still holds: a scan that starts within two seconds of the write reads the file, and keeps the record when the hash it computes is the recorded one, so a status immediately after a clone is not the one that throws the seed away;</li><li>a full clone now extracts through the flat map and writes the head's flat cache, so that first status opens no tree either (the tree walk through the schema was the other half of the researcher's 11 s).</li></ul>
+<p><b>Measured</b> on the synthetic vault (228,000 files, 305,230 objects, in-memory host, a fast local disk):</p>
+<div class="tablewrap"><table><thead><tr><th></th><th>before</th><th>after</th></tr></thead><tbody><tr><td>clone</td><td>275 s</td><td>216 s</td></tr><tr><td>first <code>status</code> after the clone</td><td>20.1 s (every file read and hashed)</td><td>8.2 s</td></tr><tr><td>second <code>status</code></td><td>7.4 s</td><td>6.5 s</td></tr></tbody></table></div>
+<p>Here the disk is fast, so "before" is the hashing; on the curator's session it was the 18 minutes. The clone itself also writes the scan cache in the same pass (a hash per file as it is written, no second read).</p>
+<p><b>Lazily or in the background?</b> Not needed once the seed exists, and a lazy build would be wrong: a status must know whether a file changed, and only a hash (or a record of what sgit wrote) can say so. The one case left is a clone made by 0.24.x or 0.25.0 and then upgraded: its first status still reads everything once. Agents on fresh containers never hit that.</p>
+<h2 id="2-the-pull-of-a-whole-pass-item-2">2. The pull of a whole pass (item 2)</h2>
+<p><b>Measured</b> on the synthetic vault (228,000 files), a 300-file pass pushed from one clone and pulled in another, under cProfile: <b>566 s before, 31.7 s after.</b> Where the 566 s went, and what changed:</p>
+<div class="tablewrap"><table><thead><tr><th>Cost</th><th>Before</th><th>Cause</th><th>Now</th></tr></thead><tbody><tr><td>the fetch's tree walk</td><td>347 s (154,454 tree loads through <code>Type_Safe.from_json</code>)</td><td>every tree of the new head was opened to find what was missing, twice</td><td>the walk does not open a folder of the head this clone last accepted (that record is written only once every object of the head was local), and the trees it does open are read as JSON: 8 trees opened for a two-leaf change on a 24-tree test vault</td></tr><tr><td>writing the working copy</td><td>171 s (229,310 files written for 301 changed)</td><td>the merge checked out the whole merged tree</td><td>only the files whose blob changed are written</td></tr><tr><td>flattening the new head</td><td>~45 s</td><td>a full walk, the cache being for the old head</td><td>the new head's map is built by copying the unchanged folders from the cached old head</td></tr></tbody></table></div>
+<p>What is left in the 31.7 s is the vault's size, in seconds: the dirty-tree scan (15 s, one <code>lstat</code> per file over 228k files), the missing-blob check (6 s, <code>exists</code> over 235k ids) and pruning empty folders after deletes (5 s). On the curator's clone, the 8 minutes also held the disk writes of 6,807 files, which stay.</p>
+<h2 id="3-sgit-version-and-a-shadowing-install-item-5">3. <code>sgit version</code> and a shadowing install (item 5)</h2>
+<p><code>sgit version</code> now prints a note when the <code>sgit</code> first on the PATH is another program, with that one's version when it answers:</p>
+<pre><code class="lang-text">sgit-ai 0.25.1
+note: the `sgit` first on your PATH is /usr/local/bin/sgit (sgit-ai 0.24.0), not this one
+      (/home/agent/.venv/bin/sgit). Commands typed as `sgit` run that one; upgrade it too, or put this one first on the PATH.</code></pre>
+<p>It compares the resolved paths and, failing that, the entry scripts' bytes, so a venv's <code>sgit</code> and the same script reached through another path are not reported as two installs. Only <code>sgit version</code> checks (every command would cost a PATH search and a subprocess per invocation); the wake step that runs <code>sgit version</code> first gets it.</p>
+<h2 id="4-commit-and-push-item-4">4. Commit and push (item 4)</h2>
+<p>Nothing to do: 25 s and 67 s for phase 1 of a pass on 79,000 files, 4 s and 16 s for phase 2, are the branch working as intended, and the 35-minute pass is the capture. If a pass ever shows a commit back above a minute on a small change, send the run record: that would be the incremental build missing a case.</p>
+<h2 id="5-files">5. Files</h2>
+<p><code>sgit_ai/core/Vault__Sync__Base.py</code> (<code>_checkout_flat_map</code> seeds; <code>_scan_cache_seed</code>; a confirmed seed survives a racy scan), <code>sgit_ai/workflow/clone/Step__Clone__Extract_Working_Copy.py</code> (flat-map extraction, flat cache written, a refused tree still refuses the clone), <code>sgit_ai/storage/Vault__Sub_Tree.py</code> (the flat cache is written through to a vault that has none), <code>sgit_ai/cli/CLI__Main.py</code> (<code>cmd_version</code>, <code>path_shadow_note</code>). Tests: <code>tests/unit/sync/test_Vault__Sync__Scan_Cache__Seeded_On_Write.py</code>, <code>tests/unit/cli/test_CLI__Version__Path_Note.py</code>.</p>
+<div class="pagenav"><a href="../research/indexes-and-caches-review.html">← Review: indexes and caches across sgit, after 0.25.0</a><a href="../research/pack-indexes-release-readiness.html">Release readiness: the pack-indexes branch (27 Oct 2026) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/newsroom-first-morning-response.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/newsroom-first-morning-response.md"><code>admin/content/research/newsroom-first-morning-response.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/newsroom-first-morning-response.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

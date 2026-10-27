@@ -1,7 +1,7 @@
 {
   "schema": "sgit-cli-reference-v1",
-  "cli_version": "v0.25.0",
-  "command_count": 165,
+  "cli_version": "v0.26.0",
+  "command_count": 174,
   "commands": [
     {
       "path": "branch",
@@ -410,6 +410,101 @@
       ]
     },
     {
+      "path": "checkout",
+      "help": "Write tracked files into a selective working copy (a clone made with --no-checkout or --sparse); sgit branch checkout <target> switches branches",
+      "options": [
+        {
+          "flags": [
+            "--all"
+          ],
+          "help": "Write every tracked file; the clone becomes a full one",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--changed-since"
+          ],
+          "help": "Write what changed between COMMIT and HEAD",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--directory"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--force"
+          ],
+          "help": "Overwrite uncommitted edits at the paths written (by default they are kept)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--since-pull"
+          ],
+          "help": "Write what the last pull added or changed",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "paths",
+          "help": "Files or folders to write (a folder means everything under it)",
+          "required": false
+        }
+      ]
+    },
+    {
       "path": "clone",
       "help": "Clone a vault from the remote server",
       "options": [
@@ -443,9 +538,23 @@
         },
         {
           "flags": [
+            "--no-checkout"
+          ],
+          "help": "Selective working copy: the vault's objects and index, no file written; sgit checkout <path> / --since-pull writes what you need (on a pack vault every object is already local, so a checkout is a local write)",
+          "choices": []
+        },
+        {
+          "flags": [
             "--no-verify-tls"
           ],
           "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--pack-store"
+          ],
+          "help": "Pack vault: keep the packs in place and read objects from them by offset instead of extracting every object into bare/data/ (sgit pack store status | extract | rebuild)",
           "choices": []
         },
         {
@@ -1389,7 +1498,7 @@
           "flags": [
             "--all"
           ],
-          "help": "Fetch all unfetched files (convert sparse clone to full)",
+          "help": "Fetch every tracked file (the clone stays sparse; sgit checkout --all makes it full)",
           "choices": []
         },
         {
@@ -2537,6 +2646,268 @@
       ]
     },
     {
+      "path": "pack index",
+      "help": "Index packs beside the data packs (build the missing ones, verify, stats)",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "pack index build",
+      "help": "Write the index pack of every data pack that lacks one (needs the write key)",
+      "options": [
+        {
+          "flags": [
+            "--all"
+          ],
+          "help": "Also rewrite the newest snapshot index",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pack index stats",
+      "help": "Index packs per folder, sizes, gaps, generations",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pack index verify",
+      "help": "Check every index pack against its data pack and the trees (read-only)",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
       "path": "pack ls",
       "help": "List the packs on the host",
       "options": [
@@ -2606,6 +2977,247 @@
     {
       "path": "pack stats",
       "help": "Packs and bytes on the host; local compression ratio",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pack store",
+      "help": "The local pack store of a clone made with --pack-store (packs kept in place)",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": []
+    },
+    {
+      "path": "pack store extract",
+      "help": "Write every packed object loose and drop the kept packs: an ordinary clone from here",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pack store rebuild",
+      "help": "Rebuild the object table from the kept pack files",
+      "options": [
+        {
+          "flags": [
+            "--base-url"
+          ],
+          "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-verify-tls"
+          ],
+          "help": "Skip TLS certificate verification (staging / self-signed only)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--remote"
+          ],
+          "help": "Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--token"
+          ],
+          "help": "SG/Send access token (overrides global --token and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--transport"
+          ],
+          "help": "How to reach the vault: auto (default \u2014 a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only)",
+          "choices": [
+            "api",
+            "auto",
+            "local",
+            "static"
+          ]
+        },
+        {
+          "flags": [
+            "--verify-tls"
+          ],
+          "help": "Verify TLS certificates (default)",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "directory",
+          "help": "",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "pack store status",
+      "help": "Packs kept, objects read from them, loose objects",
       "options": [
         {
           "flags": [
@@ -2994,6 +3606,13 @@
             "--base-url"
           ],
           "help": "API base URL (overrides --remote, global --base-url, and saved config)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-checkout"
+          ],
+          "help": "Selective working copy only: move the head and list what changed, write no file (sgit checkout --since-pull writes it)",
           "choices": []
         },
         {

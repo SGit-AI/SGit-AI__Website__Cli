@@ -9,7 +9,7 @@
 
 Fetch file content on demand (sparse clone).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.25.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit fetch [options] [path] [directory]
@@ -22,7 +22,7 @@ sgit fetch [options] [path] [directory]
 
 | Option | What it does |
 |---|---|
-| `--all` | Fetch all unfetched files (convert sparse clone to full) |
+| `--all` | Fetch every tracked file (the clone stays sparse; sgit checkout --all makes it full) |
 | `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
 | `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
 | `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |

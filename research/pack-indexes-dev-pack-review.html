@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Review: the pack-indexes dev pack (cli.sgit.ai/dev/pack-indexes, 26 Oct 2026) · cli.sgit.ai</title>
+<meta name="description" content="The CLI team&#x27;s review of cli.sgit.ai&#x27;s pack-indexes dev pack before building it: what to keep, what to change, the selective working copy added, and the plan in six steps.">
+<link rel="canonical" href="https://cli.sgit.ai/research/pack-indexes-dev-pack-review.html">
+<link rel="alternate" type="text/markdown" href="../research/pack-indexes-dev-pack-review.md">
+<meta property="og:title" content="Review: the pack-indexes dev pack (cli.sgit.ai/dev/pack-indexes, 26 Oct 2026)">
+<meta property="og:description" content="The CLI team&#x27;s review of cli.sgit.ai&#x27;s pack-indexes dev pack before building it: what to keep, what to change, the selective working copy added, and the plan in six steps.">
+<meta property="og:url" content="https://cli.sgit.ai/research/pack-indexes-dev-pack-review.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Review: the pack-indexes dev pack (cli.sgit.ai/dev/pack-indexes, 26 Oct 2026)</div>
+<h1 id="review-the-pack-indexes-dev-pack-cli-sgit-ai-dev-pack-indexe">Review: the pack-indexes dev pack (cli.sgit.ai/dev/pack-indexes, 26 Oct 2026)</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-26 · 17:13 UTC</span><span class="k">Kind</span><span class="v">review</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/scale.html">scale</a> <a class="chip" href="../research/topics/write-path.html">write-path</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/09172b0f3e50fc15712e7418ce8c46b56416d832/team/humans/dinis_cruz/claude-code-web/10/26/review__pack-indexes-dev-pack.md"><code>team/humans/dinis_cruz/claude-code-web/10/26/review__pack-indexes-dev-pack.md</code></a> in SGit-AI__CLI at <code>09172b0</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>Read:</b> the dev pack (index, 01 format, 02 writer, 03 reader, 04 compatibility/security/tests), the three articles behind it (<i>Indexes in the pack</i>, <i>Indexes the writer pays for</i>, <i>A vault is already a graph</i>), the measurements page, the 0.25.0 release notes, and the research index. Checked against the CLI at <code>c069475</code>. <b>Verdict:</b> ready to implement. Phase 1 is specified to the level of function names and member schemas, every code claim I could check holds, it needs no new dependency, and it is better than the architecture I wrote yesterday in the five places where it differs. Section 4 lists what to settle before the first line of code, and section 5 adds the one thing the brief of this afternoon asks for that the pack does not yet have: a working copy the agent builds selectively.</p>
+<h2 id="1-what-i-checked-against-the-code">1. What I checked against the code</h2>
+<div class="tablewrap"><table><thead><tr><th>Dev pack claim</th><th>Code</th><th>Holds</th></tr></thead><tbody><tr><td>0.25.0 refuses an unknown pack member individually, writes the rest, and <code>sync_down</code> then leaves the pack unrecorded, so it is re-downloaded on every pull</td><td><code>extract_pack</code>: <code>member_is_safe</code> per member, <code>refused.append; continue</code>; <code>sync_down</code> records only packs with no refusal</td><td>yes: my "refused whole" was wrong; indexes must not live inside data packs</td></tr><tr><td>0.24.0–0.25.0 never list <code>bare/packs/indexes/</code></td><td><code>sync_down</code> lists <code>PACK_SNAPSHOTS</code> and <code>PACK_COMMITS</code> only</td><td>yes: a separate index pack is invisible to old clients, so no gate is needed</td></tr><tr><td>The header can be signed like a commit</td><td><code>Vault__Commit.signing_bytes</code> (canonical JSON) and <code>PKI__Crypto.sign</code> exist; the clone key is loaded at commit time</td><td>yes</td></tr><tr><td>Members can use the tree primitive</td><td><code>Vault__Crypto.encrypt</code> (random IV, AES-GCM)</td><td>yes</td></tr><tr><td>Ranged reads exist for Phase 2 and 4</td><td><code>Vault__API.fetch_presigned_range(url, start, end)</code> returns bytes, total, partial</td><td>yes; the in-memory test host has no ranged read yet (section 6)</td></tr><tr><td>The writer holds what it needs at push</td><td>the flat cache (<code>flatten</code>, <code>flatten_dirs</code>), the incremental build's changed paths, parents from the commit</td><td>yes</td></tr><tr><td>The sparse semantics the brief needs</td><td><code>Schema__Local_Config.sparse</code>; status and commit already treat a never-fetched tracked file as "not here", never as deleted</td><td>yes, see section 5</td></tr><tr><td>Path order keeps <code>MEMBER_RE</code> and determinism</td><td><code>write_pack</code> sorts ids; order is the writer's choice; extraction sorts by name</td><td>yes</td></tr></tbody></table></div>
+<h2 id="2-where-it-corrects-my-architecture-and-i-agree">2. Where it corrects my architecture, and I agree</h2>
+<ol><li><b>Index packs beside data packs, under <code>bare/packs/indexes/</code>,</b> same names: no member rule to change, no gate, old clients keep working unchanged, rollback is "stop writing them". Mine needed a format feature and locked out 0.25.0. Theirs is strictly better.</li><li><b>No SQLite, no graph engine, no new dependency.</b> Their measurements say dicts win for every question sgit asks (a 7,600-file folder: 2.2 ms in dicts, 48 ms in SQLite, 131 ms in Oxigraph; a merge base with generation numbers: 0.1 ms). Ship JSON members typed at the writer, load dicts at the reader. The local graph view stays optional, outside the CLI.</li><li><b>Indexes stay encrypted on disk; assembly is in memory.</b> Nothing new in clear (T10), and it is already what sealed vault keys will need. Mine put a plaintext SQLite under <code>local/</code>.</li><li><b>Generation numbers in the index, not in commits.</b> Same idea, without touching <code>commit_v1</code>.</li><li><b>Members as sequence numbers with meaning only in the signed header, and an offset table first</b> so a reader opens a 58,598-member index in 50 ms instead of parsing the central directory in 910 ms.</li></ol>
+<p>Two things it adds that I did not have and that matter most to the newsroom: <b>path-ordered data packs with <code>at</code> offsets</b> (one folder = one contiguous range: <code>raw/c09/s4/</code>, 1,520 files, 0.22 MB in one range instead of 30.4 MB in 265), and <b>folder members with subtree totals and both-way cross-references</b> (which paths hold a blob, which commits changed a file), which are the questions the curator and the journalist ask.</p>
+<h2 id="3-numbers-i-trust-and-numbers-i-will-re-measure">3. Numbers I trust and numbers I will re-measure</h2>
+<p>The prototypes are honest about being prototypes. Three figures carry the design and are solid: the flat member (2.42 MB deflated, 0.58 s to inflate and parse 76,000 entries), the commit delta (3.1 KB for five files, 0.92 s for 1,000 commits), and reading an object in place (5 µs). The ones I will re-measure in sgit itself before claiming them: the "first command after clone 0.58 s" (today the clone seeds the flat cache anyway, so the gain is the tree walk on a pull of an unseen head), the pull targets (the 6 s presence check and the stat pass are the floor on the 228,000-file vault, and the stat pass stays), and anything on a cloud disk, which no prototype touched.</p>
+<h2 id="4-to-settle-before-coding">4. To settle before coding</h2>
+<ol><li><b>Signed and unsigned indexes.</b> 03 accepts an unsigned index on a vault without <code>signatures-required</code>. Agreed, with one addition: an index whose <code>author_key_id</code> is not in <code>bare/keys/</code> is treated as unsigned, and <code>sgit pack index verify</code> says which indexes are unsigned, so a vault that turns the policy on later sees what it has.</li><li><b><code>at</code> offsets after compaction.</b> A commit index's <code>data_packs</code> names older packs for unchanged files; compaction moves those packs to <code>archive/</code>. The reader must resolve a pack name in <code>commits/</code> or <code>archive/</code>, and the snapshot index written by compaction must carry <code>at</code> into the snapshot pack for every file. 02 says both; make the second a test (T6 extended).</li><li><b>The <code>pack-indexes</code> feature write.</b> Adding a feature to the branch index is a CAS write of the index; do it in the same push that already rewrites the branch index when needed, never as a separate write that can race another client. The first index upload on an existing vault is the one case; <code>pack index build</code> does it under the same CAS.</li><li><b>The reserved header size.</b> The grow-and-retry layout (R in 16 KiB steps, 4 KiB slack) is fine. I would also write the header's <code>L</code> into the zip comment so a reader that <i>does</i> have the central directory can skip the 30-byte probe; cheap, optional.</li><li><b>Memory per command.</b> The reader assembles the flat map and cross-references in memory on first use: on the 228,000-file vault that is ~60 MB of dicts per process, built in ~1.5 s. Acceptable for a CLI run; note it in the limits. A later on-disk assembly (encrypted) is the stated option.</li><li><b>Phase order.</b> The pack says 1, 2, 3, 4. I would run 1, then the selective working copy of section 5, then 3 (the pack as the store, which is what the cloud disks pay for), then 2, then 4. Section 5 explains why the working-copy change comes early.</li><li><b>Windows and the pack store (Phase 3).</b> A kept pack is an open file; compaction's local swap and <code>vault move</code> must close handles first. Put it in T9.</li></ol>
+<p>Everything else in the pack I would implement as written.</p>
+<h2 id="5-the-brief-of-this-afternoon-the-agent-builds-the-files-it-">5. The brief of this afternoon: the agent builds the files it needs</h2>
+<p>The newsroom's loop is: the researchers push a pass of new material; the curator pulls and needs to read <b>the new files</b>, not the 79,000 it already has. Today a pull writes exactly the changed files (0.25.x), which is right, but the clone itself wrote all 79,000 at clone time, and a fresh container clones every wake.</p>
+<p>The dev pack's Phase 2 (<code>clone --path &lt;folder&gt;</code>, one ranged read per folder) covers "I want this folder". The curator's case is different: "I want whatever the last passes added, wherever it is", and later maybe one folder for a deeper look. That is a <b>selective working copy</b>: the clone holds the whole index (and, with the pack store, the whole pack), and materialises files on demand, by path or by change.</p>
+<p>What it needs, and what already exists:</p>
+<div class="tablewrap"><table><thead><tr><th>Piece</th><th>Exists</th><th>To add</th></tr></thead><tbody><tr><td>a clone whose working copy is a subset of the head, where a tracked file that was never written is "not here", not "deleted"</td><td>yes: <code>sparse</code> clones (<code>Schema__Local_Config.sparse</code>); status, commit and pull already honour it</td><td>make it reachable for pack vaults: <code>sgit clone --packs --no-checkout</code> (index and packs only, no files)</td></tr><tr><td>"which files did the last passes add or change"</td><td>Phase 1's <code>changes</code> members, and today's pull listing</td><td><code>sgit pull --no-checkout</code> prints the changed paths (and <code>--json</code> lists them) instead of writing them</td></tr><tr><td>materialising a path</td><td><code>_checkout_flat_map</code> over a sub-map; <code>sgit fetch &lt;folder&gt;</code> widens a scoped clone</td><td><code>sgit checkout &lt;path&gt; [...]</code>, <code>sgit checkout --changed-since &lt;commit&gt;</code> and <code>--since-pull</code>: write those files from local objects (loose today, in place with the pack store), seed the scan cache, record them as materialised</td></tr><tr><td>a commit from a selective working copy</td><td>yes: a sparse commit overlays the on-disk files on the parent's flat map</td><td>nothing; the new files the curator writes alongside are committed as today</td></tr><tr><td>status on a selective working copy</td><td>yes, sparse rule</td><td>report "N tracked files not checked out" once, so it is never mistaken for a deletion</td></tr></tbody></table></div>
+<p>With the pack store (Phase 3) a <code>checkout</code> of a folder is a local seek per file; without it, it is a loose read per file, also local. Either way no network, and the curator's wake becomes: <code>clone --packs --no-checkout</code> (packs and indexes, no files), <code>pull --no-checkout</code> (lists what the researchers added), <code>checkout --since-pull</code> (writes just those), read, write its own files, <code>commit</code>, <code>push</code>. On the newsroom's vault that replaces 79,000 file writes with a few thousand.</p>
+<p>Size: about two days on top of Phase 1, because every mechanism is the sparse clone's; the work is the three flags, the materialised-set record, and the status line, with tests on the two-clone in-memory host.</p>
+<h2 id="6-what-i-need-to-implement-and-have">6. What I need to implement, and have</h2>
+<ul><li><b>No new dependency</b>: <code>zipfile</code>, <code>zlib</code>, <code>json</code>, the existing <code>cryptography</code> use, osbot-utils' Type_Safe for the writer-side schemas. The pack is explicit about this and the code agrees.</li><li><b>Test hosts</b>: the in-memory host (<code>Vault__API__In_Memory</code>) and the counting host (<code>Host__Counting</code>) cover Phase 1 and the selective working copy. Phase 2 needs a ranged read on the in-memory host (<code>read_range</code>): an hour. Phase 4 needs the live API's presigned range, which exists.</li><li><b>Benchmark vaults</b>: the 228,000-file synthetic vault and its stores are in my scratch space; the 76,000-file vault's generator (<code>vault/genbig.py</code>) is on the site. The newsroom's own vault is not needed; its key stays with them.</li><li><b>Fuzzer</b>: the site's fuzzer (16 seeds, ~450 commits) is the T1 oracle; I will port its shape into <code>tests/unit/pack/</code> so T1 runs in CI on the in-memory host.</li><li><b>Threat model</b>: TM-R42 (path order) and the index rows of 04 go into <code>v0.21.0__threat-model.md</code> with a <code>Known_Gaps</code> test each where a gap is accepted.</li></ul>
+<h2 id="7-plan-with-sizes">7. Plan, with sizes</h2>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>What</th><th>Days</th></tr></thead><tbody><tr><td>1</td><td>Phase 1 writer: <code>Vault__Pack_Index</code> (build, lay out, sign, encrypt, write), schemas, push/compaction/import hooks, <code>pack index build/verify/stats</code>, gaps file</td><td>2.5</td></tr><tr><td>2</td><td>Phase 1 reader: find, verify, assemble in memory; pull (commit list, merge base, missing blobs, flat map), <code>history log</code>, first flatten after clone; fallbacks; T1–T6, T10, C1</td><td>2.5</td></tr><tr><td>3</td><td>Selective working copy (section 5): <code>--no-checkout</code>, <code>checkout &lt;path&gt;</code> / <code>--since-pull</code>, status line, sparse-on-packs tests</td><td>2</td></tr><tr><td>4</td><td>Phase 3 pack store: packs kept, pack index, read in place, verify on first read, fsck, compaction swap, Windows handle rule; T9; cloud-disk measurement with the newsroom</td><td>3</td></tr><tr><td>5</td><td>Phase 2: path-ordered packs (scope-grouped), <code>at</code> offsets, ranged scoped clone and pull; T7, T8; TM-R42</td><td>3</td></tr><tr><td>6</td><td>Phase 4 with the SG/Vault team</td><td>—</td></tr></tbody></table></div>
+<p>Steps 1 and 2 are one release (the writer is useless without the reader and vice versa); step 3 rides with them if it is ready; 4 and 5 are each their own release behind their flag, as 04 says.</p>
+<div class="pagenav"><a href="../research/graph-and-index-measurements-2026-10-26.html">← Graph and index measurements, 26 October 2026: every number, how it was taken, and the scripts to take it again</a><a href="../research/pack-carried-indexes-architecture.html">Architecture: the pack as the store, and the indexes it carries →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/pack-indexes-dev-pack-review.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/pack-indexes-dev-pack-review.md"><code>admin/content/research/pack-indexes-dev-pack-review.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/pack-indexes-dev-pack-review.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/limitations.html">When NOT to use sgit</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+    <a href="../research/topics/correctness.html">Found in daily use</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

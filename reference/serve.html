@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.25.0</span>
+  <span class="stage-pill">sgit-ai v0.26.0</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -85,6 +85,7 @@
       <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
       <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
       <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
       <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
@@ -92,7 +93,6 @@
       <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
       <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
       <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
-      <a class="sl" href="../articles/a-vault-you-can-carry.html">A vault you can carry: one zip holds the whole vault, a public key can seal it, and the round trip already works</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -117,7 +117,7 @@
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../reference/index.html">Command reference</a> / sgit serve</div>
 <h1 id="sgit-serve">sgit serve</h1>
 <p>Run this vault on your machine: the vault UI + API in a container (Docker, Podman, Apple container), or --static.</p>
-<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.25.0. 8 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
+<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.0. 8 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
 <pre><code class="lang-text">sgit serve [options]</code></pre>
 <div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--bind</code></td><td>Address to bind (default 127.0.0.1; 0.0.0.0 exposes it to your network)</td></tr><tr><td><code>--data</code></td><td>Data folder for the server (default: .sg_vault/serve/data in this clone)</td></tr><tr><td><code>--image</code></td><td>Image to run (default diniscruz/sg-send-vault:latest)</td></tr><tr><td><code>--no-pull</code></td><td>Do not check for a newer image; use the one already here</td></tr><tr><td><code>--open</code></td><td>Open the UI in a browser</td></tr><tr><td><code>--port</code></td><td>Port on this machine (default 8420; the next free one if taken)</td></tr><tr><td><code>--runtime</code></td><td>container | docker | podman | nerdctl | finch | uv (default: the first found)</td></tr><tr><td><code>--static</code></td><td>Read-only server for a published vault (default: this vault's .sg_vault/publish/, publishing first if needed)</td></tr><tr><td><code>--ui-dir</code></td><td>Built vault UI folder (uv engine only)</td></tr></tbody></table></div>
 <h2 id="subcommands">Subcommands</h2>
@@ -195,11 +195,11 @@
   <div>
     <h4>Articles</h4>
     <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
     <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
     <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
     <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
     <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
-    <a href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
   </div>
   <div>
     <h4>Site</h4>

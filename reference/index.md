@@ -7,7 +7,7 @@
 ---
 # Command reference
 
-All **165 commands** of **sgit-ai v0.25.0**, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (`CLI__Reference`, behind `sgit help all --format json`, schema `sgit-cli-reference-v1`); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.
+All **174 commands** of **sgit-ai v0.26.0**, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (`CLI__Reference`, behind `sgit help all --format json`, schema `sgit-cli-reference-v1`); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.
 
 - The same data, as published: [sgit-cli-reference.json](../reference/sgit-cli-reference.json). Diff two releases' files to see exactly what changed.
 - Your installed version, offline: `sgit help all`, or `sgit help <command>`.
@@ -102,7 +102,8 @@ Where to put a new command is a rule of the CLI (its `CLAUDE.md`): a daily-use v
 
 | Command | Subcommands | What it does |
 |---|---|---|
-| [`sgit pack`](../reference/pack.md) | 6 | Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats) |
+| [`sgit checkout`](../reference/checkout.md) |  | Write tracked files into a selective working copy (a clone made with --no-checkout or --sparse); sgit branch checkout <target> switches branches |
+| [`sgit pack`](../reference/pack.md) | 14 | Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats) |
 
 ## How this page is made
 

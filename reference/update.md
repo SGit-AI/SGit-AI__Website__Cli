@@ -9,7 +9,7 @@
 
 Update sgit-ai to the latest version.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.25.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.0. No subcommands. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit update

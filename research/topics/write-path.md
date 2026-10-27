@@ -39,6 +39,8 @@
 
 ## The research documents, newest first
 
+- [Pack indexes: steps 1 to 5 shipped on the branch (26 Oct 2026)](../../research/pack-indexes-steps-shipped.md): The CLI team's note on shipping steps 1 to 5 of the pack-indexes plan: the index writer and reader, the selective working copy, the pack store and path-ordered packs with ranged scoped clones, and eight decisions taken alone.
+- [Review: the pack-indexes dev pack (cli.sgit.ai/dev/pack-indexes, 26 Oct 2026)](../../research/pack-indexes-dev-pack-review.md): The CLI team's review of cli.sgit.ai's pack-indexes dev pack before building it: what to keep, what to change, the selective working copy added, and the plan in six steps.
 - [Architecture: the pack as the store, and the indexes it carries](../../research/pack-carried-indexes-architecture.md): The CLI team's exploration after the 0.25.0 field report: keep the packs a clone downloads and read objects in place; carry flat, diff and graph indexes inside the pack, encrypted under the read key and signed by the pusher; assemble them locally into SQLite; four phases.
 - [Pack mode, round 4: the fixes at `c5b326f2`](../../research/pack-mode-verification-round-4.md): The fourth round: no release blockers left. Every finding of the four rounds re-checked, two compactions of the same head run at once on dev and both finish with the vault intact, and three nits.
 - [How pack mode went from an article to a release, and the documents along the way](../../research/pack-mode-idea-to-release.md): How pack mode went from a measured problem to a release in eight days: research before code, a spec reviewed before the build, tests on a counted host, a live trial, four verification rounds by a second agent, and the documents…

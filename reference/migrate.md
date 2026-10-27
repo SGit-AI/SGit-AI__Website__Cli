@@ -9,7 +9,7 @@
 
 Run vault data migrations.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.25.0. 3 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 3 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit migrate

@@ -9,7 +9,7 @@
 
 Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.25.0. 6 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 14 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit pack [options]
@@ -29,8 +29,16 @@ sgit pack [options]
 - [`sgit pack compact`](#pack-compact): One snapshot of the head; absorbed, superseded and orphan packs move to archive/
 - [`sgit pack export`](#pack-export): Rewrite a pack-vault clone into a NEW normal vault (new key; source untouched)
 - [`sgit pack import`](#pack-import): Rewrite a full clone of a normal vault into a NEW pack vault (new key; source untouched)
+- [`sgit pack index`](#pack-index): Index packs beside the data packs (build the missing ones, verify, stats)
+- [`sgit pack index build`](#pack-index-build): Write the index pack of every data pack that lacks one (needs the write key)
+- [`sgit pack index stats`](#pack-index-stats): Index packs per folder, sizes, gaps, generations
+- [`sgit pack index verify`](#pack-index-verify): Check every index pack against its data pack and the trees (read-only)
 - [`sgit pack ls`](#pack-ls): List the packs on the host
 - [`sgit pack stats`](#pack-stats): Packs and bytes on the host; local compression ratio
+- [`sgit pack store`](#pack-store): The local pack store of a clone made with --pack-store (packs kept in place)
+- [`sgit pack store extract`](#pack-store-extract): Write every packed object loose and drop the kept packs: an ordinary clone from here
+- [`sgit pack store rebuild`](#pack-store-rebuild): Rebuild the object table from the kept pack files
+- [`sgit pack store status`](#pack-store-status): Packs kept, objects read from them, loose objects
 - [`sgit pack verify`](#pack-verify): Check every pack member against its content address
 
 ### sgit pack compact {#pack-compact}
@@ -105,6 +113,90 @@ sgit pack import [options] <source> <target>
 | `--vault-key` | Key for the new vault (generated if omitted) |
 | `--verify-tls` | Verify TLS certificates (default) |
 
+### sgit pack index {#pack-index}
+
+Index packs beside the data packs (build the missing ones, verify, stats)
+
+```text
+sgit pack index [options]
+```
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+#### sgit pack index build {#pack-index-build}
+
+Write the index pack of every data pack that lacks one (needs the write key)
+
+```text
+sgit pack index build [options] [directory]
+```
+
+| Argument | | What it is |
+|---|---|---|
+| `directory` | optional |  |
+
+| Option | What it does |
+|---|---|
+| `--all` | Also rewrite the newest snapshot index |
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--json` |  |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+#### sgit pack index stats {#pack-index-stats}
+
+Index packs per folder, sizes, gaps, generations
+
+```text
+sgit pack index stats [options] [directory]
+```
+
+| Argument | | What it is |
+|---|---|---|
+| `directory` | optional |  |
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--json` |  |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+#### sgit pack index verify {#pack-index-verify}
+
+Check every index pack against its data pack and the trees (read-only)
+
+```text
+sgit pack index verify [options] [directory]
+```
+
+| Argument | | What it is |
+|---|---|---|
+| `directory` | optional |  |
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--json` |  |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
 ### sgit pack ls {#pack-ls}
 
 List the packs on the host
@@ -133,6 +225,87 @@ Packs and bytes on the host; local compression ratio
 
 ```text
 sgit pack stats [options] [directory]
+```
+
+| Argument | | What it is |
+|---|---|---|
+| `directory` | optional |  |
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--json` |  |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+### sgit pack store {#pack-store}
+
+The local pack store of a clone made with --pack-store (packs kept in place)
+
+```text
+sgit pack store [options]
+```
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+#### sgit pack store extract {#pack-store-extract}
+
+Write every packed object loose and drop the kept packs: an ordinary clone from here
+
+```text
+sgit pack store extract [options] [directory]
+```
+
+| Argument | | What it is |
+|---|---|---|
+| `directory` | optional |  |
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+#### sgit pack store rebuild {#pack-store-rebuild}
+
+Rebuild the object table from the kept pack files
+
+```text
+sgit pack store rebuild [options] [directory]
+```
+
+| Argument | | What it is |
+|---|---|---|
+| `directory` | optional |  |
+
+| Option | What it does |
+|---|---|
+| `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
+| `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
+| `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
+| `--token` | SG/Send access token (overrides global --token and saved config) |
+| `--transport` | How to reach the vault: auto (default — a folder is local, an http(s) host is api unless its batch endpoint is absent), api (live SG/API), static (any GET host, read-only), local (a folder, read-only) One of: `api`, `auto`, `local`, `static`. |
+| `--verify-tls` | Verify TLS certificates (default) |
+
+#### sgit pack store status {#pack-store-status}
+
+Packs kept, objects read from them, loose objects
+
+```text
+sgit pack store status [options] [directory]
 ```
 
 | Argument | | What it is |

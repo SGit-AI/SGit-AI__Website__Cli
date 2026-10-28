@@ -5353,6 +5353,9 @@ $ sgit vault tag show v1                                  # names the tag's sign
 
 | Client | clone | fsck | clone signatures | push a commit | 0.26.8 pulls it |
 |---|---|---|---|---|---|
+| 0.20.0 | ✓ | ok | 4 of 4 verified | ✓ | ✓, 5 of 5 verified |
+| 0.22.0 | ✓ | ok | 4 of 4 verified | ✓ | ✓ |
+| 0.24.0 | ✓ | ok | 4 of 4 verified | ✓ | ✓ |
 | 0.26.0 | ✓ | ok | 4 of 4 verified | ✓ | ✓, 5 of 5 verified |
 | 0.26.3 | ✓ | ok | 4 of 4 verified | ✓ | ✓ |
 | 0.26.6 | ✓ | ok | 4 of 4 verified | ✓ | ✓ |
@@ -5402,6 +5405,8 @@ The diff against 0.26.6 is 14 changed code files and new ones: `crypto/signing/`
 
 ### Also noted
 
+- **The CLI team's brief for this review names `check verify --user`.** The build has no such flag: user signatures are always counted when a commit carries one, and `--require-user-signature` makes them mandatory. The brief and the CHANGELOG should agree with the build.
+- **The BR-1 fix is on the CLI's `dev`** (`963f9ff7`, 16:06 UTC) and was not on PyPI when this page was written; I have not tested it. It is checked on the next build.
 - **The clone key and the signer's key are different things.** `check verify` says "verified" for the clone signature and reports user signatures on their own line. A reader may read "verified" as "signed by a person"; the release notes for 0.27.0 should say it does not.
 - **Not tested here:** `ssh-keygen` as the signer or verifier (not installed on the test machine; the in-process path was used), certificates, KRLs, FIDO keys, and a passphrase-protected key.
 

@@ -1,0 +1,2 @@
+clone signatures: {'verified': 4, 'bad': 0, 'unsigned': 0, 'no-key': 0, 'missing': 0}
+user signatures : {'untrusted': 1, 'bad': 2, 'none': 1}

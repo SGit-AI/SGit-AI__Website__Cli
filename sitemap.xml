@@ -44,6 +44,8 @@
   <url><loc>https://cli.sgit.ai/builds/0-26-4.html</loc></url>
   <url><loc>https://cli.sgit.ai/builds/0-26-5.html</loc></url>
   <url><loc>https://cli.sgit.ai/builds/0-26-6.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-7.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-8.html</loc></url>
   <url><loc>https://cli.sgit.ai/builds/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/pack-indexes/01-format.html</loc></url>
@@ -99,6 +101,7 @@
   <url><loc>https://cli.sgit.ai/reference/doctor.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/fetch.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/file.html</loc></url>
+  <url><loc>https://cli.sgit.ai/reference/grep.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/help.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/history.html</loc></url>
   <url><loc>https://cli.sgit.ai/reference/index.html</loc></url>

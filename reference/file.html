@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>sgit file · cli.sgit.ai</title>
-<meta name="description" content="File operations (cat, ls, write)">
+<meta name="description" content="File operations (cat, ls, write, grep)">
 <link rel="canonical" href="https://cli.sgit.ai/reference/file.html">
 <link rel="alternate" type="text/markdown" href="../reference/file.md">
 <meta property="og:title" content="sgit file">
-<meta property="og:description" content="File operations (cat, ls, write)">
+<meta property="og:description" content="File operations (cat, ls, write, grep)">
 <meta property="og:url" content="https://cli.sgit.ai/reference/file.html">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <span class="stage-pill">sgit-ai v0.26.8</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -39,9 +39,9 @@
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
       <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-26-8.html">sgit-ai 0.26.8: history, blame and search; renames found as Git finds them</a>
+      <a class="sl" href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags</a>
       <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
-      <a class="sl" href="../builds/0-26-5.html">sgit-ai 0.26.5: line-level merge, opt-in</a>
-      <a class="sl" href="../builds/0-26-4.html">sgit-ai 0.26.4: commit messages up to 64 KB</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -121,16 +121,21 @@
 <main class="doc wide">
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../reference/index.html">Command reference</a> / sgit file</div>
 <h1 id="sgit-file">sgit file</h1>
-<p>File operations (cat, ls, write).</p>
-<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.0. 3 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
+<p>File operations (cat, ls, write, grep).</p>
+<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.8. 4 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
 <pre><code class="lang-text">sgit file</code></pre>
 <h2 id="subcommands">Subcommands</h2>
-<ul><li><a href="#file-cat"><code>sgit file cat</code></a>: Decrypt and print a vault file to stdout</li><li><a href="#file-ls"><code>sgit file ls</code></a>: List vault files with fetch status</li><li><a href="#file-write"><code>sgit file write</code></a>: Write a file directly to vault HEAD (agent/programmatic workflow)</li></ul>
+<ul><li><a href="#file-cat"><code>sgit file cat</code></a>: Decrypt and print a vault file to stdout</li><li><a href="#file-grep"><code>sgit file grep</code></a>: Search file contents, as git grep</li><li><a href="#file-ls"><code>sgit file ls</code></a>: List vault files with fetch status</li><li><a href="#file-write"><code>sgit file write</code></a>: Write a file directly to vault HEAD (agent/programmatic workflow)</li></ul>
 <h3 id="file-cat">sgit file cat</h3>
 <p>Decrypt and print a vault file to stdout</p>
 <pre><code class="lang-text">sgit file cat [options] &lt;path&gt; [directory]</code></pre>
 <div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>path</code></td><td>required</td><td>File path inside the vault</td></tr><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
 <div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--id</code></td><td>Print only the blob ID (zero network calls)</td></tr><tr><td><code>--json</code></td><td>Print file metadata as JSON (path, blob_id, size, content_type, fetched)</td></tr></tbody></table></div>
+<h3 id="file-grep">sgit file grep</h3>
+<p>Search file contents, as git grep</p>
+<pre><code class="lang-text">sgit file grep [options] [positionals]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>positionals</code></td><td>optional</td><td>The pattern (unless -e), then revisions to search instead of the working copy; paths go after --</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--json</code></td><td>One JSON object (grep_v1)</td></tr><tr><td><code>--offline</code></td><td>Never fetch a blob this clone does not hold</td></tr><tr><td><code>--text</code>, <code>-a</code></td><td>Search binary files as text</td></tr><tr><td><code>--untracked</code></td><td>Also search untracked files</td></tr><tr><td><code>-A</code></td><td>N lines after each match</td></tr><tr><td><code>-B</code></td><td>N lines before each match</td></tr><tr><td><code>-C</code></td><td>N lines around each match</td></tr><tr><td><code>-E</code>, <code>--extended-regexp</code></td><td>Accepted: patterns are Python regexes</td></tr><tr><td><code>-F</code>, <code>--fixed-strings</code></td><td>The pattern is a literal string</td></tr><tr><td><code>-H</code></td><td>Print file names (the default)</td></tr><tr><td><code>-I</code></td><td>Do not search binary files</td></tr><tr><td><code>-L</code>, <code>--files-without-match</code></td><td>Print only the files that do not</td></tr><tr><td><code>-P</code>, <code>--perl-regexp</code></td><td>Accepted: patterns are Python regexes</td></tr><tr><td><code>-c</code>, <code>--count</code></td><td>Print path:count</td></tr><tr><td><code>-d</code>, <code>--directory</code></td><td>Vault directory (default: .)</td></tr><tr><td><code>-e</code></td><td>A pattern (repeatable: lines matching any)</td></tr><tr><td><code>-h</code></td><td>Do not print file names</td></tr><tr><td><code>-i</code>, <code>--ignore-case</code></td><td>Ignore case</td></tr><tr><td><code>-l</code>, <code>--files-with-matches</code></td><td>Print only the files that match</td></tr><tr><td><code>-m</code>, <code>--max-count</code></td><td>Stop after N matching lines per file</td></tr><tr><td><code>-n</code>, <code>--line-number</code></td><td>Prefix line numbers</td></tr><tr><td><code>-o</code>, <code>--only-matching</code></td><td>Print only the matched parts</td></tr><tr><td><code>-q</code>, <code>--quiet</code></td><td>Print nothing; the exit code tells</td></tr><tr><td><code>-v</code>, <code>--invert-match</code></td><td>Lines that do not match</td></tr><tr><td><code>-w</code>, <code>--word-regexp</code></td><td>Match whole words</td></tr></tbody></table></div>
 <h3 id="file-ls">sgit file ls</h3>
 <p>List vault files with fetch status</p>
 <pre><code class="lang-text">sgit file ls [options] [path] [directory]</code></pre>
@@ -141,7 +146,7 @@
 <pre><code class="lang-text">sgit file write [options] &lt;path&gt; [directory]</code></pre>
 <div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>path</code></td><td>required</td><td>Vault-relative file path to write</td></tr><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
 <div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--also</code></td><td>Additional files to include atomically (repeatable)</td></tr><tr><td><code>--file</code></td><td>Read content from LOCAL_FILE instead of stdin</td></tr><tr><td><code>--json</code></td><td>Print result as JSON instead of plain text</td></tr><tr><td><code>--message</code></td><td>Commit message (auto-generated if omitted)</td></tr><tr><td><code>--push</code></td><td>Push immediately after writing; stdout contains only the blob ID</td></tr></tbody></table></div>
-<div class="pagenav"><a href="../reference/fetch.html">← sgit fetch</a><a href="../reference/help.html">sgit help →</a></div>
+<div class="pagenav"><a href="../reference/fetch.html">← sgit fetch</a><a href="../reference/grep.html">sgit grep →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../reference/file.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/reference/sgit-cli-reference.json"><code>admin/content/reference/sgit-cli-reference.json</code></a></p>
 </main>
 

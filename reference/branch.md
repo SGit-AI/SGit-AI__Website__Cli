@@ -9,7 +9,7 @@
 
 Branch management.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 7 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.8. 7 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit branch
@@ -71,6 +71,8 @@ sgit branch merge [options] <name> [directory]
 | Option | What it does |
 |---|---|
 | `--base-url` | API base URL |
+| `--conflict` | Conflict markers in lines style: merge (default) or diff3 One of: `diff3`, `merge`. |
+| `--merge` | Files both sides changed: files (default) or lines (merge line by line, as git does) One of: `files`, `lines`. |
 | `--token` | SG/Send access token |
 
 ### sgit branch merge-abort {#branch-merge-abort}

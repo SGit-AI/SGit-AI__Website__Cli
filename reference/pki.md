@@ -9,7 +9,7 @@
 
 PKI key management and encryption.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 10 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.8. 10 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit pki

@@ -9,7 +9,7 @@
 
 Manage vault remotes (alias for `sgit vault remote`).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 7 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.8. 7 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit remote

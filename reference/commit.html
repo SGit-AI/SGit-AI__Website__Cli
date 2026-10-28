@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <span class="stage-pill">sgit-ai v0.26.8</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -39,9 +39,9 @@
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
       <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-26-8.html">sgit-ai 0.26.8: history, blame and search; renames found as Git finds them</a>
+      <a class="sl" href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags</a>
       <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
-      <a class="sl" href="../builds/0-26-5.html">sgit-ai 0.26.5: line-level merge, opt-in</a>
-      <a class="sl" href="../builds/0-26-4.html">sgit-ai 0.26.4: commit messages up to 64 KB</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -122,10 +122,10 @@
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../reference/index.html">Command reference</a> / sgit commit</div>
 <h1 id="sgit-commit">sgit commit</h1>
 <p>Commit local changes to the clone branch.</p>
-<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.0. No subcommands. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
-<pre><code class="lang-text">sgit commit [options] [message]</code></pre>
-<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>message</code></td><td>optional</td><td>Commit message (auto-generated if omitted)</td></tr></tbody></table></div>
-<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--allow-deletions</code></td><td>In sparse clones, allow files absent from disk to be deleted (default: preserve unfetched entries)</td></tr><tr><td><code>--allow-secret-file</code></td><td>Commit PATH although it looks like a vault secret (a zip with a key file in it); names one file, repeatable</td></tr><tr><td><code>--amend</code></td><td>Replace the last commit (not yet pushed) with the working copy and/or a new -m message</td></tr><tr><td><code>-d</code>, <code>--directory</code></td><td>Vault directory (default: .)</td></tr><tr><td><code>-m</code>, <code>--message</code></td><td>Commit message via flag (git-style). Overrides the positional arg.</td></tr></tbody></table></div>
+<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.8. No subcommands. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
+<pre><code class="lang-text">sgit commit [options] [positionals]</code></pre>
+<div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>positionals</code></td><td>optional</td><td>Without -m: the commit message (auto-generated if omitted). With -m: paths to commit (only those; every other change stays uncommitted). Paths also go after --: sgit commit "msg" -- a.txt docs/ "*.md"</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--allow-deletions</code></td><td>In sparse clones, allow files absent from disk to be deleted (default: preserve unfetched entries)</td></tr><tr><td><code>--allow-secret-file</code></td><td>Commit PATH although it looks like a vault secret (a zip with a key file in it); names one file, repeatable</td></tr><tr><td><code>--amend</code></td><td>Replace the last commit (not yet pushed) with the working copy and/or a new -m message</td></tr><tr><td><code>--hunk</code></td><td>Commit only this hunk (id from --list-hunks); repeatable. The working copy is not changed</td></tr><tr><td><code>--json</code></td><td>Print one JSON object (committed / nothing_to_commit / refused)</td></tr><tr><td><code>--list-hunks</code></td><td>Print the hunks of the changed files (or the named paths) with their ids; commits nothing</td></tr><tr><td><code>--split</code></td><td>With --list-hunks: list each change of a splittable hunk on its own</td></tr><tr><td><code>-d</code>, <code>--directory</code></td><td>Vault directory (default: .)</td></tr><tr><td><code>-m</code>, <code>--message</code></td><td>Commit message via flag (git-style); positionals are then paths.</td></tr><tr><td><code>-p</code>, <code>--patch</code></td><td>Choose hunks interactively (needs a terminal; agents use --list-hunks / --hunk)</td></tr></tbody></table></div>
 <div class="pagenav"><a href="../reference/clone-range.html">← sgit clone-range</a><a href="../reference/create.html">sgit create →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../reference/commit.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/reference/sgit-cli-reference.json"><code>admin/content/reference/sgit-cli-reference.json</code></a></p>
 </main>

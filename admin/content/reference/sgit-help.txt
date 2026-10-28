@@ -1,15 +1,16 @@
 usage: sgit-ai [-h] [--version] [--base-url BASE_URL] [--token TOKEN]
                [--debug] [--vault PATH]
-               {doctor,version,update,help,clone,init,create,clone-branch,clone-headless,clone-range,commit,status,pull,push,fetch,publish,cat,ls,write,branch,merge-abort,resolve,vault,serve,cache,migrate,pki,check,dev,file,history,inspect,remote} ...
+               {doctor,version,update,help,clone,init,create,clone-branch,clone-headless,clone-range,commit,status,pull,push,fetch,checkout,publish,grep,cat,ls,write,branch,merge-abort,resolve,vault,serve,cache,pack,migrate,pki,check,dev,file,history,inspect,remote} ...
 
 CLI tool for syncing encrypted vaults with SG/Send
 
 positional arguments:
-  {doctor,version,update,help,clone,init,create,clone-branch,clone-headless,clone-range,commit,status,pull,push,fetch,publish,cat,ls,write,branch,merge-abort,resolve,vault,serve,cache,migrate,pki,check,dev,file,history,inspect,remote}
+  {doctor,version,update,help,clone,init,create,clone-branch,clone-headless,clone-range,commit,status,pull,push,fetch,checkout,publish,grep,cat,ls,write,branch,merge-abort,resolve,vault,serve,cache,pack,migrate,pki,check,dev,file,history,inspect,remote}
                         Available commands
     doctor              Check remote connectivity and configuration
     version             Show sgit-ai version
-    update              Update sgit-ai to the latest version
+    update              Update sgit-ai to the newest build (X.Y.0 is a
+                        release, X.Y.N a dev build)
     help                Show help (use `sgit help all` for full surface)
     clone               Clone a vault from the remote server
     init                Create a new empty vault and register it on the server
@@ -26,8 +27,13 @@ positional arguments:
     pull                Pull named branch changes and merge into clone branch
     push                Push clone branch to the named branch
     fetch               Fetch file content on demand (sparse clone)
+    checkout            Write tracked files into a selective working copy (a
+                        clone made with --no-checkout or --sparse); sgit
+                        branch checkout <target> switches branches
     publish             Generate the plaintext surface for static publishing
                         (.sg_vault/publish/ — the only path that changes)
+    grep                Search the files of the working copy or a revision, as
+                        git grep
     cat                 Decrypt and print a vault file to stdout
     ls                  List vault files with fetch status
     write               Write a file directly to vault HEAD (agent workflow)
@@ -39,11 +45,13 @@ positional arguments:
                         a container (Docker, Podman, Apple container), or
                         --static
     cache               Declare cached paths (fast single-request reads)
+    pack                Pack vaults: objects as zips on the host (import,
+                        export, compact, ls, verify, stats)
     migrate             Run vault data migrations
     pki                 PKI key management and encryption
     check               Vault integrity checks
     dev                 Dev/perf instrumentation tools (sgit dev <tool>)
-    file                File operations (cat, ls, write)
+    file                File operations (cat, ls, write, grep)
     history             Commit history and diffs
     inspect             Read-only vault inspection tools
     remote              Manage vault remotes (alias for `sgit vault remote`)

@@ -1,0 +1,4 @@
+== push_gap 0.26.7
+/tmp/claude-0/-home-user-SGit-AI--Website--Cli/4dff064a-f0e5-54e1-a7c6-0ad74737a308/scratchpad/venvs/v0.26.7/bin/python: can't open file '/home/user/SGit-AI__Website__Cli/admin/research/builds-0-26-7-0-26-8-2026-10-28/scripts/push_gap.py': [Errno 2] No such file or directory
+== push_gap 0.26.8
+/tmp/claude-0/-home-user-SGit-AI--Website--Cli/4dff064a-f0e5-54e1-a7c6-0ad74737a308/scratchpad/venvs/v0.26.8/bin/python: can't open file '/home/user/SGit-AI__Website__Cli/admin/research/builds-0-26-7-0-26-8-2026-10-28/scripts/push_gap.py': [Errno 2] No such file or directory

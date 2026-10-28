@@ -9,7 +9,7 @@
 
 Run this vault on your machine: the vault UI + API in a container (Docker, Podman, Apple container), or --static.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 8 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.8. 8 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit serve [options]

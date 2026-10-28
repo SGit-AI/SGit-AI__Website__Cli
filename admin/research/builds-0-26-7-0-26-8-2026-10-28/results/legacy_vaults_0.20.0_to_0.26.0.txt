@@ -1,0 +1,24 @@
+##### 0.20.0 plain
+{"step": "make", "sgit": "v0.20.0", "made": "ok"}
+{"step": "open", "sgit": "v0.26.8", "old-copy status": "ok", "old-copy fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "old-copy commit+push": "ok", "fresh clone": "ok", "clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "verify": {"verified": 7, "bad": 0, "unsigned": 0, "no-key": 0, "missing": 0}, "trees equal": true}
+{"step": "reopen", "sgit": "v0.20.0", "pull": "ok", "new.txt": true, "fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}}
+##### 0.22.0 plain
+{"step": "make", "sgit": "v0.22.0", "made": "ok"}
+{"step": "open", "sgit": "v0.26.8", "old-copy status": "ok", "old-copy fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "old-copy commit+push": "ok", "fresh clone": "ok", "clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "verify": {"verified": 7, "bad": 0, "unsigned": 0, "no-key": 0, "missing": 0}, "trees equal": true}
+{"step": "reopen", "sgit": "v0.22.0", "pull": "ok", "new.txt": true, "fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}}
+##### 0.24.0 plain
+{"step": "make", "sgit": "v0.24.0", "made": "ok"}
+{"step": "open", "sgit": "v0.26.8", "old-copy status": "ok", "old-copy fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "old-copy commit+push": "ok", "fresh clone": "ok", "clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "verify": {"verified": 7, "bad": 0, "unsigned": 0, "no-key": 0, "missing": 0}, "trees equal": true}
+{"step": "reopen", "sgit": "v0.24.0", "pull": "ok", "new.txt": true, "fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}}
+##### 0.24.0 packs
+{"step": "make", "sgit": "v0.24.0", "made": "ok"}
+{"step": "open", "sgit": "v0.26.8", "old-copy status": "ok", "old-copy fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "old-copy commit+push": "ok", "fresh clone": "ok", "clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "verify": {"verified": 7, "bad": 0, "unsigned": 0, "no-key": 0, "missing": 0}, "trees equal": true}
+{"step": "reopen", "sgit": "v0.24.0", "pull": "ok", "new.txt": true, "fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}}
+##### 0.26.0 plain
+{"step": "make", "sgit": "v0.26.0", "made": "ok"}
+{"step": "open", "sgit": "v0.26.8", "old-copy status": "ok", "old-copy fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "old-copy commit+push": "ok", "fresh clone": "ok", "clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "verify": {"verified": 7, "bad": 0, "unsigned": 0, "no-key": 0, "missing": 0}, "trees equal": true}
+{"step": "reopen", "sgit": "v0.26.0", "pull": "ok", "new.txt": true, "fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}}
+##### 0.26.0 packs
+{"step": "make", "sgit": "v0.26.0", "made": "ok"}
+{"step": "open", "sgit": "v0.26.8", "old-copy status": "ok", "old-copy fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "old-copy commit+push": "ok", "fresh clone": "ok", "clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "verify": {"verified": 7, "bad": 0, "unsigned": 0, "no-key": 0, "missing": 0}, "trees equal": true}
+{"step": "reopen", "sgit": "v0.26.0", "pull": "ok", "new.txt": true, "fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}}

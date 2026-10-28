@@ -9,7 +9,7 @@
 
 Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats).
 
-*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 14 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.8. 14 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit pack [options]
@@ -191,6 +191,7 @@ sgit pack index verify [options] [directory]
 |---|---|
 | `--base-url` | API base URL (overrides --remote, global --base-url, and saved config) |
 | `--json` |  |
+| `--last` | Check only the N newest index packs (commits and snapshots); "did my last push's index match" |
 | `--no-verify-tls` | Skip TLS certificate verification (staging / self-signed only) |
 | `--remote` | Use the named remote (URL + tls_verify from saved config); overrides the default remote for this command |
 | `--token` | SG/Send access token (overrides global --token and saved config) |

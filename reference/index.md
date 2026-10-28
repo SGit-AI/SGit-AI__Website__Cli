@@ -7,7 +7,7 @@
 ---
 # Command reference
 
-All **174 commands** of **sgit-ai v0.26.0**, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (`CLI__Reference`, behind `sgit help all --format json`, schema `sgit-cli-reference-v1`); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.
+All **177 commands** of **sgit-ai v0.26.8**, generated from the parser the CLI actually builds. The CLI walks its own argparse tree (`CLI__Reference`, behind `sgit help all --format json`, schema `sgit-cli-reference-v1`); this site renders that JSON and nothing else. A flag cannot appear here unless the code registers it, and none the code registers can be missing.
 
 - The same data, as published: [sgit-cli-reference.json](../reference/sgit-cli-reference.json). Diff two releases' files to see exactly what changed.
 - Your installed version, offline: `sgit help all`, or `sgit help <command>`.
@@ -30,7 +30,7 @@ Where to put a new command is a rule of the CLI (its `CLAUDE.md`): a daily-use v
 | [`sgit write`](../reference/write.md) |  | Write a file directly to vault HEAD (agent workflow) |
 | [`sgit cat`](../reference/cat.md) |  | Decrypt and print a vault file to stdout |
 | [`sgit ls`](../reference/ls.md) |  | List vault files with fetch status |
-| [`sgit file`](../reference/file.md) | 3 | File operations (cat, ls, write) |
+| [`sgit file`](../reference/file.md) | 4 | File operations (cat, ls, write, grep) |
 | [`sgit publish`](../reference/publish.md) |  | Generate the plaintext surface for static publishing (.sg_vault/publish/ — the only path that changes) |
 
 ### Branches and merges
@@ -45,7 +45,7 @@ Where to put a new command is a rule of the CLI (its `CLAUDE.md`): a daily-use v
 
 | Command | Subcommands | What it does |
 |---|---|---|
-| [`sgit history`](../reference/history.md) | 7 | Commit history and diffs |
+| [`sgit history`](../reference/history.md) | 8 | Commit history and diffs |
 
 ### The vault as a whole
 
@@ -90,7 +90,7 @@ Where to put a new command is a rule of the CLI (its `CLAUDE.md`): a daily-use v
 |---|---|---|
 | [`sgit help`](../reference/help.md) |  | Show help (use `sgit help all` for full surface) |
 | [`sgit version`](../reference/version.md) |  | Show sgit-ai version |
-| [`sgit update`](../reference/update.md) |  | Update sgit-ai to the latest version |
+| [`sgit update`](../reference/update.md) |  | Update sgit-ai to the newest build (X.Y.0 is a release, X.Y.N a dev build) |
 
 ### For developers of sgit
 
@@ -103,6 +103,7 @@ Where to put a new command is a rule of the CLI (its `CLAUDE.md`): a daily-use v
 | Command | Subcommands | What it does |
 |---|---|---|
 | [`sgit checkout`](../reference/checkout.md) |  | Write tracked files into a selective working copy (a clone made with --no-checkout or --sparse); sgit branch checkout <target> switches branches |
+| [`sgit grep`](../reference/grep.md) |  | Search the files of the working copy or a revision, as git grep |
 | [`sgit pack`](../reference/pack.md) | 14 | Pack vaults: objects as zips on the host (import, export, compact, ls, verify, stats) |
 
 ## How this page is made

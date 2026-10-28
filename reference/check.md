@@ -9,7 +9,7 @@
 
 Vault integrity checks.
 
-*Generated from `sgit help all --format json`, sgit-ai v0.26.0. 3 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
+*Generated from `sgit help all --format json`, sgit-ai v0.26.8. 3 subcommands below. To change this page, change the command's `register()` in the CLI and regenerate.*
 
 ```text
 sgit check
@@ -65,7 +65,9 @@ sgit check verify [options] [directory]
 
 | Option | What it does |
 |---|---|
+| `--json` | One JSON object: counts, user_counts, ids by status |
 | `--limit` | Stop after N commits (0 = all) |
+| `--require-user-signature` | Fail unless every checked commit carries a good user signature (the signer's own SSH / OpenPGP key, trusted by your allowed-signers file or keyring) |
 | `--verbose` | List every commit with its status |
 
 ---

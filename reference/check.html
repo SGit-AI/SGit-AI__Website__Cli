@@ -20,7 +20,7 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <span class="stage-pill">sgit-ai v0.26.8</span>
   <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
@@ -39,9 +39,9 @@
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
       <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-26-8.html">sgit-ai 0.26.8: history, blame and search; renames found as Git finds them</a>
+      <a class="sl" href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags</a>
       <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
-      <a class="sl" href="../builds/0-26-5.html">sgit-ai 0.26.5: line-level merge, opt-in</a>
-      <a class="sl" href="../builds/0-26-4.html">sgit-ai 0.26.4: commit messages up to 64 KB</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -122,7 +122,7 @@
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../reference/index.html">Command reference</a> / sgit check</div>
 <h1 id="sgit-check">sgit check</h1>
 <p>Vault integrity checks.</p>
-<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.0. 3 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
+<p><i>Generated from <code>sgit help all --format json</code>, sgit-ai v0.26.8. 3 subcommands below. To change this page, change the command's <code>register()</code> in the CLI and regenerate.</i></p>
 <pre><code class="lang-text">sgit check</code></pre>
 <h2 id="subcommands">Subcommands</h2>
 <ul><li><a href="#check-fsck"><code>sgit check fsck</code></a>: Verify vault integrity and repair missing objects</li><li><a href="#check-upload-objects"><code>sgit check upload-objects</code></a>: Upload specific local objects to the server (recovery tool — run on the vault that HAS the objects)</li><li><a href="#check-verify"><code>sgit check verify</code></a>: Verify the ECDSA signature on every commit reachable from HEAD</li></ul>
@@ -139,7 +139,7 @@
 <p>Verify the ECDSA signature on every commit reachable from HEAD</p>
 <pre><code class="lang-text">sgit check verify [options] [directory]</code></pre>
 <div class="tablewrap"><table><thead><tr><th>Argument</th><th></th><th>What it is</th></tr></thead><tbody><tr><td><code>directory</code></td><td>optional</td><td>Vault directory (default: .)</td></tr></tbody></table></div>
-<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--limit</code></td><td>Stop after N commits (0 = all)</td></tr><tr><td><code>--verbose</code></td><td>List every commit with its status</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><code>--json</code></td><td>One JSON object: counts, user_counts, ids by status</td></tr><tr><td><code>--limit</code></td><td>Stop after N commits (0 = all)</td></tr><tr><td><code>--require-user-signature</code></td><td>Fail unless every checked commit carries a good user signature (the signer's own SSH / OpenPGP key, trusted by your allowed-signers file or keyring)</td></tr><tr><td><code>--verbose</code></td><td>List every commit with its status</td></tr></tbody></table></div>
 <div class="pagenav"><a href="../reference/cat.html">← sgit cat</a><a href="../reference/checkout.html">sgit checkout →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../reference/check.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/reference/sgit-cli-reference.json"><code>admin/content/reference/sgit-cli-reference.json</code></a></p>
 </main>

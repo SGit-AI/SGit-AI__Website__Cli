@@ -1,7 +1,7 @@
 {
   "schema": "sgit-cli-reference-v1",
-  "cli_version": "v0.26.0",
-  "command_count": 174,
+  "cli_version": "v0.26.8",
+  "command_count": 177,
   "commands": [
     {
       "path": "branch",
@@ -63,6 +63,26 @@
           ],
           "help": "API base URL",
           "choices": []
+        },
+        {
+          "flags": [
+            "--conflict"
+          ],
+          "help": "Conflict markers in lines style: merge (default) or diff3",
+          "choices": [
+            "diff3",
+            "merge"
+          ]
+        },
+        {
+          "flags": [
+            "--merge"
+          ],
+          "help": "Files both sides changed: files (default) or lines (merge line by line, as git does)",
+          "choices": [
+            "files",
+            "lines"
+          ]
         },
         {
           "flags": [
@@ -388,9 +408,23 @@
       "options": [
         {
           "flags": [
+            "--json"
+          ],
+          "help": "One JSON object: counts, user_counts, ids by status",
+          "choices": []
+        },
+        {
+          "flags": [
             "--limit"
           ],
           "help": "Stop after N commits (0 = all)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--require-user-signature"
+          ],
+          "help": "Fail unless every checked commit carries a good user signature (the signer's own SSH / OpenPGP key, trusted by your allowed-signers file or keyring)",
           "choices": []
         },
         {
@@ -866,6 +900,34 @@
         },
         {
           "flags": [
+            "--hunk"
+          ],
+          "help": "Commit only this hunk (id from --list-hunks); repeatable. The working copy is not changed",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "Print one JSON object (committed / nothing_to_commit / refused)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--list-hunks"
+          ],
+          "help": "Print the hunks of the changed files (or the named paths) with their ids; commits nothing",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--split"
+          ],
+          "help": "With --list-hunks: list each change of a splittable hunk on its own",
+          "choices": []
+        },
+        {
+          "flags": [
             "-d",
             "--directory"
           ],
@@ -877,14 +939,22 @@
             "-m",
             "--message"
           ],
-          "help": "Commit message via flag (git-style). Overrides the positional arg.",
+          "help": "Commit message via flag (git-style); positionals are then paths.",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-p",
+            "--patch"
+          ],
+          "help": "Choose hunks interactively (needs a terminal; agents use --list-hunks / --hunk)",
           "choices": []
         }
       ],
       "positionals": [
         {
-          "name": "message",
-          "help": "Commit message (auto-generated if omitted)",
+          "name": "positionals",
+          "help": "Without -m: the commit message (auto-generated if omitted). With -m: paths to commit (only those; every other change stays uncommitted). Paths also go after --: sgit commit \"msg\" -- a.txt docs/ \"*.md\"",
           "required": false
         }
       ]
@@ -1571,7 +1641,7 @@
     },
     {
       "path": "file",
-      "help": "File operations (cat, ls, write)",
+      "help": "File operations (cat, ls, write, grep)",
       "options": [],
       "positionals": []
     },
@@ -1603,6 +1673,209 @@
         {
           "name": "directory",
           "help": "Vault directory (default: .)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "path": "file grep",
+      "help": "Search file contents, as git grep",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "One JSON object (grep_v1)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--offline"
+          ],
+          "help": "Never fetch a blob this clone does not hold",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--text",
+            "-a"
+          ],
+          "help": "Search binary files as text",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--untracked"
+          ],
+          "help": "Also search untracked files",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-A"
+          ],
+          "help": "N lines after each match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-B"
+          ],
+          "help": "N lines before each match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-C"
+          ],
+          "help": "N lines around each match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-E",
+            "--extended-regexp"
+          ],
+          "help": "Accepted: patterns are Python regexes",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-F",
+            "--fixed-strings"
+          ],
+          "help": "The pattern is a literal string",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-H"
+          ],
+          "help": "Print file names (the default)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-I"
+          ],
+          "help": "Do not search binary files",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-L",
+            "--files-without-match"
+          ],
+          "help": "Print only the files that do not",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-P",
+            "--perl-regexp"
+          ],
+          "help": "Accepted: patterns are Python regexes",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-c",
+            "--count"
+          ],
+          "help": "Print path:count",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-d",
+            "--directory"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-e"
+          ],
+          "help": "A pattern (repeatable: lines matching any)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-h"
+          ],
+          "help": "Do not print file names",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-i",
+            "--ignore-case"
+          ],
+          "help": "Ignore case",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-l",
+            "--files-with-matches"
+          ],
+          "help": "Print only the files that match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-m",
+            "--max-count"
+          ],
+          "help": "Stop after N matching lines per file",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-n",
+            "--line-number"
+          ],
+          "help": "Prefix line numbers",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-o",
+            "--only-matching"
+          ],
+          "help": "Print only the matched parts",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-q",
+            "--quiet"
+          ],
+          "help": "Print nothing; the exit code tells",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-v",
+            "--invert-match"
+          ],
+          "help": "Lines that do not match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-w",
+            "--word-regexp"
+          ],
+          "help": "Match whole words",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "positionals",
+          "help": "The pattern (unless -e), then revisions to search instead of the working copy; paths go after --",
           "required": false
         }
       ]
@@ -1693,6 +1966,209 @@
       ]
     },
     {
+      "path": "grep",
+      "help": "Search the files of the working copy or a revision, as git grep",
+      "options": [
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "One JSON object (grep_v1)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--offline"
+          ],
+          "help": "Never fetch a blob this clone does not hold",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--text",
+            "-a"
+          ],
+          "help": "Search binary files as text",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--untracked"
+          ],
+          "help": "Also search untracked files",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-A"
+          ],
+          "help": "N lines after each match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-B"
+          ],
+          "help": "N lines before each match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-C"
+          ],
+          "help": "N lines around each match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-E",
+            "--extended-regexp"
+          ],
+          "help": "Accepted: patterns are Python regexes",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-F",
+            "--fixed-strings"
+          ],
+          "help": "The pattern is a literal string",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-H"
+          ],
+          "help": "Print file names (the default)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-I"
+          ],
+          "help": "Do not search binary files",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-L",
+            "--files-without-match"
+          ],
+          "help": "Print only the files that do not",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-P",
+            "--perl-regexp"
+          ],
+          "help": "Accepted: patterns are Python regexes",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-c",
+            "--count"
+          ],
+          "help": "Print path:count",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-d",
+            "--directory"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-e"
+          ],
+          "help": "A pattern (repeatable: lines matching any)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-h"
+          ],
+          "help": "Do not print file names",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-i",
+            "--ignore-case"
+          ],
+          "help": "Ignore case",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-l",
+            "--files-with-matches"
+          ],
+          "help": "Print only the files that match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-m",
+            "--max-count"
+          ],
+          "help": "Stop after N matching lines per file",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-n",
+            "--line-number"
+          ],
+          "help": "Prefix line numbers",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-o",
+            "--only-matching"
+          ],
+          "help": "Print only the matched parts",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-q",
+            "--quiet"
+          ],
+          "help": "Print nothing; the exit code tells",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-v",
+            "--invert-match"
+          ],
+          "help": "Lines that do not match",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-w",
+            "--word-regexp"
+          ],
+          "help": "Match whole words",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "positionals",
+          "help": "The pattern (unless -e), then revisions to search instead of the working copy; paths go after --",
+          "required": false
+        }
+      ]
+    },
+    {
       "path": "help",
       "help": "Show help (use `sgit help all` for full surface)",
       "options": [
@@ -1732,6 +2208,104 @@
       "positionals": []
     },
     {
+      "path": "history blame",
+      "help": "Show which commit last changed each line of a file",
+      "options": [
+        {
+          "flags": [
+            "--abbrev"
+          ],
+          "help": "Commit id characters (default 12)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--first-parent"
+          ],
+          "help": "Follow only the first parent of merges",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--json"
+          ],
+          "help": "One JSON object (history_blame_v1)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--line-porcelain"
+          ],
+          "help": "The machine format with commit details on every line",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--offline"
+          ],
+          "help": "Never fetch a blob this clone does not hold",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--porcelain"
+          ],
+          "help": "Git's machine format",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--text"
+          ],
+          "help": "Blame a binary file line by line",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-L"
+          ],
+          "help": "Only these lines: N,M  N,+K  N,-K  /regex/  /regex/,+K (repeatable)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-d",
+            "--directory"
+          ],
+          "help": "Vault directory (default: .)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-e"
+          ],
+          "help": "The signing key id instead of the branch name",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-s"
+          ],
+          "help": "No author and date columns",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-w"
+          ],
+          "help": "Ignore whitespace changes",
+          "choices": []
+        }
+      ],
+      "positionals": [
+        {
+          "name": "target",
+          "help": "The file, optionally after a revision",
+          "required": true
+        }
+      ]
+    },
+    {
       "path": "history diff",
       "help": "Show file-level and content-level diff",
       "options": [
@@ -1765,9 +2339,32 @@
         },
         {
           "flags": [
+            "--no-renames"
+          ],
+          "help": "No rename detection: a moved file is a delete and an add",
+          "choices": []
+        },
+        {
+          "flags": [
             "--remote"
           ],
           "help": "Compare working copy vs named branch HEAD",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-M",
+            "--find-renames"
+          ],
+          "help": "Rename threshold, as git -M (default 50%%: -M90, -M90%%, -M0.9)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-l",
+            "--rename-limit"
+          ],
+          "help": "Skip the similarity pass above N x N candidates (default 1000)",
           "choices": []
         }
       ],
@@ -1811,6 +2408,13 @@
         },
         {
           "flags": [
+            "--follow"
+          ],
+          "help": "With --file: continue past renames, as git log --follow",
+          "choices": []
+        },
+        {
+          "flags": [
             "--graph"
           ],
           "help": "Show graph with connectors",
@@ -1832,6 +2436,13 @@
         },
         {
           "flags": [
+            "--no-renames"
+          ],
+          "help": "No rename detection: a moved file is a delete and an add",
+          "choices": []
+        },
+        {
+          "flags": [
             "--oneline"
           ],
           "help": "Compact one-line-per-commit format",
@@ -1842,6 +2453,20 @@
             "--patch"
           ],
           "help": "Include full diff per commit (range mode)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--pickaxe-regex"
+          ],
+          "help": "With -S: STRING is a regular expression",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--show-signature"
+          ],
+          "help": "Show each commit's user signature (the signer's own SSH / OpenPGP key), as git does",
           "choices": []
         },
         {
@@ -1870,6 +2495,44 @@
             "--vault-key"
           ],
           "help": "Vault key (auto-read from .sg_vault/local/vault_key if omitted)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-G"
+          ],
+          "help": "Commits whose diff adds or removes a line matching REGEX (git log -G)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-M",
+            "--find-renames"
+          ],
+          "help": "Rename threshold, as git -M (default 50%%: -M90, -M90%%, -M0.9)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-S"
+          ],
+          "help": "Commits that change the number of occurrences of STRING in a file (git log -S)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-i",
+            "--regexp-ignore-case"
+          ],
+          "help": "-S / -G ignore case",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-l",
+            "--rename-limit"
+          ],
+          "help": "Skip the similarity pass above N x N candidates (default 1000)",
           "choices": []
         },
         {
@@ -1995,6 +2658,36 @@
             "--files-only"
           ],
           "help": "Show file names only (no inline diff)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--no-renames"
+          ],
+          "help": "No rename detection: a moved file is a delete and an add",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--show-signature"
+          ],
+          "help": "Show the commit's user signature (the signer's own SSH / OpenPGP key)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-M",
+            "--find-renames"
+          ],
+          "help": "Rename threshold, as git -M (default 50%%: -M90, -M90%%, -M0.9)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "-l",
+            "--rename-limit"
+          ],
+          "help": "Skip the similarity pass above N x N candidates (default 1000)",
           "choices": []
         }
       ],
@@ -2860,6 +3553,13 @@
         },
         {
           "flags": [
+            "--last"
+          ],
+          "help": "Check only the N newest index packs (commits and snapshots); \"did my last push's index match\"",
+          "choices": []
+        },
+        {
+          "flags": [
             "--no-verify-tls"
           ],
           "help": "Skip TLS certificate verification (staging / self-signed only)",
@@ -3610,6 +4310,26 @@
         },
         {
           "flags": [
+            "--conflict"
+          ],
+          "help": "Conflict markers in lines style: merge (ours, theirs; the default) or diff3 (ours, the common version, theirs)",
+          "choices": [
+            "diff3",
+            "merge"
+          ]
+        },
+        {
+          "flags": [
+            "--merge"
+          ],
+          "help": "Files both sides changed: files keeps yours and writes theirs to <file>.conflict (the default), lines merges them line by line as git does, with conflict markers where they collide (also: SGIT_MERGE_STYLE)",
+          "choices": [
+            "files",
+            "lines"
+          ]
+        },
+        {
+          "flags": [
             "--no-checkout"
           ],
           "help": "Selective working copy only: move the head and list what changed, write no file (sgit checkout --since-pull writes it)",
@@ -4206,8 +4926,23 @@
     },
     {
       "path": "update",
-      "help": "Update sgit-ai to the latest version",
-      "options": [],
+      "help": "Update sgit-ai to the newest build (X.Y.0 is a release, X.Y.N a dev build)",
+      "options": [
+        {
+          "flags": [
+            "--pre"
+          ],
+          "help": "The newest build, dev builds included (the default; kept for scripts)",
+          "choices": []
+        },
+        {
+          "flags": [
+            "--stable"
+          ],
+          "help": "Install the newest release (X.Y.0) instead of the newest dev build",
+          "choices": []
+        }
+      ],
       "positionals": []
     },
     {

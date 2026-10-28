@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit-ai 0.26.8: history, blame and search; renames found as Git finds them · cli.sgit.ai</title>
+<meta name="description" content="Dev build of 28 October 2026, from the CLI&#x27;s dev at bc904c1b, and what a plain pip install gives today. sgit history blame, sgit grep (the working copy or any revision), history log -S and -G, rename detection in history show, diff and log, history log --follow, and a patch text that is git diff&#x27;s byte for byte. Only the files a commit changed are opened, so these cost what changed, not the vault&#x27;s size. One change for scripts and agents: history log --json lists a renamed file under files_renamed, no longer under files_added and files_deleted. Reviewed by cli.build. 5,436 unit and security tests pass. Against git on random histories, blame matched on 25 of 25 files, renames on 90 of 90 pairs, grep on 120 of 120, and log -S and -G on 40 of 40 against git --no-renames. Vaults made by 0.20.0 to 0.26.0 open. Maturity good. One low finding that breaks a script&#x27;s exit code (BR-5), two differences from Git to document (BR-6, BR-7), and BR-1 still open.">
+<link rel="canonical" href="https://cli.sgit.ai/builds/0-26-8.html">
+<link rel="alternate" type="text/markdown" href="../builds/0-26-8.md">
+<meta property="og:title" content="sgit-ai 0.26.8: history, blame and search; renames found as Git finds them">
+<meta property="og:description" content="Dev build of 28 October 2026, from the CLI&#x27;s dev at bc904c1b, and what a plain pip install gives today. sgit history blame, sgit grep (the working copy or any revision), history log -S and -G, rename detection in history show, diff and log, history log --follow, and a patch text that is git diff&#x27;s byte for byte. Only the files a commit changed are opened, so these cost what changed, not the vault&#x27;s size. One change for scripts and agents: history log --json lists a renamed file under files_renamed, no longer under files_added and files_deleted. Reviewed by cli.build. 5,436 unit and security tests pass. Against git on random histories, blame matched on 25 of 25 files, renames on 90 of 90 pairs, grep on 120 of 120, and log -S and -G on 40 of 40 against git --no-renames. Vaults made by 0.20.0 to 0.26.0 open. Maturity good. One low finding that breaks a script&#x27;s exit code (BR-5), two differences from Git to document (BR-6, BR-7), and BR-1 still open.">
+<meta property="og:url" content="https://cli.sgit.ai/builds/0-26-8.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.26.8</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl here" href="../builds/0-26-8.html">sgit-ai 0.26.8: history, blame and search; renames found as Git finds them</a>
+      <a class="sl" href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags</a>
+      <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../builds/index.html">Builds</a> / sgit-ai 0.26.8: history, blame and search; renames found as Git finds them</div>
+<h1 id="sgit-ai-0-26-8">sgit-ai 0.26.8</h1>
+<pre><code class="lang-text">┌─ sgit-ai 0.26.8 ── dev build ── 28 Oct 2026, 13:34 UTC ─────────────────────────
+│ tag v0.26.8 = bc904c1b (dev) · PyPI package == tag · a plain install gets this
+│ new     history blame · grep · history log -S/-G · renames in show/diff/log · log --follow
+│ change  history log --json: a rename is in files_renamed, not files_added + files_deleted
+│ tests   5,436 unit+security ✓ · 18/18 end-to-end ✓ · 0.20.0–0.26.0 vaults open ✓
+│ vs git  blame 25/25 · renames 90/90 · grep 120/120 · log -S/-G 40/40 (git --no-renames)
+│ open    BR-1 (high, every build) · BR-5 (low) · BR-6, BR-7 (differences) · R3-1
+│ maturity  ########--  good: use it; read BR-5 if a script tests grep&#x27;s exit code
+└──────────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code class="lang-text">$ pip install sgit-ai==0.26.8        # or: sgit update, which takes the newest build
+$ sgit version
+sgit-ai v0.26.8</code></pre>
+<h2 id="new">What is new</h2>
+<p>This build is design 04 of the <a href="../research/git-parity-roadmap.html">Git-parity roadmap</a>: reading history the way Git does. It adds no vault format and no gate.</p>
+<h3 id="blame">Blame</h3>
+<pre><code class="lang-text">$ sgit history blame -L 10,+5 src/app.py          # who last changed each line
+$ sgit history blame HEAD~3 docs/guide.md          # as of a revision
+$ sgit history blame --porcelain notes.md          # Git&#x27;s machine format
+$ sgit history blame --json notes.md               # history_blame_v1</code></pre>
+<ul><li><b>Each line is attributed to the commit that last changed it,</b> through renames and merges.</li><li><b>Options as in Git:</b> <code>-L N,M</code>, <code>N,+K</code>, <code>N,-K</code>, <code>/regex/,+K</code> (repeatable), <code>-w</code>, <code>--first-parent</code>, <code>-s</code>, <code>--abbrev</code>, <code>--porcelain</code>, <code>--line-porcelain</code>. Also <code>--json</code>, <code>-e</code> (the signing key id in place of the branch name) and <code>--text</code> (a binary file, line by line).</li><li><b>The author is the commit's branch name,</b> dates are UTC, and a boundary (the root, a shallow clone's edge) is marked <code>^</code>.</li></ul>
+<h3 id="search">Search</h3>
+<pre><code class="lang-text">$ sgit grep -n -i todo                              # the working copy (an uncommitted edit is what is searched)
+$ sgit grep -n todo HEAD~5 -- &#x27;*.py&#x27;                # a revision, decrypted in memory: HEAD~5:path:line:text
+$ sgit history log -S needle --oneline              # commits where the count of &quot;needle&quot; changes
+$ sgit history log -G &#x27;def \w+&#x27; --file src/ -n 5    # commits whose diff adds or removes a matching line</code></pre>
+<ul><li><b><code>sgit grep</code> takes Git's options</b> (<code>-i -w -v -n -c -l -L -o -q -h -H -I -a -F -e -A -B -C -m</code>) and exit codes: 0 a match, 1 none, 2 an error. <code>grep</code> is a new top-level command; <code>sgit file grep</code> is the same.</li><li><b>The pattern is a Python regular expression</b> (see <a href="#br-6">BR-6</a>); it goes through the same guard as <code>--grep</code>: at most 1,000 characters, valid, and no repetition of a repetition.</li><li><b>A path from the vault is quoted as Git quotes it</b> (<code>"jos\303\251.md"</code>), so a file name cannot forge an output line.</li><li><b><code>log -S</code> and <code>-G</code></b> combine with <code>--file</code>, <code>--grep</code>, <code>--since</code>, <code>--until</code>, <code>--author</code>, <code>-n</code>, <code>--oneline</code> and <code>--stat</code>; <code>--pickaxe-regex</code> and <code>-i</code> as in Git. They stop at the <code>-n</code>-th match.</li></ul>
+<h3 id="renames-found-as-git-finds-them">Renames, found as Git finds them</h3>
+<ul><li><b><code>history show</code>, <code>history diff</code> and <code>history log</code> (<code>--files</code>, <code>--patch</code>, <code>--json</code>)</b> report <code>R096  docs/guide.md -&gt; manual/guide-v2.md</code>, and in a patch Git's <code>similarity index</code>, <code>rename from</code>, <code>rename to</code> header. On by default.</li><li><b>The detection is a port of Git's:</b> exact, then same basename, then a similarity matrix.</li><li><b>Options as in Git:</b> <code>-M[&lt;n&gt;]</code> (<code>-M90</code>, <code>-M90%</code>, <code>-M0.9</code>), <code>--no-renames</code>, <code>-l</code> / <code>--rename-limit</code>.</li><li><b><code>sgit history log --file &lt;path&gt; --follow</code></b> continues past a rename.</li></ul>
+<h3 id="faster-and-a-patch-that-is-git-diff-s">Faster, and a patch that is <code>git diff</code>'s</h3>
+<ul><li><b><code>history show</code>, <code>history diff</code> and <code>history log --patch</code> open only the folders whose ids differ</b> and decrypt only the changed files. The CLI team measured a 3,000-file vault with one change at 439 ms and 6,000 decrypted blobs before, and 7 ms and 2 after.</li><li><b>The patch text is <code>git diff</code>'s, byte for byte,</b> including <code>\ No newline at end of file</code>. The old output glued the last line of a file with no final newline to the next <code>+</code> line.</li><li><b>A re-encrypted file whose bytes did not change</b> is no longer listed as modified.</li></ul>
+<h3 id="script-changes">Changes for scripts and agents</h3>
+<div class="tablewrap"><table><thead><tr><th>What</th><th>Before</th><th>Now</th></tr></thead><tbody><tr><td><code>history log --json</code>, <code>history show --json</code>, <code>history diff --json</code></td><td>a renamed file is in <code>files_added</code> and <code>files_deleted</code></td><td>it is in <code>files_renamed</code> (<code>old_path</code>, <code>new_path</code>, <code>score</code>, <code>exact</code>, <code>lines_added</code>, <code>lines_removed</code>); <code>--no-renames</code> restores the old lists</td></tr><tr><td>patch text</td><td>the old format</td><td><code>git diff</code>'s</td></tr><tr><td><code>history log --stat</code></td><td>a rename shown as <code>R old -&gt; new</code></td><td>the same, preferring a same-basename source, as Git does</td></tr></tbody></table></div>
+<ul><li><b>A script that reads <code>files_added</code> to find new files</b> now misses a renamed file. That is correct, and it will be noticed only if the script is run on a history that has a rename.</li></ul>
+<h2 id="compat">Compatibility</h2>
+<ul><li><b>No change to the vault format, and no new gate.</b> Everything here reads; nothing writes a new kind of object.</li><li><b>Checked on old vaults</b> made by 0.20.0, 0.22.0, 0.24.0 and 0.26.0 (pack mode too, from 0.24.0), each opened by 0.26.8:</li><li>the old working copy: status, fsck, a commit and a push;</li><li>a fresh clone: fsck clean, every commit's signature verified, the same tree;</li><li>the old client pulls what 0.26.8 pushed, and its fsck is clean.</li><li><b>Blame (through a rename), grep and <code>-S</code></b> gave the right answers on the vaults of 0.20.0 and 0.24.0 (pack mode).</li></ul>
+<h2 id="review">Review by cli.build</h2>
+<p><b>Verdict: good.</b></p>
+<ul><li>The new commands matched Git, used as the oracle, on every case I built, and where they differ the difference is a documented design choice (BR-6, BR-7).</li><li>The hostile inputs I tried were refused or quoted: a pattern that backtracks without end, a quote or non-ASCII characters in a name (a newline in a name is rewritten to <code>_</code> by the vault, and <code>sgit ls</code> prints it raw, see below), a path outside the vault, a binary file.</li><li>One finding changes a script's exit code (BR-5). One high finding is not this build's own (BR-1).</li></ul>
+<pre><code class="lang-text">┌─ checks on the PyPI package 0.26.8 ───────────────────────────────────────────────
+│ ✓     package == tag v0.26.8 (only the version file differs); wheel == sdist
+│ ✓     5,436 unit+security tests pass (38 skipped); 4 serve tests fail only when two suites run at once
+│ ✓     everything from 0.26.1–0.26.7 (G1–G2, M1–M5, L1–L2, X1–X4, C1–C5) still holds
+│ ✓ H1  blame, 25 files over random histories with edits, moves, a rename: every line&#x27;s commit equals git blame --porcelain
+│ ✓ H2  grep: 104 working-copy runs (13 option sets) and 16 revision runs: output and exit code equal git grep (-E syntax)
+│ ✓ H3  log -S / -G / -i -S / --pickaxe-regex: 40 runs: the commits selected equal git log --no-renames
+│ ✓ H4  rename detection -M50: 90 consecutive pairs: scores and paths equal git diff -M50 --name-status
+│ ✓ H5  hostile input: nested repetition, 1,000 and 1,001 characters, a quote and non-ASCII in a name, ../ pathspec, a binary file
+│ ✓ H6  vaults of 0.20.0 · 0.22.0 · 0.24.0 · 0.26.0, plain and pack: open, commit, push; old client pulls
+│ ✗ P1  one push of 150 commits: fresh clone&#x27;s fsck fails  ── BR-1, unchanged from 0.26.6
+│ ✗     R3-1 not re-run; no change in the code it concerns
+└──────────────────────────────────────────────────────────────────────────────────────</code></pre>
+<h3 id="br-5">BR-5 (low): <code>sgit grep</code> with a pattern of 1,001 characters or more exits 1 with a traceback message</h3>
+<p><b>What happens.</b></p>
+<ul><li><code>history log --grep</code> refuses a long pattern cleanly: <code>error: --grep pattern is 1001 characters; the limit is 1000</code>.</li><li><code>sgit grep</code> does not reach that check. The pattern becomes a <code>Safe_Str__Grep_Pattern</code> first, and its own length limit fails with <code>error: TypeError in "grep" — … value exceeds maximum length of 1000 characters (was 1001)</code>.</li><li><b>The exit code is 1,</b> which for <code>grep</code> means "no match", not "error" (2).</li></ul>
+<p><b>Why it matters:</b> a script that treats 1 as "nothing found" will treat an oversized pattern as a clean result. 1,000 characters is a long pattern, so this is rare.</p>
+<p><b>For the CLI team's agent:</b> check the length (and run the guard) before the pattern is turned into the safe type, or catch the type error in <code>CLI__Grep</code> and exit 2 with the guard's message. The repro: <code>sgit grep -c "$(printf 'y%.0s' $(seq 1 1001))"; echo $?</code>.</p>
+<h3 id="br-6">BR-6 (difference from Git, to document): the pattern is a Python expression, and Git's default is a basic one</h3>
+<ul><li><code>git grep</code> reads a pattern as a basic regular expression: <code>a\|b</code> is an alternation and <code>a|b</code> is literal. <code>sgit grep</code> reads it like <code>git grep -E</code>: <code>a|b</code> is an alternation and <code>a\|b</code> is literal.</li><li>A Git user's <code>sgit grep 'alpha\|gamma'</code> finds nothing and exits 1. <code>sgit grep -E 'alpha|gamma'</code> and <code>sgit grep 'alpha|gamma'</code> behave as in Git with <code>-E</code>.</li><li>The CHANGELOG says <code>-E</code> and <code>-P</code> are accepted and the pattern is a Python regular expression; it does not say that the default differs from Git. Say it in the release notes, and in <a href="../docs/sgit-and-git.html">sgit and Git</a>.</li><li><b>In my differential</b> the 104 working-copy runs used patterns that mean the same in both dialects; the one run that did not (<code>ne+dle</code>) is where this showed.</li></ul>
+<h3 id="br-7">BR-7 (difference from Git, to document): <code>log -S</code> and <code>-G</code> do not follow renames</h3>
+<ul><li>Git's <code>log -S</code> runs after rename detection, which <code>git log</code> turns on by default. A commit that only renames (or renames and edits) a file holding the string does not change its count, so it is not listed.</li><li><code>sgit history log -S</code> lists it: a rename counts as a delete and an add. Its answers equal <code>git log --no-renames -S</code> on all 40 runs, and differ from default Git, which has rename detection on, in 16 of the 40 runs.</li><li>This is a choice, not a bug, and the CHANGELOG's "exactly git log's" is true of <code>--no-renames</code>. Rename detection is on by default for <code>show</code>, <code>diff</code> and <code>log</code>, so a reader will expect <code>-S</code> to follow it. Either follow renames in the pickaxe, or say so.</li></ul>
+<h3 id="also-noted">Also noted</h3>
+<ul><li><b><code>history blame</code> on a 200,000-line file took 24 s</b> (two commits, 3.7 MB, one edit). <code>grep -c</code> over the same vault took 1.4 s, <code>log -S</code> 0.9 s, <code>history show HEAD</code> 0.8 s. The CLI team's own figures (0.44 s on a vault of 67,742 files) use small files. That is one point; I did not measure how it grows.</li><li><b><code>sgit ls</code> prints a path with a newline in it raw,</b> so the name can forge a line. It does in 0.26.6 too. The new <code>Vault__Path_Quote</code> is used by grep and not by <code>ls</code>; one call would fix it.</li><li><b><code>blame -L 0,1</code> says "file has only 3 lines"</b> when the range, not the file, is wrong. A CR in a line is shown as <code>?</code>.</li><li><b><code>history blame HEAD~9</code> on a vault with fewer commits</b> says "has 0 parent(s), not 1", which does not say the revision is out of range.</li><li><b>The serve tests share ports,</b> so two suites at once fail four of them; run alone they pass (9 of 9).</li><li><b>Not tested here:</b> <code>-p</code> and the interactive paths, a merge-heavy history for <code>blame --first-parent</code>, and a vault on a real host (everything ran on the in-memory host).</li></ul>
+<h2 id="for-release-notes">What changed since 0.26.6, for the release notes of 0.27.0</h2>
+<p>A list the CLI team can paste into the release notes, from this and the three builds before it:</p>
+<ol><li><b><code>sgit commit -m "msg" y</code>:</b> <code>y</code> is a path now; it was ignored (0.26.6).</li><li><b><code>history log/show/diff --json</code>:</b> renames are in <code>files_renamed</code> (0.26.8).</li><li><b>Patch text</b> is <code>git diff</code>'s (0.26.8).</li><li><b>Rename detection</b> is on by default in <code>show</code>, <code>diff</code> and <code>log</code> (0.26.8); <code>--no-renames</code> turns it off.</li><li><b><code>sgit grep</code> patterns</b> read like <code>git grep -E</code>, not Git's default (0.26.8).</li><li><b><code>sgit push</code></b> pushes with uncommitted changes (0.26.6).</li><li><b><code>sgit update</code></b> takes the newest build; <code>--stable</code> takes the newest release (0.26.3).</li><li><b>User signatures can be checked,</b> and none can be made yet (0.26.7).</li></ol>
+<p><i>Scripts: <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/tree/dev/admin/research/builds-0-26-7-0-26-8-2026-10-28/scripts"><code>diff_history.py</code></a> (<code>NORENAMES=1</code> for the <code>-S</code> comparison), <code>legacy_vault.py</code>, <code>push_gap.py</code>, <code>check_build.py</code>. Results: <code>results/check_0.26.8.json</code>, <code>results/suite-v0.26.8.txt</code>, <code>results/diff_history_seeds_1-8_*.txt</code>, <code>results/legacy_vaults_0.20.0_to_0.26.0.txt</code>. All builds: <a href="../builds/index.html">the builds page</a>.</i></p>
+<div class="pagenav"><span></span><a href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../builds/0-26-8.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/builds/0-26-8.md"><code>admin/content/builds/0-26-8.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../builds/0-26-8.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

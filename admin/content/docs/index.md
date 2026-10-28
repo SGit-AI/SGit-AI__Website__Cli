@@ -18,6 +18,12 @@ Read the first section in order; the rest when you need it. Commands are in [the
 
 !list guides
 
+## Builds since the last release {#builds}
+
+Every build on PyPI since 0.26.0, with its release notes and cli.build's review: what was tested, what held, what did not. A plain `pip install sgit-ai` takes the newest of them. [All builds →](/builds/index.html)
+
+!list builds
+
 ## Security {#security}
 
 !list security

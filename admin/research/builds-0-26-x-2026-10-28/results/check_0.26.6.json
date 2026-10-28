@@ -1,0 +1,138 @@
+{
+ "version": "v0.26.6",
+ "results": [
+  {
+   "id": "P1",
+   "title": "one push of 150 commits: the host holds all of them",
+   "status": "FAIL",
+   "detail": "fsck of a fresh clone: ok=False, missing=1",
+   "seconds": 3.070430278778076
+  },
+  {
+   "id": "G1",
+   "title": "a new pack vault is gated at what its features need (0.24.0)",
+   "status": "PASS",
+   "detail": "min_client = 0.24.0",
+   "seconds": 0.3689265251159668
+  },
+  {
+   "id": "G2",
+   "title": "`pack index verify`: all packs, then --last 1",
+   "status": "PASS",
+   "detail": "600 files, 5 packs: all 0.05 s (ok=True), --last 1 0.01 s (ok=True)",
+   "seconds": 2.060650587081909
+  },
+  {
+   "id": "M1",
+   "title": "commit during an unresolved merge is refused; .conflict never committed",
+   "status": "PASS",
+   "detail": "refused: Vault__Merge_Unresolved_Error: cannot commit: 1 file(s) still have merge conflicts:\n  doc.txt   (theirs is in doc.txt.con",
+   "seconds": 0.5484237670898438
+  },
+  {
+   "id": "M2",
+   "title": "`status` shows the merge in progress",
+   "status": "PASS",
+   "detail": "status keys: ['merge_conflicts', 'merge_in_progress', 'merge_lca', 'merge_markers', 'merge_ours', 'merge_resolved', 'merge_style', 'merge_theirs', 'merge_unresolved']",
+   "seconds": 0.5302445888519287
+  },
+  {
+   "id": "M3",
+   "title": "the same bytes written on both sides is not a conflict",
+   "status": "PASS",
+   "detail": "conflict files: none",
+   "seconds": 0.4726731777191162
+  },
+  {
+   "id": "M4",
+   "title": "a fork 250 commits deep each side (pushed 50 at a time) merges cleanly",
+   "status": "PASS",
+   "detail": "pull 1.7 s; conflicts: 0; a/x.txt=250 b/y.txt=250",
+   "seconds": 10.859845161437988
+  },
+  {
+   "id": "M5",
+   "title": "a nested vault inside the working copy is never committed",
+   "status": "PASS",
+   "detail": "nested/ in a fresh clone: no",
+   "seconds": 0.5105547904968262
+  },
+  {
+   "id": "L1",
+   "title": "a 741-byte message is refused before anything is written",
+   "status": "PASS",
+   "detail": "Vault__Commit_Message_Too_Long_Error: the commit message is 741 bytes (UTF-8) and this vault takes up to 740. Shorten ; objects 10 \u2192 10",
+   "seconds": 0.28206825256347656
+  },
+  {
+   "id": "L2",
+   "title": "long-messages: 64 KiB accepted, read back by a fresh clone; gate 0.26.4",
+   "status": "PASS",
+   "detail": "65536 B ok; clone ok; min_client 0.26.4; 64 KiB+1 refused",
+   "seconds": 0.45496225357055664
+  },
+  {
+   "id": "X1",
+   "title": "`pull --merge lines`: edits to different lines merge cleanly",
+   "status": "PASS",
+   "detail": "both edits in the file; no markers; no .conflict",
+   "seconds": 0.5365157127380371
+  },
+  {
+   "id": "X2",
+   "title": "same line on both sides: markers; commit refuses until they are gone",
+   "status": "PASS",
+   "detail": "markers: True; commit with markers refused: True",
+   "seconds": 0.48435378074645996
+  },
+  {
+   "id": "X3",
+   "title": "the default is unchanged: whole-file .conflict",
+   "status": "PASS",
+   "detail": "notes.txt.conflict written: True",
+   "seconds": 0.5119695663452148
+  },
+  {
+   "id": "X4",
+   "title": "an uncommitted edit to a file that would get markers refuses the pull",
+   "status": "PASS",
+   "detail": "refused: True; the edit kept: True",
+   "seconds": 0.5636286735534668
+  },
+  {
+   "id": "C1",
+   "title": "`commit <paths>` against `git add -A -- <paths>; git commit`, 40 random cases",
+   "status": "PASS",
+   "detail": "40 cases; differences: none",
+   "seconds": 35.760162353515625
+  },
+  {
+   "id": "C2",
+   "title": "hunk commits against `git apply --cached`, headers against `git diff -U3`, 60 cases",
+   "status": "PASS",
+   "detail": "60 hunk subsets committed; differences: none",
+   "seconds": 27.293315649032593
+  },
+  {
+   "id": "C3",
+   "title": "a stale hunk id is refused and nothing is written",
+   "status": "PASS",
+   "detail": "Vault__Hunk_Selection_Error; HEAD and objects unchanged",
+   "seconds": 0.297344446182251
+  },
+  {
+   "id": "C4",
+   "title": "push with uncommitted changes pushes the commits and keeps the edits",
+   "status": "PASS",
+   "detail": "remote has x2, y unchanged; y edit kept locally",
+   "seconds": 0.3489663600921631
+  },
+  {
+   "id": "C5",
+   "title": "push refuses before writing when incoming commits would change an edited file",
+   "status": "PASS",
+   "detail": "refused: True; edit kept: True",
+   "seconds": 0.47033238410949707
+  }
+ ]
+}

@@ -5,7 +5,7 @@
 *Source: <https://cli.sgit.ai/research/sgit-and-git-article-review.html> · generated from the same content as the page, so the two cannot drift.*
 
 ---
-> **Published as written.** Dinis Cruz passed it to this site on 28 October 2026; it is not yet in the CLI repository. cli.sgit.ai's build agent checked three of its claims against the PyPI release 0.26.0 on 28 October and found all three hold: `sgit write` leaves other edits uncommitted, a zip holding a vault key is refused at commit, and a pull refuses a rewound head that the host accepted ([the script](https://github.com/SGit-AI/SGit-AI__Website__Cli/tree/dev/admin/research/sgit-and-git-2026-10-28)). The site's summary of it, row by row, is [sgit and Git](../docs/sgit-and-git.md).
+> **Published as written.** Dinis Cruz passed it to this site on 28 October 2026; it is now also in the CLI repository, at `team/humans/dinis_cruz/claude-code-web/10/28/` on `dev` (`036e33b`), and led to the [Git-parity roadmap](../research/git-parity-roadmap.md). cli.sgit.ai's build agent checked three of its claims against the PyPI release 0.26.0 on 28 October and found all three hold: `sgit write` leaves other edits uncommitted, a zip holding a vault key is refused at commit, and a pull refuses a rewound head that the host accepted ([the script](https://github.com/SGit-AI/SGit-AI__Website__Cli/tree/dev/admin/research/sgit-and-git-2026-10-28)). The site's summary of it, row by row, is [sgit and Git](../docs/sgit-and-git.md).
 
 # Review: "What sgit does that Git does not" (newsroom.sgit.ai, article No. 308, 27 Oct 2026)
 

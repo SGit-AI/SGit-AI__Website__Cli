@@ -1,0 +1,112 @@
+{
+ "seed": 2,
+ "cases": 5000,
+ "style": "merge",
+ "stats": {
+  "unique|identical": 2490,
+  "code|identical": 1237,
+  "tiny|identical": 1172,
+  "tiny|both conflict, bytes differ": 73,
+  "tiny|sgit conflict, git clean": 11,
+  "code|both conflict, bytes differ": 11,
+  "tiny|sgit clean, git conflict": 6
+ },
+ "samples": {
+  "both conflict, bytes differ": [
+   {
+    "case": 94,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "a\nc\nb\nc\nb",
+    "ours": "a\nc\nc\nb\na\nc\nc\nb\n",
+    "theirs": "c\nb\na\na\nb\nc\nb\na\nb\na\na\n",
+    "sgit": "c\nb\na\na\n<<<<<<< ours\nc\nc\n=======\n>>>>>>> theirs\nb\na\nc\nc\nb\n<<<<<<< ours\n=======\na\nb\na\na\n>>>>>>> theirs\n",
+    "git": "c\nc\nb\na\n<<<<<<< ours\nc\nc\nb\n=======\na\nb\nc\nb\na\nb\na\na\n>>>>>>> theirs\n"
+   },
+   {
+    "case": 476,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\nc\nb\nc\na\na\na\nb\na\nc\nb\na\nc\na\nb",
+    "ours": "c\nc\na\na\na\nb\na\nc\na\nb\n",
+    "theirs": "c\nc\nb\nc\nb\nb\nc\na\na\na\nb\na\nc\nb\na\nc\na\nb\n",
+    "sgit": "c\nc\n<<<<<<< ours\n=======\nb\nc\nb\nb\nc\n>>>>>>> theirs\na\na\na\nb\na\nc\na\n<<<<<<< ours\n=======\nc\na\n>>>>>>> theirs\nb\n",
+    "git": "c\nc\n<<<<<<< ours\n=======\nb\nc\nb\nb\nc\na\n>>>>>>> theirs\na\na\na\nb\na\nc\na\nb\n"
+   },
+   {
+    "case": 555,
+    "kind": "code",
+    "crlf": false,
+    "base": "line 6747 0.776656\nend\nline 6748 0.708655\nif (a) {\n",
+    "ours": "line 6748 0.708655\nelse\nend\nelse\n\n}\nline 6749 0.853500",
+    "theirs": "line 6747 0.776656\nend\nline 6748 0.708655\nline 6751 0.894268\n    }\nend\nelse\nline 6752 0.997335\n    return x;\n",
+    "sgit": "line 6748 0.708655\nelse\nend\n<<<<<<< ours\nelse\n\n}\nline 6749 0.853500\n=======\nline 6748 0.708655\nline 6751 0.894268\n    }\nend\nelse\nline 6752 0.997335\n    return x;\n>>>>>>> theirs\n",
+    "git": "line 6748 0.708655\n<<<<<<< ours\nelse\nend\nelse\n\n}\nline 6749 0.853500\n=======\nline 6751 0.894268\n    }\nend\nelse\nline 6752 0.997335\n    return x;\n>>>>>>> theirs\n"
+   }
+  ],
+  "sgit conflict, git clean": [
+   {
+    "case": 121,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\nb\nc\nc\nb\nb\nc\na\nc\nb\nb\nb\nb\na\na\nb\na\na\nb\nb\nb",
+    "ours": "c\nb\nc\nc\nc\nc\na\nb\na\nc\nb\nb\nb\nb\na\na\nb\na\na\nb\nb\n",
+    "theirs": "c\nb\nc\nc\nb\nb\nc\na\nb\nb\nb\nb\na\na\nb\nb\nb\n",
+    "sgit": "c\nb\nc\nc\nc\nc\na\n<<<<<<< ours\nb\na\nc\n=======\n>>>>>>> theirs\nb\nb\nb\nb\na\na\nb\nb\nb\n",
+    "git": "c\nb\nc\nc\nc\nc\na\nb\na\nb\nb\nb\nb\na\na\nb\nb\nb\n"
+   },
+   {
+    "case": 1027,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\nc\na\na\nb\na\nb\nc",
+    "ours": "c\na\nc\nb\na\nb\na\nb\nc\n",
+    "theirs": "c\na\na\nb\na\nb\nc\n",
+    "sgit": "c\na\n<<<<<<< ours\nc\nb\n=======\n>>>>>>> theirs\na\nb\na\nb\nc\n",
+    "git": "c\na\nc\nb\na\nb\na\nb\nc\n"
+   },
+   {
+    "case": 1057,
+    "kind": "tiny",
+    "crlf": true,
+    "base": "c\r\nc\r\nc\r\na\r\nc\r\nc\r\nb\r\nb\r\nb\r\nc\r\nc\r\na\r\na\r\nb\r\nb\r\nc\r\na\r\na\r\nc\r\na\r\nc",
+    "ours": "c\r\nc\r\nc\r\na\r\nc\r\nc\r\nb\r\nb\r\nb\r\nc\r\nc\r\na\r\na\r\nb\r\nb\r\nc\r\na\r\na\r\na\r\nb\r\na\r\nc\r\nb\r\na\r\na\r\nc\r\n",
+    "theirs": "c\r\nc\r\nc\r\na\r\nc\r\nc\r\nb\r\nb\r\nc\r\nc\r\na\r\na\r\nb\r\nb\r\nc\r\na\r\na\r\nc\r\na\r\nc\r\n",
+    "sgit": "c\r\nc\r\nc\r\na\r\nc\r\nc\r\nb\r\nb\r\nc\r\nc\r\na\r\na\r\nb\r\nb\r\nc\r\na\r\na\r\na\r\nb\r\na\r\nc\r\nb\r\na\r\n<<<<<<< ours\r\na\r\n=======\r\n>>>>>>> theirs\r\nc\r\n",
+    "git": "c\r\nc\r\nc\r\na\r\nc\r\nc\r\nb\r\nb\r\nc\r\nc\r\na\r\na\r\nb\r\nb\r\nc\r\na\r\na\r\na\r\nb\r\na\r\nc\r\nb\r\na\r\na\r\nc\r\n"
+   }
+  ],
+  "sgit clean, git conflict": [
+   {
+    "case": 1077,
+    "kind": "tiny",
+    "crlf": true,
+    "base": "c\r\nb\r\nc\r\nb\r\nc\r\na\r\nc\r\nb\r\nb\r\n",
+    "ours": "c\r\nb\r\nc\r\na\r\nb\r\nc\r\na\r\nc\r\nb\r\nb\r\n",
+    "theirs": "b\r\nc\r\na\r\nc\r\nb\r\nc\r\na\r\nc\r\nb\r\na\r\nc\r\nb\r\n",
+    "sgit": "b\r\nc\r\na\r\nc\r\na\r\nb\r\nc\r\na\r\nc\r\nb\r\na\r\nc\r\nb\r\n",
+    "git": "b\r\nc\r\na\r\n<<<<<<< ours\r\n=======\r\nc\r\n>>>>>>> theirs\r\nb\r\nc\r\na\r\nc\r\nb\r\na\r\nc\r\nb\r\n"
+   },
+   {
+    "case": 1304,
+    "kind": "tiny",
+    "crlf": true,
+    "base": "b\r\nc\r\nb\r\na\r\nb\r\nb\r\nc\r\na\r\n",
+    "ours": "b\r\nc\r\na\r\nb\r\nb\r\nb\r\nc\r\nb\r\nb\r\nc\r\na\r\n",
+    "theirs": "b\r\na\r\na\r\na\r\nc\r\nc\r\nb\r\na\r\nb\r\nc\r\nc\r\na\r\nb\r\na\r\n",
+    "sgit": "b\r\na\r\na\r\na\r\nc\r\nc\r\na\r\nb\r\nb\r\nb\r\nc\r\nb\r\nc\r\nc\r\na\r\nb\r\na\r\n",
+    "git": "b\r\na\r\na\r\na\r\nc\r\nc\r\na\r\nb\r\n<<<<<<< ours\r\nb\r\nb\r\nc\r\nb\r\nb\r\n=======\r\n>>>>>>> theirs\r\nc\r\nc\r\na\r\nb\r\na\r\n"
+   },
+   {
+    "case": 3112,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\nb\na\nc\na\nc\nc\nb\nb\nb\nb\nc\na\nc\na\nb\nb\nb\nc\na\na\nc\nb\nb\nc",
+    "ours": "c\nb\na\nc\nb\na\nc\nc\nb\nb\nb\nb\nc\na\nc\nb\na\nb\nb\nb\nc\na\na\nc\nb\nb\nb\nc\nb\n",
+    "theirs": "c\nb\nc\nc\na\nb\nb\nc\nb\nb\nb\nb\nc\na\nc\na\nb\nb\nb\nc\na\na\nc\nb\nb\nc",
+    "sgit": "c\nb\nc\nc\nb\na\nb\nb\nc\nb\nb\nb\nb\nc\na\nc\nb\na\nb\nb\nb\nc\na\na\nc\nb\nb\nb\nc\nb\n",
+    "git": "c\nb\nc\n<<<<<<< ours\nb\na\n=======\n>>>>>>> theirs\nc\na\nb\nb\nc\nb\nb\nb\nb\nc\na\nc\nb\na\nb\nb\nb\nc\na\na\nc\nb\nb\nb\nc\nb\n"
+   }
+  ]
+ }
+}

@@ -53,6 +53,35 @@ DOCS = [
      'scale, security-review', 'packs, indexes, fixes, review',
      'The CLI team\'s answer to both reviews of the pack-indexes branch: every finding fixed, documented or deferred '
      'with its reason.'),
+    ('10/28/roadmap__git-parity.md', 'git-parity-roadmap', 'roadmap', 'git', 'git, parity, roadmap, sgithub, signing',
+     'The CLI team\'s roadmap to parity with Git the client, then more on top: what sgit already matches, the '
+     'client-side gaps in three priorities with sizes (line merge, own-key signing, partial commits first), signing '
+     'the way Git does it, and GitHub\'s features moved to a future server, SGitHub. Every new feature off by default.'),
+    ('10/28/design__00__index-and-reconciliation.md', 'git-parity-designs-index', 'design', 'git', 'git, parity, design, foundations',
+     'The entry point to the seven Git-parity designs: the shared foundations to build once, where the designs '
+     'disagreed and how it was settled, the bugs the designs found in the code (fixed in 0.26.3), and the decisions '
+     'waiting on Dinis Cruz.'),
+    ('10/28/design__01__line-merge-and-cherry-pick.md', 'git-parity-design-line-merge', 'design', 'git', 'git, merge, cherry-pick, design',
+     'Design 01: an opt-in three-way line merge with Git\'s conflict markers, checked against git merge-file, and '
+     'sgit history cherry-pick on top of it. Whole-file .conflict stays the default. The merge shipped in 0.26.5.'),
+    ('10/28/design__02__signing-with-your-own-key.md', 'git-parity-design-signing', 'design', 'git, keys', 'git, signing, ssh, gpg, design',
+     'Design 02: sign commits and tags with the SSH or GPG key you already have, as an optional second signature, '
+     'and verify against your own allowed-signers file, the way Git leaves trust to the verifier. No gate. Not built.'),
+    ('10/28/design__03__partial-commits-and-hooks.md', 'git-parity-design-partial-commits', 'design', 'git', 'git, commit, hunks, hooks, design',
+     'Design 03: commit <paths>, commit -p and the agents\' --list-hunks / --hunk pair, checked against Git, and local '
+     'hooks that never sync. Partial commits shipped in 0.26.6; hooks are not built.'),
+    ('10/28/design__04__renames-blame-and-grep.md', 'git-parity-design-blame-grep', 'design', 'git', 'git, renames, blame, grep, design',
+     'Design 04: rename detection, sgit history blame, sgit grep and pickaxe, all read-only on plaintext the client '
+     'holds, with no server change and no gate. Not built.'),
+    ('10/28/design__05__bisect.md', 'git-parity-design-bisect', 'design', 'git', 'git, bisect, design',
+     'Design 05: sgit history bisect, a binary search over the commit graph by generation number, with run, skip, '
+     'log and replay, matched to git bisect. Not built.'),
+    ('10/28/design__06__worktree.md', 'git-parity-design-worktree', 'design', 'git', 'git, worktree, agents, design',
+     'Design 06: sgit worktree, a second working copy in seconds with no network: a real clone whose object store '
+     'borrows from the main vault\'s, like Git\'s alternates. Not built.'),
+    ('10/28/design__07__rebase.md', 'git-parity-design-rebase', 'design', 'git', 'git, rebase, design',
+     'Design 07: history rebase, pull --rebase and an interactive todo, replaying unpushed commits one cherry-pick at '
+     'a time with stop and continue. Opt-in; pushed history is never rewritten. Not built.'),
     ('10/26/release-readiness__pack-indexes-branch.md', 'pack-indexes-release-readiness', 'measurement',
      'scale', 'packs, indexes, release, 0.26.0, measurements',
      'The release readiness of the pack-indexes branch: a third, independent review (R1 to R9, fixed), the build '
@@ -250,7 +279,9 @@ def main():
         month, day = src.split("/")[:2]
         date = f"2026-{month}-{day}"
         first = git(cli, "log", "--diff-filter=A", "--format=%cI", "-1", "--", path)
-        body = re.sub(r"`([^`\s/]+\.md)`", lambda m: link(m.group(1), by_name), text.strip("\n"))
+        body = re.sub(r"\]\(([^)\s/]+\.md)\)", lambda m: f"](/research/{by_name[m.group(1)]}.html)" if m.group(1) in by_name
+                      else m.group(0), text.strip("\n"))                        # relative links to a sibling document
+        body = re.sub(r"(?<!\[)`([^`\s/]+\.md)`(?!\])", lambda m: link(m.group(1), by_name), body)
         (OUT / f"{slug}.md").write_text(
             "---\n"
             f"title: {title}\n"

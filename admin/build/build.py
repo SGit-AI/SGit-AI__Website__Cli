@@ -70,6 +70,7 @@ SECTIONS = {
     "home":      ("Home",              "index.html"),
     "start":     ("Get started",       "docs/index.html"),
     "guides":    ("Guides",            "docs/index.html"),
+    "builds":    ("Builds",            "builds/index.html"),
     "security":  ("Security",          "security/index.html"),
     "reference": ("Command reference", "reference/index.html"),
     "api":       ("HTTP API",          "api/index.html"),
@@ -86,8 +87,9 @@ SECTIONS = {
 # section, so a page added to a section reaches the menu without an edit here. A group label is always a
 # link to a real page; nothing is reachable only by opening a dropdown.
 NAV = [
-    ("Docs", "docs/index.html", ("start", "guides"), [
-        ("All the docs", "docs/index.html"), ("@start", 6), ("@guides", 4)]),
+    ("Docs", "docs/index.html", ("start", "guides", "builds"), [
+        ("All the docs", "docs/index.html"), ("@start", 6), ("@guides", 4),
+        ("&#9679; Builds since the last release, reviewed", "builds/index.html"), ("@builds", 3)]),
     ("Security", "security/index.html", ("security",), [("@security", 8)]),
     ("Reference", "reference/index.html", ("reference", "api"), [
         ("&#9679; Every command", "reference/index.html"), ("sgit vault", "reference/vault.html"),
@@ -328,6 +330,9 @@ def card_html(p, up, pages=()):
         docs, arts = topic_members(pages, p.rel.split("/")[-1][:-5])
         tag = '<span class="tag">research topic</span>'
         meta = f'<span class="meta">{len(docs)} document{"s" if len(docs) != 1 else ""}' + (f' · {len(arts)} article{"s" if len(arts) != 1 else ""}' if arts else "") + "</span>"
+    elif p.section == "builds":
+        tag = f'<span class="tag">{html.escape(m.get("channel", "dev build"))}</span>'
+        meta = f'<span class="meta">{m.get("date", "")} · {html.escape(m.get("verdict", ""))}</span>'
     elif m.get("moved_from"):
         tag, meta = "", '<span class="meta">moved from sgit.ai</span>'
     else:
@@ -643,7 +648,7 @@ def llms_txt(pages, ctx):
            "  exactly what changed. Your installed version answers the same question: `sgit help all --format json`.",
            "- Never write a vault key into a tracked file. Read keys may be published; vault keys never.",
            "- The project, the vault platform and the network of sites: https://sgit.ai/llms.txt", ""]
-    order = ["home", "start", "guides", "security", "reference", "api", "topics", "research", "devpacks", "articles", "briefs", "site"]
+    order = ["home", "start", "guides", "builds", "security", "reference", "api", "topics", "research", "devpacks", "articles", "briefs", "site"]
     for sec in order:
         ps = [p for p in pages if p.section == sec]
         if not ps:

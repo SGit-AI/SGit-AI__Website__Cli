@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Git parity, priority 1 and 2: index, shared foundations and reconciliation (28 Oct 2026) · cli.sgit.ai</title>
+<meta name="description" content="The entry point to the seven Git-parity designs: the shared foundations to build once, where the designs disagreed and how it was settled, the bugs the designs found in the code (fixed in 0.26.3), and the decisions waiting on Dinis Cruz.">
+<link rel="canonical" href="https://cli.sgit.ai/research/git-parity-designs-index.html">
+<link rel="alternate" type="text/markdown" href="../research/git-parity-designs-index.md">
+<meta property="og:title" content="Git parity, priority 1 and 2: index, shared foundations and reconciliation (28 Oct 2026)">
+<meta property="og:description" content="The entry point to the seven Git-parity designs: the shared foundations to build once, where the designs disagreed and how it was settled, the bugs the designs found in the code (fixed in 0.26.3), and the decisions waiting on Dinis Cruz.">
+<meta property="og:url" content="https://cli.sgit.ai/research/git-parity-designs-index.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
+      <a class="sl" href="../builds/0-26-5.html">sgit-ai 0.26.5: line-level merge, opt-in</a>
+      <a class="sl" href="../builds/0-26-4.html">sgit-ai 0.26.4: commit messages up to 64 KB</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Git parity, priority 1 and 2: index, shared foundations and reconciliation (28 Oct 2026)</div>
+<h1 id="git-parity-priority-1-and-2-index-shared-foundations-and-rec">Git parity, priority 1 and 2: index, shared foundations and reconciliation (28 Oct 2026)</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-28 · 03:19 UTC</span><span class="k">Kind</span><span class="v">design</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/git.html">git</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/036e33b5280e209804fbfd5fc6633c1cbc1a7af3/team/humans/dinis_cruz/claude-code-web/10/28/design__00__index-and-reconciliation.md"><code>team/humans/dinis_cruz/claude-code-web/10/28/design__00__index-and-reconciliation.md</code></a> in SGit-AI__CLI at <code>036e33b</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>What this is:</b> the entry point to the seven design documents for the Git-parity roadmap (<a href="../research/git-parity-roadmap.html"><code>roadmap__git-parity.md</code></a>). Each document was written against the code at <code>640069a</code> and ends with an acceptance checklist. This index does three things:</p>
+<ul><li>it lists the parts several designs need, to be built once;</li><li>it settles the places where two designs disagree;</li><li>it collects the bugs found in today's code and every decision waiting on Dinis.</li></ul>
+<p><b>Where this index and a design disagree, this index wins.</b> The designs were written in parallel, and section 2 records the outcome of checking them against each other.</p>
+<hr>
+<h2 id="1-the-documents">1. The documents</h2>
+<div class="tablewrap"><table><thead><tr><th>Doc</th><th>Roadmap items</th><th>Priority</th><th>Estimate</th><th>Decisions</th></tr></thead><tbody><tr><td><a href="../research/git-parity-design-line-merge.html"><code>design__01__line-merge-and-cherry-pick.md</code></a></td><td>2.1 line-level merge (opt-in), 2.8 cherry-pick</td><td>1 (merge), 2 (cherry-pick)</td><td>4.5 d (3.25 + 1.25)</td><td>D1–D11</td></tr><tr><td><a href="../research/git-parity-design-signing.html"><code>design__02__signing-with-your-own-key.md</code></a></td><td>2.2 SSH/GPG signing, Git's config, allowed signers</td><td>1</td><td>4 d</td><td>D1–D12</td></tr><tr><td><a href="../research/git-parity-design-partial-commits.html"><code>design__03__partial-commits-and-hooks.md</code></a></td><td>2.3 <code>commit &lt;paths&gt;</code>, <code>commit -p</code>; 2.9 hooks</td><td>1 (paths, -p), 2 (hooks)</td><td>7.5 d (4.5 + 3)</td><td>D1–D10</td></tr><tr><td><a href="../research/git-parity-design-blame-grep.html"><code>design__04__renames-blame-and-grep.md</code></a></td><td>2.4 renames, 2.5 blame, 2.7 grep and <code>log -S/-G</code></td><td>2</td><td>7.5 d</td><td>D1–D12</td></tr><tr><td><a href="../research/git-parity-design-bisect.html"><code>design__05__bisect.md</code></a></td><td>2.6 bisect</td><td>2</td><td>5–6 d</td><td>D1–D8</td></tr><tr><td><a href="../research/git-parity-design-worktree.html"><code>design__06__worktree.md</code></a></td><td>2.13 worktree (shared objects), local branch merge</td><td>2</td><td>3.25 d + 1–1.5 d</td><td>D1–D8</td></tr><tr><td><a href="../research/git-parity-design-rebase.html"><code>design__07__rebase.md</code></a></td><td>2.12 rebase, <code>pull --rebase</code>, <code>rebase -i</code></td><td>2</td><td>6.5–7.5 d</td><td>D1–D10, X1</td></tr></tbody></table></div>
+<p><b>Totals:</b></p>
+<div class="tablewrap"><table><thead><tr><th>Scope</th><th>As written</th><th>After building the shared parts once (section 2)</th></tr></thead><tbody><tr><td>Priority 1 (2.1, 2.2, 2.3)</td><td>~11.75 days</td><td>—</td></tr><tr><td>All seven documents</td><td>~40 days</td><td>~36–37 days</td></tr></tbody></table></div>
+<p>The roadmap's estimates were roughly half of this. Each design explains its own gap; the same three causes recur:</p>
+<ul><li>prerequisites in today's code (section 3);</li><li>making every clone shape work: scoped, shallow, sparse, selective and pack;</li><li>the Git oracle tests, run against git 2.43.</li></ul>
+<hr>
+<h2 id="2-shared-foundations-and-reconciliation">2. Shared foundations and reconciliation</h2>
+<p>Build these once, before the features that use them. Each one names the design that owns it.</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Foundation</th><th>Used by</th><th>Owner</th><th>What was reconciled</th></tr></thead><tbody><tr><td>F1</td><td><b>One line differ:</b> <code>Vault__Line_Diff</code> in <code>sgit_ai/core/text/</code>. Myers diff, linear space, with a cost cap and <code>Vault__Line_Diff__Too_Different</code>. Includes <code>Vault__Line_Splitter</code> and <code>Schema__Line_Hunk</code>.</td><td>merge (01), blame, diff, pickaxe (04), rebase (07 via 01)</td><td>01</td><td>01 and 04 each specified a <code>Vault__Line_Diff</code>: 01 in <code>core/text/</code> with <code>diff(a_ids, b_ids)</code>, 04 in <code>core/actions/diff/</code> with <code>split_lines</code>, <code>opcodes()</code>, <code>matching_blocks</code> and <code>-w</code>. <b>01's location and core win.</b> 04's needs become methods on the same class: <code>opcodes()</code> and <code>matching_blocks()</code> derived from the hunks, and the whitespace-ignore mode as a splitter option. 04's step 3 already allows "if design 01 lands first, step 3 uses it".</td></tr><tr><td>F2</td><td><b>One commit graph:</b> <code>Vault__Commit_Graph</code>, with parents, generation numbers (from index packs, else computed and memoised), a generation-ordered painting walk, ancestry, and a merge base with <b>no 200-commit cap</b>.</td><td>bisect (05), rebase range (07), cherry-pick ranges (01), <code>log --follow</code> (04)</td><td>05</td><td>05 named it <code>Vault__Bisect__Graph</code>; 07 D9 asked for it to be shared. It is named <code>Vault__Commit_Graph</code>, and the bisect-only parts (weights, best, skip_away) stay in <code>Vault__Bisect__Graph</code> on top of it.</td></tr><tr><td>F3</td><td><b>Tree building that costs the change.</b></td><td>partial commits and <code>write</code> (03), merges (01), rebase replays (07), cherry-pick (01)</td><td>03</td><td>03 adds folder reuse to <code>build_from_flat(..., old_tree_ids=)</code>; 07 adds <code>Vault__Sub_Tree.apply_changes(tree_id, changes, read_key)</code>, which walks only the spine. <b>Both are kept, in one commit:</b> <code>apply_changes</code> for callers that hold a change list (replays, picks, path commits), <code>old_tree_ids</code> reuse for callers that hold a full flat map. A shared test pins the invariant that both give exactly the ids <code>build_from_flat</code> gives today (07's I6).</td></tr><tr><td>F4</td><td><b>Same content on both sides is not a conflict.</b></td><td>every merge path: pull, <code>branch merge</code>, revert, cherry-pick, rebase, rewind re-apply</td><td>01</td><td>Found independently by 04 and 07 (X1). Blobs use a random IV, so two clones writing the same content get different blob ids. <code>three_way_merge</code> compares ids only, so today it reports a conflict. Fix: when ids differ, compare <code>content_hash</code> and <code>size</code>; if equal, decrypt both and compare bytes (04's <code>verify_exact</code>), then take ours. This changes the <b>default</b> whole-file merge too, so it is decision <b>X-D1</b> (section 5).</td></tr><tr><td>F5</td><td><b>One "operation in progress" guard:</b> <code>Vault__Operation_Guard.check(directory, action)</code>. It reads <code>merge_state.json</code> (01: merge, cherry-pick), <code>bisect.json</code> (05) and <code>rebase/state.json</code> (07), and refuses an action with the one message pattern each design already uses ("Cannot &lt;action&gt;: a &lt;op&gt; is in progress … finish it with … or abort with …").</td><td>commit, write, pull, push, branch switch/checkout, stash, rebase, bisect, cherry-pick, worktree remove</td><td>01</td><td>01, 05 and 07 each specify their own refusals (01 D3, 05 D1, 07 D8 and <code>check_not_in_progress</code>). The table in 2.1 below is the combined rule; each design's own list follows it.</td></tr><tr><td>F6</td><td><b>Hooks runner:</b> <code>Vault__Hooks</code>, <code>Enum__Hook_Name</code>, <code>VERIFY_HOOKS</code>, <code>Vault__Hooks.environment</code> (secrets stripped).</td><td>commit (03), rebase <code>exec</code> and hooks (07), cherry-pick (01)</td><td>03</td><td>03 D9 says "commit hooks run for <code>commit</code> only"; 07 runs <code>pre-commit</code> / <code>commit-msg</code> on a <code>reword</code>, as Git does. <b>Resolution:</b> follow Git. Automatic commits (pull merges, <code>pick</code>, <code>cherry-pick</code> without an edit) run no commit hooks. A commit whose message the user edits (<code>reword</code>, an interactive squash, <code>cherry-pick -e</code>) runs <code>pre-commit</code>, <code>prepare-commit-msg</code>, <code>commit-msg</code> and <code>post-commit</code>. 07 adds <code>PRE_REBASE</code> and <code>POST_REWRITE</code>.</td></tr><tr><td>F7</td><td><b>Signing at commit creation:</b> <code>create_commit(..., user_signer=)</code> (02).</td><td>every commit path, including merges (01), picks (01), replays (07)</td><td>02</td><td>Consistent. Replayed and picked commits are re-signed by this clone's key and, if configured, the current user's key (07's <code>--sign/--no-sign</code>). 02 D10 (drop user signatures and report the count) applies to whole-history rewrites only: pack import/export, migrate.</td></tr><tr><td>F8</td><td><b>Atomic object writes:</b> temp file, fsync, rename.</td><td>worktree (06), and any two sgit processes on one store</td><td>06</td><td>06 found object files are written in place, so a concurrent reader can see half a file. This lands first, on its own (06 commit 0).</td></tr><tr><td>F9</td><td><b>Pruned diff:</b> <code>history show</code> / <code>diff</code> / <code>log --patch</code> read only the changed paths.</td><td>blame, rename display (04), and the cost of every rebase and cherry-pick report</td><td>04</td><td>It is 04's step 3; it moves into the foundations because 07 and 01 print diffs too.</td></tr></tbody></table></div>
+<h3 id="2-1-what-is-allowed-while-an-operation-is-in-progress-f5">2.1 What is allowed while an operation is in progress (F5)</h3>
+<p>Git's rules, with one deliberate difference: Git allows <code>push</code> during these operations, but sgit's push runs an implicit pull that writes the working copy, so sgit refuses it (it already does for a merge, <code>Vault__Sync__Push.py:50</code>). "✗" means refused by name, with the way out.</p>
+<div class="tablewrap"><table><thead><tr><th>Action ↓ / in progress →</th><th>merge or cherry-pick conflict</th><th>bisect</th><th>rebase (stopped)</th></tr></thead><tbody><tr><td><code>commit</code></td><td>only once every conflict is resolved (01 D3, D4)</td><td>✗ (05 D1)</td><td>✗: use <code>rebase --continue</code> (07 D8)</td></tr><tr><td><code>write</code></td><td>✗</td><td>✗</td><td>✗</td></tr><tr><td><code>pull</code>, <code>branch merge</code>, <code>cherry-pick</code>, <code>rebase</code></td><td>✗</td><td>✗</td><td>✗</td></tr><tr><td><code>push</code></td><td>✗</td><td>✗</td><td>✗</td></tr><tr><td><code>branch switch</code> / <code>checkout &lt;commit&gt;</code></td><td>✗</td><td>✗ (bisect moves the working copy itself)</td><td>✗</td></tr><tr><td><code>bisect start</code></td><td>✗</td><td>—</td><td>✗</td></tr><tr><td><code>stash</code></td><td>✗</td><td>✗</td><td>✗ (<code>--autostash</code> is rebase's own)</td></tr><tr><td><code>status</code>, <code>log</code>, <code>diff</code>, <code>show</code>, <code>blame</code>, <code>grep</code>, <code>cat</code>, <code>ls</code></td><td>✓, and <code>status</code> shows the operation (01's status block)</td><td>✓</td><td>✓</td></tr><tr><td><code>worktree add</code> / <code>remove</code> of <i>another</i> worktree</td><td>✓ (state is per clone)</td><td>✓</td><td>✓</td></tr></tbody></table></div>
+<p>Every operation's state lives under that clone's <code>.sg_vault/local/</code>, so each worktree (06) has its own and they never block each other.</p>
+<hr>
+<h2 id="3-bugs-and-gaps-found-in-today-s-code">3. Bugs and gaps found in today's code</h2>
+<p>The designs found these while reading the code. Fixes for real bugs can ship before any feature.</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Found by</th><th>What</th><th>Kind</th><th>Ship</th></tr></thead><tbody><tr><td>B1</td><td>01 (reproduced)</td><td><code>sgit commit</code> during an unresolved merge <b>commits the <code>.conflict</code> files into the vault</b>; every teammate who pulls gets them</td><td>bug</td><td>now, as F5's first use</td></tr><tr><td>B2</td><td>01</td><td><code>sgit status</code> never shows an in-progress merge, though pull's output points there</td><td>bug</td><td>with B1</td></tr><tr><td>B3</td><td>04, 07</td><td>Same content on both sides is reported as a conflict (random-IV blob ids)</td><td>bug</td><td>F4</td></tr><tr><td>B4</td><td>06</td><td>Object files are written in place, not atomically</td><td>bug (concurrency)</td><td>F8, now</td></tr><tr><td>B5</td><td>06</td><td>The working-copy scan descends into a nested vault folder and would commit its files</td><td>bug</td><td>now</td></tr><tr><td>B6</td><td>05, 07</td><td><code>find_lca</code> and <code>_walk_commit_ids</code> stop after 200 commits</td><td>limit</td><td>F2</td></tr><tr><td>B7</td><td>03</td><td><code>build_from_flat</code> rebuilds every folder, so <code>sgit write</code> of one file costs the whole vault</td><td>performance</td><td>F3</td></tr><tr><td>B8</td><td>04</td><td><code>history show/diff/log --patch</code> decrypt every file of both commits; <code>log --file</code> flattens the whole tree per commit</td><td>performance</td><td>F9</td></tr><tr><td>B9</td><td>03</td><td><code>sgit push</code> refuses any uncommitted change, so a partial commit could never be pushed</td><td>behaviour (prerequisite of 2.3)</td><td>with 2.3</td></tr><tr><td>B10</td><td>04</td><td>The snapshot index's <code>file-commits</code> member is written but never read</td><td>unused</td><td>blame uses it (04)</td></tr></tbody></table></div>
+<hr>
+<h2 id="4-implementation-order">4. Implementation order</h2>
+<p>Each step leaves <code>pytest tests/unit -n auto</code> and <code>pytest tests/security</code> green. Each feature lands with its CHANGELOG entry and any threat-model rows its design lists.</p>
+<p><b>Phase 0: foundations and bug fixes (~4 days)</b></p>
+<ol><li>F8 atomic object writes (B4); B5 nested-vault scan.</li><li>F5 operation guard, with B1 and B2 (merge state only at first).</li><li>F4 same-content merge (B3), <i>after X-D1 is decided</i>.</li><li>F3 tree building (B7).</li><li>F1 line differ and F2 commit graph (B6).</li></ol>
+<p><b>Phase 0 status (28 Oct): done</b> on <code>claude/charming-babbage-5hzcxq</code> (not yet merged to <code>dev</code>):</p>
+<div class="tablewrap"><table><thead><tr><th>Step</th><th>Commit</th><th>What</th></tr></thead><tbody><tr><td>1</td><td><code>6ea436d</code></td><td>F8 atomic object writes (B4, TM-F39); B5 nested vault never scanned or committed (TM-F38)</td></tr><tr><td>2</td><td><code>e4e05fb</code></td><td>F5 <code>Vault__Operation_Guard</code>; B1 commit refuses unresolved conflicts (01 D3); B2 status merge block</td></tr><tr><td>3</td><td><code>dac3416</code></td><td>F4 same content is not a conflict (B3, X-D1)</td></tr><tr><td>4</td><td><code>bbc3f92</code></td><td>F3 <code>build_from_flat</code> folder reuse and <code>apply_changes</code> (B7)</td></tr><tr><td>5a</td><td><code>8a1d6ec</code></td><td>F1 <code>Vault__Line_Diff</code>, <code>Vault__Line_Splitter</code> (<code>sgit_ai/core/text/</code>)</td></tr><tr><td>5b</td><td><code>21a4bf6</code></td><td>F2 <code>Vault__Commit_Graph</code>, no 200-commit cap (B6)</td></tr></tbody></table></div>
+<p>F9 (pruned diff) stays with design 04, as planned. Each step's tests fail on the code before it.</p>
+<p><b>Phase 1: priority 1 (~10 days after phase 0)</b></p>
+<ol><li>2.1 line-level merge, opt-in (01 steps for 2.1).</li><li>2.3 <code>commit &lt;paths&gt;</code> and <code>commit -p</code>, with the push prerequisite B9 (03 steps for 2.3).</li><li>2.2 signing with your own key (02); the signing half waits on the web UI check (02 D7).</li></ol>
+<p><b>Phase 2: priority 2 (~22 days)</b></p>
+<ol><li>F9 pruned diff, then 2.4 renames, 2.5 blame, 2.7 grep (04).</li><li>2.8 cherry-pick (01).</li><li>2.9 hooks (03), then F6 extended by rebase.</li><li>2.12 rebase (07).</li><li>2.6 bisect (05).</li><li>2.13 worktree, phases 1 and 2 (06).</li></ol>
+<p>A release can follow each phase. Phase 1 is the "line merges, signing with your own key, partial commits" release.</p>
+<hr>
+<h2 id="5-decisions-waiting-on-dinis">5. Decisions waiting on Dinis</h2>
+<p>72 decisions are recorded across the seven documents, each with a recommendation. Most follow Git and need only a glance. These are the ones that change behaviour, the command surface or a dependency:</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Decision</th><th>Recommendation</th><th>Doc</th></tr></thead><tbody><tr><td>X-D1</td><td>Same content on both sides stops being a conflict, <b>including in the default whole-file merge</b></td><td>Yes. It is a bug fix: the <code>.conflict</code> file would hold the same bytes as the working file.</td><td>this index (F4)</td></tr><tr><td>01 D3</td><td><code>commit</code> refuses while conflicts are unresolved, including for the default <code>.conflict</code> style</td><td>Yes (fixes B1)</td><td>01</td></tr><tr><td>01 D1 / D10</td><td>How line merge is switched on: <code>--merge lines</code>, <code>merge_style</code> in local config, <code>SGIT_MERGE_STYLE</code>; no <code>config</code> command yet</td><td>As recommended</td><td>01</td></tr><tr><td>02 D2</td><td>What turns user signing on</td><td><code>sgit.gpgSign</code> in Git config, off by default. Not Git's own <code>commit.gpgSign</code>, which would make agents start signing, or failing, on upgrade.</td><td>02</td></tr><tr><td>02 D7</td><td>Hold <i>signing</i> until the web UI team confirms its signing bytes exclude the new field; <i>verification</i> ships regardless</td><td>Yes</td><td>02</td></tr><tr><td>03 D1</td><td>Staging area</td><td>None for now: pathspec plus <code>-p</code></td><td>03</td></tr><tr><td>03 D2</td><td><code>sgit commit -m msg a b</code> makes <code>a b</code> paths (<code>sgit commit "msg"</code> unchanged)</td><td>Yes</td><td>03</td></tr><tr><td>03 D5 / D6</td><td>Hooks from inside the vault only with an explicit opt-in; configured under <code>sgit vault hooks</code></td><td>Yes</td><td>03</td></tr><tr><td>04 D1</td><td><code>grep</code> becomes a top-level command (edit <code>TOP_LEVEL_COMMANDS</code>), also <code>file grep</code></td><td>Yes</td><td>04</td></tr><tr><td>04 D2</td><td>Python regex syntax, not Git's basic regex</td><td>Yes</td><td>04</td></tr><tr><td>04 D4</td><td>Renames detected by default; JSON gains <code>files_renamed</code></td><td>Yes</td><td>04</td></tr><tr><td>05 D1</td><td>Commits refused during a bisect</td><td>Yes</td><td>05</td></tr><tr><td>05 D3</td><td><code>bisect run</code> takes argv; a shell only with <code>--shell</code></td><td>Yes</td><td>05</td></tr><tr><td>06 D1</td><td><code>worktree</code> becomes a top-level command</td><td>Yes</td><td>06</td></tr><tr><td>06 D2</td><td>The worktree copies the vault key (0600) rather than pointing at the main's</td><td>Yes</td><td>06</td></tr><tr><td>06 D6</td><td>No worktrees of read-only clones in v1</td><td>Yes</td><td>06</td></tr><tr><td>07 D2</td><td>Rebase never rewrites pushed commits in v1</td><td>Yes</td><td>07</td></tr><tr><td>07 D3</td><td>Replaying another clone's commits needs <code>--allow-foreign</code></td><td>Yes</td><td>07</td></tr><tr><td>07 D5</td><td><code>pull_rebase</code> is off by default (merge stays the pull default)</td><td>Yes</td><td>07</td></tr></tbody></table></div>
+<p>Top-level command changes in total: <code>grep</code> and <code>worktree</code> (CLAUDE.md rule 9). Everything else goes under <code>history</code> (blame, bisect, cherry-pick, rebase), <code>vault</code> (hooks) or existing commands (<code>commit</code>, <code>pull</code>, <code>branch merge</code>).</p>
+<div class="pagenav"><span></span><a href="../research/git-parity-design-rebase.html">Design 07: rebase (history rebase, pull --rebase, interactive todo) →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/git-parity-designs-index.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/git-parity-designs-index.md"><code>admin/content/research/git-parity-designs-index.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/git-parity-designs-index.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

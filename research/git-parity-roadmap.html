@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roadmap: feature parity with Git, then more on top (28 Oct 2026) · cli.sgit.ai</title>
+<meta name="description" content="The CLI team&#x27;s roadmap to parity with Git the client, then more on top: what sgit already matches, the client-side gaps in three priorities with sizes (line merge, own-key signing, partial commits first), signing the way Git does it, and GitHub&#x27;s features moved to a future server, SGitHub. Every new feature off by default.">
+<link rel="canonical" href="https://cli.sgit.ai/research/git-parity-roadmap.html">
+<link rel="alternate" type="text/markdown" href="../research/git-parity-roadmap.md">
+<meta property="og:title" content="Roadmap: feature parity with Git, then more on top (28 Oct 2026)">
+<meta property="og:description" content="The CLI team&#x27;s roadmap to parity with Git the client, then more on top: what sgit already matches, the client-side gaps in three priorities with sizes (line merge, own-key signing, partial commits first), signing the way Git does it, and GitHub&#x27;s features moved to a future server, SGitHub. Every new feature off by default.">
+<meta property="og:url" content="https://cli.sgit.ai/research/git-parity-roadmap.html">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.26.0</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
+      <a class="sl" href="../builds/0-26-5.html">sgit-ai 0.26.5: line-level merge, opt-in</a>
+      <a class="sl" href="../builds/0-26-4.html">sgit-ai 0.26.4: commit messages up to 64 KB</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../research/index.html">Research</a> / Roadmap: feature parity with Git, then more on top (28 Oct 2026)</div>
+<h1 id="roadmap-feature-parity-with-git-then-more-on-top-28-oct-2026">Roadmap: feature parity with Git, then more on top (28 Oct 2026)</h1>
+<div class="docmeta"><span class="k">Date</span><span class="v">2026-10-28 · 02:22 UTC</span><span class="k">Kind</span><span class="v">roadmap</span><span class="k">Research topics</span><span class="v"><a class="chip" href="../research/topics/git.html">git</a></span><span class="k">Written by</span><span class="v">the sgit-ai CLI team (Claude Code sessions), for Dinis Cruz</span><span class="k">Source</span><span class="v"><a href="https://github.com/SGit-AI/SGit-AI__CLI/blob/036e33b5280e209804fbfd5fc6633c1cbc1a7af3/team/humans/dinis_cruz/claude-code-web/10/28/roadmap__git-parity.md"><code>team/humans/dinis_cruz/claude-code-web/10/28/roadmap__git-parity.md</code></a> in SGit-AI__CLI at <code>036e33b</code>. Published here as written; the CLI repository is where the work happened.</span></div>
+<p><b>The message:</b> sgit does just about everything Git does, and then more on top. Git, the client, is the bar. GitHub's features (accounts, verified badges, protected branches, review, CI) belong to a future server product ("SGitHub"), not to the CLI.</p>
+<p><b>Follows:</b> <code>review__article-what-sgit-does-that-git-does-not.md</code> (same folder). That review mixed Git and GitHub features, and proposed an owner-signed signer registry for TM-R01. Under this scope, that registry moves to SGitHub (section 4). Signing becomes what Git does: sign with the key you already have, and let each verifier decide whom to trust.</p>
+<p><b>Extension rule:</b> every new feature is off by default and changes nothing for vaults and clients that don't use it. It is on through a setting, either local or a vault feature (<code>sgit vault format --feature …</code>, the mechanism <code>packs</code> and <code>signatures-required</code> already use). Only a feature that old clients would get <i>wrong</i> sets a minimum client version.</p>
+<hr>
+<h2 id="1-already-at-parity">1. Already at parity</h2>
+<p>These Git commands already have an sgit equivalent.</p>
+<p><b>Working with a clone</b></p>
+<div class="tablewrap"><table><thead><tr><th>Git</th><th>sgit</th></tr></thead><tbody><tr><td><code>clone</code>, <code>--depth</code>, <code>fetch --unshallow</code></td><td><code>clone</code>, <code>--depth N</code>, <code>fetch --unshallow</code></td></tr><tr><td>partial clone + <code>sparse-checkout</code></td><td><code>clone --path</code> (repeatable), <code>fetch &lt;folder&gt;</code> to widen, <code>clone --sparse</code></td></tr><tr><td><code>clone --no-checkout</code>, <code>--bare</code></td><td><code>clone --no-checkout</code>, <code>checkout &lt;paths&gt;</code> / <code>--since-pull</code> / <code>--changed-since</code> / <code>--all</code>; <code>clone --bare</code></td></tr><tr><td><code>status</code>, <code>commit</code>, <code>commit --amend</code></td><td><code>status</code>, <code>commit</code>, <code>commit --amend</code></td></tr><tr><td><code>push</code>, <code>pull</code>, <code>fetch</code>, <code>push --force-with-lease</code></td><td>the same</td></tr><tr><td><code>remote</code></td><td><code>remote</code></td></tr><tr><td><code>.gitignore</code></td><td><code>.gitignore</code> (read as is)</td></tr><tr><td><code>stash</code></td><td><code>vault stash</code></td></tr></tbody></table></div>
+<p><b>Branches, tags and merges</b></p>
+<div class="tablewrap"><table><thead><tr><th>Git</th><th>sgit</th></tr></thead><tbody><tr><td><code>branch</code>, <code>switch</code>, <code>checkout &lt;commit&gt;</code></td><td><code>branch new/list/switch/rename/checkout</code></td></tr><tr><td><code>merge</code></td><td><code>branch merge</code> (whole-file: see 2.1)</td></tr><tr><td><code>merge --abort</code></td><td><code>merge-abort</code></td></tr><tr><td>conflict resolution</td><td><code>resolve</code></td></tr><tr><td><code>tag -s</code> (signed), <code>tag -v</code></td><td><code>vault tag create/list/show/delete</code> (signed, verified)</td></tr></tbody></table></div>
+<p><b>History</b></p>
+<div class="tablewrap"><table><thead><tr><th>Git</th><th>sgit</th></tr></thead><tbody><tr><td><code>log</code>, <code>--grep</code>, <code>--since</code>, <code>--until</code>, <code>--author</code>, <code>--stat</code>, <code>-p</code>, <code>-- &lt;file&gt;</code>, <code>--graph</code>, <code>--oneline</code></td><td><code>history log</code> with the same filters</td></tr><tr><td><code>diff</code>, <code>show</code></td><td><code>history diff</code>, <code>history show</code></td></tr><tr><td><code>reflog</code></td><td><code>history reflog</code></td></tr><tr><td><code>reset --hard</code></td><td><code>history reset</code></td></tr><tr><td><code>revert</code></td><td><code>history revert --as-commit</code></td></tr><tr><td>(no single command)</td><td><code>history undo</code></td></tr><tr><td><code>HEAD~2</code>, <code>HEAD^2</code>, short ids, tag names</td><td>the same revision syntax</td></tr></tbody></table></div>
+<p><b>Integrity and plumbing</b></p>
+<div class="tablewrap"><table><thead><tr><th>Git</th><th>sgit</th></tr></thead><tbody><tr><td><code>fsck</code></td><td><code>check fsck</code></td></tr><tr><td><code>verify-commit</code> (one commit)</td><td><code>check verify</code> (every commit to HEAD)</td></tr><tr><td><code>commit-graph</code>, pack indexes</td><td>index packs (0.26.0)</td></tr><tr><td>packs, kept packs (<code>fetch.unpackLimit</code>)</td><td>pack vaults, <code>clone --pack-store</code></td></tr><tr><td><code>hash-object</code> / <code>commit-tree</code> plumbing</td><td><code>write --file … --also … --push --json</code> (atomic commit of named files)</td></tr><tr><td><code>bundle</code> / <code>file://</code> remotes</td><td><code>--transport local</code>, <code>vault backup</code> / <code>restore</code></td></tr><tr><td>dumb HTTP</td><td><code>--transport static</code></td></tr></tbody></table></div>
+<hr>
+<h2 id="2-gaps-git-has-it-sgit-doesn-t-yet-the-cli-roadmap">2. Gaps: Git has it, sgit doesn't yet (the CLI roadmap)</h2>
+<p>All of these run on the client in Git too. None needs a server change.</p>
+<h3 id="priority-1">Priority 1</h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Feature</th><th>Git</th><th>sgit plan</th><th>Size</th><th>Gate?</th></tr></thead><tbody><tr><td>2.1</td><td><b>Line-level three-way merge</b></td><td><code>ort</code> merge, conflict markers, <code>merge-file</code></td><td>One function changes: <code>Vault__Merge.three_way_merge</code>. Every merge (pull, <code>branch merge</code>, <code>revert</code>, the rewind re-apply) goes through it. For a text file both sides changed: decrypt base/ours/theirs, run a three-way line merge, and store the result as a new blob. A clean merge commits as today; rough edges get <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> markers in the file instead of a <code>.conflict</code> copy. Binary files (a NUL byte) and files over a size cap stay whole-file. Tests use <code>git merge-file -p</code> as the oracle. <b>Opt-in; whole-file with <code>.conflict</code> stays the default</b> (the web UI works that way). Chosen per command (<code>--merge lines</code> / <code>--merge files</code> on <code>pull</code> and <code>branch merge</code>) or per clone (a <code>merge_style</code> field in <code>.sg_vault/local/config.json</code>, never synced, like Git's <code>.git/config</code>). A team-wide per-file rule, if ever wanted, is a committed attributes file (Git's <code>.gitattributes</code>), versioned like the <code>.gitignore</code> sgit already reads.</td><td>2–3 days</td><td>No: a merge result is an ordinary commit</td></tr><tr><td>2.2</td><td><b>Sign with your own key</b> (SSH or GPG) <b>and verify against your allowed-signers file</b></td><td><code>user.signingkey</code>, <code>gpg.format</code>, <code>commit.gpgSign</code>, <code>tag.gpgSign</code>, <code>gpg.ssh.allowedSignersFile</code>, <code>log --show-signature</code>, <code>verify-commit</code>, <code>verify-tag</code></td><td>Section 3</td><td>3–4 days</td><td>No (section 3)</td></tr><tr><td>2.3</td><td><b>Commit some files, not all</b></td><td><code>commit &lt;paths&gt;</code>, <code>add -p</code> + <code>commit</code></td><td><code>sgit commit &lt;paths&gt;</code> reuses <code>write</code>'s code (only the named paths' folders are rebuilt). <code>commit -p</code> picks hunks over <code>history diff</code>. A persistent staging area (<code>sgit add</code>) is a separate decision; pathspec plus <code>-p</code> covers most use.</td><td>1 day / 2 days</td><td>No</td></tr></tbody></table></div>
+<h3 id="priority-2">Priority 2</h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Feature</th><th>Git</th><th>sgit plan</th><th>Size</th></tr></thead><tbody><tr><td>2.4</td><td>Rename detection</td><td><code>diff -M</code>, <code>log --follow</code>, renames in merge</td><td>Exact renames: the same plaintext <code>content_hash</code> (already in tree entries) on a deleted and an added path. Similar renames: Git's similarity score, within a cap.</td><td>1–2 days</td></tr><tr><td>2.5</td><td><code>blame</code></td><td><code>blame</code></td><td><code>history blame &lt;path&gt;</code>: walk the file's commits (the index pack's file → commits member makes it cheap) with a line diff per step. Blobs are fetched on demand; it stops at a shallow boundary.</td><td>2 days</td></tr><tr><td>2.6</td><td><code>bisect</code></td><td><code>bisect start/good/bad/run</code></td><td><code>history bisect …</code>. State in <code>.sg_vault/local/</code>; the midpoint comes from generation numbers (index packs carry them).</td><td>1–2 days</td></tr><tr><td>2.7</td><td><code>grep</code>, pickaxe</td><td><code>grep</code>, <code>log -S</code> / <code>-G</code></td><td><code>sgit grep &lt;regex&gt;</code> over HEAD or <code>--rev C</code> (decrypt locally); <code>history log -S/-G</code>.</td><td>1–2 days</td></tr><tr><td>2.8</td><td><code>cherry-pick</code></td><td><code>cherry-pick</code></td><td><code>history cherry-pick &lt;commit&gt;</code>: a three-way merge of that commit's change onto HEAD (uses 2.1).</td><td>1 day after 2.1</td></tr><tr><td>2.9</td><td>Hooks</td><td><code>.git/hooks/pre-commit</code>, <code>commit-msg</code>, <code>pre-push</code>, <code>post-merge</code></td><td><code>.sg_vault/local/hooks/</code>, local only and never synced (as in Git, a hook in a vault must never run on a clone).</td><td>1 day</td></tr><tr><td>2.12</td><td><code>rebase</code> (moved up from priority 3: <code>pull --rebase</code> and <code>rebase -i</code> are daily Git)</td><td><code>rebase</code>, <code>pull --rebase</code>, <code>rebase -i</code>, <code>--continue/--skip/--abort</code></td><td>Replay this clone's unpushed commits onto the new head, one cherry-pick (2.8) per commit, with stop-and-continue on conflict. Opt-in like 2.1: merge stays the default for <code>pull</code>. Pushed history is never rewritten.</td><td>2–3 days</td></tr><tr><td>2.13</td><td><code>worktree</code> (moved up from priority 3: agents use worktrees heavily)</td><td><code>worktree add/list/remove/prune</code></td><td><code>sgit worktree add &lt;path&gt; [--branch &lt;named&gt;]</code>: a real clone with its own <code>.sg_vault/local</code>, clone branch and key, whose object store borrows from the main vault's (Git's <i>alternates</i>): own store, then the main store, then the network. Seconds and no network instead of a full clone. Merging is as today (push, then <code>branch merge</code>); merging another local clone branch without a push is a follow-up. Full shared refs (Git's <code>commondir</code>) is not planned: 81 hand-built <code>.sg_vault</code>/<code>bare</code> paths would need one resolver plus ref locking.</td><td>2–3 days</td></tr></tbody></table></div>
+<h3 id="priority-3">Priority 3</h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Feature</th><th>Git</th><th>sgit plan</th><th>Size</th></tr></thead><tbody><tr><td>2.10</td><td>Garbage collection</td><td><code>gc</code>, <code>prune</code></td><td><code>vault prune</code> with the write key. Compute the set reachable from every branch, clone branch, tag and stash; delete the rest after a grace period (Git's two weeks) so in-flight pushes survive. On pack vaults, delete <code>archive/</code> packs older than the grace period. It has to be client-side: the host cannot read trees.</td><td>2–3 days</td></tr><tr><td>2.11</td><td>Delta compression</td><td><code>repack</code>, delta packs</td><td>At push, delta a blob against its previous version before deflate and encryption. The reader rebuilds the blob and verifies it by content address.</td><td>1–2 weeks; old clients can't read deltas, so it needs a vault feature with a gate</td></tr><tr><td>2.14</td><td><code>archive</code>, <code>shortlog</code>, <code>describe</code>, aliases</td><td>the same</td><td>Plaintext export of a commit as zip/tar; summaries; <code>sgit config alias.*</code>.</td><td>small each</td></tr><tr><td>2.15</td><td>Submodules</td><td><code>submodule</code></td><td>A vault referencing another vault at a commit. Needs a design; skip until someone asks.</td><td>design</td></tr></tbody></table></div>
+<hr>
+<h2 id="3-signing-the-way-git-does-it">3. Signing the way Git does it</h2>
+<p><b>How Git does it.</b> Git never asks who is allowed. It signs with the key the user already has: GPG (<code>gpg.format openpgp</code>), SSH (<code>gpg.format ssh</code>, signing through <code>ssh-keygen -Y sign</code> and so through ssh-agent and hardware keys) or X.509. It stores the signature in the commit (<code>gpgsig</code>), excluded from the signed bytes. Verification is each verifier's choice: a GPG keyring, or an <code>allowed_signers</code> file of principal → public key. GitHub then adds "verified" on top by matching keys to accounts. That last part is the SGitHub layer, not the CLI.</p>
+<p><b>sgit, the same way:</b></p>
+<ul><li><b>Signing.</b></li><li>Read Git's own settings (<code>git config user.signingkey</code>, <code>gpg.format</code>, <code>commit.gpgsign</code>, <code>tag.gpgsign</code>). A user whose Git signs their commits gets signed sgit commits with zero sgit setup. <code>sgit config</code> can override per vault.</li><li>Sign the way Git does: run <code>ssh-keygen -Y sign -n git</code> (agent and hardware keys work) or <code>gpg --detach-sign</code>. The output is Git's format, so <code>ssh-keygen -Y verify</code> or <code>gpg --verify</code> can check an sgit signature outside sgit.</li><li><b>Verification.</b></li><li><code>check verify</code>, <code>history log --show-signature</code> and <code>vault tag show</code> read the same <code>allowed_signers</code> file Git uses (<code>gpg.ssh.allowedSignersFile</code>), or the GPG keyring.</li><li>Results are Git's: good signature from a listed principal / good signature from an unknown key / bad / none.</li><li>Verifying SSH signatures in-process uses <code>cryptography</code>, which is OpenSSL underneath and already a dependency; ed25519, ECDSA and RSA keys are supported. GPG verification runs <code>gpg</code>, as Git does.</li><li><b>What stays as it is.</b></li><li>The per-clone ECDSA key keeps signing every commit. It is the machine signature that agents get with no setup, and <code>signatures-required</code> keeps meaning "every commit carries a valid clone signature".</li><li>The user's signature is a second, optional one. It is what answers "who wrote this", for anyone who keeps an allowed-signers file. That closes TM-R01 for that verifier exactly as far as Git closes it, and that is the bar.</li><li><b>Compatibility: no gate needed.</b> Checked on the code today:</li><li>A commit JSON with a field the client does not know parses fine (<code>Schema__Object_Commit.from_json</code> accepts unknown keys).</li><li>Clients check the clone signature over the fields they know (<code>commit.json()</code>), so the new field must be <i>excluded</i> from the clone's signing bytes, as Git excludes <code>gpgsig</code>. Then old clients verify the clone signature unchanged and simply ignore the user signature.</li><li>The reserved <code>author_signature</code> field cannot carry it: it is validated as base64 of at most 256 characters, and an SSH or PGP signature is longer, so a client would reject the commit (tested). The signature goes in a new field.</li><li>Signed tags work the same way.</li><li><b>What it does not do</b> (SGitHub's job later): a list of who may write, carried in the vault; joining and approval; revocation records; "verified" decided by a server.</li></ul>
+<p>Size: 3–4 days with tests (SSH first, GPG second), plus CHANGELOG and threat-model rows (TM-R01 gains "closed per verifier with an allowed-signers file").</p>
+<hr>
+<h2 id="4-moved-to-sgithub-server-side-later">4. Moved to SGitHub (server-side, later)</h2>
+<p>These were in the article's "Git is ahead" list or in yesterday's review. They are GitHub's features, not Git's, so they are out of scope for the CLI:</p>
+<ul><li><b>Accounts and identity:</b> who pushed, keys attached to people, "verified" badges, verification recorded at push time.</li><li><b>A list of who may write:</b> owner-signed signer registry, join requests and approval, revocation (yesterday's TM-R01 proposal), per-person write tokens.</li><li><b>Protected branches:</b> required signed pushes, rules enforced by the server.</li><li><b>Collaboration:</b> review / pull requests, the web merge button, CI triggers, issues.</li><li><b>The append lane</b> is already a server feature. Its CLI (<code>sgit inbox send/read</code>) belongs in section 5, because Git has nothing like it.</li></ul>
+<p>Under zero knowledge, an SGitHub server can do the access parts: tokens, ref ACLs keyed by the hashed ref ids, recording verification. The content parts (review, CI, search) run in the browser or in a runner that holds the key.</p>
+<hr>
+<h2 id="5-more-on-top-what-sgit-does-that-git-does-not">5. More on top: what sgit does that Git does not</h2>
+<p>The second half of the message. Already shipped unless marked.</p>
+<ul><li>The host reads nothing: contents, file names, messages and branch names are encrypted on the client.</li><li>A read key is a capability: publish it, and anyone reads from any static host with no account.</li><li>Fetch one folder by byte ranges from plain storage (pack vaults), each object verified by hash.</li><li>Indexes shipped by the writer, signed and encrypted, checked before use.</li><li>Many agents, one folder each: writes outside the scope are refused by name, and two scoped agents never conflict.</li><li>Custody without access: <code>vault mirror</code>.</li><li>Policy carried by the vault and enforced by every client: format gate, <code>signatures-required</code>.</li><li>Rewind detection on every clone.</li><li>The secret guard (keys and key zips are never committed).</li><li>Key rotation: <code>vault rekey</code> / <code>vault move</code>.</li><li>A computable cache for fixed-cost reads.</li><li><code>serve</code>, <code>publish</code>.</li><li><code>pki encrypt</code> to a person.</li><li>To add: <code>sgit inbox</code> for the append lane; <code>cat --vault-key</code> (one file with no clone); Phase 4 ranged reads on pack vaults.</li></ul>
+<h2 id="suggested-order">Suggested order</h2>
+<ol><li>2.1 line-level merge.</li><li>2.2 signing with your own key.</li><li>2.3 <code>commit &lt;paths&gt;</code>.</li><li>Then 2.4–2.9, 2.12 (rebase) and 2.13 (worktree) as the priority-2 release.</li><li>2.10, 2.11, 2.14 and 2.15 when a workload asks (garbage collection is not needed for now).</li></ol>
+<p>Each is an extension: off or invisible until used, and no version gate except 2.11.</p>
+<div class="pagenav"><a href="../research/git-parity-design-partial-commits.html">← Design 03: partial commits (commit &lt;paths&gt;, commit -p) and hooks</a><a href="../research/sgit-and-git-article-review.html">Review: &quot;What sgit does that Git does not&quot;, checked against the code →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../research/git-parity-roadmap.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/research/git-parity-roadmap.md"><code>admin/content/research/git-parity-roadmap.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../research/git-parity-roadmap.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

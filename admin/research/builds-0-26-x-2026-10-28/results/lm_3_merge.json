@@ -1,0 +1,126 @@
+{
+ "seed": 3,
+ "cases": 5000,
+ "style": "merge",
+ "stats": {
+  "unique|identical": 2478,
+  "code|identical": 1286,
+  "tiny|identical": 1132,
+  "code|both conflict, bytes differ": 13,
+  "tiny|both conflict, bytes differ": 77,
+  "tiny|sgit clean, git conflict": 2,
+  "tiny|both clean, bytes differ": 1,
+  "tiny|sgit conflict, git clean": 10,
+  "code|sgit clean, git conflict": 1
+ },
+ "samples": {
+  "both conflict, bytes differ": [
+   {
+    "case": 39,
+    "kind": "code",
+    "crlf": false,
+    "base": "{\n\n#\nline 513 0.594221\nelse\n    return x;\nline 514 0.625881\nx = 1;\n}",
+    "ours": "{\nline 517 0.395749\n    i++;\n#\nline 513 0.594221\nelse\n    return x;\nline 514 0.625881\nx = 1;\n}\nline 515 0.495216\n  \nline 516 0.998485\n",
+    "theirs": "{\n\n    }\nelse\n    return x;\nline 513 0.594221\nline 518 0.936732\n    return x;\nline 514 0.625881\nx = 1;",
+    "sgit": "{\n<<<<<<< ours\nline 517 0.395749\n    i++;\n#\n=======\n\n    }\nelse\n    return x;\n>>>>>>> theirs\nline 513 0.594221\nline 518 0.936732\n    return x;\nline 514 0.625881\n<<<<<<< ours\nx = 1;\n}\nline 515 0.495216\n  \nline 516 0.998485\n=======\nx = 1;\n>>>>>>> theirs\n",
+    "git": "{\n<<<<<<< ours\nline 517 0.395749\n    i++;\n#\nline 513 0.594221\n=======\n\n    }\n>>>>>>> theirs\nelse\n    return x;\nline 513 0.594221\nline 518 0.936732\n    return x;\nline 514 0.625881\n<<<<<<< ours\nx = 1;\n}\nline 515 0.495216\n  \nline 516 0.998485\n=======\nx = 1;\n>>>>>>> theirs\n"
+   },
+   {
+    "case": 44,
+    "kind": "code",
+    "crlf": false,
+    "base": "\nelse\n\nline 585 0.207166\nline 586 0.414929\n",
+    "ours": "else\n\nline 585 0.207166\nline 586 0.414929\n",
+    "theirs": "\nif (a) {\n\nline 588 0.159471\n\nline 586 0.414929",
+    "sgit": "<<<<<<< ours\nelse\n=======\n\nif (a) {\n\nline 588 0.159471\n>>>>>>> theirs\n\nline 586 0.414929",
+    "git": "<<<<<<< ours\nelse\n=======\n\nif (a) {\n>>>>>>> theirs\n\nline 588 0.159471\n\nline 586 0.414929"
+   },
+   {
+    "case": 64,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "b\nc\nc\na\nc\n",
+    "ours": "b\nc\na\na\na\na\nc\n",
+    "theirs": "b\nc\na\nc\nb\nc\n",
+    "sgit": "b\nc\na\n<<<<<<< ours\na\na\na\n=======\nc\nb\n>>>>>>> theirs\nc\n",
+    "git": "b\nc\n<<<<<<< ours\na\na\na\n=======\n>>>>>>> theirs\na\nc\nb\nc\n"
+   }
+  ],
+  "sgit clean, git conflict": [
+   {
+    "case": 208,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\nc\nc\nb\nb\na\nc\na\nc\na\na\na\nc\n",
+    "ours": "b\nc\nc\nc\na\na\nb\na\nc\na\na\na",
+    "theirs": "c\nc\nc\nb\nb\na\nc\nb\na\nc\na\na\na\nc\n",
+    "sgit": "b\nc\nc\nc\na\na\nb\na\nc\nb\na\na\na",
+    "git": "b\nc\nc\nc\na\n<<<<<<< ours\n=======\nc\nb\n>>>>>>> theirs\na\nb\na\nc\na\na\na"
+   },
+   {
+    "case": 1472,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "a\nb\nb\na\nb\na\nc\nc\nc\na\nb\nb\na\nb\nc\n",
+    "ours": "a\nb\nb\nc\na\nb\na\na\nc\nc\na\nb\na\nc\nb\na\nb\nc\n",
+    "theirs": "a\nb\na\nb\na\nb\na\na\nc\nc\nc\na\nb\nb\nb\nc\nc\na\n",
+    "sgit": "a\nb\na\nb\nc\na\nb\na\na\nc\nc\na\nb\na\nc\nb\nb\nc\nc\na\n",
+    "git": "a\nb\na\nb\nc\na\nb\na\na\n<<<<<<< ours\n=======\nc\n>>>>>>> theirs\nc\nc\na\nb\na\nc\nb\nb\nc\nc\na\n"
+   },
+   {
+    "case": 3349,
+    "kind": "code",
+    "crlf": false,
+    "base": "{\n{\n    i++;\n  \nline 40955 0.280669\n    i++;\nline 40956 0.162434\nline 40957 0.332192\nline 40958 0.436634\n",
+    "ours": "{\n{\n    i++;\nline 40956 0.162434\nline 40957 0.332192\nline 40958 0.436634\n",
+    "theirs": "    }\n    i++;\n{\n    i++;\nline 40956 0.162434\nline 40960 0.111342\nend\n#\nline 40957 0.332192\nline 40958 0.436634\n",
+    "sgit": "    }\n    i++;\n{\n    i++;\nline 40956 0.162434\nline 40960 0.111342\nend\n#\nline 40957 0.332192\nline 40958 0.436634\n",
+    "git": "    }\n    i++;\n<<<<<<< ours\n=======\n{\n    i++;\n>>>>>>> theirs\nline 40956 0.162434\nline 40960 0.111342\nend\n#\nline 40957 0.332192\nline 40958 0.436634\n"
+   }
+  ],
+  "both clean, bytes differ": [
+   {
+    "case": 422,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\na\nb\nc\nc\na\nc\nc\na\na\na\nc\na\nc\nb\nc\na\nc\n",
+    "ours": "c\na\nb\nc\nc\na\nc\nc\nb\nb\nc\na\na\na\nc\na\nc\nb\nc\na\nc\n",
+    "theirs": "c\na\nb\nc\nb\nc\nc\na\nc\nc\na\nc\nb\nb\nc\na\na\na\na\nc\na\nc\nb\nc\na\nc\n",
+    "sgit": "c\na\nb\nc\nb\nc\nc\na\nc\nc\nb\nb\nc\na\nc\nb\nb\nc\na\na\na\na\nc\na\nc\nb\nc\na\nc\n",
+    "git": "c\na\nb\nc\nb\nc\nc\na\nc\nc\na\nc\nb\nb\nc\nb\nb\nc\na\na\na\na\nc\na\nc\nb\nc\na\nc\n"
+   }
+  ],
+  "sgit conflict, git clean": [
+   {
+    "case": 1876,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "a\nb\nb\na\nc\na\nb\nc\nb\nb",
+    "ours": "a\nb\nb\na\nc\na\nb\nc\nb\nb\n",
+    "theirs": "a\nb\nb\nb\nc\nb\nb\n",
+    "sgit": "a\nb\nb\nb\nc\nb\nb\n<<<<<<< ours\nb\n=======\n>>>>>>> theirs\n",
+    "git": "a\nb\nb\nb\nc\nb\nb\n"
+   },
+   {
+    "case": 2971,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "c\nb\nc\nc\nb\nc\nb\nc\nb\nb\nc\nb\nc\nc\na\na\na\nc\na\nb\nb\nb\nc\nc\nc\n",
+    "ours": "c\nb\nc\nc\nb\nc\nb\nc\nb\nb\nc\nb\nc\nc\na\na\na\nc\na\nb\nb\nb\nc\nc\nc",
+    "theirs": "c\nb\nc\nc\nb\nc\nb\nb\nc\nb\nb\nc\nc\na\na\na\nc\nb\na\nb\nb\nc\nc\nc",
+    "sgit": "c\nb\nc\nc\nb\nc\nb\nb\nc\nb\nb\nc\nc\na\na\na\nc\nb\na\nb\nb\nc\n<<<<<<< ours\n=======\nc\n>>>>>>> theirs\nc",
+    "git": "c\nb\nc\nc\nb\nc\nb\nb\nc\nb\nb\nc\nc\na\na\na\nc\nb\na\nb\nb\nc\nc\nc"
+   },
+   {
+    "case": 3131,
+    "kind": "tiny",
+    "crlf": false,
+    "base": "b\nc\nb\nc\nc\nc\nb\nc\na\nb\nc\nb\nc\na\nc\na\na\nc\na\nc\nc\nc",
+    "ours": "a\nb\nc\nb\nc\nc\nc\nb\nc\na\nb\nc\nb\nc\na\nc\na\na\na\nc\na\nc\nc\nc\n",
+    "theirs": "b\nc\nb\nc\nc\nc\na\nb\nc\nc\na\nb\na\nc\na\nc\nc\na\nc\nc\nc\n",
+    "sgit": "a\nb\nc\nb\nc\nc\nc\na\nb\nc\nc\na\nb\na\nc\na\nc\nc\na\n<<<<<<< ours\na\na\n=======\n>>>>>>> theirs\nc\nc\nc\n<<<<<<< ours\nc\n=======\n>>>>>>> theirs\n",
+    "git": "a\nb\nc\nb\nc\nc\nc\na\nb\nc\nc\na\nb\na\nc\na\na\nc\nc\na\nc\nc\nc\n"
+   }
+  ]
+ }
+}

@@ -33,6 +33,7 @@
 
 ## The research documents, newest first
 
+- [Design 02: signing commits and tags with your own key, the way Git does it](../../research/git-parity-design-signing.md): Design 02: sign commits and tags with the SSH or GPG key you already have, as an optional second signature, and verify against your own allowed-signers file, the way Git leaves trust to the verifier. No gate. Not built.
 - [Sealed vault keys: the requirements and the design, side by side](../../research/sealed-vault-keys-side-by-side.md): Two documents arrived on the same day about the same gap, a vault key that is sealed in transit and in clear at rest. One is a list of ten requirements from an agent that moves vault keys for a living; the other is cli.sgit.ai's design for native PKI in sgit.
 - [Sealed vault keys in sgit: requirements](../../research/sealed-vault-keys-requirements.md): Requirements for sealed vault keys in sgit, from an agent that spent a fortnight moving vault keys between Dinis Cruz and many agent sessions, by paste and then by sealed QR code. The three places a vault key is still in clear on…
 - [Keys the way git does them, PKI access to a vault, and copy-on-write: what is already published, and what is not](../../research/keys-pki-copy-on-write-coverage-map.md): Before writing two articles, a map of what is already published on keys the way git does them, PKI access to a vault and copy-on-write: seven questions from the memo, where each stands, the facts the articles must not get wrong,…

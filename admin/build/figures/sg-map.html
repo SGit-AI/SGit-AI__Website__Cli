@@ -12,7 +12,7 @@
 .red{background:var(--red-bg)}
 </style></head><body>
 <h1>sgit and Git, row by row</h1>
-<p class="sub">Checked against sgit-ai 0.26.0, from the sgit CLI team's review of the code and this site's own checks. "No equivalent" means the mainstream Git toolchain and GitHub. Dashed: not built in sgit yet, but buildable on the client without giving up zero knowledge, because Git builds it on the client too.</p>
+<p class="sub">Checked against sgit-ai 0.26.0 and the dev builds of 28 October, from the sgit CLI team's review of the code and this site's own checks. "No equivalent" means the mainstream Git toolchain and GitHub. Dashed: not built in sgit yet, but buildable on the client without giving up zero knowledge, because Git builds it on the client too.</p>
 <div class="grid cols">
  <div class="box teal"><h3>Only sgit</h3><div class="n">12</div>
   <ol>
@@ -42,22 +42,26 @@
    <li>merge and resolve, remotes, fsck</li>
    <li>reading from a static host</li>
   </ul></div>
- <div class="box warm prop"><h3>Git ahead</h3><div class="n">16</div>
-  <div class="sub2">14 buildable on the client</div>
+ <div class="box warm prop"><h3>Git ahead</h3><div class="n">closing</div>
+  <div class="sub2">shipped in dev builds, 28 Oct</div>
   <ul>
-   <li><b>line-level merges</b>, rename detection</li>
-   <li>staging, <span class="k">commit -p</span></li>
-   <li><b>blame</b>, <b>bisect</b>, grep over content</li>
-   <li>delta compression, garbage collection</li>
-   <li>one file with no clone, from the CLI</li>
-   <li>an append-lane command</li>
-   <li><b>allowed signers</b>, expiry, revocation</li>
-   <li>per-folder read access, by folder keys</li>
-   <li>who pushed; branches protected per person</li>
-   <li>review, CI and IDEs, via <span class="k">git-remote-sgit</span></li>
+   <li>&#10003; <b>line-level merge</b>, opt-in <span class="k">0.26.5</span></li>
+   <li>&#10003; <b>commit &lt;paths&gt;, -p, hunks</b> <span class="k">0.26.6</span></li>
   </ul>
-  <div class="sub2">and two more</div>
-  <ul><li>160-bit ids: format 2, 128-bit, is opt-in</li><li>twenty years of maturity: only time</li></ul></div>
+  <div class="sub2">designed, days each</div>
+  <ul>
+   <li>sign with your own key, allowed signers</li>
+   <li><b>blame</b>, grep, renames, cherry-pick</li>
+   <li><b>bisect</b>, hooks, <b>rebase</b>, worktree</li>
+  </ul>
+  <div class="sub2">planned or larger</div>
+  <ul>
+   <li>prune, deltas, one file with no clone</li>
+   <li>per-folder read keys; append-lane command</li>
+   <li>maturity: only time</li>
+  </ul>
+  <div class="sub2">moved to a future server</div>
+  <ul><li>accounts, who pushed, protected branches, review, CI</li></ul></div>
  <div class="box red"><h3>Ruled out</h3><div class="n">6</div>
   <ul>
    <li>anything the host must read: search, diffs, a merge button, scanning</li>
@@ -69,5 +73,5 @@
   </ul>
   <div class="sub2">each has a client substitute</div></div>
 </div>
-<div class="foot"><b>Almost all of Git's lead can be built on the client; sgit's lead needs a host that reads nothing.</b><span>cli.sgit.ai · 28 October 2026 · /docs/sgit-and-git.html</span></div>
+<div class="foot"><b>Almost all of Git's lead can be built on the client; sgit's lead needs a host that reads nothing.</b><span>cli.sgit.ai · 28 October 2026, updated for 0.26.6 · /docs/sgit-and-git.html</span></div>
 </body></html>

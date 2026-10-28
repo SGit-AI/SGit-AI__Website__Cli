@@ -1,0 +1,138 @@
+{
+ "version": "v0.26.0",
+ "results": [
+  {
+   "id": "P1",
+   "title": "one push of 150 commits: the host holds all of them",
+   "status": "FAIL",
+   "detail": "fsck of a fresh clone: ok=False, missing=1",
+   "seconds": 3.2260637283325195
+  },
+  {
+   "id": "G1",
+   "title": "a new pack vault is gated at what its features need (0.24.0)",
+   "status": "n/a",
+   "detail": "claimed from 0.26.1",
+   "seconds": 0.0
+  },
+  {
+   "id": "G2",
+   "title": "`pack index verify`: all packs, then --last 1",
+   "status": "n/a",
+   "detail": "claimed from 0.26.1",
+   "seconds": 0.0
+  },
+  {
+   "id": "M1",
+   "title": "commit during an unresolved merge is refused; .conflict never committed",
+   "status": "n/a",
+   "detail": "claimed from 0.26.3",
+   "seconds": 0.0
+  },
+  {
+   "id": "M2",
+   "title": "`status` shows the merge in progress",
+   "status": "n/a",
+   "detail": "claimed from 0.26.3",
+   "seconds": 0.0
+  },
+  {
+   "id": "M3",
+   "title": "the same bytes written on both sides is not a conflict",
+   "status": "n/a",
+   "detail": "claimed from 0.26.3",
+   "seconds": 0.0
+  },
+  {
+   "id": "M4",
+   "title": "a fork 250 commits deep each side (pushed 50 at a time) merges cleanly",
+   "status": "n/a",
+   "detail": "claimed from 0.26.3",
+   "seconds": 0.0
+  },
+  {
+   "id": "M5",
+   "title": "a nested vault inside the working copy is never committed",
+   "status": "n/a",
+   "detail": "claimed from 0.26.3",
+   "seconds": 0.0
+  },
+  {
+   "id": "L1",
+   "title": "a 741-byte message is refused before anything is written",
+   "status": "n/a",
+   "detail": "claimed from 0.26.4",
+   "seconds": 0.0
+  },
+  {
+   "id": "L2",
+   "title": "long-messages: 64 KiB accepted, read back by a fresh clone; gate 0.26.4",
+   "status": "n/a",
+   "detail": "claimed from 0.26.4",
+   "seconds": 0.0
+  },
+  {
+   "id": "X1",
+   "title": "`pull --merge lines`: edits to different lines merge cleanly",
+   "status": "n/a",
+   "detail": "claimed from 0.26.5",
+   "seconds": 0.0
+  },
+  {
+   "id": "X2",
+   "title": "same line on both sides: markers; commit refuses until they are gone",
+   "status": "n/a",
+   "detail": "claimed from 0.26.5",
+   "seconds": 0.0
+  },
+  {
+   "id": "X3",
+   "title": "the default is unchanged: whole-file .conflict",
+   "status": "n/a",
+   "detail": "claimed from 0.26.5",
+   "seconds": 0.0
+  },
+  {
+   "id": "X4",
+   "title": "an uncommitted edit to a file that would get markers refuses the pull",
+   "status": "n/a",
+   "detail": "claimed from 0.26.5",
+   "seconds": 0.0
+  },
+  {
+   "id": "C1",
+   "title": "`commit <paths>` against `git add -A -- <paths>; git commit`, 40 random cases",
+   "status": "n/a",
+   "detail": "claimed from 0.26.6",
+   "seconds": 0.0
+  },
+  {
+   "id": "C2",
+   "title": "hunk commits against `git apply --cached`, headers against `git diff -U3`, 60 cases",
+   "status": "n/a",
+   "detail": "claimed from 0.26.6",
+   "seconds": 0.0
+  },
+  {
+   "id": "C3",
+   "title": "a stale hunk id is refused and nothing is written",
+   "status": "n/a",
+   "detail": "claimed from 0.26.6",
+   "seconds": 0.0
+  },
+  {
+   "id": "C4",
+   "title": "push with uncommitted changes pushes the commits and keeps the edits",
+   "status": "n/a",
+   "detail": "claimed from 0.26.6",
+   "seconds": 0.0
+  },
+  {
+   "id": "C5",
+   "title": "push refuses before writing when incoming commits would change an edited file",
+   "status": "n/a",
+   "detail": "claimed from 0.26.6",
+   "seconds": 0.0
+  }
+ ]
+}

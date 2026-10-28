@@ -130,7 +130,7 @@ for (const f of htmlFiles) {
 // --- 7. key-leak tripwire -------------------------------------------------
 const SHAPES = [
   ['a vault key', /[A-Za-z0-9_-]{20,}:[0-9a-z]{8}(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/],
-  ['a private key', /-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----/],
+  ['a private key', /-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----\r?\n/],   // a real block: the header, then a newline; a header named in a sentence is not a key
   ['an AWS access key id', /\bAKIA[0-9A-Z]{16}\b/],
   ['a GitHub token', /\bgh[pousr]_[A-Za-z0-9]{36,}\b/],
   ['an OpenRouter / OpenAI-style key', /\bsk-(?:or-v1-|proj-)?[A-Za-z0-9]{32,}\b/],

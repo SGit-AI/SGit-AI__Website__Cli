@@ -38,6 +38,13 @@
   <url><loc>https://cli.sgit.ai/briefs/2026-10-20__cli-sgit-ai-first-brief.html</loc></url>
   <url><loc>https://cli.sgit.ai/briefs/2026-10-20__research-and-articles.html</loc></url>
   <url><loc>https://cli.sgit.ai/briefs/index.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-1.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-2.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-3.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-4.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-5.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/0-26-6.html</loc></url>
+  <url><loc>https://cli.sgit.ai/builds/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/index.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/pack-indexes/01-format.html</loc></url>
   <url><loc>https://cli.sgit.ai/dev/pack-indexes/02-writer.html</loc></url>
@@ -117,6 +124,15 @@
   <url><loc>https://cli.sgit.ai/research/clone-refetched-shared-subtrees.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/compatibility-matrix-cli-web-ui-api.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/future-features-after-0-21.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-bisect.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-blame-grep.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-line-merge.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-partial-commits.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-rebase.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-signing.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-design-worktree.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-designs-index.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/git-parity-roadmap.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/git-to-sgit-security-mapping.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/graph-and-index-measurements-2026-10-26.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/history-integrity-cost-and-compatibility.html</loc></url>

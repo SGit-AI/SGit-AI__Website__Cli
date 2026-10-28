@@ -27,9 +27,9 @@ $ sgit clone <vault-key>       # anywhere else, a person or an agent
 | **Agents on one huge vault, one folder each** | a folder by byte ranges from plain storage, 2.8 s against 36 on 76,000 files; commits outside the folder refused by name; two folders never conflict: [0.26.0](/docs/update-to-0-26-0.html) |
 | **Trust carried by the vault** | a format gate and `signatures-required` every client enforces; rewinds refused by name; a secret guard at commit; key rotation |
 
-!shot sg-map.webp | /articles/images/ | sgit and Git, row by row, against sgit-ai 0.26.0. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Sixteen where Git is ahead, fourteen of which sgit can build on the client without giving up zero knowledge. And six that zero knowledge rules out, each with a client-side substitute. | comparison
+!shot sg-map.webp | /articles/images/ | sgit and Git, row by row, against sgit-ai 0.26.0 and the dev builds after it. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: line-level merge and partial commits shipped in the dev builds of 28 October, seven more items designed, GitHub's features moved to a future server. And six that zero knowledge rules out, each with a client-side substitute. | comparison
 
-Git is still ahead on line-level merges, blame, bisect, its forges and twenty years of tooling. Almost all of that runs on the client in Git too, so sgit can build it; what it can never do is anything that needs the host to read your files. **The full map, row by row, with the commands and the qualifiers: [sgit and Git](/docs/sgit-and-git.html).**
+Git is still ahead on blame, bisect, rebase, its forges and twenty years of tooling, and the gap is closing fast: line-level merges and partial commits shipped in the [dev builds](/builds/index.html) of 28 October, and the rest of Git's client is designed. What sgit can never do is anything that needs the host to read your files. **The full map, row by row, with the commands and the qualifiers: [sgit and Git](/docs/sgit-and-git.html).**
 
 **Where things are.** The project, the vault platform and what is built on top of it are on [sgit.ai](https://sgit.ai). Everything about the command-line tool is here.
 
@@ -37,6 +37,7 @@ Git is still ahead on line-level merges, blame, bisect, its forges and twenty ye
 |---|---|
 | **[Get started](/docs/index.html)** | [sgit and Git](/docs/sgit-and-git.html), what sgit is, install, the five-minute quickstart, the git-to-sgit mapping, the two-branch model, and the honest page about its limits |
 | **[Command reference](/reference/index.html)** | All {{command_count}} commands of sgit-ai {{cli_version}}, generated from `sgit help all --format json`, so it describes the code and not somebody's memory of it |
+| **[Builds](/builds/index.html)** | Every build on PyPI since the last release, with its notes and a review of what was tested and what failed |
 | **[Guides](/docs/index.html#guides)** | Partial clones, history integrity, agents sharing one vault, messages between vaults, self-hosting, the update notices |
 | **[Security](/security/index.html)** | The security model, key management, credentials and the PKI commands |
 | **[HTTP API](/api/index.html)** | The surface the CLI and the browser are both clients of: authentication, vault objects, transfers, append lanes, errors |

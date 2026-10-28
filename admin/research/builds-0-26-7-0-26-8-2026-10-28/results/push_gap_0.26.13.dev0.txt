@@ -1,0 +1,8 @@
+== push_gap 0.26.13.dev0
+  ✓ N=101  fresh clone walks  103 of 103 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}
+  ✓ N=102  fresh clone walks  104 of 104 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}
+  ✓ N=103  fresh clone walks  105 of 105 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}
+  ✓ N=151  fresh clone walks  153 of 153 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}
+  ✓ N=152  fresh clone walks  154 of 154 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}
+== packs 152
+  ✓ N=153  fresh clone walks  155 of 155 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}

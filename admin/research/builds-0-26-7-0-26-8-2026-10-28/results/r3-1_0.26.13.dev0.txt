@@ -1,0 +1,18 @@
+R3-1: 0.25.0 creates a 60-file pack vault; the build under test clones, pushes, builds indexes, compacts; pack index verify after each step (narrow.py)
+-- run 1, 0.26.13.dev0
+after clone: ok=True packs=0 bad=0 
+after push: ok=True packs=1 bad=0 
+after build_missing: ok=True packs=2 bad=0 
+after compaction: ok=True packs=3 bad=0 
+-- run 2, 0.26.13.dev0
+after clone: ok=True packs=0 bad=0 
+after push: ok=True packs=1 bad=0 
+after build_missing: ok=True packs=2 bad=0 
+after compaction: ok=True packs=3 bad=0 
+-- run 3, 0.26.13.dev0
+after clone: ok=True packs=0 bad=0 
+after push: ok=True packs=1 bad=0 
+after build_missing: ok=True packs=2 bad=0 
+after compaction: ok=True packs=3 bad=0 
+-- for reference, 0.26.12.dev0
+after compaction: ok=False packs=3 bad=64 ('1793223097__obj-cas-imm-15c6e93716a3__40275.zip', 'tree_at: at doe

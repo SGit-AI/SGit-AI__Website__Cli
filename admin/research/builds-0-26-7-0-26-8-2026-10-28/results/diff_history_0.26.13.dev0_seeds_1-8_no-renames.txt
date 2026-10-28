@@ -1,0 +1,6 @@
+blame (line -> commit message)                     25/25   match
+grep working copy: output + exit code             104/104  match
+grep HEAD~2: output + exit code                    16/16   match
+log -S/-G: commit messages selected                39/40   match
+rename detection -M50 (score + paths)              90/90   match
+DIFF (1, 'log -S/-G: commit messages selected', [], ['commits'])

@@ -1,0 +1,12 @@
+=== cross-version new=0.26.13.dev0 old=0.26.0
+{"step": "new-create", "sgit": "v0.26.13.dev0", "hunks": 2}
+{"step": "old-follow", "sgit": "v0.26.0", "a.txt": "a2\n", "b.txt": "b\n", "line 2 / 15": ["line 2 edited", "line 15"]}
+{"step": "new-follow", "sgit": "v0.26.13.dev0", "c.txt": "from the old client\n", "b.txt kept": "b2 (left uncommitted)\n"}
+{"step": "new-long", "sgit": "v0.26.13.dev0", "pushed": "10,000-byte message"}
+{"step": "old-after-long", "sgit": "v0.26.0", "pull": "refused: Vault__Client_Too_Old_Error: this vault needs sgit-ai >= 0.26.4 and this is 0.26.0: run `sgit update`, then try again"}
+=== cross-version new=0.26.13.dev0 old=0.26.3
+{"step": "new-create", "sgit": "v0.26.13.dev0", "hunks": 2}
+{"step": "old-follow", "sgit": "v0.26.3", "a.txt": "a2\n", "b.txt": "b\n", "line 2 / 15": ["line 2 edited", "line 15"]}
+{"step": "new-follow", "sgit": "v0.26.13.dev0", "c.txt": "from the old client\n", "b.txt kept": "b2 (left uncommitted)\n"}
+{"step": "new-long", "sgit": "v0.26.13.dev0", "pushed": "10,000-byte message"}
+{"step": "old-after-long", "sgit": "v0.26.3", "pull": "refused: Vault__Client_Too_Old_Error: this vault needs sgit-ai >= 0.26.4 and this is 0.26.3: run `sgit update`, then try again"}

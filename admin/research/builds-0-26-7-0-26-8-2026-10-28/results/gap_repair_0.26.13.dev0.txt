@@ -1,0 +1,6 @@
+== gap by 0.26.8 (plain), repair by 0.26.13.dev0
+{"before repair: fresh clone fsck": {"ok": false, "missing": 1, "corrupt": 0, "errors": 0}}
+{"dry-run": {"ok": true, "dry_run": true, "pack_vault": false, "commits_checked": 153, "uploaded_objects": 0}, "repair": {"ok": true, "dry_run": false, "pack_vault": false, "commits_checked": 153, "uploaded_objects": 150}, "after repair: fresh clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "log": "n/a"}
+== gap by 0.26.8 (packs), repair by 0.26.13.dev0
+{"before repair: fresh clone fsck": {"ok": false, "missing": 1, "corrupt": 0, "errors": 0}}
+{"dry-run": {"ok": true, "dry_run": true, "pack_vault": true, "commits_checked": 153, "uploaded_objects": 0}, "repair": {"ok": true, "dry_run": false, "pack_vault": true, "commits_checked": 153, "uploaded_objects": 150}, "after repair: fresh clone fsck": {"ok": true, "missing": 0, "corrupt": 0, "errors": 0}, "log": "n/a"}

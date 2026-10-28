@@ -1,0 +1,5 @@
+commit         {'untrusted': 1, 'none': 2}
+write          {'untrusted': 2, 'none': 2}
+tag            ssh key SHA256:JSEiwGysf+DEIX2hRUnZd128F | tag_show user_signature: untrusted
+merge by pull  {'untrusted': 3, 'none': 3} (counts all commits reachable: unsigned base, b local, signed ones, merge)
+revert         {'untrusted': 3, 'none': 4} -> {'untrusted': 4, 'none': 4}

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sgit-ai 0.26.9: a push of any size uploads every commit (BR-1 fixed) · cli.sgit.ai</title>
+<meta name="description" content="Dev build of 28 October 2026, from the CLI&#x27;s dev at 9345a1fc. Fixes BR-1, the high finding in every build since at least 0.26.0: a push of more than 100 commits uploaded only the newest 100 and left a gap in the host&#x27;s history. Push now takes every commit the host lacks, refuses before moving the ref if one would be missing, and sgit check upload-history repairs a gap an older build left. Reviewed by cli.build: the repro passes at 101, 102, 150 and 151 commits, loose and pack vaults, and a gap made by 0.26.8 is repaired from the clone that holds the commits. BR-1 closed.">
+<link rel="canonical" href="https://cli.sgit.ai/builds/0-26-9.html">
+<link rel="alternate" type="text/markdown" href="../builds/0-26-9.md">
+<meta property="og:title" content="sgit-ai 0.26.9: a push of any size uploads every commit (BR-1 fixed)">
+<meta property="og:description" content="Dev build of 28 October 2026, from the CLI&#x27;s dev at 9345a1fc. Fixes BR-1, the high finding in every build since at least 0.26.0: a push of more than 100 commits uploaded only the newest 100 and left a gap in the host&#x27;s history. Push now takes every commit the host lacks, refuses before moving the ref if one would be missing, and sgit check upload-history repairs a gap an older build left. Reviewed by cli.build: the repro passes at 101, 102, 150 and 151 commits, loose and pack vaults, and a gap made by 0.26.8 is repaired from the clone that holds the commits. BR-1 closed.">
+<meta property="og:url" content="https://cli.sgit.ai/builds/0-26-9.html">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="../assets/site.css?h=4c8a66e7">
+<link rel="stylesheet" href="../assets/themes/themes.css?h=86437750">
+<script src="../assets/themes/themes.js?h=5d5d7d30"></script>
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">cli<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai, the project: the vault platform this CLI is the client of">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">sgit-ai v0.26.8</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history" data-site-version></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+      <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
+      <a class="sl" href="../docs/installation.html">Installation</a>
+      <a class="sl" href="../docs/quickstart.html">Quickstart</a>
+      <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
+      <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
+      <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
+      <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
+      <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
+      <a class="sl" href="../docs/agents.html">Working with AI agents</a>
+      <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-26-12.html">sgit-ai 0.26.12.dev0: dev builds are pre-releases again; sgit update follows the channel</a>
+      <a class="sl" href="../builds/0-26-11.html">sgit-ai 0.26.11: doctor shows signing; the signature gate exempts the empty first commit</a>
+      <a class="sl" href="../builds/0-26-10.html">sgit-ai 0.26.10: sign commits and tags with your own key; the line differ is Git&#x27;s</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../security/index.html">Security<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../security/index.html">Security model</a>
+      <a class="sl" href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+      <a class="sl" href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+      <a class="sl" href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../reference/index.html">Reference<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../reference/index.html">&#9679; Every command</a>
+      <a class="sl" href="../reference/vault.html">sgit vault</a>
+      <a class="sl" href="../reference/history.html">sgit history</a>
+      <a class="sl" href="../reference/pki.html">sgit pki</a>
+      <a class="sl" href="../reference/pack.html">sgit pack</a>
+      <a class="sl" href="../reference/serve.html">sgit serve</a>
+      <a class="sl" href="../api/index.html">&#9679; The HTTP API</a>
+      <a class="sl" href="../api/index.html">The HTTP API</a>
+      <a class="sl" href="../api/authentication.html">Authentication</a>
+      <a class="sl" href="../api/vault-objects.html">Vault objects</a>
+      <a class="sl" href="../api/transfers.html">The transfer API, one encrypted handover, one link</a>
+      <a class="sl" href="../api/append-lanes.html">Append lanes</a>
+      <a class="sl" href="../api/errors.html">Errors and limits</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
+      <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
+      <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
+      <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
+      <a class="sl" href="../research/topics/write-path.html">How a vault takes writes</a>
+      <a class="sl" href="../research/topics/serve.html">Running a vault locally</a>
+      <a class="sl" href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+      <a class="sl" href="../research/topics/correctness.html">Found in daily use</a>
+      <a class="sl" href="../dev/index.html">&#9679; Dev packs: designs to build from</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../articles/index.html">Articles<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../articles/index.html">&#9679; All articles</a>
+      <a class="sl" href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+      <a class="sl" href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+      <a class="sl" href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+      <a class="sl" href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+      <a class="sl" href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+      <a class="sl" href="../articles/a-vault-key-that-never-lands.html">A vault key that never lands: native PKI in sgit, so a key arrives sealed, stays sealed on disk and is opened only in memory</a>
+      <a class="sl" href="../articles/pack-mode-four-rounds.html">Four rounds to no blockers: how pack mode was reviewed before release, the four ways compaction could strand a clone, and the fix that was itself the bug</a>
+      <a class="sl" href="../articles/is-there-any-overhead.html">Is there any overhead? sgit&#x27;s performance, measured: what a vault costs in a CI job, an agent&#x27;s session and a hive, and why being selective beats being fast</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../briefs/index.html">The brief</a>
+      <a class="sl" href="../about/team.html">The team</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Engineering</a>
+      <a class="sl" href="../admin/reality.html">Reality</a>
+      <a class="sl" href="../admin/corrections.html">Corrections</a>
+      <a class="sl" href="../admin/moved.html">What moved from sgit.ai</a>
+      <a class="sl" href="../about/participant.html">Participant disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pick"></div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__Cli">★ GitHub</a>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../builds/index.html">Builds</a> / sgit-ai 0.26.9: a push of any size uploads every commit (BR-1 fixed)</div>
+<h1 id="sgit-ai-0-26-9">sgit-ai 0.26.9</h1>
+<pre><code class="lang-text">┌─ sgit-ai 0.26.9 ── dev build ── 28 Oct 2026, 16:14 UTC ─────────────────────────
+│ tag v0.26.9 = 9345a1fc (dev) · PyPI package == tag
+│ fixed   BR-1: one push of 101+ commits uploaded only 100; the host kept a gap
+│ new     sgit check upload-history [--dry-run]: repairs a gap an older build left
+│ tests   19/19 end-to-end ✓ (P1 now passes) · push_gap 100/101/102/150/151 ✓ · repair ✓
+│ maturity  #########-  good: this is the build to push from
+└──────────────────────────────────────────────────────────────────────────────────</code></pre>
+<h2 id="new">What changed</h2>
+<ul><li><b>Push collects every commit the host lacks,</b> with the commit graph's two-sided walk, no cap. Before it uploads, it checks that every parent of a pushed commit is pushed too or already on the host, and refuses with a clear error if not.</li><li><b><code>sgit check upload-history [--dry-run]</code></b> repairs a gap an older build left, <b>from the clone that still holds the commits</b>. If that clone is gone, those commits are lost.</li></ul>
+<h2 id="review">Review by cli.build</h2>
+<p><b>Verdict: good. BR-1 is closed on this build.</b></p>
+<div class="tablewrap"><table><thead><tr><th>Check</th><th>Result</th></tr></thead><tbody><tr><td>one push of 100, 101, 102, 150 commits, then one more push; a fresh clone walks the history and runs fsck</td><td>102, 103, 104, 152 commits walked, fsck ok (0.26.8: the clone stops at 101)</td></tr><tr><td>the same on a pack vault, 151 commits</td><td>all walked, fsck ok</td></tr><tr><td>a gap made by 0.26.8 (150 commits) repaired by <code>upload-history</code>, normal and pack vault</td><td>150 objects uploaded; a fresh clone's fsck goes from <code>missing: 1</code> to ok</td></tr><tr><td>the 19 end-to-end checks</td><td>all pass, including P1</td></tr></tbody></table></div>
+<ul><li><b>Not tested:</b> a repair when the pushing clone has been deleted (nothing to repair from, by design), and a push of thousands of commits over a slow host.</li><li><b>Small:</b> <code>--dry-run</code> reports <code>uploaded_objects: 0</code>, so it does not say how many objects a repair would upload.</li></ul>
+<p><i>Scripts: <code>push_gap.py</code>, <code>gap_repair.py</code> (new). Results: <code>results/push_gap_0.26.9_0.26.11.txt</code>, <code>results/gap_repair_0.26.8_to_0.26.11.txt</code>, <code>results/check_0.26.9.json</code>. All builds: <a href="../builds/index.html">the builds page</a>.</i></p>
+<div class="pagenav"><a href="../builds/0-26-10.html">← sgit-ai 0.26.10: sign commits and tags with your own key; the line differ is Git&#x27;s</a><a href="../builds/0-26-8.html">sgit-ai 0.26.8: history, blame and search; renames found as Git finds them →</a></div>
+<p class="small dim" style="margin-top:2rem">This page as <a href="../builds/0-26-9.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/builds/0-26-9.md"><code>admin/content/builds/0-26-9.md</code></a></p>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">cli<span>.sgit.ai</span></div>
+    <p>The documentation for the sgit command-line tool (<code>pip install sgit-ai</code>): every command, the HTTP API it is a client of, the guides, the CLI team's research by topic, and articles. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. Content CC BY 4.0, code Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a>, the project and the vault platform · <a href="https://github.com/SGit-AI/SGit-AI__CLI">↗ the CLI's code</a> · <a href="https://pypi.org/project/sgit-ai/">↗ sgit-ai on PyPI</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="partnote">⚠ Participant disclosure: written by the team that builds the sgit CLI. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html" data-site-version>release history</a> · <a href="../admin/index.html">engineering</a> · <a href="../builds/0-26-9.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
+    <a href="../docs/what-is-sgit.html">What is sgit</a>
+    <a href="../docs/installation.html">Installation</a>
+    <a href="../docs/quickstart.html">Quickstart</a>
+    <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
+    <a href="../docs/two-branch-model.html">The two-branch model</a>
+    <a href="../docs/index.html#guides">All the guides</a>
+  </div>
+  <div>
+    <h4>Reference</h4>
+    <a href="../reference/index.html">Every command</a>
+    <a href="../security/index.html">Security model</a>
+    <a href="../docs/key-management.html">Vault key management: where each key lives, and how it travels</a>
+    <a href="../docs/credentials.html">Vault credentials: what each one can do, and what its prefix declares</a>
+    <a href="../docs/pki.html">Keys, signatures and encrypting to someone else</a>
+    <a href="../api/index.html">The HTTP API</a>
+  </div>
+  <div>
+    <h4>Research</h4>
+    <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
+    <a href="../research/topics/keys.html">Keys, members and who may write</a>
+    <a href="../research/topics/integrity.html">History integrity and signatures</a>
+    <a href="../research/topics/scale.html">Big vaults and many agents</a>
+    <a href="../research/topics/write-path.html">How a vault takes writes</a>
+    <a href="../research/topics/serve.html">Running a vault locally</a>
+    <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
+  </div>
+  <div>
+    <h4>Articles</h4>
+    <a href="../articles/index.html">All articles</a>
+    <a href="../articles/pack-indexes-shipped.html">Pack indexes, shipped: how sgit-ai 0.26.0 went from a slow first morning to a release in eighteen hours, and what it measured</a>
+    <a href="../articles/indexes-the-writer-pays-for.html">Indexes the writer pays for: plain JSON cross-references, one file per folder, MGraph-DB and Memory-FS measured, and a million-page link graph read a shard at a time</a>
+    <a href="../articles/a-vault-is-already-a-graph.html">A vault is already a graph: triples as the form that travels encrypted, which graph engines Python can run locally, and why generation numbers beat every one of them on history, measured on 482,000 triples</a>
+    <a href="../articles/indexes-in-the-pack.html">Indexes in the pack: why a reader should download what the pusher already computed, read one folder of a pack vault without the rest, and keep SQLite on its own side of the wire</a>
+    <a href="../articles/a-second-factor-without-a-server.html">A second factor without a server: why an authenticator app&#x27;s code cannot protect a vault, why a passkey or a security key can, and what the second factor is for an agent</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../briefs/index.html">The brief</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../admin/index.html">Engineering</a>
+    <a href="../admin/reality.html">Reality</a>
+    <a href="../admin/corrections.html">Corrections</a>
+    <a href="../llms.txt">llms.txt</a>
+  </div>
+</div></footer>
+<script src="../assets/version.js" defer></script>
+<script src="../assets/nav.js?h=8f8f0966" defer></script>
+</body>
+</html>

@@ -39,9 +39,9 @@
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
       <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
-      <a class="sl here" href="../builds/0-26-8.html">sgit-ai 0.26.8: history, blame and search; renames found as Git finds them</a>
-      <a class="sl" href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags</a>
-      <a class="sl" href="../builds/0-26-6.html">sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes</a>
+      <a class="sl" href="../builds/0-26-12.html">sgit-ai 0.26.12.dev0: dev builds are pre-releases again; sgit update follows the channel</a>
+      <a class="sl" href="../builds/0-26-11.html">sgit-ai 0.26.11: doctor shows signing; the signature gate exempts the empty first commit</a>
+      <a class="sl" href="../builds/0-26-10.html">sgit-ai 0.26.10: sign commits and tags with your own key; the line differ is Git&#x27;s</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -187,7 +187,7 @@ $ sgit history log -G &#x27;def \w+&#x27; --file src/ -n 5    # commits whose di
 <p>A list the CLI team can paste into the release notes, from this and the three builds before it:</p>
 <ol><li><b><code>sgit commit -m "msg" y</code>:</b> <code>y</code> is a path now; it was ignored (0.26.6).</li><li><b><code>history log/show/diff --json</code>:</b> renames are in <code>files_renamed</code> (0.26.8).</li><li><b>Patch text</b> is <code>git diff</code>'s (0.26.8).</li><li><b>Rename detection</b> is on by default in <code>show</code>, <code>diff</code> and <code>log</code> (0.26.8); <code>--no-renames</code> turns it off.</li><li><b><code>sgit grep</code> patterns</b> read like <code>git grep -E</code>, not Git's default (0.26.8).</li><li><b><code>sgit push</code></b> pushes with uncommitted changes (0.26.6).</li><li><b><code>sgit update</code></b> takes the newest build; <code>--stable</code> takes the newest release (0.26.3).</li><li><b>User signatures can be checked,</b> and none can be made yet (0.26.7).</li></ol>
 <p><i>Scripts: <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/tree/dev/admin/research/builds-0-26-7-0-26-8-2026-10-28/scripts"><code>diff_history.py</code></a> (<code>NORENAMES=1</code> for the <code>-S</code> comparison), <code>legacy_vault.py</code>, <code>push_gap.py</code>, <code>check_build.py</code>. Results: <code>results/check_0.26.8.json</code>, <code>results/suite-v0.26.8.txt</code>, <code>results/diff_history_seeds_1-8_*.txt</code>, <code>results/legacy_vaults_0.20.0_to_0.26.0.txt</code>. All builds: <a href="../builds/index.html">the builds page</a>.</i></p>
-<div class="pagenav"><span></span><a href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags →</a></div>
+<div class="pagenav"><a href="../builds/0-26-9.html">← sgit-ai 0.26.9: a push of any size uploads every commit (BR-1 fixed)</a><a href="../builds/0-26-7.html">sgit-ai 0.26.7: verify the signer&#x27;s own SSH or OpenPGP signature on commits and tags →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../builds/0-26-8.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/builds/0-26-8.md"><code>admin/content/builds/0-26-8.md</code></a></p>
 </main>
 

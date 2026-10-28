@@ -1,0 +1,13 @@
+sgit-ai 0.26.11, sgit commit -S through the real CLI (GIT_CONFIG_GLOBAL points at a one-off config; key = ed25519 file, gpg key in a one-off GNUPGHOME). Transcript of the session.
+signed (ssh, in process)              : history log --show-signature: Good "git" signature with ED25519 key SHA256:JSEi…  / No principal matched.   (no allowed-signers file: U)
+signed (gpg, -S and -S<key>)          : Good signature from "QA Tester <qa@example.com>" [EDDSA key 470B397D…]
+no flag, sgit.gpgSign unset           : unsigned
+sgit.gpgSign = true                   : signed;   --no-gpg-sign wins: unsigned
+commit.gpgSign = true (Git's own)     : NOT read: unsigned
+failures, each rc=1, tip unchanged, commit object not written, "nothing was written" in the message; objects +2 (blob, tree) vs +3 on success:
+  key file missing   error: signing failed: cannot read the signing key /nonexistent/key.pub: No such file or directory
+  gpg.format x509    error: signing failed: gpg.format = x509 is not supported by sgit; use ssh or openpgp
+  unknown gpg key    error: signing failed: gpg: gpg: signing failed: No secret key
+  key "-evil"        same as unknown key (not taken as an option)
+  no key configured  error: signing failed: no SSH signing key: set user.signingKey …
+10 commits (4 signed with -S or sgit.gpgSign, 6 not) pushed; clients 0.20.0, 0.24.0, 0.26.0, 0.26.6, 0.26.11: clone, fsck ok, 10/10 clone signatures verified, commit, push.

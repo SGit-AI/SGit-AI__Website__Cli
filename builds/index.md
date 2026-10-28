@@ -1,6 +1,6 @@
 # Builds since the last release, each reviewed, cli.sgit.ai
 
-> Every sgit-ai build published to PyPI since 0.26.0, newest first, with its release notes and cli.build's review: what was tested, what held, what did not, and how mature the build is. Since 28 October every merge to the CLI's dev branch is published as the next patch (0.26.3, 0.26.4, …), and a plain pip install takes the newest of them. Eight builds reviewed so far, 0.26.1 to 0.26.8: the pack index verify speed-up, Git-parity phase 0, 64 KB commit messages, line-level merge, partial commits, verifying a signer's own signature, and history, blame and search. Every claim held on the build that makes it, and old vaults (0.20.0 to 0.26.0) and old clients are untouched. Open: a push of more than 100 commits leaves a gap on the host (BR-1, in every build since at least 0.26.0), three small findings in 0.26.8 (BR-5 to BR-7), a question for the web UI (W-1), and R3-1. Written for people and for the CLI team's agent, which can read the reviews here directly.
+> Every sgit-ai build published to PyPI since 0.26.0, newest first, with its release notes and cli.build's review: what was tested, what held, what did not, and how mature the build is. Since 28 October every merge to the CLI's dev branch is published as the next patch (0.26.3, 0.26.4, …), and a plain pip install takes the newest of them. Twelve builds reviewed so far, 0.26.1 to 0.26.12.dev0: the pack index verify speed-up, Git-parity phase 0, 64 KB commit messages, line-level merge, partial commits, verifying a signer's own signature, history, blame and search, the BR-1 push fix, signing with your own key, a differ that is Git's, and the return to pre-release dev builds. Every claim held on the build that makes it, and old vaults (0.20.0 to 0.26.0) and old clients are untouched. Closed: BR-1 (0.26.9), BR-2 and BR-3 (0.26.10), BR-4 (0.26.12.dev0, once the yank is done). Open: four small findings (BR-5 to BR-8), a question for the web UI (W-1), and R3-1. Written for people and for the CLI team's agent, which can read the reviews here directly.
 
 *Source: <https://cli.sgit.ai/builds/index.html> · generated from the same content as the page, so the two cannot drift.*
 
@@ -16,30 +16,35 @@ The reviews are written so that the CLI team's agent can read them directly, wit
 ```text
  main ──●── 0.26.0 ─────────────────────────────────────────────── (next release: 0.27.0)
          \
- dev ─────●────────●────────●────●────●────●────●────●──► every merge is a build on PyPI
-        0.26.1   0.26.2   0.26.3 .4   .5   .6   .7   .8
-        27 Oct   28 Oct   ─────────────── 28 Oct ───────────────
-        23:51    04:29    11:02 11:07 11:25 11:47 12:22 13:34 UTC
+ dev ─────●────────●────────●────●────●────●────●────●────●────●────●────●──► every merge is a build on PyPI
+        0.26.1   0.26.2   0.26.3 .4   .5   .6   .7   .8   .9   .10  .11  .12.dev0
+        27 Oct   28 Oct   ─────────────────────── 28 Oct ───────────────────────────
+        23:51    04:29    11:02 11:07 11:25 11:47 12:22 13:35 16:14 16:30 16:41 19:09 UTC
 ```
 
 ## Which build you get {#channels}
 
 | You run | You get | Today |
 |---|---|---|
-| `pip install sgit-ai` or `sgit update` | **the newest build, dev builds included** | 0.26.8 |
+| `pip install sgit-ai` | the newest release. **Until the yank of 0.26.3 to 0.26.11 is done, the newest plain build** | 0.26.11 now, 0.26.0 after the yank |
+| `pip install --pre sgit-ai` or `sgit update` on a dev install | the newest dev build (pre-release, from 0.26.12.dev0) | 0.26.12.dev0 |
 | `pip install sgit-ai==0.26.0` | that release | 0.26.0 |
 | `sgit update --stable` (0.26.1 and later) | the newest release, `X.Y.0` | 0.26.0 |
-| `pip install sgit-ai==0.26.8` | that build | 0.26.8 |
+| `pip install sgit-ai==0.26.11` | that build (a yanked version stays installable by its number) | 0.26.11 |
 
 - **Releases** come from the CLI's `main` and end in `.0`.
 - **Dev builds** come from `dev`, one per merge, and carry the same version as their GitHub tag.
 - **Exception:** for one day the dev builds were pre-releases, `0.26.1.dev0` and `0.26.2.dev0`.
-- **Pointing an agent at a build:** give it the version and this page's address, for example "install `sgit-ai==0.26.8` and read `https://cli.sgit.ai/builds/0-26-8.md`".
+- **Pointing an agent at a build:** give it the version and this page's address, for example "install `sgit-ai==0.26.11` and read `https://cli.sgit.ai/builds/0-26-11.md`".
 
-**Read [BR-4](../builds/0-26-3.md#br-4) before relying on a plain install.**
+**[BR-4](../builds/0-26-3.md#br-4): resolved by [0.26.12.dev0](../builds/0-26-12.md) once the CLI team yanks 0.26.3 to 0.26.11; until then a plain install still takes 0.26.11.**
 
 ## The builds {#builds}
 
+- [sgit-ai 0.26.12.dev0: dev builds are pre-releases again; sgit update follows the channel](../builds/0-26-12.md): Dev build of 28 October 2026, from the CLI's dev at 9346851d: the first build published as a PEP 440 pre-release (X.Y.Z.devN), so a plain pip install never selects it and pip install --pre does. The CLI team is yanking the eleven plain dev versions 0.26.3 to 0.26.11, after which a plain install gives the release, 0.26.0, until 0.27.0. sgit update follows the channel: a dev install moves to the newest pre-release, a release install to the newest release, --stable pins the newest release. The code is 0.26.11's, with two comment and wiring changes. Reviewed by cli.build: 0.26.12.dev0 is on PyPI; the yank had not happened when this was written. BR-4 resolved once it has.
+- [sgit-ai 0.26.11: doctor shows signing; the signature gate exempts the empty first commit](../builds/0-26-11.md): Dev build of 28 October 2026, from the CLI's dev at 66f7e0d4. sgit doctor gains a Signing block (whether signing is on and why, format, key, programs, allowed-signers and revocation files); check verify --require-user-signature exempts only a vault's empty first commit, so the gate can pass on a vault whose every content commit is signed, and --limit N no longer checks N + 1 commits. The last plain build on PyPI before dev builds became pre-releases. Reviewed by cli.build: every check from 0.26.9 and 0.26.10 holds; doctor's block checked; the gate exemption not tested.
+- [sgit-ai 0.26.10: sign commits and tags with your own key; the line differ is Git's](../builds/0-26-10.md): Dev build of 28 October 2026, from the CLI's dev at bbc51d9f. sgit commit -S, sgit write -S and sgit vault tag create -s add your own SSH or OpenPGP signature (user_signature), also on merges, reverts and tags when signing is on; off by default, on with sgit.gpgSign. The line differ is now a port of Git's xdiff, which fixes BR-2 and BR-3 (line merge differing from git merge-file on repeated lines). Reviewed by cli.build. Signed commits are read by clients from 0.20.0 to 0.26.11; a signing failure stops without writing a commit; 4,500 line merges are byte-identical to git merge-file. BR-2 and BR-3 closed. Open: BR-8 (a failed signing leaves two unreferenced objects).
+- [sgit-ai 0.26.9: a push of any size uploads every commit (BR-1 fixed)](../builds/0-26-9.md): Dev build of 28 October 2026, from the CLI's dev at 9345a1fc. Fixes BR-1, the high finding in every build since at least 0.26.0: a push of more than 100 commits uploaded only the newest 100 and left a gap in the host's history. Push now takes every commit the host lacks, refuses before moving the ref if one would be missing, and sgit check upload-history repairs a gap an older build left. Reviewed by cli.build: the repro passes at 101, 102, 150 and 151 commits, loose and pack vaults, and a gap made by 0.26.8 is repaired from the clone that holds the commits. BR-1 closed.
 - [sgit-ai 0.26.8: history, blame and search; renames found as Git finds them](../builds/0-26-8.md): Dev build of 28 October 2026, from the CLI's dev at bc904c1b, and what a plain pip install gives today. sgit history blame, sgit grep (the working copy or any revision), history log -S and -G, rename detection in history show, diff and log, history log --follow, and a patch text that is git diff's byte for byte. Only the files a commit changed are opened, so these cost what changed, not the vault's size. One change for scripts and agents: history log --json lists a renamed file under files_renamed, no longer under files_added and files_deleted. Reviewed by cli.build. 5,436 unit and security tests pass. Against git on random histories, blame matched on 25 of 25 files, renames on 90 of 90 pairs, grep on 120 of 120, and log -S and -G on 40 of 40 against git --no-renames. Vaults made by 0.20.0 to 0.26.0 open. Maturity good. One low finding that breaks a script's exit code (BR-5), two differences from Git to document (BR-6, BR-7), and BR-1 still open.
 - [sgit-ai 0.26.7: verify the signer's own SSH or OpenPGP signature on commits and tags](../builds/0-26-7.md): Dev build of 28 October 2026, from the CLI's dev at 0d486aaf. A commit or tag can carry its signer's own SSH or OpenPGP signature (user_signature, Git's gpgsig) beside the per-clone signature every commit already has, and this build checks them, with Git's verdicts and Git's trust files. sgit check verify, history log --show-signature, history show --show-signature and vault tag show report them. Nothing in the CLI can make one yet (sgit commit -S was written and parked until the web UI confirms the signing-bytes rule). Reviewed by cli.build. 5,235 unit and security tests pass. Old vaults and old clients are untouched; 0.26.0, 0.26.3 and 0.26.6 read, verify, fsck and push over commits that carry the new member. Maturity good. BR-1 is still open.
 - [sgit-ai 0.26.6: commit some paths, commit some hunks, push with uncommitted changes](../builds/0-26-6.md): Dev build of 28 October 2026, from the CLI's dev at 036e33b5, and what a plain pip install gives today. sgit commit takes paths, as git commit -- paths does, and leaves every other change on disk. sgit commit -p picks hunks interactively; agents use --list-hunks and --hunk ID, with ids that refuse to pick a different hunk once the file has changed. sgit push no longer refuses uncommitted changes. One behaviour change for scripts: with -m, extra words are now paths. Reviewed by cli.build. 5,144 unit and security tests pass. commit with paths matched Git in 40 random cases, and hunk commits matched git apply --cached in 60. Maturity good. One high finding, in every build since at least 0.26.0: a push of more than 100 commits leaves a gap in the host's history (BR-1).
@@ -51,7 +56,7 @@ The reviews are written so that the CLI team's agent can read them directly, wit
 
 ## What was tested, on every build {#matrix}
 
-Each build was installed from PyPI into its own environment, and its package was compared with its git tag: all eight match. Then three kinds of test ran.
+Each build was installed from PyPI into its own environment, and its package was compared with its git tag: all twelve match. Then three kinds of test ran.
 
 **Unit and security suites, at the tag.** The two docs-only builds were not run. The 0.26.7 and 0.26.8 rows are `tests/unit` and `tests/security` at the tag, with `pytest -n 3`.
 
@@ -63,6 +68,7 @@ Each build was installed from PyPI into its own environment, and its package was
 | 0.26.6 | 5,144 | all passed |
 | 0.26.7 | 5,235 | all passed |
 | 0.26.8 | 5,436 | all passed (four serve tests fail only when two suites share ports; pass alone) |
+| 0.26.11 | 5,623 | all passed |
 
 **An end-to-end check per claim,** on the in-memory host, through each build's own `Vault__Sync`:
 
@@ -82,6 +88,8 @@ Each build was installed from PyPI into its own environment, and its package was
 
 **On 0.26.7 and 0.26.8** the 18 end-to-end checks above all pass, and P1 still fails. Their own checks are on their pages: signed commits read by 0.26.0, 0.26.3 and 0.26.6 ([S1–S4](../builds/0-26-7.md#review)); blame, grep, `log -S` and rename detection against git ([H1–H6](../builds/0-26-8.md#review)); and vaults made by 0.20.0, 0.22.0, 0.24.0 and 0.26.0, in normal and pack mode, opened by 0.26.8.
 
+**On 0.26.9 to 0.26.11** the 19 end-to-end checks pass, P1 included (BR-1 fixed); 4,500 line merges are byte-identical to `git merge-file` (BR-2 and BR-3 fixed); signed commits are read by clients from 0.20.0 to 0.26.11 ([0.26.10](../builds/0-26-10.md#review)); a gap made by 0.26.8 is repaired by `check upload-history`, loose and pack.
+
 **Four focused checks:**
 - **Line merge against `git merge-file`:** 18,000 random three-way merges, in both merge styles. All 8,925 with unique lines were byte-identical. For the rest see [BR-2](#br-2).
 - **Cross-version on one host:** 0.26.6 against 0.26.0 and against 0.26.3, in both directions.
@@ -94,17 +102,18 @@ The scripts and every result are in [`admin/research/builds-0-26-x-2026-10-28/`]
 
 | # | Severity | In | Finding | Page |
 |---|---|---|---|---|
-| **BR-1** | **high** | every build tested, 0.26.0 to 0.26.8 | one push of more than 100 commits uploads only the newest 100; the host's history has a gap that later pushes never fill, a fresh clone's `fsck` fails, and merges across it conflict on everything | [0.26.6](../builds/0-26-6.md#br-1) |
-| **BR-2** | medium | 0.26.5, opt-in | `--merge lines` can merge cleanly where `git merge-file` reports a conflict, when the changed lines repeat (2 in 4,544 code-like merges) | [0.26.5](../builds/0-26-5.md#br-2) |
-| BR-3 | low | 0.26.5, opt-in | where both report a conflict, the blocks differ from Git's in 0.9% of code-like merges | [0.26.5](../builds/0-26-5.md#br-3) |
-| **BR-4** | decision | 0.26.3 and later | a plain `pip install sgit-ai` installs the newest dev build, not the release; if the intent is that a plain install gets the release, dev builds must be pre-releases again | [0.26.3](../builds/0-26-3.md#br-4) |
+| ~~BR-1~~ | closed | 0.26.0 to 0.26.8 | one push of more than 100 commits uploaded only the newest 100 and left a gap on the host. **Fixed in [0.26.9](../builds/0-26-9.md)**: repro passes at 101 to 151 commits, loose and pack; `check upload-history` repairs an old gap from the clone that holds the commits | [0.26.9](../builds/0-26-9.md) |
+| ~~BR-2~~ | closed | 0.26.5 to 0.26.9 | `--merge lines` merged cleanly where `git merge-file` conflicts on repeated lines. **Fixed in [0.26.10](../builds/0-26-10.md)**: the differ is a port of Git's; 4,500 merges byte-identical | [0.26.10](../builds/0-26-10.md) |
+| ~~BR-3~~ | closed | 0.26.5 to 0.26.9 | conflict blocks drew differently from Git's. Fixed in 0.26.10 with BR-2 | [0.26.10](../builds/0-26-10.md) |
+| ~~BR-4~~ | resolved, pending the yank | 0.26.3 to 0.26.11 | a plain `pip install sgit-ai` took the newest dev build. From [0.26.12.dev0](../builds/0-26-12.md) dev builds are pre-releases; **0.26.3 to 0.26.11 are not yanked yet**, so a plain install still gets 0.26.11 | [0.26.12](../builds/0-26-12.md) |
 | BR-5 | low | 0.26.8 | `sgit grep` with a pattern of 1,001 characters or more fails with a `TypeError` message and exits 1, which `grep` uses for "no match"; `history log --grep` refuses it cleanly | [0.26.8](../builds/0-26-8.md#br-5) |
 | BR-6 | difference | 0.26.8 | `sgit grep` reads patterns like `git grep -E`; Git's default syntax is basic (`a\|b` and `a|b` swap) | [0.26.8](../builds/0-26-8.md#br-6) |
 | BR-7 | difference | 0.26.8 | `log -S` and `-G` do not follow renames, as `git log --no-renames`; Git's default does | [0.26.8](../builds/0-26-8.md#br-7) |
-| W-1 | question | 0.26.7 | before signing ships: does the web UI remove `user_signature` from the bytes it checks the clone signature over? | [0.26.7](../builds/0-26-7.md#w-1) |
+| BR-8 | low | 0.26.10 | a failed `commit -S` says "nothing was written" but leaves a blob and a tree (no commit, no ref move); a doubled `gpg:` prefix | [0.26.10](../builds/0-26-10.md#br-8) |
+| W-1 | question, answered by the CLI team, not tested | 0.26.7 | signing shipped in 0.26.10 on the CLI team's statement that the web UI never verifies commit signatures and ignores unknown members; one test with a signed vault is still worth running | [0.26.7](../builds/0-26-7.md#w-1) |
 | R3-1 | low | since 0.26.0 | after a compaction, `pack index verify` reports bad offsets for an archived pack an older client wrote; unchanged in 0.26.6 | [round 3](../research/pack-indexes-review-round-3.md#r3-1) |
 
-*Reviewed by cli.build, cli.sgit.ai's build agent, on 28 October 2026 (0.26.1 to 0.26.6 earlier in the day, 0.26.7 and 0.26.8 later). The roadmap these builds start on: [Git parity](../research/git-parity-roadmap.md).*
+*Reviewed by cli.build, cli.sgit.ai's build agent, on 28 October 2026 (0.26.1 to 0.26.6 earlier in the day, 0.26.7 and 0.26.8 later, 0.26.9 to 0.26.12.dev0 in the evening). The roadmap these builds start on: [Git parity](../research/git-parity-roadmap.md).*
 
 ---
 

@@ -125,7 +125,7 @@ cli.sgit.ai measured the released code (`09172b0f`) independently on its own 76,
 | Situation | What happens |
 |---|---|
 | **an existing pack vault, agents on 0.25.0 and 0.26.0 together** | works. 0.25.0 never reads `bare/packs/indexes/`; 0.26.0 fills the gaps 0.25.0's pushes leave. The vault's `min_client` does not change |
-| **a pack vault created with 0.26.0** | **needs 0.26.0.** As since 0.24.0, a new pack vault is gated at the release that created it. Update every agent that will use it before you create it. [R3-2](../research/pack-indexes-review-round-3.md#r3-2) |
+| **a pack vault created with 0.26.0** | **needs 0.26.0.** As since 0.24.0, a new pack vault is gated at the release that created it. Update every agent that will use it before you create it. [R3-2](../research/pack-indexes-review-round-3.md#r3-2). **Fixed for the next release:** on the CLI's `dev` (pre-release 0.26.1.dev0, `pip install --pre sgit-ai`), a new pack vault's gate is what its features need, 0.24.0; `sgit vault format --min-client` lowers an existing one |
 | **a `--pack-store` clone** | only 0.26.0 opens it; `sgit pack store extract` makes it an ordinary clone |
 | **`sgit pack index verify` after a compaction of an older vault** | may report wrong offsets (`at`) in the index of an archived 0.24.0 or 0.25.0 pack; no data is affected and no reader in 0.26.0 uses those offsets. [R3-1](../research/pack-indexes-review-round-3.md#r3-1) |
 | **normal (loose) vaults** | unchanged |

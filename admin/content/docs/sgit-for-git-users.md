@@ -12,6 +12,8 @@ moved_on: 2026-10-20
 
 If you know git, you know most of sgit. Same verbs, same mental model, with three deliberate differences that exist because the payload is encrypted.
 
+> **Updated, 28 October 2026, against sgit-ai 0.26.0.** sgit is not only Git with encryption: it does twelve things Git has no equivalent for, and Git is still ahead on sixteen. The map is [sgit and Git](/docs/sgit-and-git.html). Rows below gained `write`, the clone options and `checkout`.
+
 ## The Rosetta stone
 
 | git | sgit | Notes |
@@ -19,7 +21,12 @@ If you know git, you know most of sgit. Same verbs, same mental model, with thre
 | `git init` | `sgit init` | `--existing` vault-ifies a non-empty folder |
 | `git clone <url>` | `sgit clone <vault-key>` | the key is URL + auth + decryption in one |
 | `git status` | `sgit status` | `--explain` teaches the branch model |
-| `git commit -am` | `sgit commit -m` | always whole-folder. There is no staging area |
+| `git commit -am` | `sgit commit -m` | the whole folder. There is no staging area |
+| `git commit <paths>` | `sgit write <path> --file F --also P:F` | whole files, committed atomically to HEAD; other edits stay uncommitted; `--push --json` for agents |
+| `git clone --filter` + sparse-checkout | `sgit clone --path FOLDER`, `sgit fetch FOLDER` | a commit outside the scope is refused by name |
+| `git clone --depth` / `fetch --unshallow` | `sgit clone --depth N` / `sgit fetch --unshallow` | |
+| `git clone --no-checkout` + `git checkout -- <paths>` | `sgit clone --no-checkout` + `sgit checkout <paths>` | `pull --no-checkout`, then `checkout --since-pull` writes only what changed |
+| `git tag -s` | `sgit vault tag` | signed |
 | `git push / pull / fetch` | `sgit push / pull / fetch` | push is delta + ciphertext only |
 | `git log` | `sgit history log` | `--oneline`, `--patch`, `--json`, ranges |
 | `git diff` | `sgit history diff` | `--remote`, `--commit`, `--files-only` |
@@ -35,7 +42,7 @@ If you know git, you know most of sgit. Same verbs, same mental model, with thre
 
 ### 1. No staging area
 
-Every commit snapshots the whole folder. This removes git's most confusing concept, and it fits the security model: partial staging would leak "which parts changed" into workflows that are supposed to be opaque. Use branches where you would have used the index.
+`sgit commit` snapshots the whole folder. This removes git's most confusing concept. To commit some files and not others, `sgit write` commits the named files whole and leaves the rest uncommitted. What does not exist is choosing hunks within a file.
 
 ### 2. The vault key is URL, auth, and encryption key in one
 

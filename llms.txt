@@ -4,7 +4,7 @@
 > points `sgit` and `sgit-ai`): every command, generated from the CLI's own parser; the HTTP API it is a
 > client of; the guides; and the CLI team's research, published as articles.
 
-Site version: v0.2.18 · command reference generated from sgit-ai v0.26.0 (174 commands) · 171 pages.
+Site version: v0.2.19 · command reference generated from sgit-ai v0.26.0 (174 commands) · 174 pages.
 
 Every page below is markdown, generated from the same source as the HTML page at the same path (swap
 `.md` for `.html`). Links inside the markdown point at markdown. Every page in one document: /llms-full.txt.
@@ -17,10 +17,11 @@ Notes for agents:
 - The project, the vault platform and the network of sites: https://sgit.ai/llms.txt
 
 ## Home
-- [cli.sgit.ai](/index.md): The documentation for sgit, the command-line tool for encrypted vaults: every command generated from the CLI's own parser, the HTTP API it is a client of, the guides, and the CLI team's research as articles.
+- [cli.sgit.ai](/index.md): sgit is version control for files the host must never read. It has Git's verbs, and it does twelve things Git has no equivalent for: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges, indexes the writer ships encrypted, policy the vault carries, rewinds refused by name. This is its documentation: every command generated from the CLI's own parser, the HTTP API, the guides, and the research.
 
 ## Get started
 - [Docs](/docs/index.md): Every page of the sgit CLI documentation in reading order: getting started, the guides, and the security pages, with the command reference and the HTTP API alongside.
+- [sgit and Git: what only sgit does, what both do, and where Git is ahead](/docs/sgit-and-git.md): The row-by-row comparison, checked against sgit-ai 0.26.0. Twelve things Git has no equivalent for, each with the command and Git's nearest answer: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges from plain storage, indexes the writer ships encrypted and signed, policy the vault carries, rewinds refused by name, a secret guard, key rotation, a computable cache, files sealed to a person. Fifteen things both have, with what differs. Sixteen where Git is ahead, fourteen of which sgit can build on the client without giving up zero knowledge, with how and at what size. And the six that zero knowledge rules out, each with its substitute.
 - [What is sgit](/docs/what-is-sgit.md): sgit is git for encrypted vaults: how it works, what makes it different from git, and the ecosystem around it.
 - [Installation](/docs/installation.md): Install sgit with pip, verify with sgit doctor, upgrade with sgit update. Python 3.11+, two runtime dependencies.
 - [Quickstart](/docs/quickstart.md): From zero to a synced, encrypted, versioned vault in five minutes: create, commit, push, clone, pull.
@@ -98,6 +99,7 @@ Notes for agents:
 - [Errors and limits](/api/errors.md): 400, 403, 413 and 507: what each means, why a malformed token returns 400 rather than 403, the input patterns enforced before storage is reached, and every documented ceiling.
 
 ## Research topics
+- [sgit and Git](/research/topics/git.md): What sgit does that Git cannot, what both do, which of Git's lead sgit can close on the client, and what zero knowledge rules out for good, with the status of each and where it is said.
 - [Keys, members and who may write](/research/topics/keys.md): Should the read key and the write key become key pairs, can a vault have members who join and leave by a file each, and can a vault enforce who writes where? What is built, what is designed, and what is still a question.
 - [History integrity and signatures](/research/topics/integrity.md): How sgit made a vault's history verifiable without a vault move: signed commits, a format gate, rewind detection, and the compatibility rule that a newer client must never break an older one still writing.
 - [Big vaults and many agents](/research/topics/scale.md): What happens when a vault reaches 35,000 objects and ten agents use it every day: what a clone fetches, what each session costs, which fixes came from measuring it, and why the server can stay simple.
@@ -108,6 +110,7 @@ Notes for agents:
 
 ## Research documents
 - [Research](/research/index.md): The sgit CLI team's research, kept as written and grouped into topics: measurements on real vaults, designs and the reviews that corrected them, security reviews, and the bugs found in daily use, each with its source in the CLI repository.
+- [Review: "What sgit does that Git does not", checked against the code](/research/sgit-and-git-article-review.md): The sgit CLI team's review of the newsroom's article "What sgit does that Git does not" (No. 308, 27 October 2026), claim by claim against the CLI at 640069a. The article is accurate on the whole. One headline number is unsourced and one signing line is wrong. Two claims are too strong in sgit's favour: signatures prove a key holder, not a clone (TM-R01), and indexes are checked under the vault's signature policy (TM-R42). It also undersells sgit, missing partial commits with sgit write, one file with no clone on normal vaults, and seven things Git has no equivalent for. Almost everything on Git's lead can be built client-side, with how and at what size. Six things zero knowledge rules out are listed, each with its substitute.
 - [Review of the dev merge before 0.26.0, round 3](/research/pack-indexes-review-round-3.md): The build agent checks the dev merge at 09172b0f: the fixes hold, real-world compatibility with 0.25.0 passes, and one finding before the tag: compaction archives a reordered copy of a pack another version wrote, so the archived index's offsets point at other bytes. Plus a note on how new pack vaults are gated, and a flaky test.
 - [Review of the pack-indexes fixes, round 2: every finding re-checked](/research/pack-indexes-review-round-2.md): The build agent re-runs each reproduction against the fixes at 58f52a42: both blocking findings and every testable medium one fixed; clones 40 to 57% faster than before the fixes, pushes back to the base speed, history log after compaction from indexes in 0.03 s. Four small notes left.
 - [Response: the review findings on the pack-indexes branch, fixed (26 Oct 2026)](/research/pack-indexes-review-fixes.md): The CLI team's answer to both reviews of the pack-indexes branch: every finding fixed, documented or deferred with its reason.

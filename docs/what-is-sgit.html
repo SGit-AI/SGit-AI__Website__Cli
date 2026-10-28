@@ -28,12 +28,12 @@
       <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
       <a class="sl here" href="../docs/what-is-sgit.html">What is sgit</a>
       <a class="sl" href="../docs/installation.html">Installation</a>
       <a class="sl" href="../docs/quickstart.html">Quickstart</a>
       <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
       <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
-      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
       <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
       <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
@@ -71,6 +71,7 @@
       <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
       <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
       <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
       <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
@@ -117,6 +118,7 @@
 <div class="crumb"><a href="../index.html">cli.sgit.ai</a> / <a href="../docs/index.html">Get started</a> / What is sgit</div>
 <h1 id="what-is-sgit">What is sgit</h1>
 <div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/what-is-sgit.html">sgit.ai/docs/what-is-sgit.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
+<blockquote><p><b>Updated, 28 October 2026.</b> "Git for encrypted vaults" now undersells it: sgit does twelve things Git has no equivalent for, from read keys that work from any static host to indexes the writer ships encrypted. See <a href="../docs/sgit-and-git.html">sgit and Git</a>.</p></blockquote>
 <p><b>sgit is git for encrypted vaults.</b> Clone, commit, branch, diff and merge folders of files that are encrypted with AES-256-GCM before they leave your machine. The server stores ciphertext under opaque IDs, it never sees your filenames, your contents, or your commit messages.</p>
 <p>It's like git and a password vault had a baby.</p>
 <h2 id="how-it-works">How it works</h2>
@@ -132,7 +134,7 @@
 <h2 id="one-vault-three-doors">One vault, three doors</h2>
 <ul><li><b>sgit</b>: this CLI. Open source, Apache-2.0, <code>pip install sgit-ai</code>.</li><li><b>SG/Vault</b>: the web app: browse, edit and review the same vaults in a browser, via an independent implementation of the same wire format. <a href="https://sgraph.ai">How it works →</a></li><li><b>SG/Send</b>: the zero-knowledge transfer API both clients speak to. <a href="https://sgraph.ai">How it works →</a></li></ul>
 <p><b>Maturity:</b> sgit is in beta and has been powering production workflows for a while. The vault format is versioned and <code>sgit migrate</code> handles upgrades. Read <a href="../docs/limitations.html">when NOT to use sgit</a> for the honest edges.</p>
-<div class="pagenav"><span></span><a href="../docs/installation.html">Installation →</a></div>
+<div class="pagenav"><a href="../docs/sgit-and-git.html">← sgit and Git: what only sgit does, what both do, and where Git is ahead</a><a href="../docs/installation.html">Installation →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../docs/what-is-sgit.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/docs/what-is-sgit.md"><code>admin/content/docs/what-is-sgit.md</code></a></p>
 </main>
 
@@ -146,12 +148,12 @@
   </div>
   <div>
     <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
     <a href="../docs/what-is-sgit.html">What is sgit</a>
     <a href="../docs/installation.html">Installation</a>
     <a href="../docs/quickstart.html">Quickstart</a>
     <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
     <a href="../docs/two-branch-model.html">The two-branch model</a>
-    <a href="../docs/limitations.html">When NOT to use sgit</a>
     <a href="../docs/index.html#guides">All the guides</a>
   </div>
   <div>
@@ -166,13 +168,13 @@
   <div>
     <h4>Research</h4>
     <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
     <a href="../research/topics/keys.html">Keys, members and who may write</a>
     <a href="../research/topics/integrity.html">History integrity and signatures</a>
     <a href="../research/topics/scale.html">Big vaults and many agents</a>
     <a href="../research/topics/write-path.html">How a vault takes writes</a>
     <a href="../research/topics/serve.html">Running a vault locally</a>
     <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
-    <a href="../research/topics/correctness.html">Found in daily use</a>
   </div>
   <div>
     <h4>Articles</h4>

@@ -66,6 +66,7 @@
   <url><loc>https://cli.sgit.ai/docs/quickstart.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/self-host-for-agents.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/send-a-vault-key.html</loc></url>
+  <url><loc>https://cli.sgit.ai/docs/sgit-and-git.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/sgit-for-git-users.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/two-branch-model.html</loc></url>
   <url><loc>https://cli.sgit.ai/docs/update-to-0-18-0.html</loc></url>
@@ -158,11 +159,13 @@
   <url><loc>https://cli.sgit.ai/research/security-review-case-study.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/security-review-plan.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/security-review-skills.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/sgit-and-git-article-review.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/sgit-issues-2026-10-14.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/sgit-serve-container-first.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/sgit-serve-running-a-vault-locally.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/threat-modeling-tools.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/topics/correctness.html</loc></url>
+  <url><loc>https://cli.sgit.ai/research/topics/git.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/topics/integrity.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/topics/keys.html</loc></url>
   <url><loc>https://cli.sgit.ai/research/topics/scale.html</loc></url>

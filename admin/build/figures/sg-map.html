@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="figures.css">
+<style>
+.cols{grid-template-columns:1.15fr 1fr 1.15fr .95fr;gap:16px;align-items:stretch}
+.box .n{font:400 44px/1 var(--serif);margin:2px 0 6px}
+.box.teal .n{color:var(--teal)} .box.blue .n{color:var(--blue)} .box.warm .n{color:var(--warm)} .box.red .n{color:var(--red)}
+.box ol,.box ul{margin:4px 0 0;padding-left:20px;font-size:13.5px;line-height:1.38;color:#34363c}
+.box li{margin:0 0 3px}
+.box li b{color:var(--fg);font-weight:600}
+.k{font:12.5px var(--mono);color:var(--dim2)}
+.sub2{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);margin:10px 0 2px}
+.box.warm{background:var(--panel)} .box.warm.prop{border-style:dashed}
+.red{background:var(--red-bg)}
+</style></head><body>
+<h1>sgit and Git, row by row</h1>
+<p class="sub">Checked against sgit-ai 0.26.0, from the sgit CLI team's review of the code and this site's own checks. "No equivalent" means the mainstream Git toolchain and GitHub. Dashed: not built in sgit yet, but buildable on the client without giving up zero knowledge, because Git builds it on the client too.</p>
+<div class="grid cols">
+ <div class="box teal"><h3>Only sgit</h3><div class="n">12</div>
+  <ol>
+   <li><b>The host reads nothing</b>: contents, names, messages, branches</li>
+   <li><b>Read keys</b>: read from any static host, no account</li>
+   <li><b>Custody without access</b> <span class="k">vault mirror</span></li>
+   <li><b>Write without read</b>: append lanes</li>
+   <li><b>One folder by byte ranges</b>, from plain storage</li>
+   <li><b>Indexes the writer ships</b>, encrypted and signed</li>
+   <li><b>Policy the vault carries</b>: format gate, signatures required</li>
+   <li><b>Rewinds refused by name</b>, on every clone</li>
+   <li><b>A secret guard</b> at commit</li>
+   <li><b>Rotate the key</b> <span class="k">vault rekey</span></li>
+   <li><b>A computable cache</b> <span class="k">cache add</span></li>
+   <li><b>Seal a file to a person</b> <span class="k">pki encrypt</span></li>
+  </ol></div>
+ <div class="box blue"><h3>Both</h3><div class="n">15</div>
+  <ul>
+   <li>packs, kept packs</li>
+   <li>partial clones: one folder; out-of-scope commits refused by name</li>
+   <li>no-checkout clones, and the agent loop <span class="k">checkout --since-pull</span></li>
+   <li>shallow and bare clones</li>
+   <li>committing named files <span class="k">sgit write</span></li>
+   <li>signed commits and tags</li>
+   <li>log, diff, show, reflog</li>
+   <li>revert, reset, undo, amend, stash</li>
+   <li>merge and resolve, remotes, fsck</li>
+   <li>reading from a static host</li>
+  </ul></div>
+ <div class="box warm prop"><h3>Git ahead</h3><div class="n">16</div>
+  <div class="sub2">14 buildable on the client</div>
+  <ul>
+   <li><b>line-level merges</b>, rename detection</li>
+   <li>staging, <span class="k">commit -p</span></li>
+   <li><b>blame</b>, <b>bisect</b>, grep over content</li>
+   <li>delta compression, garbage collection</li>
+   <li>one file with no clone, from the CLI</li>
+   <li>an append-lane command</li>
+   <li><b>allowed signers</b>, expiry, revocation</li>
+   <li>per-folder read access, by folder keys</li>
+   <li>who pushed; branches protected per person</li>
+   <li>review, CI and IDEs, via <span class="k">git-remote-sgit</span></li>
+  </ul>
+  <div class="sub2">and two more</div>
+  <ul><li>160-bit ids: format 2, 128-bit, is opt-in</li><li>twenty years of maturity: only time</li></ul></div>
+ <div class="box red"><h3>Ruled out</h3><div class="n">6</div>
+  <ul>
+   <li>anything the host must read: search, diffs, a merge button, scanning</li>
+   <li>taking back what a reader has (Git cannot either)</li>
+   <li>per-folder permissions inside one key</li>
+   <li>hiding all metadata</li>
+   <li>the host repacking or deduplicating</li>
+   <li>a host that enforces fast-forward</li>
+  </ul>
+  <div class="sub2">each has a client substitute</div></div>
+</div>
+<div class="foot"><b>Almost all of Git's lead can be built on the client; sgit's lead needs a host that reads nothing.</b><span>cli.sgit.ai · 28 October 2026 · /docs/sgit-and-git.html</span></div>
+</body></html>

@@ -28,12 +28,12 @@
       <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
       <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
       <a class="sl" href="../docs/installation.html">Installation</a>
       <a class="sl" href="../docs/quickstart.html">Quickstart</a>
       <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
       <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
-      <a class="sl here" href="../docs/limitations.html">When NOT to use sgit</a>
       <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
       <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
@@ -71,6 +71,7 @@
       <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
       <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
       <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
       <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
@@ -118,10 +119,11 @@
 <h1 id="when-not-to-use-sgit">When NOT to use sgit</h1>
 <div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/limitations.html">sgit.ai/docs/limitations.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
 <p>Every tool earns trust faster by stating its edges. Here are sgit's, plainly.</p>
+<blockquote><p><b>Updated, 28 October 2026, against sgit-ai 0.26.0.</b> Partial commits exist (<code>sgit write</code>), commits have been signed for months and verified since 0.19.0, and the command reference is generated from the CLI. Corrected below after the CLI team's <a href="../research/sgit-and-git-article-review.html">review</a>. The full map of what sgit does that Git does not, and where Git is ahead, is <a href="../docs/sgit-and-git.html">sgit and Git</a>.</p></blockquote>
 <h2 id="don-t-use-sgit-if">Don't use sgit if…</h2>
-<ul><li><b>You need a secrets manager.</b> sgit refuses to commit <code>.env</code> files, <code>.netrc</code>, private keys and friends, deliberately. Use a purpose-built secrets manager for credentials; use sgit for documents, data, and working files.</li><li><b>You need long-term API stability guarantees today.</b> sgit is in beta: it powers production workflows daily and the vault format is versioned (<code>sgit migrate</code> handles upgrades), but commands and flags can still evolve between minor versions. Keep <code>sgit vault backup</code> archives of anything precious.</li><li><b>You need partial commits.</b> There is no staging area, a commit snapshots the whole folder. If your workflow depends on committing three of seven changed files, sgit will fight you (use branches instead, or split folders into separate vaults).</li><li><b>Your data is huge binaries that change constantly.</b> Large files work (they're chunk-uploaded past a ~4 MB threshold), but sgit is built for working sets of documents and code-sized files, not video archives. Storage is versioned: history keeps old ciphertext around until pruned.</li><li><b>You want the server to do things with your data.</b> Zero knowledge cuts both ways: the server cannot index, search, preview, or process your content. All intelligence lives client-side. That is the point.</li><li><b>You lose keys.</b> There is no password reset, no recovery, no back door. That's a feature, but only if your key management is real. Password manager, plus <code>sgit vault backup --include-key</code> somewhere safe.</li></ul>
+<ul><li><b>You need a secrets manager.</b> sgit refuses to commit <code>.env</code> files, <code>.netrc</code>, private keys and friends, deliberately. Use a purpose-built secrets manager for credentials; use sgit for documents, data, and working files.</li><li><b>You need long-term API stability guarantees today.</b> sgit is in beta: it powers production workflows daily and the vault format is versioned (<code>sgit migrate</code> handles upgrades), but commands and flags can still evolve between minor versions. Keep <code>sgit vault backup</code> archives of anything precious.</li><li><b>You need hunk-level commits or a staging area.</b> <code>sgit commit</code> snapshots the whole folder, and there is no <code>git add -p</code>. Committing three of seven changed files works with <code>sgit write &lt;path&gt; --file F --also P:F …</code>, which commits those whole files atomically and leaves the other four uncommitted; choosing lines within a file does not work.</li><li><b>Your data is huge binaries that change constantly.</b> Large files work (they're chunk-uploaded past a ~4 MB threshold), but sgit is built for working sets of documents and code-sized files, not video archives. Storage is versioned: history keeps old ciphertext around until pruned.</li><li><b>You want the server to do things with your data.</b> Zero knowledge cuts both ways: the server cannot index, search, preview, or process your content. All intelligence lives client-side. That is the point.</li><li><b>You lose keys.</b> There is no password reset, no recovery, no back door. That's a feature, but only if your key management is real. Password manager, plus <code>sgit vault backup --include-key</code> somewhere safe.</li></ul>
 <h2 id="current-gaps-roadmap-honestly">Current gaps (roadmap, honestly)</h2>
-<ul><li><b>Commit author attribution</b> is not yet recorded, in multi-agent vaults, per-agent identity currently comes from branch IDs, not signed authorship. Signature slots exist in the format; population is planned work.</li><li><b>Merge drivers</b> are whole-file three-way. Structured merges (JSON-aware, union) are designed but not yet shipped.</li><li><b>Bare clones</b> (<code>clone --bare</code>) are incomplete.</li><li><b>Partial clones have two edges.</b> A folder renamed by someone else silently leaves a scoped clone's scope, and a pull will not warn; re-clone or widen to the new name. And a scoped clone cannot see objects missing elsewhere in the vault, so <code>sgit check fsck</code>, <code>sgit dev dump</code>, <code>sgit publish</code> and <code>sgit vault move</code> need a full clone. See <a href="../docs/partial-clones.html">Partial clones</a>.</li><li><b>A partial clone is not an access boundary.</b> <code>--path</code> decides what is downloaded, not what can be read: the clone holds the vault key, and <code>sgit fetch &lt;folder&gt;</code> widens it to any folder. To keep agents out of each other's memory, give each its own vault. See <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>.</li><li><b>The full CLI reference</b> on this site is still being wired to its generator (it will be produced from the CLI's own argument parser on every release, so it can never go stale).</li></ul>
+<ul><li><b>Who wrote a commit is not proven.</b> Every commit is signed with its clone's own key (for months now), verified by <code>sgit check verify</code> since 0.19.0, and a vault with <code>signatures-required</code> makes every sgit client refuse an unsigned one. But any read-key holder can make a signing key, so a signature proves "a key holder", not a particular clone or person, and keys have no expiry or revocation. An owner-signed list of allowed signers would close this; it is designed, not built (threat model TM-R01).</li><li><b>Merges are whole-file three-way.</b> A file both sides changed is written as <code>&lt;path&gt;.conflict</code>; there is no line-level merge and no rename detection. Structured merges (JSON-aware, union) are designed but not yet shipped. No blame, bisect or grep over content either: all of these are client-side and can be built (<a href="../docs/sgit-and-git.html#git-ahead">how</a>).</li><li><b>Bare clones</b> (<code>clone --bare</code>) are incomplete.</li><li><b>Partial clones have two edges.</b> A folder renamed by someone else silently leaves a scoped clone's scope, and a pull will not warn; re-clone or widen to the new name. And a scoped clone cannot see objects missing elsewhere in the vault, so <code>sgit check fsck</code>, <code>sgit dev dump</code>, <code>sgit publish</code> and <code>sgit vault move</code> need a full clone. See <a href="../docs/partial-clones.html">Partial clones</a>.</li><li><b>A partial clone is not an access boundary.</b> <code>--path</code> decides what is downloaded, not what can be read: the clone holds the vault key, and <code>sgit fetch &lt;folder&gt;</code> widens it to any folder. To keep agents out of each other's memory, give each its own vault. See <a href="../docs/self-host-for-agents.html">Self-hosting a vault server for agents</a>.</li><li><b>No pruning.</b> Nothing deletes unreachable objects; on pack vaults, compaction moves superseded packs to <code>archive/</code>. A client-driven <code>vault prune</code> is possible and not built.</li></ul>
 <h2 id="what-pki-does-not-do-yet">What PKI does not do yet</h2>
 <p><a href="../docs/pki.html">Keypairs</a> ship and work, keygen, export, import, sign, verify, encrypt, decrypt all round-trip on v0.15.0. The layer around them is thinner than the primitives:</p>
 <ul><li><b>No revocation, expiry or rotation workflow.</b> No CRL, no <code>sgit pki revoke</code>. A compromised private key means generating a new pair and redistributing the bundle out of band, by hand.</li><li><b>No directory and no web of trust.</b> Verifying that a fingerprint belongs to who you think is entirely your problem, compare out of band, as with SSH host keys.</li><li><b>Lane addressing is not wired end to end.</b> The intended model is <code>append_token = H(public key)</code>, so a sender derives your <a href="../docs/vault-messaging.html">message lane</a> address from the key you published. The server side ships; no shipped command emits that token, so today you agree one out of band. Details and the interim recipe are in the <a href="../docs/vault-messaging.html#addressing">addressing note</a>.</li><li><b>Only the first mode is built.</b> Signing and encrypting files, plus the append transport. The richer modes (group addressing, key discovery, delegated capability) are designs, not code.</li></ul>
@@ -141,12 +143,12 @@
   </div>
   <div>
     <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
     <a href="../docs/what-is-sgit.html">What is sgit</a>
     <a href="../docs/installation.html">Installation</a>
     <a href="../docs/quickstart.html">Quickstart</a>
     <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
     <a href="../docs/two-branch-model.html">The two-branch model</a>
-    <a href="../docs/limitations.html">When NOT to use sgit</a>
     <a href="../docs/index.html#guides">All the guides</a>
   </div>
   <div>
@@ -161,13 +163,13 @@
   <div>
     <h4>Research</h4>
     <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
     <a href="../research/topics/keys.html">Keys, members and who may write</a>
     <a href="../research/topics/integrity.html">History integrity and signatures</a>
     <a href="../research/topics/scale.html">Big vaults and many agents</a>
     <a href="../research/topics/write-path.html">How a vault takes writes</a>
     <a href="../research/topics/serve.html">Running a vault locally</a>
     <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
-    <a href="../research/topics/correctness.html">Found in daily use</a>
   </div>
   <div>
     <h4>Articles</h4>

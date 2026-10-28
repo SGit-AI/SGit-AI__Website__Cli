@@ -28,12 +28,12 @@
       <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
       <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
       <a class="sl" href="../docs/installation.html">Installation</a>
       <a class="sl" href="../docs/quickstart.html">Quickstart</a>
       <a class="sl" href="../docs/sgit-for-git-users.html">sgit for git users</a>
       <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
-      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
       <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
       <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
@@ -71,6 +71,7 @@
       <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
       <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
       <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
       <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
@@ -153,7 +154,7 @@ $ sgit checkout --since-pull                     # write what that pull added or
 <div class="tablewrap"><table><thead><tr><th>Flow</th><th>0.25.0</th><th><b>0.26.0</b></th></tr></thead><tbody><tr><td>full clone</td><td>117 s</td><td><b>61 s</b></td></tr><tr><td><code>clone --no-checkout</code></td><td>n/a</td><td><b>28 s</b></td></tr><tr><td><code>clone --pack-store</code></td><td>n/a</td><td><b>26 s</b></td></tr><tr><td><code>clone --path</code> of one folder (1,520 files)</td><td>36 s, the whole 88 MB pack</td><td><b>2.8 s</b>, 12.5 MB by ranges</td></tr><tr><td>pull of a pass, full clone</td><td>81 s</td><td><b>6.6 s</b></td></tr><tr><td>push of a 5-file commit</td><td>6.2 s</td><td><b>4.5 to 5.2 s</b></td></tr><tr><td>push of a 300-file pass</td><td>12.5 s</td><td><b>11.6 to 11.8 s</b></td></tr><tr><td><code>history log</code>, 4 commits</td><td>3.2 s</td><td><b>0.45 s</b></td></tr><tr><td><code>history log</code> on a fresh clone after compaction</td><td>6.1 s</td><td><b>1.1 s</b></td></tr><tr><td>first push of a new vault (snapshot)</td><td>47 s</td><td>82 to 84 s</td></tr><tr><td>compaction</td><td>58 s</td><td>95 to 109 s</td></tr></tbody></table></div>
 <p>cli.sgit.ai measured the released code (<code>09172b0f</code>) independently on its own 76,000-file vault: full clone 49.8 s, <code>--no-checkout</code> 33.6 s, <code>--pack-store</code> 27.7 s, <code>clone --path</code> 3.1 s, a 5-file push 5.2 s, <code>pull --no-checkout</code> 1.1 s, <code>history log</code> 0.19 s, and 0.84 s on a fresh clone after compaction; <a href="../articles/pack-indexes-shipped.html#measured">the table</a>. Both sets agree: everything an agent does daily is as fast or faster. The first push of a vault and each compaction now also write the snapshot index, which is the price of the rest.</p>
 <h2 id="4-compatibility">4. Compatibility</h2>
-<div class="tablewrap"><table><thead><tr><th>Situation</th><th>What happens</th></tr></thead><tbody><tr><td><b>an existing pack vault, agents on 0.25.0 and 0.26.0 together</b></td><td>works. 0.25.0 never reads <code>bare/packs/indexes/</code>; 0.26.0 fills the gaps 0.25.0's pushes leave. The vault's <code>min_client</code> does not change</td></tr><tr><td><b>a pack vault created with 0.26.0</b></td><td><b>needs 0.26.0.</b> As since 0.24.0, a new pack vault is gated at the release that created it. Update every agent that will use it before you create it. <a href="../research/pack-indexes-review-round-3.html#r3-2">R3-2</a></td></tr><tr><td><b>a <code>--pack-store</code> clone</b></td><td>only 0.26.0 opens it; <code>sgit pack store extract</code> makes it an ordinary clone</td></tr><tr><td><b><code>sgit pack index verify</code> after a compaction of an older vault</b></td><td>may report wrong offsets (<code>at</code>) in the index of an archived 0.24.0 or 0.25.0 pack; no data is affected and no reader in 0.26.0 uses those offsets. <a href="../research/pack-indexes-review-round-3.html#r3-1">R3-1</a></td></tr><tr><td><b>normal (loose) vaults</b></td><td>unchanged</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Situation</th><th>What happens</th></tr></thead><tbody><tr><td><b>an existing pack vault, agents on 0.25.0 and 0.26.0 together</b></td><td>works. 0.25.0 never reads <code>bare/packs/indexes/</code>; 0.26.0 fills the gaps 0.25.0's pushes leave. The vault's <code>min_client</code> does not change</td></tr><tr><td><b>a pack vault created with 0.26.0</b></td><td><b>needs 0.26.0.</b> As since 0.24.0, a new pack vault is gated at the release that created it. Update every agent that will use it before you create it. <a href="../research/pack-indexes-review-round-3.html#r3-2">R3-2</a>. <b>Fixed for the next release:</b> on the CLI's <code>dev</code> (pre-release 0.26.1.dev0, <code>pip install --pre sgit-ai</code>), a new pack vault's gate is what its features need, 0.24.0; <code>sgit vault format --min-client</code> lowers an existing one</td></tr><tr><td><b>a <code>--pack-store</code> clone</b></td><td>only 0.26.0 opens it; <code>sgit pack store extract</code> makes it an ordinary clone</td></tr><tr><td><b><code>sgit pack index verify</code> after a compaction of an older vault</b></td><td>may report wrong offsets (<code>at</code>) in the index of an archived 0.24.0 or 0.25.0 pack; no data is affected and no reader in 0.26.0 uses those offsets. <a href="../research/pack-indexes-review-round-3.html#r3-1">R3-1</a></td></tr><tr><td><b>normal (loose) vaults</b></td><td>unchanged</td></tr></tbody></table></div>
 <h2 id="5-what-is-on-disk-now">5. What is on disk now</h2>
 <p>Everything below lives under <code>.sg_vault/local/</code> in each clone, readable by you alone, as in 0.25.0:</p>
 <div class="tablewrap"><table><thead><tr><th>File</th><th>Holds</th><th>Delete it?</th></tr></thead><tbody><tr><td><code>index/packs/&lt;folder&gt;/&lt;name&gt;.zip</code></td><td>the index packs this clone downloaded, <b>still encrypted</b></td><td>safe; fetched again when needed</td></tr><tr><td><code>index/cd/&lt;folder&gt;/&lt;name&gt;.json</code></td><td>the central directories a scoped clone read (object ids and offsets)</td><td>safe</td></tr><tr><td><code>checkout.json</code>, <code>last-pull.json</code>, <code>stale.json</code></td><td>a selective clone's record: the paths checked out, what the last pull changed, bytes a pull left behind</td><td>safe; rebuilt from the files on disk</td></tr><tr><td><code>pack-store.sqlite</code></td><td>a <code>--pack-store</code> clone's table of where each object sits in which pack</td><td>safe; <code>sgit pack store rebuild</code></td></tr><tr><td><code>generations.json</code>, <code>gaps.json</code></td><td>commit generations this clone computed; data packs it pushed without an index</td><td>safe</td></tr></tbody></table></div>
@@ -175,12 +176,12 @@ $ sgit checkout --since-pull                     # write what that pull added or
   </div>
   <div>
     <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
     <a href="../docs/what-is-sgit.html">What is sgit</a>
     <a href="../docs/installation.html">Installation</a>
     <a href="../docs/quickstart.html">Quickstart</a>
     <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
     <a href="../docs/two-branch-model.html">The two-branch model</a>
-    <a href="../docs/limitations.html">When NOT to use sgit</a>
     <a href="../docs/index.html#guides">All the guides</a>
   </div>
   <div>
@@ -195,13 +196,13 @@ $ sgit checkout --since-pull                     # write what that pull added or
   <div>
     <h4>Research</h4>
     <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
     <a href="../research/topics/keys.html">Keys, members and who may write</a>
     <a href="../research/topics/integrity.html">History integrity and signatures</a>
     <a href="../research/topics/scale.html">Big vaults and many agents</a>
     <a href="../research/topics/write-path.html">How a vault takes writes</a>
     <a href="../research/topics/serve.html">Running a vault locally</a>
     <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
-    <a href="../research/topics/correctness.html">Found in daily use</a>
   </div>
   <div>
     <h4>Articles</h4>

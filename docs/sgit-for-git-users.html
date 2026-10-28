@@ -28,12 +28,12 @@
       <a class="nl here" href="../docs/index.html">Docs<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../docs/index.html">All the docs</a>
+      <a class="sl" href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
       <a class="sl" href="../docs/what-is-sgit.html">What is sgit</a>
       <a class="sl" href="../docs/installation.html">Installation</a>
       <a class="sl" href="../docs/quickstart.html">Quickstart</a>
       <a class="sl here" href="../docs/sgit-for-git-users.html">sgit for git users</a>
       <a class="sl" href="../docs/two-branch-model.html">The two-branch model</a>
-      <a class="sl" href="../docs/limitations.html">When NOT to use sgit</a>
       <a class="sl" href="../docs/partial-clones.html">Partial clones: a folder scope and a history depth</a>
       <a class="sl" href="../docs/pack-mode-for-agents.html">Pack mode: a playbook for agents</a>
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
@@ -71,6 +71,7 @@
       <a class="nl" href="../research/index.html">Research<span class="caret">&#9662;</span></a>
       <div class="sub">
       <a class="sl" href="../research/index.html">&#9679; All research, by topic</a>
+      <a class="sl" href="../research/topics/git.html">sgit and Git</a>
       <a class="sl" href="../research/topics/keys.html">Keys, members and who may write</a>
       <a class="sl" href="../research/topics/integrity.html">History integrity and signatures</a>
       <a class="sl" href="../research/topics/scale.html">Big vaults and many agents</a>
@@ -118,11 +119,12 @@
 <h1 id="sgit-for-git-users">sgit for git users</h1>
 <div class="prov"><b>Moved from sgit.ai.</b> This page was <a href="https://sgit.ai/docs/sgit-for-git-users.html">sgit.ai/docs/sgit-for-git-users.html</a> (sgit.ai site v0.7.87), moved here on 20 October 2026 as cli.sgit.ai becomes the CLI's main documentation. The text is as it was; links to pages that moved now stay on this site. <a href="../admin/moved.html">What moved, and why</a>.</div>
 <p>If you know git, you know most of sgit. Same verbs, same mental model, with three deliberate differences that exist because the payload is encrypted.</p>
+<blockquote><p><b>Updated, 28 October 2026, against sgit-ai 0.26.0.</b> sgit is not only Git with encryption: it does twelve things Git has no equivalent for, and Git is still ahead on sixteen. The map is <a href="../docs/sgit-and-git.html">sgit and Git</a>. Rows below gained <code>write</code>, the clone options and <code>checkout</code>.</p></blockquote>
 <h2 id="the-rosetta-stone">The Rosetta stone</h2>
-<div class="tablewrap"><table><thead><tr><th>git</th><th>sgit</th><th>Notes</th></tr></thead><tbody><tr><td><code>git init</code></td><td><code>sgit init</code></td><td><code>--existing</code> vault-ifies a non-empty folder</td></tr><tr><td><code>git clone &lt;url&gt;</code></td><td><code>sgit clone &lt;vault-key&gt;</code></td><td>the key is URL + auth + decryption in one</td></tr><tr><td><code>git status</code></td><td><code>sgit status</code></td><td><code>--explain</code> teaches the branch model</td></tr><tr><td><code>git commit -am</code></td><td><code>sgit commit -m</code></td><td>always whole-folder. There is no staging area</td></tr><tr><td><code>git push / pull / fetch</code></td><td><code>sgit push / pull / fetch</code></td><td>push is delta + ciphertext only</td></tr><tr><td><code>git log</code></td><td><code>sgit history log</code></td><td><code>--oneline</code>, <code>--patch</code>, <code>--json</code>, ranges</td></tr><tr><td><code>git diff</code></td><td><code>sgit history diff</code></td><td><code>--remote</code>, <code>--commit</code>, <code>--files-only</code></td></tr><tr><td><code>git show</code></td><td><code>sgit history show</code></td><td>read-only, fetches missing objects without merging</td></tr><tr><td><code>git revert / reset</code></td><td><code>sgit history revert / reset</code></td><td></td></tr><tr><td><code>git stash</code></td><td><code>sgit vault stash</code></td><td><code>pop</code>, <code>list</code>, <code>drop</code></td></tr><tr><td><code>git branch / checkout</code></td><td><code>sgit branch new / switch / checkout</code></td><td></td></tr><tr><td><code>git merge</code> conflicts</td><td><code>sgit resolve --show</code></td><td>three-way base/ours/theirs view with a verdict per file</td></tr><tr><td><code>git remote</code></td><td><code>sgit remote add / list / set-url</code></td><td></td></tr><tr><td><code>git fsck</code></td><td><code>sgit check fsck</code></td><td>verifies encrypted object integrity, can repair</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>git</th><th>sgit</th><th>Notes</th></tr></thead><tbody><tr><td><code>git init</code></td><td><code>sgit init</code></td><td><code>--existing</code> vault-ifies a non-empty folder</td></tr><tr><td><code>git clone &lt;url&gt;</code></td><td><code>sgit clone &lt;vault-key&gt;</code></td><td>the key is URL + auth + decryption in one</td></tr><tr><td><code>git status</code></td><td><code>sgit status</code></td><td><code>--explain</code> teaches the branch model</td></tr><tr><td><code>git commit -am</code></td><td><code>sgit commit -m</code></td><td>the whole folder. There is no staging area</td></tr><tr><td><code>git commit &lt;paths&gt;</code></td><td><code>sgit write &lt;path&gt; --file F --also P:F</code></td><td>whole files, committed atomically to HEAD; other edits stay uncommitted; <code>--push --json</code> for agents</td></tr><tr><td><code>git clone --filter</code> + sparse-checkout</td><td><code>sgit clone --path FOLDER</code>, <code>sgit fetch FOLDER</code></td><td>a commit outside the scope is refused by name</td></tr><tr><td><code>git clone --depth</code> / <code>fetch --unshallow</code></td><td><code>sgit clone --depth N</code> / <code>sgit fetch --unshallow</code></td><td></td></tr><tr><td><code>git clone --no-checkout</code> + <code>git checkout -- &lt;paths&gt;</code></td><td><code>sgit clone --no-checkout</code> + <code>sgit checkout &lt;paths&gt;</code></td><td><code>pull --no-checkout</code>, then <code>checkout --since-pull</code> writes only what changed</td></tr><tr><td><code>git tag -s</code></td><td><code>sgit vault tag</code></td><td>signed</td></tr><tr><td><code>git push / pull / fetch</code></td><td><code>sgit push / pull / fetch</code></td><td>push is delta + ciphertext only</td></tr><tr><td><code>git log</code></td><td><code>sgit history log</code></td><td><code>--oneline</code>, <code>--patch</code>, <code>--json</code>, ranges</td></tr><tr><td><code>git diff</code></td><td><code>sgit history diff</code></td><td><code>--remote</code>, <code>--commit</code>, <code>--files-only</code></td></tr><tr><td><code>git show</code></td><td><code>sgit history show</code></td><td>read-only, fetches missing objects without merging</td></tr><tr><td><code>git revert / reset</code></td><td><code>sgit history revert / reset</code></td><td></td></tr><tr><td><code>git stash</code></td><td><code>sgit vault stash</code></td><td><code>pop</code>, <code>list</code>, <code>drop</code></td></tr><tr><td><code>git branch / checkout</code></td><td><code>sgit branch new / switch / checkout</code></td><td></td></tr><tr><td><code>git merge</code> conflicts</td><td><code>sgit resolve --show</code></td><td>three-way base/ours/theirs view with a verdict per file</td></tr><tr><td><code>git remote</code></td><td><code>sgit remote add / list / set-url</code></td><td></td></tr><tr><td><code>git fsck</code></td><td><code>sgit check fsck</code></td><td>verifies encrypted object integrity, can repair</td></tr></tbody></table></div>
 <h2 id="the-three-differences-that-matter">The three differences that matter</h2>
 <h3 id="1-no-staging-area">1. No staging area</h3>
-<p>Every commit snapshots the whole folder. This removes git's most confusing concept, and it fits the security model: partial staging would leak "which parts changed" into workflows that are supposed to be opaque. Use branches where you would have used the index.</p>
+<p><code>sgit commit</code> snapshots the whole folder. This removes git's most confusing concept. To commit some files and not others, <code>sgit write</code> commits the named files whole and leaves the rest uncommitted. What does not exist is choosing hunks within a file.</p>
 <h3 id="2-the-vault-key-is-url-auth-and-encryption-key-in-one">2. The vault key is URL, auth, and encryption key in one</h3>
 <p><code>passphrase:vault-id</code>. There is no separate remote URL to configure, no separate credential to manage, and no password reset. Whoever holds the key holds the vault, treat it like the private key it is.</p>
 <h3 id="3-two-layers-of-branches">3. Two layers of branches</h3>
@@ -141,12 +143,12 @@
   </div>
   <div>
     <h4>Docs</h4>
+    <a href="../docs/sgit-and-git.html">sgit and Git: what only sgit does, what both do, and where Git is ahead</a>
     <a href="../docs/what-is-sgit.html">What is sgit</a>
     <a href="../docs/installation.html">Installation</a>
     <a href="../docs/quickstart.html">Quickstart</a>
     <a href="../docs/sgit-for-git-users.html">sgit for git users</a>
     <a href="../docs/two-branch-model.html">The two-branch model</a>
-    <a href="../docs/limitations.html">When NOT to use sgit</a>
     <a href="../docs/index.html#guides">All the guides</a>
   </div>
   <div>
@@ -161,13 +163,13 @@
   <div>
     <h4>Research</h4>
     <a href="../research/index.html">All research</a>
+    <a href="../research/topics/git.html">sgit and Git</a>
     <a href="../research/topics/keys.html">Keys, members and who may write</a>
     <a href="../research/topics/integrity.html">History integrity and signatures</a>
     <a href="../research/topics/scale.html">Big vaults and many agents</a>
     <a href="../research/topics/write-path.html">How a vault takes writes</a>
     <a href="../research/topics/serve.html">Running a vault locally</a>
     <a href="../research/topics/security-review.html">Reviewing sgit&#x27;s security with tools and agents</a>
-    <a href="../research/topics/correctness.html">Found in daily use</a>
   </div>
   <div>
     <h4>Articles</h4>

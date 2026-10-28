@@ -9,23 +9,25 @@
 
 Every tool earns trust faster by stating its edges. Here are sgit's, plainly.
 
+> **Updated, 28 October 2026, against sgit-ai 0.26.0.** Partial commits exist (`sgit write`), commits have been signed for months and verified since 0.19.0, and the command reference is generated from the CLI. Corrected below after the CLI team's [review](../research/sgit-and-git-article-review.md). The full map of what sgit does that Git does not, and where Git is ahead, is [sgit and Git](../docs/sgit-and-git.md).
+
 ## Don't use sgit if…
 
 - **You need a secrets manager.** sgit refuses to commit `.env` files, `.netrc`, private keys and friends, deliberately. Use a purpose-built secrets manager for credentials; use sgit for documents, data, and working files.
 - **You need long-term API stability guarantees today.** sgit is in beta: it powers production workflows daily and the vault format is versioned (`sgit migrate` handles upgrades), but commands and flags can still evolve between minor versions. Keep `sgit vault backup` archives of anything precious.
-- **You need partial commits.** There is no staging area, a commit snapshots the whole folder. If your workflow depends on committing three of seven changed files, sgit will fight you (use branches instead, or split folders into separate vaults).
+- **You need hunk-level commits or a staging area.** `sgit commit` snapshots the whole folder, and there is no `git add -p`. Committing three of seven changed files works with `sgit write <path> --file F --also P:F …`, which commits those whole files atomically and leaves the other four uncommitted; choosing lines within a file does not work.
 - **Your data is huge binaries that change constantly.** Large files work (they're chunk-uploaded past a ~4 MB threshold), but sgit is built for working sets of documents and code-sized files, not video archives. Storage is versioned: history keeps old ciphertext around until pruned.
 - **You want the server to do things with your data.** Zero knowledge cuts both ways: the server cannot index, search, preview, or process your content. All intelligence lives client-side. That is the point.
 - **You lose keys.** There is no password reset, no recovery, no back door. That's a feature, but only if your key management is real. Password manager, plus `sgit vault backup --include-key` somewhere safe.
 
 ## Current gaps (roadmap, honestly)
 
-- **Commit author attribution** is not yet recorded, in multi-agent vaults, per-agent identity currently comes from branch IDs, not signed authorship. Signature slots exist in the format; population is planned work.
-- **Merge drivers** are whole-file three-way. Structured merges (JSON-aware, union) are designed but not yet shipped.
+- **Who wrote a commit is not proven.** Every commit is signed with its clone's own key (for months now), verified by `sgit check verify` since 0.19.0, and a vault with `signatures-required` makes every sgit client refuse an unsigned one. But any read-key holder can make a signing key, so a signature proves "a key holder", not a particular clone or person, and keys have no expiry or revocation. An owner-signed list of allowed signers would close this; it is designed, not built (threat model TM-R01).
+- **Merges are whole-file three-way.** A file both sides changed is written as `<path>.conflict`; there is no line-level merge and no rename detection. Structured merges (JSON-aware, union) are designed but not yet shipped. No blame, bisect or grep over content either: all of these are client-side and can be built ([how](../docs/sgit-and-git.md#git-ahead)).
 - **Bare clones** (`clone --bare`) are incomplete.
 - **Partial clones have two edges.** A folder renamed by someone else silently leaves a scoped clone's scope, and a pull will not warn; re-clone or widen to the new name. And a scoped clone cannot see objects missing elsewhere in the vault, so `sgit check fsck`, `sgit dev dump`, `sgit publish` and `sgit vault move` need a full clone. See [Partial clones](../docs/partial-clones.md).
 - **A partial clone is not an access boundary.** `--path` decides what is downloaded, not what can be read: the clone holds the vault key, and `sgit fetch <folder>` widens it to any folder. To keep agents out of each other's memory, give each its own vault. See [Self-hosting a vault server for agents](../docs/self-host-for-agents.md).
-- **The full CLI reference** on this site is still being wired to its generator (it will be produced from the CLI's own argument parser on every release, so it can never go stale).
+- **No pruning.** Nothing deletes unreachable objects; on pack vaults, compaction moves superseded packs to `archive/`. A client-driven `vault prune` is possible and not built.
 
 ## What PKI does not do yet
 

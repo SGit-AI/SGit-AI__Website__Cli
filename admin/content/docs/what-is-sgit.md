@@ -10,6 +10,8 @@ moved_on: 2026-10-20
 
 # What is sgit
 
+> **Updated, 28 October 2026.** "Git for encrypted vaults" now undersells it: sgit does twelve things Git has no equivalent for, from read keys that work from any static host to indexes the writer ships encrypted. See [sgit and Git](/docs/sgit-and-git.html).
+
 **sgit is git for encrypted vaults.** Clone, commit, branch, diff and merge folders of files that are encrypted with AES-256-GCM before they leave your machine. The server stores ciphertext under opaque IDs, it never sees your filenames, your contents, or your commit messages.
 
 It's like git and a password vault had a baby.

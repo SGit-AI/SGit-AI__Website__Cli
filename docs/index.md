@@ -11,6 +11,7 @@ Read the first section in order; the rest when you need it. Commands are in [the
 
 ## Get started {#start}
 
+- [sgit and Git: what only sgit does, what both do, and where Git is ahead](../docs/sgit-and-git.md): The row-by-row comparison, checked against sgit-ai 0.26.0. Twelve things Git has no equivalent for, each with the command and Git's nearest answer: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges from plain storage, indexes the writer ships encrypted and signed, policy the vault carries, rewinds refused by name, a secret guard, key rotation, a computable cache, files sealed to a person. Fifteen things both have, with what differs. Sixteen where Git is ahead, fourteen of which sgit can build on the client without giving up zero knowledge, with how and at what size. And the six that zero knowledge rules out, each with its substitute.
 - [What is sgit](../docs/what-is-sgit.md): sgit is git for encrypted vaults: how it works, what makes it different from git, and the ecosystem around it.
 - [Installation](../docs/installation.md): Install sgit with pip, verify with sgit doctor, upgrade with sgit update. Python 3.11+, two runtime dependencies.
 - [Quickstart](../docs/quickstart.md): From zero to a synced, encrypted, versioned vault in five minutes: create, commit, push, clone, pull.

@@ -39,9 +39,9 @@
       <a class="sl" href="../docs/history-integrity.html">History integrity: the format gate, verifying signatures, and rewinds</a>
       <a class="sl" href="../docs/agents.html">Working with AI agents</a>
       <a class="sl" href="../builds/index.html">&#9679; Builds since the last release, reviewed</a>
+      <a class="sl" href="../builds/0-27-0.html">sgit-ai 0.27.0: release readiness, tested on 0.26.12.dev0</a>
       <a class="sl here" href="../builds/0-26-12.html">sgit-ai 0.26.12.dev0: dev builds are pre-releases again; sgit update follows the channel</a>
       <a class="sl" href="../builds/0-26-11.html">sgit-ai 0.26.11: doctor shows signing; the signature gate exempts the empty first commit</a>
-      <a class="sl" href="../builds/0-26-10.html">sgit-ai 0.26.10: sign commits and tags with your own key; the line differ is Git&#x27;s</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -133,7 +133,7 @@
 <p><b>Verdict: good. BR-4 is resolved on this build, and fully once the yank is done.</b></p>
 <ul><li><b>Checked:</b> the sdist of 0.26.12.dev0 differs from 0.26.11 only in <code>CLI__Main.py</code>, a comment in <code>Vault__Format.py</code> and the version. <code>pip index versions sgit-ai</code> does not list <code>0.26.12.dev0</code> (it lists 0.26.11 as the latest), and <code>pip install --pre</code> does take it.</li><li><b>Checked on PyPI, after 0.26.12.dev0 appeared:</b> none of 0.26.3 to 0.26.11 was yanked. A plain <code>pip install sgit-ai</code> still takes 0.26.11, so BR-4's risk is still there until the yank.</li><li><b>Not tested:</b> <code>sgit update</code> in all four cases (it needs an installed build to update), and the yank itself.</li><li><b>One thing to say in the release notes:</b> after the yank, <code>pip install sgit-ai</code> goes down to 0.26.0 for anyone on 0.26.3 to 0.26.11 who runs <code>pip install -U</code>. <code>sgit update --stable</code> is the way back to the release; a script that pins a yanked version still works.</li></ul>
 <p><i>All builds: <a href="../builds/index.html">the builds page</a>.</i></p>
-<div class="pagenav"><span></span><a href="../builds/0-26-11.html">sgit-ai 0.26.11: doctor shows signing; the signature gate exempts the empty first commit →</a></div>
+<div class="pagenav"><a href="../builds/0-27-0.html">← sgit-ai 0.27.0: release readiness, tested on 0.26.12.dev0</a><a href="../builds/0-26-11.html">sgit-ai 0.26.11: doctor shows signing; the signature gate exempts the empty first commit →</a></div>
 <p class="small dim" style="margin-top:2rem">This page as <a href="../builds/0-26-12.md">markdown</a> · its source, <a href="https://github.com/SGit-AI/SGit-AI__Website__Cli/blob/dev/admin/content/builds/0-26-12.md"><code>admin/content/builds/0-26-12.md</code></a></p>
 </main>
 

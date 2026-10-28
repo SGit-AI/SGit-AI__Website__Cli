@@ -1,0 +1,4 @@
+after clone: ok=True packs=0 bad=0 
+after push: ok=True packs=1 bad=0 
+after build_missing: ok=True packs=2 bad=0 
+after compaction: ok=False packs=3 bad=64 ('1793221099__obj-cas-imm-fd76814a8333__41095.zip', 'tree_at: at does not point at bytes hashing to obj-cas-imm-d')

@@ -8,6 +8,8 @@ order: 0
 
 # Builds since the last release, each reviewed
 
+**For the 0.27.0 release, start at [the readiness page](/builds/0-27-0.html):** tested on the newest build, 0.26.12.dev0, with three things to do first.
+
 Every build of sgit-ai on PyPI since the last release has a page here:
 - **its release notes:** what changed, and the commands to use it;
 - **cli.build's review:** what was tested against the package PyPI serves, what held, what did not, and how mature the build is.
@@ -96,11 +98,12 @@ The scripts and every result are in [`admin/research/builds-0-26-x-2026-10-28/`]
 | ~~BR-2~~ | closed | 0.26.5 to 0.26.9 | `--merge lines` merged cleanly where `git merge-file` conflicts on repeated lines. **Fixed in [0.26.10](/builds/0-26-10.html)**: the differ is a port of Git's; 4,500 merges byte-identical | [0.26.10](/builds/0-26-10.html) |
 | ~~BR-3~~ | closed | 0.26.5 to 0.26.9 | conflict blocks drew differently from Git's. Fixed in 0.26.10 with BR-2 | [0.26.10](/builds/0-26-10.html) |
 | ~~BR-4~~ | resolved, pending the yank | 0.26.3 to 0.26.11 | a plain `pip install sgit-ai` took the newest dev build. From [0.26.12.dev0](/builds/0-26-12.html) dev builds are pre-releases; **0.26.3 to 0.26.11 are not yanked yet**, so a plain install still gets 0.26.11 | [0.26.12](/builds/0-26-12.html) |
+| **UP-1** | low | 0.26.3 to 0.26.11 | `sgit update` and `--pre` leave a 0.26.3 to 0.26.11 install where it is; only `pip install --pre -U sgit-ai` reaches the dev channel; a release user's `sgit update` gives 0.26.11 until the yank | [0.27.0](/builds/0-27-0.html#open) |
 | BR-5 | low | 0.26.8 | `sgit grep` with a pattern of 1,001 characters or more fails with a `TypeError` message and exits 1, which `grep` uses for "no match"; `history log --grep` refuses it cleanly | [0.26.8](/builds/0-26-8.html#br-5) |
 | BR-6 | difference | 0.26.8 | `sgit grep` reads patterns like `git grep -E`; Git's default syntax is basic (`a\|b` and `a|b` swap) | [0.26.8](/builds/0-26-8.html#br-6) |
 | BR-7 | difference | 0.26.8 | `log -S` and `-G` do not follow renames, as `git log --no-renames`; Git's default does | [0.26.8](/builds/0-26-8.html#br-7) |
 | BR-8 | low | 0.26.10 | a failed `commit -S` says "nothing was written" but leaves a blob and a tree (no commit, no ref move); a doubled `gpg:` prefix | [0.26.10](/builds/0-26-10.html#br-8) |
 | W-1 | question, answered by the CLI team, not tested | 0.26.7 | signing shipped in 0.26.10 on the CLI team's statement that the web UI never verifies commit signatures and ignores unknown members; one test with a signed vault is still worth running | [0.26.7](/builds/0-26-7.html#w-1) |
-| R3-1 | low | since 0.26.0 | after a compaction, `pack index verify` reports bad offsets for an archived pack an older client wrote; unchanged in 0.26.6 | [round 3](/research/pack-indexes-review-round-3.html#r3-1) |
+| R3-1 | low | since 0.26.0 | after a compaction, `pack index verify` reports bad offsets for an archived pack an older client wrote; **still reproduces on 0.26.12.dev0** (64 bad offsets) | [round 3](/research/pack-indexes-review-round-3.html#r3-1) |
 
 *Reviewed by cli.build, cli.sgit.ai's build agent, on 28 October 2026 (0.26.1 to 0.26.6 earlier in the day, 0.26.7 and 0.26.8 later, 0.26.9 to 0.26.12.dev0 in the evening). The roadmap these builds start on: [Git parity](/research/git-parity-roadmap.html).*

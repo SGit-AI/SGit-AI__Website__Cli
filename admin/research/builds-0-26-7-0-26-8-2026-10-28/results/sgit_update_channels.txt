@@ -1,0 +1,6 @@
+sgit update, in throwaway venvs, 28 Oct 2026 evening (nothing yanked yet):
+start 0.26.0 + 'sgit update'            -> 0.26.11 (a dev build; the yank has not happened)
+start 0.26.11 + 'sgit update'           -> stays 0.26.11
+start 0.26.11 + 'sgit update --pre'     -> stays 0.26.11 (0.26.11's --pre means the default; it cannot reach 0.26.12.dev0)
+start 0.26.12.dev0 + 'sgit update --stable' -> 0.26.0
+start 0.26.0 + 'sgit update --stable'   -> usage error (the flag exists from 0.26.1)

@@ -4,7 +4,7 @@
 > points `sgit` and `sgit-ai`): every command, generated from the CLI's own parser; the HTTP API it is a
 > client of; the guides; and the CLI team's research, published as articles.
 
-Site version: v0.2.24 · command reference generated from sgit-ai v0.26.8 (177 commands) · 198 pages.
+Site version: v0.2.25 · command reference generated from sgit-ai v0.26.8 (177 commands) · 198 pages.
 
 Every page below is markdown, generated from the same source as the HTML page at the same path (swap
 `.md` for `.html`). Links inside the markdown point at markdown. Every page in one document: /llms-full.txt.
@@ -21,7 +21,7 @@ Notes for agents:
 
 ## Get started
 - [Docs](/docs/index.md): Every page of the sgit CLI documentation in reading order: getting started, the guides, and the security pages, with the command reference and the HTTP API alongside.
-- [sgit and Git: what only sgit does, what both do, and where Git is ahead](/docs/sgit-and-git.md): The row-by-row comparison, checked against sgit-ai 0.26.0 and the dev builds after it. Twelve things Git has no equivalent for, each with the command and Git's nearest answer: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges from plain storage, indexes the writer ships encrypted and signed, policy the vault carries, rewinds refused by name, a secret guard, key rotation, a computable cache, files sealed to a person. Fifteen things both have, with what differs. Where Git is ahead: line-level merge and partial commits shipped in the dev builds of 28 October; the rest of the CLI team's Git-parity roadmap is designed, with sizes in days. GitHub's features move to a future server. And the six things zero knowledge rules out, each with its substitute.
+- [sgit and Git: what only sgit does, what both do, and where Git is ahead](/docs/sgit-and-git.md): The row-by-row comparison, sections 1 and 2 checked against sgit-ai 0.26.0, section 3 against 0.27.0. Twelve things Git has no equivalent for, each with the command and Git's nearest answer: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges from plain storage, indexes the writer ships encrypted and signed, policy the vault carries, rewinds refused by name, a secret guard, key rotation, a computable cache, files sealed to a person. Fifteen things both have, with what differs. Where Git is ahead: of eighteen rows, six closed in sgit-ai 0.27.0 (line-level merge, partial commits, signing with your own key, rename detection, blame, grep and the pickaxe), each re-run against Git; five more are designed and next in the queue, and the page says which of the rest have a plan and which do not. GitHub's features move to a future server. And the six things zero knowledge rules out, each with its substitute.
 - [What is sgit](/docs/what-is-sgit.md): sgit is git for encrypted vaults: how it works, what makes it different from git, and the ecosystem around it.
 - [Installation](/docs/installation.md): Install sgit with pip, verify with sgit doctor, upgrade with sgit update. Python 3.11+, two runtime dependencies.
 - [Quickstart](/docs/quickstart.md): From zero to a synced, encrypted, versioned vault in five minutes: create, commit, push, clone, pull.

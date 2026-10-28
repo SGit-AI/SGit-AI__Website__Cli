@@ -1,0 +1,2 @@
+  ✓ N=102  fresh clone walks  104 of 104 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}
+  ✓ N=152  fresh clone walks  154 of 154 commits; stopped at: the root; fsck: {'ok': True, 'missing': 0, 'corrupt': 0, 'errors': 0}

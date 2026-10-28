@@ -28,12 +28,12 @@ $ sgit clone <vault-key>       # anywhere else, a person or an agent
 | **Agents on one huge vault, one folder each** | a folder by byte ranges from plain storage, 2.8 s against 36 on 76,000 files; commits outside the folder refused by name; two folders never conflict: [0.26.0](docs/update-to-0-26-0.md) |
 | **Trust carried by the vault** | a format gate and `signatures-required` every client enforces; rewinds refused by name; a secret guard at commit; key rotation |
 
-![sgit and Git, row by row, against sgit-ai 0.26.0 and the dev builds after it. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: line-level merge and partial commits shipped in the dev builds of 28 October, seven more items designed, GitHub's features moved to a future server. And six that zero knowledge rules out, each with a client-side substitute.](articles/images/sg-map.webp)
+![sgit and Git, row by row, against sgit-ai 0.26.0 and 0.27.0. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: six of eighteen rows closed in sgit-ai 0.27.0, five more designed and next in the queue, the rest waiting, sketched or unplanned, GitHub's features moved to a future server. And six that zero knowledge rules out, each with a client-side substitute.](articles/images/sg-map.webp)
 
-*sgit and Git, row by row, against sgit-ai 0.26.0 and the dev builds after it. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: line-level merge and partial commits shipped in the dev builds of 28 October, seven more items designed, GitHub's features moved to a future server. And six that zero knowledge rules out, each with a client-side substitute.*
+*sgit and Git, row by row, against sgit-ai 0.26.0 and 0.27.0. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: six of eighteen rows closed in sgit-ai 0.27.0, five more designed and next in the queue, the rest waiting, sketched or unplanned, GitHub's features moved to a future server. And six that zero knowledge rules out, each with a client-side substitute.*
 
 
-Git is still ahead on blame, bisect, rebase, its forges and twenty years of tooling, and the gap is closing fast: line-level merges and partial commits shipped in the [dev builds](builds/index.md) of 28 October, and the rest of Git's client is designed. What sgit can never do is anything that needs the host to read your files. **The full map, row by row, with the commands and the qualifiers: [sgit and Git](docs/sgit-and-git.md).**
+Git is still ahead on bisect, rebase, its forges and twenty years of tooling, and the gap is closing fast: sgit-ai 0.27.0 (28 October) added line-level merges, partial commits, signing with your own key, rename detection, blame and grep, and cherry-pick, hooks, rebase, bisect and worktree are designed and next in the queue. What sgit can never do is anything that needs the host to read your files. **The full map, row by row, with the commands and the qualifiers: [sgit and Git](docs/sgit-and-git.md).**
 
 **Where things are.** The project, the vault platform and what is built on top of it are on [sgit.ai](https://sgit.ai). Everything about the command-line tool is here.
 
@@ -76,7 +76,7 @@ Each topic is one open question, with what is shipped, what is designed and what
 
 Every page has a markdown twin at the same path (swap `.html` for `.md`), and [/llms.txt](llms.txt) indexes them all; [/llms-full.txt](llms-full.txt) is the whole site in one file. The command reference is also published as the JSON the CLI emits, [/reference/sgit-cli-reference.json](reference/sgit-cli-reference.json), so two releases can be diffed rather than re-read. Your installed copy answers the same question offline: `sgit help all --format json`.
 
-*Site v0.2.24. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
+*Site v0.2.25. This site was started on 20 October 2026 from [a brief published in full](briefs/index.md); some of its pages [moved here from sgit.ai](admin/moved.md) the same day.*
 
 ---
 

@@ -1,21 +1,21 @@
 ---
 title: sgit and Git: what only sgit does, what both do, and where Git is ahead
-summary: The row-by-row comparison, checked against sgit-ai 0.26.0 and the dev builds after it. Twelve things Git has no equivalent for, each with the command and Git's nearest answer: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges from plain storage, indexes the writer ships encrypted and signed, policy the vault carries, rewinds refused by name, a secret guard, key rotation, a computable cache, files sealed to a person. Fifteen things both have, with what differs. Where Git is ahead: line-level merge and partial commits shipped in the dev builds of 28 October; the rest of the CLI team's Git-parity roadmap is designed, with sizes in days. GitHub's features move to a future server. And the six things zero knowledge rules out, each with its substitute.
+summary: The row-by-row comparison, sections 1 and 2 checked against sgit-ai 0.26.0, section 3 against 0.27.0. Twelve things Git has no equivalent for, each with the command and Git's nearest answer: a host that reads nothing, read keys that work from any static host, custody without access, writes without reads, one folder by byte ranges from plain storage, indexes the writer ships encrypted and signed, policy the vault carries, rewinds refused by name, a secret guard, key rotation, a computable cache, files sealed to a person. Fifteen things both have, with what differs. Where Git is ahead: of eighteen rows, six closed in sgit-ai 0.27.0 (line-level merge, partial commits, signing with your own key, rename detection, blame, grep and the pickaxe), each re-run against Git; five more are designed and next in the queue, and the page says which of the rest have a plan and which do not. GitHub's features move to a future server. And the six things zero knowledge rules out, each with its substitute.
 section: start
 order: 0
 ---
 
 # sgit and Git
 
-**sgit is not a copy of Git with encryption on top.** It has Git's verbs, so a Git user is at home in an hour. But the host reads nothing, and that makes possible a set of things Git cannot do at all. This page is the map, row by row, checked against sgit-ai 0.26.0:
+**sgit is not a copy of Git with encryption on top.** It has Git's verbs, so a Git user is at home in an hour. But the host reads nothing, and that makes possible a set of things Git cannot do at all. This page is the map, row by row (sections 1 and 2 checked against sgit-ai 0.26.0, section 3 against 0.27.0):
 - what only sgit does;
 - what both do, and how they differ;
 - where Git is ahead, and how fast the gap is closing;
 - what zero knowledge rules out for good.
 
-!shot sg-map.webp | /articles/images/ | sgit and Git, row by row, against sgit-ai 0.26.0 and the dev builds after it. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: line-level merge and partial commits shipped in the dev builds of 28 October, seven more items designed and sized in days, GitHub's features moved to a future server. And six that zero knowledge rules out for good, each with a client-side substitute. | comparison
+!shot sg-map.webp | /articles/images/ | sgit and Git, row by row, against sgit-ai 0.26.0 and 0.27.0. Twelve things only sgit does, from a host that reads nothing to files sealed to a person. Fifteen both do, with sgit's difference. Where Git is ahead: six of eighteen rows closed in sgit-ai 0.27.0, five more designed and next in the queue, the rest waiting, sketched or unplanned, GitHub's features moved to a future server. And six that zero knowledge rules out for good, each with a client-side substitute. | comparison
 
-**In one paragraph.** Use sgit when the files must stay unreadable to whoever stores them, when readers should need no account, or when many agents work in one large vault, one folder each. Use Git when you need blame, bisect or rebase today, a forge's review and CI, or twenty years of tooling; line-level merges and partial commits arrived in sgit's dev builds on 28 October. Almost everything on Git's side runs on the client in Git too, so sgit can build it. What sgit can never do is anything that needs the host to read your files.
+**In one paragraph.** Use sgit when the files must stay unreadable to whoever stores them, when readers should need no account, or when many agents work in one large vault, one folder each. Use Git when you need bisect or rebase today, a forge's review and CI, or twenty years of tooling; sgit-ai 0.27.0 (28 October) added line-level merges, partial commits, signing with your own key, rename detection, blame and grep. Almost everything on Git's side runs on the client in Git too, so sgit can build it. What sgit can never do is anything that needs the host to read your files.
 
 The evidence:
 - the sgit CLI team's [claim-by-claim review](/research/sgit-and-git-article-review.html) of the newsroom's article [What sgit does that Git does not](https://newsroom.sgit.ai/articles/what-sgit-does-that-git-does-not.html), against the CLI's source and threat model;
@@ -53,12 +53,12 @@ Checked by this site against 0.26.0: rows 8 and 9, and `write` in section 2 ([th
 | `clone --no-checkout` | `clone --no-checkout`, then `sgit checkout <paths>` (0.26.0) | the agent loop: `pull --no-checkout`, then `checkout --since-pull` writes only what changed |
 | shallow clone, `fetch --unshallow` | `clone --depth N`, `fetch --unshallow` (0.18.0) | combines with `--path` |
 | bare clone | `clone --bare`, `clone-headless`, `clone-branch`, `clone-range` | |
-| `git commit <paths>`, `add -p` | `sgit commit <paths>`, `commit -p`, `--list-hunks` / `--hunk` (0.26.6); `sgit write <path> --file F [--also P:F …] [--push] [--json]` | `commit <paths>` matches Git's committed trees; hunk ids refuse to pick a different hunk once the file changed; `write` commits files without scanning the working copy. No persistent staging area |
+| `git commit <paths>`, `add -p` | `sgit commit <paths>`, `commit -p`, `--list-hunks` / `--hunk` (0.27.0); `sgit write <path> --file F [--also P:F …] [--push] [--json]` | `commit <paths>` matches Git's committed trees; hunk ids refuse to pick a different hunk once the file changed; `write` commits files without scanning the working copy. No persistent staging area |
 | signed commits and tags | commits signed by each clone's key; verification and `signatures-required` (0.19.0); signed tags (0.21.0) | sgit's check is required by the vault (row 7). A signature proves a key holder, not a person; see [section 5](#qualifiers) |
 | `log`, `diff`, `show`, `reflog` | `history log --grep --since --until --author --file --patch --stat --json`, `history diff A..B`, `history show`, `history reflog` | `history log --vault-key` runs with no clone |
 | `revert`, `reset`, `commit --amend` | `history revert`, `history reset`, `history undo`, `commit --amend` (0.21.0) | |
 | `stash` | `vault stash` | |
-| `merge` and conflicts | `branch merge`, `resolve`, `merge-abort` | whole-file `<path>.conflict` by default; line-level with Git's markers with `--merge lines` (0.26.5) |
+| `merge` and conflicts | `branch merge`, `resolve`, `merge-abort` | whole-file `<path>.conflict` by default; line-level with Git's markers with `--merge lines` (0.27.0) |
 | `remote` | `remote add / list / set-url` | |
 | `fsck` | `check fsck`, `check verify` | checks encrypted objects and their signatures; can repair |
 | reading over dumb HTTP | `--transport static` | one file from a normal vault is a ref, a commit, one tree per folder level and the blob, as plain GETs; one batch request for a path declared with `sgit cache add` |
@@ -69,41 +69,77 @@ The full Git-to-sgit command table is [sgit for Git users](/docs/sgit-for-git-us
 
 Git is a client-side program. Almost all of its lead runs on the client in Git too, on plaintext the client holds, so sgit can build the same things with no new server feature.
 - **The plan:** the CLI team's [Git-parity roadmap](/research/git-parity-roadmap.html) (28 October): Git the client is the bar, and every new feature is off by default.
-- **The first deliveries** are already on PyPI as [dev builds](/builds/index.html), each reviewed.
-- **Sizes** are the roadmap's estimates.
+- **Where it stands:** on 28 October **sgit-ai 0.27.0** was released with six of the eighteen rows below closed: [signed off by cli.build](/builds/0-27-0.html), each feature re-run against Git.
+- **Sizes** are the CLI team's design estimates (28 October), which are roughly twice the roadmap's first guesses.
 
 ```text
- Git's lead on 27 Oct            on 28 Oct, dev builds 0.26.3 – 0.26.6
+ Git's lead on 27 Oct            in sgit-ai 0.27.0 (28 Oct)
  ──────────────────────          ──────────────────────────────────────────────
- line-level merge         ──►    ✓ shipped, opt-in: pull/branch merge --merge lines   0.26.5
- commit some files/hunks  ──►    ✓ shipped: commit <paths>, -p, --list-hunks/--hunk    0.26.6
- commit messages > 740 B  ──►    ✓ shipped: up to 64 KiB with long-messages            0.26.4
- forks deeper than 200    ──►    ✓ fixed: merge base with no cap                        0.26.3
- the rest of priority 1-2 ──►    designed, with acceptance checklists: 7 documents
+ line-level merge         ──►    ✓ shipped, opt-in; the same bytes as git merge-file
+ commit some files/hunks  ──►    ✓ shipped: commit <paths>, -p, --list-hunks/--hunk
+ sign with your own key   ──►    ✓ shipped: commit -S, tags, merges; verify with your allowed signers
+ rename detection         ──►    ✓ shipped: show, diff, log, --follow
+ blame                    ──►    ✓ shipped: history blame
+ grep, log -S / -G        ──►    ✓ shipped: sgit grep (working copy or any revision), the pickaxe
+ forks deeper than 200    ──►    ✓ fixed       commit messages > 740 B ──► ✓ up to 64 KiB
+ pushes of 100+ commits   ──►    ✓ fixed (a gap on the host, found in review)
+
+ still ahead: 12 rows. 5 designed and next in the queue · 1 spec waiting on another team
+              1 server feature · 3 only sketched · 2 with no working plan
 ```
 
-| Git has | sgit, 28 October | Roadmap | Design | Size |
-|---|---|---|---|---|
-| line-by-line three-way merge | **shipped, opt-in** in [0.26.5](/builds/0-26-5.html): `--merge lines`, `--conflict diff3`; whole-file `.conflict` stays the default | 2.1 | [01](/research/git-parity-design-line-merge.html) | done |
-| a staging area, `commit <paths>`, `commit -p` | **shipped** in [0.26.6](/builds/0-26-6.html): `commit <paths>`, `commit -p`, and `--list-hunks` / `--hunk` for agents; no persistent `add` | 2.3 | [03](/research/git-parity-design-partial-commits.html) | done |
-| sign with your own key, verify against your allowed signers | each clone signs with its own key; designed: an SSH or GPG key as a second signature, and an allowed-signers file per verifier, as Git does | 2.2 | [02](/research/git-parity-design-signing.html) | 3–4 days |
-| `cherry-pick` | designed, on the line merge | 2.8 | [01](/research/git-parity-design-line-merge.html) | 1 day |
-| rename detection | none; designed from the plaintext content hash tree entries already carry | 2.4 | [04](/research/git-parity-design-blame-grep.html) | 1–2 days |
-| `blame` | none; designed as `history blame`, cheap through the index pack's file → commits member | 2.5 | [04](/research/git-parity-design-blame-grep.html) | 2 days |
-| `grep`, `log -S` / `-G` | `history log --grep` over messages; designed: `sgit grep` over content | 2.7 | [04](/research/git-parity-design-blame-grep.html) | 1–2 days |
-| `bisect` | none; designed, by generation number | 2.6 | [05](/research/git-parity-design-bisect.html) | 1–2 days |
-| hooks | none; designed as local hooks that never sync | 2.9 | [03](/research/git-parity-design-partial-commits.html) | 1 day |
-| `rebase`, `pull --rebase`, `rebase -i` | none; designed, opt-in, never rewriting pushed history | 2.12 | [07](/research/git-parity-design-rebase.html) | 2–3 days |
-| `worktree` | none; designed: a second working copy in seconds that borrows the main store, like Git's alternates | 2.13 | [06](/research/git-parity-design-worktree.html) | 2–3 days |
-| garbage collection | none; compaction moves old packs to `archive/`; client-driven `vault prune` planned | 2.10 | | 2–3 days |
-| delta compression | each blob deflated, no deltas; needs a format feature and a gate | 2.11 | | 1–2 weeks |
-| `archive`, `shortlog`, `describe`, aliases | none | 2.14 | | small each |
-| read one file with no clone, from the CLI | the browser reader does it on normal vaults; on pack vaults, Phase 4 of [pack indexes](/dev/pack-indexes/index.html) | | | S / L |
-| a command for append lanes | the server feature only | | | S–M |
-| per-folder read access | one key per vault; a scoped clone is not a boundary; would need folder keys | | | XL |
-| submodules | none; a design if someone asks | 2.15 | | design |
-| 160-bit ids by default | format 2, 128-bit, opt-in since 0.19.0 | | | shipped, opt-in |
-| twenty years of maturity | a month of releases, now one reviewed build per merge | | | time |
+### Closed {#closed}
+
+| Git has | sgit-ai 0.27.0 | Checked against Git |
+|---|---|---|
+| line-by-line three-way merge | **shipped, opt-in:** `pull --merge lines`, `branch merge --merge lines`, `--conflict diff3`; whole-file `.conflict` stays the default | 4,500 random merges: byte-identical to `git merge-file` |
+| a staging area, `commit <paths>`, `commit -p` | **shipped:** `commit <paths>`, `commit -p`, and `--list-hunks` / `--hunk` for agents; no persistent `add` | matches `git commit -- <paths>` and `git apply --cached` |
+| sign with your own key, verify against your allowed signers | **shipped:** `commit -S`, `write -S`, `vault tag create -s`, signed merges and reverts, `sgit.gpgSign`; SSH and OpenPGP; trust from your Git config (`allowedSignersFile`, revocation file, your keyring); `check verify`, `history log --show-signature`; `sgit doctor` shows the setup. It is a second signature beside the clone's own | verdicts are Git's letters; clients back to 0.20.0 read signed vaults |
+| rename detection | **shipped:** `history show`, `diff` and `log`, `-M<n>`, `--no-renames`, `log --follow`; a port of Git's detection | 90 of 90 pairs equal `git diff -M --name-status` |
+| `blame` | **shipped:** `history blame`, with `-L`, `-w`, `--porcelain`, `--json` | 25 of 25 files equal `git blame --porcelain` |
+| `grep`, `log -S` / `-G` | **shipped:** `sgit grep` over the working copy or any revision, decrypted in memory; `history log -S`, `-G`, `--pickaxe-regex` | grep: 120 of 120 runs equal `git grep`; `-S`/`-G`: 40 of 40 equal `git log --no-renames` |
+
+**Differences from Git on those rows, said plainly:**
+- `sgit grep` reads patterns like `git grep -E`; Git's default syntax swaps `a|b` and `a\|b`.
+- `log -S` and `-G` do not follow renames; Git's default does. `log --file F --follow` does.
+- `sgit.gpgSign` turns signing on, not Git's `commit.gpgSign`, so a Git setup never starts signing vault commits unasked. `x509` is refused.
+- Not tested: the web UI with signed commits, passphrase-protected keys, and `ssh-keygen` as the signer.
+
+### Still ahead, and how firm the plan is {#still-ahead}
+
+**Planned: designed, with an acceptance checklist, and next in the CLI team's build queue.** Order and sizes are theirs; about 21 days of work in all.
+
+| Git has | sgit today | Design | Size |
+|---|---|---|---|
+| `cherry-pick` | none; designed on the line merge, which has shipped | [01](/research/git-parity-design-line-merge.html) | 1.25 days |
+| hooks | none; local hooks that never sync (a hook that arrived in a vault must never run on a clone) | [03](/research/git-parity-design-partial-commits.html) | 3 days |
+| `rebase`, `pull --rebase`, `rebase -i` | none; opt-in, never rewriting pushed history | [07](/research/git-parity-design-rebase.html) | 6.5 to 7.5 days |
+| `bisect` | none; by generation number | [05](/research/git-parity-design-bisect.html) | 5 to 6 days |
+| `worktree` | none; a second working copy in seconds that borrows the main store | [06](/research/git-parity-design-worktree.html) | 3.25 days, then 1 to 1.5 for local branch merge |
+
+**Planned, but waiting on another team or on a server.**
+
+| Git has | sgit today | What is planned | Waiting on |
+|---|---|---|---|
+| read one file with no clone, from the CLI | `sgit cat` needs a local vault; the browser reader does it on normal vaults | `cat --vault-key`, and Phase 4 of [pack indexes](/dev/pack-indexes/index.html) for pack vaults | the SG/Vault team (Phase 4) |
+| a command for append lanes | the server feature only | `sgit inbox` on the client; a [brief to the SG/Send team](/research/zip-append-via-s3-brief.html) for the server side | the server |
+
+**Sketched in the roadmap, no design, built when a workload asks.**
+
+| Git has | sgit today | The sketch | Size guess |
+|---|---|---|---|
+| garbage collection | compaction moves old packs to `archive/` | `vault prune` with the write key, after a grace period; the roadmap says it is not needed for now | 2 to 3 days |
+| delta compression | each blob deflated, no deltas | delta at push, rebuilt and verified by content address; needs a format feature and a gate, so old clients must update | 1 to 2 weeks |
+| `archive`, `shortlog`, `describe`, aliases | none | plaintext export, summaries, `sgit config alias.*` | small each |
+
+**No working plan yet.**
+
+| Git has | sgit today | Why there is none |
+|---|---|---|
+| per-folder read access | one key per vault; a scoped clone is not a boundary | needs folder keys, a different key model; not designed |
+| submodules | none | a vault referencing another vault at a commit needs a design; the roadmap says skip until someone asks |
+
+**Not a gap:** 160-bit ids are opt-in (format 2, 128-bit by default since 0.19.0). Git's twenty years of maturity is time.
 
 **Moved to a future server, "SGitHub"** ([the roadmap, section 4](/research/git-parity-roadmap.html)): GitHub's features, not Git's.
 - accounts, and who pushed;

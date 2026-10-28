@@ -12,7 +12,7 @@ moved_on: 2026-10-20
 
 If you know git, you know most of sgit. Same verbs, same mental model, with three deliberate differences that exist because the payload is encrypted.
 
-> **Updated, 28 October 2026, against sgit-ai 0.26.0.** sgit is not only Git with encryption: it does twelve things Git has no equivalent for, and Git is still ahead on sixteen. The map is [sgit and Git](/docs/sgit-and-git.html). Rows below gained `write`, the clone options and `checkout`.
+> **Updated, 28 October 2026, against sgit-ai 0.26.0 (rows) and 0.27.0 (what Git still has that sgit does not).** sgit is not only Git with encryption: it does twelve things Git has no equivalent for. Git is still ahead on twelve rows, down from eighteen: [the table](/docs/sgit-and-git.html#still-ahead) says which are planned. The map is [sgit and Git](/docs/sgit-and-git.html). Rows below gained `write`, the clone options and `checkout`.
 
 ## The Rosetta stone
 
